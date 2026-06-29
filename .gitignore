@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+venv/
+.venv/
+
+# Excel / LibreOffice lock files
+src/.~lock.*.xlsx#
+src/~$*.xlsx
+*.~lock.*
+~$*
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Outputs temporales
+*.tmp

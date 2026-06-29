@@ -1,6 +1,49 @@
-# Hoja de Ruta (Roadmap) - EvalFP v1.0
+# Hoja de Ruta (Roadmap) - EvalFP
 
-Este documento contiene la planificación oficial del desarrollo de EvalFP v1.0, organizada en **14 Sprints**. Cada sprint debe entregar un producto 100% funcional y listo para pruebas.
+> **Estado actual: v2.0.1 — estable** (29 jun 2026)
+> EvalFP 1.0 completado en 14 sprints. EvalFP 2.0 completado en 7 sprints adicionales (2.1–2.7) + corrección OOXML (v2.0.1).
+
+---
+
+## Versión 2.x — EvalFP Multigrupo / Multimódulo ✅
+
+### Sprint 2.1 – Arquitectura multigrupo ✅
+*   `teacher_config.py`: configuración de carga docente (lista de módulos + grupos).
+*   `_set_module_context()` y helpers de prefijo `_sn()`/`_sr()`.
+*   Segundo módulo de ejemplo: `par_data.py` (PAR).
+*   Nueva hoja global `Mis Módulos` con navegación por hipervínculo.
+
+### Sprint 2.2 – Biblioteca de Recursos ✅
+*   Hoja global `Biblioteca` con índice consolidado de actividades y exámenes de todos los módulos.
+
+### Sprint 2.3 – Calendario Académico ✅
+*   Hoja global `Calendario` con 60 eventos configurables y dropdowns de validación.
+
+### Sprint 2.4 – Panel Diario ✅
+*   Hoja `Hoy` con fecha dinámica, KPIs en riesgo y bloc de notas rápidas.
+
+### Sprint 2.5 – Dashboard Global ✅
+*   Hoja `Dashboard Global` con KPIs consolidados por módulo y fila TOTAL CURSO.
+
+### Sprint 2.6 – Asistente IA ✅
+*   `scripts/ai_asistente.py`: clase `IAAsistente` para descriptores de rúbricas, propuestas de actividades e informes individuales via Claude / OpenAI.
+*   Hoja oculta `_IA_Config`. Flag `--ia` en `build_template.py`.
+
+### Sprint 2.7 – Lanzamiento EvalFP 2.0 ✅
+*   Limpieza de hardcodes residuales, `requirements.txt`, README v2.0, documentación técnica cerrada.
+
+### v2.0.1 – Corrección OOXML (diálogo de reparación Excel) ✅
+*   Eliminado diálogo "Hemos encontrado un problema con el contenido de EvalFP.xlsx".
+*   7 violaciones OOXML de openpyxl corregidas mediante bloque post-save en `build_template.py`.
+*   Ver CHANGELOG [2.0.1] para detalle completo.
+
+---
+
+## Versión 1.0 — EvalFP Monomódulo ✅
+
+Este bloque contiene la planificación original de EvalFP v1.0, organizada en **14 Sprints**.
+
+---
 
 ---
 
