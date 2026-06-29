@@ -2023,7 +2023,7 @@ def build_resumen(wb):
 
     r += 2
     kpis = [
-        ("📊 Alumnos registrados", "=COUNTA({_sr('Alumnos')}!C9:C38)"),
+        ("📊 Alumnos registrados", f"=COUNTA({_sr('Alumnos')}!C9:C38)"),
         ("✅ Aprobados (≥5)", "—"),
         ("❌ Suspensos (<5)", "—"),
         ("📈 Media del grupo",  "—"),
@@ -2399,7 +2399,7 @@ def build_boletin(wb):
     sel.border = thin_border("C00000")
     ws.merge_cells("D8:H8")
     nom = ws.cell(r, 4,
-        value="=IFERROR(INDEX({_sr('Alumnos')}!C:C,9+C8)&\", \"&INDEX({_sr('Alumnos')}!D:D,9+C8),\"\")")
+        value=f"=IFERROR(INDEX({_sr('Alumnos')}!C:C,9+C8)&\", \"&INDEX({_sr('Alumnos')}!D:D,9+C8),\"\")")
     nom.font = fn(size=13, bold=True, color=NAVY)
     nom.fill = f(ICE); nom.alignment = al(v="center"); nom.border = thin_border()
 
@@ -2613,8 +2613,8 @@ def build_informe_grupo(wb):
     c.fill = f(NAVY); c.alignment = al(v="center")
 
     kpi_rows = [
-        ("Alumnos registrados", "=COUNTA({_sr('Alumnos')}!C10:C39)"),
-        ("Activos",             "=COUNTIF({_sr('Alumnos')}!J10:J39,\"Activo\")"),
+        ("Alumnos registrados", f"=COUNTA({_sr('Alumnos')}!C10:C39)"),
+        ("Activos",             f"=COUNTIF({_sr('Alumnos')}!J10:J39,\"Activo\")"),
         ("Aprobados en 1ªORD (≥5)",
          f"=COUNTIF({_sr('1ªORD')}!{ORD1_RES_L}{ORD1_DATA_ROW_START}:"
          f"{ORD1_RES_L}{ORD1_DATA_ROW_END},\"APTO\")"),
@@ -3326,7 +3326,7 @@ def build_dashboard(wb):
 
     # Fila KPI 2: Media · Máxima · En riesgo (<4)
     kpi_box(12, 2, "MEDIA GRUPO",
-            f'=IFERROR(ROUND(AVERAGE({ord_ref}!{NF_L}11:{NF_L}40),2),"–")',
+            f'=IFERROR(ROUND(AVERAGE({ord_ref}!{NF_L}11:{NF_L}40),2),"")',
             MED)
     kpi_box(12, 4, "NOTA MÁXIMA",
             f'=IFERROR(MAX({ord_ref}!{NF_L}11:{NF_L}40),"–")',
@@ -3584,6 +3584,10 @@ def main():
     out_dir = os.path.join(os.path.dirname(__file__), "..", "src")
     os.makedirs(out_dir, exist_ok=True)
     out_path = os.path.join(out_dir, "EvalFP.xlsx")
+   
+    for i, ws in enumerate(wb.worksheets, start=1):
+        print(f"{i:02d} -> {ws.title}")
+   
     wb.save(out_path)
     # Post-save XML fixes: openpyxl genera OOXML inválido en 3 puntos que Excel 365
     # detecta como "contenido dañado" y muestra el diálogo de reparación.
@@ -3613,17 +3617,10 @@ def main():
                 _xml = _xml.replace('Target="/xl/worksheets/', 'Target="worksheets/')
                 _xml = _xml.replace('Target="/xl/styles.xml"', 'Target="styles.xml"')
                 _xml = _xml.replace('Target="/xl/theme/', 'Target="theme/')
-                _data = _xml.encode('utf-8')
-            elif _item.filename.startswith('xl/worksheets/'):
-                _xml = _data.decode('utf-8')
-                # Fix 4: strip invalid type attributes from empty cells.
-                # openpyxl writes t="n" and t="inlineStr" on cells with no content,
-                # which is invalid OOXML (type implies a value/child element must exist).
-                _xml = _xml.replace(' t="n"></c>', '></c>')
-                _xml = _xml.replace(' t="inlineStr"></c>', '></c>')
                 # Self-close all remaining truly empty cells
-                _xml = _re.sub(r'(<c [^>]*?)></c>', r'\1/>', _xml)
-                _data = _xml.encode('utf-8')
+               # _xml = _xml.replace(' t="inlineStr"></c>', '></c>')
+                #_xml = _re.sub(r'(<c [^>]*?)></c>', r'\1/>', _xml)
+                #_data = _xml.encode('utf-8')
             _zout.writestr(_item, _data)
     _sh.move(_tmp, out_path)
     n_vis    = len([s for s in wb.sheetnames if wb[s].sheet_state == "visible"])
