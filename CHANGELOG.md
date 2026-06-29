@@ -2,6 +2,20 @@
 
 Todos los cambios notables realizados en el proyecto EvalFP se documentarán en este archivo.
 
+## [2.0.1] - 2026-06-29
+### Corrección: diálogo de reparación de Excel eliminado
+*   **Problema:** Excel 365 para Mac mostraba el diálogo "Hemos encontrado un problema con el contenido de EvalFP.xlsx" en cada apertura, causado por múltiples violaciones OOXML que openpyxl 3.1.x genera de forma incorrecta.
+*   **Diagnóstico:** Metodología ZIP diff (EvalFP.xlsx vs versión reparada por Excel) en 6 rondas iterativas. Se identificaron 7 causas raíz.
+*   **Fix 1 — workbook.xml:** Eliminado elemento `<workbookProtection/>` vacío que openpyxl inserta por defecto.
+*   **Fix 2 — styles.xml:** `<patternFill/>` sin atributo `patternType` → `patternType="none"` (requerido por esquema OOXML).
+*   **Fix 3 — styles.xml:** Colores ARGB con alpha `00` (transparente) → `FF` (opaco). Afectaba a ~190 colores en borders, fills y fonts.
+*   **Fix 4 — workbook.xml.rels:** Rutas `Target="/xl/..."` absolutas → relativas (e.g. `worksheets/sheet1.xml`).
+*   **Fix 5 — styles.xml:** Atributos redundantes `pivotButton="0"` y `quotePrefix="0"` en los 352 elementos `cellXf` → eliminados.
+*   **Fix 6 — styles.xml:** Orden de elementos hijos de `<font>` incorrecto (`<name><family><color><sz>`) → orden canónico de Excel (`<b?><i?><sz><color><name><family><scheme?>`).
+*   **Fix 7 — workbook.xml:** `calcPr fullCalcOnLoad="1"` → atributo eliminado.
+*   **Resultado:** EvalFP.xlsx abre sin ningún diálogo de reparación en Excel 365 para Mac. ✅
+*   **Implementación:** Bloque post-save en `main()` de `build_template.py` (líneas ~3592–3645). El parche se aplica en cada generación del xlsx reescribiendo los ZIP entries afectados.
+
 ## [2.0.0] - 2026-06-29
 ### EvalFP 2.0 — Versión estable (Sprints 2.6 + 2.7)
 *   **Sprint 2.7 (Limpieza técnica y lanzamiento):** Hardcode residual `"1º ASIR"` en tabla `_Grupos` sustituido por `MODULO['curso']`. Docstring de `build_template.py` actualizado a v2.0. `requirements.txt` creado con dependencias obligatorias (`openpyxl`) y opcionales (`anthropic`/`openai`). README completamente reescrito con estructura real v2.0, guías de uso y tabla de docs técnica. ROADMAP y CHANGELOG cerrados con todos los sprints ✅.

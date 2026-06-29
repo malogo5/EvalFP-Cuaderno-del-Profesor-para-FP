@@ -3589,38 +3589,62 @@ def main():
         print(f"{i:02d} -> {ws.title}")
    
     wb.save(out_path)
-    # Post-save XML fixes: openpyxl genera OOXML inválido en 3 puntos que Excel 365
-    # detecta como "contenido dañado" y muestra el diálogo de reparación.
+    # Post-save XML fixes: openpyxl 3.1.x genera OOXML con varias violaciones que
+    # Excel 365 detecta como "contenido dañado" y muestra el diálogo de reparación.
+    # Verificado contra ZIP diff entre EvalFP.xlsx y versión reparada por Excel.
     #
-    # Fix 1 – workbook.xml:      <workbookProtection/> vacío → eliminarlo
-    # Fix 2 – styles.xml:        <patternFill/> sin patternType → patternType="none"
-    # Fix 3 – workbook.xml.rels: Target="/xl/…" absoluto → relativo
+    # Fix 1 – workbook.xml:       <workbookProtection/> vacío → eliminar
+    #                              calcPr fullCalcOnLoad="1" → eliminar atributo
+    # Fix 2 – styles.xml:         <patternFill/> → patternType="none"
+    #                              ARGB alpha 00 (transparente) → FF (opaco)
+    #                              pivotButton="0" y quotePrefix="0" en cellXf → eliminar
+    #                              orden de hijos de <font> → orden canónico Excel
+    # Fix 3 – workbook.xml.rels:  Target="/xl/..." absoluto → relativo
+    # Fix 4 – worksheets/*.xml:   t="n" y t="inlineStr" en celdas vacías → eliminar
     import zipfile as _zf, shutil as _sh, re as _re
     _tmp = out_path + ".tmp"
+
+    # Orden canónico de elementos hijos de <font> según Excel 365
+    _FONT_ORDER = ['b', 'i', 'strike', 'condense', 'extend', 'outline', 'shadow',
+                   'charset', 'sz', 'color', 'name', 'family', 'scheme']
+
+    def _reorder_font(m):
+        inner = m.group(1)
+        elems = _re.findall(r'<\w+[^<]*/>', inner)
+        def _key(e):
+            tag = _re.match(r'<(\w+)', e).group(1)
+            return _FONT_ORDER.index(tag) if tag in _FONT_ORDER else 99
+        elems.sort(key=_key)
+        return '<font>' + ''.join(elems) + '</font>'
+
     with _zf.ZipFile(out_path, 'r') as _zin, _zf.ZipFile(_tmp, 'w', _zf.ZIP_DEFLATED) as _zout:
         for _item in _zin.infolist():
             _data = _zin.read(_item.filename)
             if _item.filename == 'xl/workbook.xml':
                 _xml = _data.decode('utf-8')
                 _xml = _re.sub(r'<workbookProtection[^/]*/>', '', _xml)
+                _xml = _re.sub(r'\s+fullCalcOnLoad="1"', '', _xml)
                 _data = _xml.encode('utf-8')
             elif _item.filename == 'xl/styles.xml':
                 _xml = _data.decode('utf-8')
-                # Fix 2: <patternFill/> → <patternFill patternType="none"/>
                 _xml = _xml.replace('<patternFill/>', '<patternFill patternType="none"/>')
-                # Fix 5: openpyxl escribe colores ARGB con alpha=00 (transparente).
-                # Excel requiere alpha=FF (opaco). Afecta a 190 colores en borders/fills/fonts.
                 _xml = _re.sub(r'rgb="00([0-9A-Fa-f]{6})"', r'rgb="FF\1"', _xml)
+                _xml = _re.sub(r'\s+pivotButton="0"', '', _xml)
+                _xml = _re.sub(r'\s+quotePrefix="0"', '', _xml)
+                _xml = _re.sub(r'<font>(.*?)</font>', _reorder_font, _xml, flags=_re.DOTALL)
                 _data = _xml.encode('utf-8')
             elif _item.filename == 'xl/_rels/workbook.xml.rels':
                 _xml = _data.decode('utf-8')
                 _xml = _xml.replace('Target="/xl/worksheets/', 'Target="worksheets/')
                 _xml = _xml.replace('Target="/xl/styles.xml"', 'Target="styles.xml"')
                 _xml = _xml.replace('Target="/xl/theme/', 'Target="theme/')
-                # Self-close all remaining truly empty cells
-               # _xml = _xml.replace(' t="inlineStr"></c>', '></c>')
-                #_xml = _re.sub(r'(<c [^>]*?)></c>', r'\1/>', _xml)
-                #_data = _xml.encode('utf-8')
+                _data = _xml.encode('utf-8')
+            elif _item.filename.startswith('xl/worksheets/'):
+                _xml = _data.decode('utf-8')
+                _xml = _xml.replace(' t="n"></c>', '></c>')
+                _xml = _xml.replace(' t="inlineStr"></c>', '></c>')
+                _xml = _re.sub(r'(<c [^>]*?)></c>', r'\1/>', _xml)
+                _data = _xml.encode('utf-8')
             _zout.writestr(_item, _data)
     _sh.move(_tmp, out_path)
     n_vis    = len([s for s in wb.sheetnames if wb[s].sheet_state == "visible"])
