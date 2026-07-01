@@ -14,7 +14,9 @@
     "appId": "com.evalfp.app",
     "productName": "EvalFP",
     "copyright": "© 2026 EvalFP",
-    "directories": { "output": "dist" },
+    "directories": {
+      "output": "dist"
+    },
     "files": [
       "main.js",
       "preload.js",
@@ -26,7 +28,10 @@
       {
         "from": "../scripts",
         "to": "scripts",
-        "filter": ["**/*.py", "modules/**/*.py"]
+        "filter": [
+          "**/*.py",
+          "modules/**/*.py"
+        ]
       }
     ],
     "mac": {
@@ -35,20 +40,41 @@
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "target": [
-        { "target": "dmg", "arch": ["arm64", "x64"] }
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
       ]
     },
     "dmg": {
       "title": "EvalFP ${version}",
       "icon": "assets/icon.icns",
       "contents": [
-        { "x": 130, "y": 220 },
-        { "x": 410, "y": 220, "type": "link", "path": "/Applications" }
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
       ]
     },
     "win": {
       "icon": "assets/icon.ico",
-      "target": [{ "target": "nsis", "arch": ["x64"] }]
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
     },
     "nsis": {
       "oneClick": false,
@@ -62,5 +88,8 @@
   "devDependencies": {
     "electron": "^42.5.1",
     "electron-builder": "^26.15.3"
+  },
+  "dependencies": {
+    "keytar": "^7.9.0"
   }
 }
