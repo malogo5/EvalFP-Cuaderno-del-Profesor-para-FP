@@ -133,14 +133,24 @@ const getAlumnos = moduloId =>
 
 function saveAlumno(a) {
   const db = getDb()
+  const n = v => (v === undefined || v === '') ? null : v
   if (a.id) {
     db.prepare(`UPDATE alumnos SET num=?,apellidos=?,nombre=?,nia=?,fecha_nacim=?,
       email=?,telefono=?,estado=?,observaciones=? WHERE id=?`)
-      .run(a.num,a.apellidos,a.nombre,a.nia,a.fecha_nacim,
-           a.email,a.telefono,a.estado,a.observaciones,a.id)
+      .run(
+        n(a.num),
+        n(a.apellidos),
+        n(a.nombre),
+        n(a.nia),
+        n(a.fecha_nacim),
+        n(a.email),
+        n(a.telefono),
+        a.estado || 'Activo',
+        n(a.observaciones),
+        a.id
+      )
     return a.id
   }
-  const n = v => (v === undefined || v === '') ? null : v
   return Number(db.prepare(`INSERT INTO alumnos
     (modulo_id,num,apellidos,nombre,nia,fecha_nacim,email,telefono,estado,observaciones)
     VALUES (?,?,?,?,?,?,?,?,?,?)`)
