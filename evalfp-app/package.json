@@ -1,0 +1,66 @@
+{
+  "name": "evalfp",
+  "version": "3.0.0",
+  "description": "EvalFP — Cuaderno del Profesor para FP",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "prebake": "python3 ../scripts/prebake_modules.py",
+    "build:mac": "npm run prebake && electron-builder --mac",
+    "build:win": "npm run prebake && electron-builder --win",
+    "build:all": "npm run prebake && electron-builder --mac --win"
+  },
+  "build": {
+    "appId": "com.evalfp.app",
+    "productName": "EvalFP",
+    "copyright": "© 2026 EvalFP",
+    "directories": { "output": "dist" },
+    "files": [
+      "main.js",
+      "preload.js",
+      "db.js",
+      "renderer/**/*",
+      "!node_modules/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "../scripts",
+        "to": "scripts",
+        "filter": ["**/*.py", "modules/**/*.py"]
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.education",
+      "entitlementsInherit": "entitlements.mac.plist",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "target": [
+        { "target": "dmg", "arch": ["arm64", "x64"] }
+      ]
+    },
+    "dmg": {
+      "title": "EvalFP ${version}",
+      "icon": "assets/icon.icns",
+      "contents": [
+        { "x": 130, "y": 220 },
+        { "x": 410, "y": 220, "type": "link", "path": "/Applications" }
+      ]
+    },
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": [{ "target": "nsis", "arch": ["x64"] }]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  },
+  "devDependencies": {
+    "electron": "^42.5.1",
+    "electron-builder": "^26.15.3"
+  }
+}

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <!-- Permite ejecutar JIT y código no firmado (necesario para Electron/Node.js) -->
+    <key>com.apple.security.cs.allow-jit</key>
+    <true/>
+    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+    <true/>
+    <!-- Acceso a red para IA (OpenAI / Anthropic) -->
+    <key>com.apple.security.network.client</key>
+    <true/>
+    <!-- Acceso a sistema de archivos del usuario (EvalFP output folder) -->
+    <key>com.apple.security.files.user-selected.read-write</key>
+    <true/>
+    <key>com.apple.security.files.downloads.read-write</key>
+    <true/>
+  </dict>
+</plist>
