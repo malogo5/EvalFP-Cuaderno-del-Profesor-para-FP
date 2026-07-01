@@ -5,6 +5,7 @@ const { spawn } = require('child_process')
 const fs     = require('fs')
 const os     = require('os')
 const keytar = require('keytar')
+const schedule = require('node-schedule')
 
 // ── Rutas ─────────────────────────────────────────────────────────────────────
 const scriptsDir = () => app.isPackaged
@@ -29,6 +30,88 @@ async function loadApiKeysFromSecureStorage() {
     console.log('✓ API keys loaded from secure storage')
   } catch (e) {
     console.warn('⚠ Error loading API keys from keytar:', e.message)
+  }
+}
+
+// ── Automatic Database Backups ────────────────────────────────────────────────
+const backupsDir = () => path.join(os.homedir(), 'Documents', 'EvalFP', 'backups')
+const dbPath = () => path.join(os.homedir(), 'Documents', 'EvalFP', 'evalfp.db')
+
+function setupBackups() {
+  try {
+    // Crear directorio de backups si no existe
+    fs.mkdirSync(backupsDir(), { recursive: true })
+    
+    // Ejecutar backup diario a las 2 AM
+    schedule.scheduleJob('0 2 * * *', async () => {
+      console.log('📅 Ejecutando backup automático...')
+      try {
+        await performBackup()
+        await cleanOldBackups()
+      } catch (e) {
+        console.error('❌ Error en backup automático:', e.message)
+      }
+    })
+    
+    // También ejecutar backup al cierre (graceful shutdown)
+    process.on('SIGINT', async () => {
+      console.log('💾 Backup final antes de cerrar...')
+      try {
+        await performBackup()
+      } catch (e) {
+        console.error('Error en backup final:', e.message)
+      }
+      process.exit(0)
+    })
+    
+    console.log('✓ Automatic backups initialized (daily at 2 AM)')
+  } catch (e) {
+    console.warn('⚠ Error initializing backups:', e.message)
+  }
+}
+
+async function performBackup() {
+  try {
+    const src = dbPath()
+    const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-')
+    const dest = path.join(backupsDir(), `evalfp_${timestamp}.db`)
+    
+    // Hacer copia del archivo
+    fs.copyFileSync(src, dest)
+    console.log(`✓ Backup created: ${path.basename(dest)}`)
+    return dest
+  } catch (e) {
+    throw new Error(`Failed to create backup: ${e.message}`)
+  }
+}
+
+async function cleanOldBackups() {
+  try {
+    const files = fs.readdirSync(backupsDir())
+      .filter(f => f.startsWith('evalfp_') && f.endsWith('.db'))
+      .map(f => ({
+        name: f,
+        path: path.join(backupsDir(), f),
+        time: fs.statSync(path.join(backupsDir(), f)).mtime.getTime()
+      }))
+      .sort((a, b) => b.time - a.time) // Newest first
+    
+    const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000)
+    let deleted = 0
+    
+    for (const file of files) {
+      if (file.time < thirtyDaysAgo) {
+        fs.unlinkSync(file.path)
+        deleted++
+        console.log(`  🗑 Deleted old backup: ${file.name}`)
+      }
+    }
+    
+    if (deleted > 0) {
+      console.log(`✓ Cleanup: ${deleted} old backups removed`)
+    }
+  } catch (e) {
+    console.warn('⚠ Error cleaning old backups:', e.message)
   }
 }
 
@@ -60,6 +143,7 @@ function createWindow() {
 
 app.whenReady().then(async () => {
   await loadApiKeysFromSecureStorage()
+  setupBackups()
   createWindow()
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow() })
 })
