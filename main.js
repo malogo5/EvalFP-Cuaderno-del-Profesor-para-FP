@@ -61,13 +61,6 @@ function createWindow() {
 app.whenReady().then(async () => {
   await loadApiKeysFromSecureStorage()
   createWindow()
-  // Cargar config API keys al entorno
-  try {
-    const db = require('./db')
-    const cfg = db.getAllConfig()
-    if (cfg.openaiKey)    process.env.OPENAI_API_KEY    = cfg.openaiKey
-    if (cfg.anthropicKey) process.env.ANTHROPIC_API_KEY = cfg.anthropicKey
-  } catch {}
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow() })
 })
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit() })
