@@ -4,9 +4,23 @@ const path   = require('path')
 const { spawn } = require('child_process')
 const fs     = require('fs')
 const os     = require('os')
-const keytar = require('keytar')
+const Database = require('better-sqlite3')
 const schedule = require('node-schedule')
 const logger = require('./main/logger')
+
+// ── Conditional Keytar Import ─────────────────────────────────────────────
+// Keytar is a native module and may fail on some systems (e.g., macOS without rebuild)
+// If it fails, we fall back to database storage
+let keytar = null
+try {
+  keytar = require('keytar')
+  logger.logEvent('KEYTAR_LOADED', { status: 'success' })
+} catch (err) {
+  logger.logEvent('KEYTAR_FAILED', { 
+    message: `Keytar failed to load: ${err.message}. Using database fallback.` 
+  })
+  // keytar remains null - will use fallback
+}
 
 // ── Rutas ─────────────────────────────────────────────────────────────────────
 const scriptsDir = () => app.isPackaged
@@ -19,18 +33,48 @@ const modulesDataPath = () => path.join(__dirname, 'renderer', 'modules_data.jso
 const outputDir = () => path.join(os.homedir(), 'Documents', 'EvalFP')
 const python    = () => process.platform === 'win32' ? 'python' : 'python3'
 
-// ── Secure API Key Storage with keytar ─────────────────────────────────────────
+// ── Secure API Key Storage with keytar (or database fallback) ──────────────────────
 async function loadApiKeysFromSecureStorage() {
   try {
-    const openaiKey = await keytar.getPassword('EvalFP', 'openai_api_key')
-    const anthropicKey = await keytar.getPassword('EvalFP', 'anthropic_api_key')
+    let openaiKey = ''
+    let anthropicKey = ''
+    
+    if (keytar) {
+      // Primary: Use keytar for secure OS-level storage
+      try {
+        openaiKey = await keytar.getPassword('EvalFP', 'openai_api_key') || ''
+        anthropicKey = await keytar.getPassword('EvalFP', 'anthropic_api_key') || ''
+        if (openaiKey || anthropicKey) {
+          logger.logEvent('API_KEYS_LOADED_FROM_KEYTAR')
+        }
+      } catch (keytarErr) {
+        logger.logEvent('KEYTAR_READ_FAILED', { message: keytarErr.message })
+      }
+    } else {
+      // Fallback: Load from database (less secure but functional)
+      logger.logEvent('LOADING_API_KEYS_FROM_DATABASE_FALLBACK')
+      try {
+        const db = new Database(dbPath())
+        const cfg = db.prepare('SELECT openaiKey, anthropicKey FROM cfg LIMIT 1').get()
+        if (cfg) {
+          openaiKey = cfg.openaiKey || ''
+          anthropicKey = cfg.anthropicKey || ''
+          logger.logEvent('API_KEYS_LOADED_FROM_DATABASE')
+        }
+      } catch (dbErr) {
+        logger.logError('Failed to load API keys from database', dbErr)
+      }
+    }
     
     if (openaiKey) process.env.OPENAI_API_KEY = openaiKey
     if (anthropicKey) process.env.ANTHROPIC_API_KEY = anthropicKey
     
-    logger.info('API keys loaded from secure storage')
+    logger.logEvent('API_KEYS_LOADED_TO_ENV', { 
+      hasOpenAI: !!openaiKey, 
+      hasAnthropic: !!anthropicKey 
+    })
   } catch (e) {
-    logger.logError('Failed to load API keys from keytar', e)
+    logger.logError('Failed to load API keys from secure storage', e)
   }
 }
 
@@ -190,19 +234,41 @@ ipcMain.handle('db:getModuloData', (_, key) => {
 ipcMain.handle('db:addModulo', (_, payload) => db.addModulo(payload))
 ipcMain.handle('db:deleteModulo', (_, id) => db.deleteModulo(id))
 
-// ── IPC: API Keys (Secure Storage) ─────────────────────────────────────────────
+// ── IPC: API Keys (Secure Storage with Fallback) ────────────────────────────
 ipcMain.handle('api:saveKeys', async (_, keys) => {
   try {
-    if (keys.openai) {
-      await keytar.setPassword('EvalFP', 'openai_api_key', keys.openai)
-      process.env.OPENAI_API_KEY = keys.openai
+    if (keytar) {
+      // Primary: Use keytar for secure storage
+      try {
+        if (keys.openai) {
+          await keytar.setPassword('EvalFP', 'openai_api_key', keys.openai)
+          process.env.OPENAI_API_KEY = keys.openai
+        }
+        if (keys.anthropic) {
+          await keytar.setPassword('EvalFP', 'anthropic_api_key', keys.anthropic)
+          process.env.ANTHROPIC_API_KEY = keys.anthropic
+        }
+        logger.logEvent('API_KEYS_SAVED_TO_KEYTAR')
+        return { success: true, message: 'Keys saved securely' }
+      } catch (keytarErr) {
+        logger.logEvent('KEYTAR_WRITE_FAILED', { message: keytarErr.message })
+        throw keytarErr
+      }
+    } else {
+      // Fallback: Save to database (less secure but functional)
+      logger.logEvent('SAVING_API_KEYS_TO_DATABASE_FALLBACK')
+      const db = new Database(dbPath())
+      if (keys.openai) {
+        db.prepare('UPDATE cfg SET openaiKey = ?').run(keys.openai)
+        process.env.OPENAI_API_KEY = keys.openai
+      }
+      if (keys.anthropic) {
+        db.prepare('UPDATE cfg SET anthropicKey = ?').run(keys.anthropic)
+        process.env.ANTHROPIC_API_KEY = keys.anthropic
+      }
+      logger.logEvent('API_KEYS_SAVED_TO_DATABASE')
+      return { success: true, message: 'Keys saved (database fallback)' }
     }
-    if (keys.anthropic) {
-      await keytar.setPassword('EvalFP', 'anthropic_api_key', keys.anthropic)
-      process.env.ANTHROPIC_API_KEY = keys.anthropic
-    }
-    logger.info('API keys saved securely')
-    return { success: true, message: 'Keys saved securely' }
   } catch (e) {
     logger.logError('Error saving API keys', e)
     return { success: false, error: e.message }
