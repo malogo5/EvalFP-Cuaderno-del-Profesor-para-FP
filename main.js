@@ -7,20 +7,32 @@ const os     = require('os')
 const Database = require('better-sqlite3')
 const schedule = require('node-schedule')
 const logger = require('./main/logger')
+const keytarSafe = require('./main/keytar-safe')
 
-// ── Conditional Keytar Import ─────────────────────────────────────────────
-// Keytar is a native module and may fail on some systems (e.g., macOS without rebuild)
-// If it fails, we fall back to database storage
-let keytar = null
-try {
-  keytar = require('keytar')
-  logger.logEvent('KEYTAR_LOADED', { status: 'success' })
-} catch (err) {
-  logger.logEvent('KEYTAR_FAILED', { 
-    message: `Keytar failed to load: ${err.message}. Using database fallback.` 
-  })
-  // keytar remains null - will use fallback
+// ── Initialize Keytar (Safe Mode) ──────────────────────────────────────────
+// Keytar is optional. Initialize it but don't crash if unavailable.
+let keytarReady = false
+
+async function initializeKeytar() {
+  try {
+    const success = await keytarSafe.initialize()
+    keytarReady = success
+    logger.logEvent('KEYTAR_INIT_COMPLETE', { 
+      status: success ? 'available' : 'unavailable',
+      mode: success ? 'native' : 'database_fallback'
+    })
+    return success
+  } catch (err) {
+    logger.logEvent('KEYTAR_INIT_ERROR', { message: err.message })
+    keytarReady = false
+    return false
+  }
 }
+
+// Don't await here - let it initialize async
+initializeKeytar().catch(err => {
+  logger.logError('Failed to initialize keytar', err)
+})
 
 // ── Rutas ─────────────────────────────────────────────────────────────────────
 const scriptsDir = () => app.isPackaged
@@ -39,27 +51,35 @@ async function loadApiKeysFromSecureStorage() {
     let openaiKey = ''
     let anthropicKey = ''
     
-    if (keytar) {
+    if (keytarSafe.isAvailable()) {
       // Primary: Use keytar for secure OS-level storage
       try {
-        openaiKey = await keytar.getPassword('EvalFP', 'openai_api_key') || ''
-        anthropicKey = await keytar.getPassword('EvalFP', 'anthropic_api_key') || ''
+        openaiKey = await keytarSafe.getPassword('EvalFP', 'openai_api_key') || ''
+        anthropicKey = await keytarSafe.getPassword('EvalFP', 'anthropic_api_key') || ''
         if (openaiKey || anthropicKey) {
-          logger.logEvent('API_KEYS_LOADED_FROM_KEYTAR')
+          logger.logEvent('API_KEYS_LOADED_FROM_KEYTAR', { source: 'keytar' })
         }
       } catch (keytarErr) {
         logger.logEvent('KEYTAR_READ_FAILED', { message: keytarErr.message })
       }
-    } else {
-      // Fallback: Load from database (less secure but functional)
-      logger.logEvent('LOADING_API_KEYS_FROM_DATABASE_FALLBACK')
+    }
+    
+    // Always try database as fallback (or if keytar not available)
+    if (!openaiKey || !anthropicKey) {
+      logger.logEvent('LOADING_API_KEYS_FROM_DATABASE', { 
+        hasKeytar: keytarSafe.isAvailable(),
+        source: 'database'
+      })
       try {
         const db = new Database(dbPath())
         const cfg = db.prepare('SELECT openaiKey, anthropicKey FROM cfg LIMIT 1').get()
         if (cfg) {
-          openaiKey = cfg.openaiKey || ''
-          anthropicKey = cfg.anthropicKey || ''
-          logger.logEvent('API_KEYS_LOADED_FROM_DATABASE')
+          if (!openaiKey) openaiKey = cfg.openaiKey || ''
+          if (!anthropicKey) anthropicKey = cfg.anthropicKey || ''
+          logger.logEvent('API_KEYS_LOADED_FROM_DATABASE_SUCCESS', { 
+            hasOpenAI: !!openaiKey, 
+            hasAnthropic: !!anthropicKey 
+          })
         }
       } catch (dbErr) {
         logger.logError('Failed to load API keys from database', dbErr)
@@ -71,7 +91,8 @@ async function loadApiKeysFromSecureStorage() {
     
     logger.logEvent('API_KEYS_LOADED_TO_ENV', { 
       hasOpenAI: !!openaiKey, 
-      hasAnthropic: !!anthropicKey 
+      hasAnthropic: !!anthropicKey,
+      source: keytarSafe.isAvailable() ? 'keytar_or_db' : 'database_only'
     })
   } catch (e) {
     logger.logError('Failed to load API keys from secure storage', e)
@@ -237,37 +258,55 @@ ipcMain.handle('db:deleteModulo', (_, id) => db.deleteModulo(id))
 // ── IPC: API Keys (Secure Storage with Fallback) ────────────────────────────
 ipcMain.handle('api:saveKeys', async (_, keys) => {
   try {
-    if (keytar) {
-      // Primary: Use keytar for secure storage
+    let saved = false
+    
+    // Try keytar first if available
+    if (keytarSafe.isAvailable()) {
       try {
         if (keys.openai) {
-          await keytar.setPassword('EvalFP', 'openai_api_key', keys.openai)
+          await keytarSafe.setPassword('EvalFP', 'openai_api_key', keys.openai)
           process.env.OPENAI_API_KEY = keys.openai
         }
         if (keys.anthropic) {
-          await keytar.setPassword('EvalFP', 'anthropic_api_key', keys.anthropic)
+          await keytarSafe.setPassword('EvalFP', 'anthropic_api_key', keys.anthropic)
           process.env.ANTHROPIC_API_KEY = keys.anthropic
         }
-        logger.logEvent('API_KEYS_SAVED_TO_KEYTAR')
-        return { success: true, message: 'Keys saved securely' }
+        logger.logEvent('API_KEYS_SAVED_TO_KEYTAR', { source: 'keytar' })
+        saved = true
       } catch (keytarErr) {
         logger.logEvent('KEYTAR_WRITE_FAILED', { message: keytarErr.message })
-        throw keytarErr
+        // Fall through to database
       }
-    } else {
-      // Fallback: Save to database (less secure but functional)
-      logger.logEvent('SAVING_API_KEYS_TO_DATABASE_FALLBACK')
-      const db = new Database(dbPath())
-      if (keys.openai) {
-        db.prepare('UPDATE cfg SET openaiKey = ?').run(keys.openai)
-        process.env.OPENAI_API_KEY = keys.openai
+    }
+    
+    // Save to database as backup or primary storage
+    if (!saved) {
+      logger.logEvent('SAVING_API_KEYS_TO_DATABASE', { 
+        keytar_available: keytarSafe.isAvailable(),
+        source: 'database'
+      })
+      try {
+        const db = new Database(dbPath())
+        if (keys.openai) {
+          db.prepare('UPDATE cfg SET openaiKey = ?').run(keys.openai)
+          process.env.OPENAI_API_KEY = keys.openai
+        }
+        if (keys.anthropic) {
+          db.prepare('UPDATE cfg SET anthropicKey = ?').run(keys.anthropic)
+          process.env.ANTHROPIC_API_KEY = keys.anthropic
+        }
+        logger.logEvent('API_KEYS_SAVED_TO_DATABASE', { success: true })
+        saved = true
+      } catch (dbErr) {
+        logger.logError('Failed to save API keys to database', dbErr)
       }
-      if (keys.anthropic) {
-        db.prepare('UPDATE cfg SET anthropicKey = ?').run(keys.anthropic)
-        process.env.ANTHROPIC_API_KEY = keys.anthropic
-      }
-      logger.logEvent('API_KEYS_SAVED_TO_DATABASE')
-      return { success: true, message: 'Keys saved (database fallback)' }
+    }
+    
+    return { 
+      success: saved, 
+      message: saved 
+        ? (keytarSafe.isAvailable() ? 'Keys saved securely' : 'Keys saved to database')
+        : 'Failed to save keys'
     }
   } catch (e) {
     logger.logError('Error saving API keys', e)
