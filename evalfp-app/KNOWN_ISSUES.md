@@ -11,8 +11,10 @@ Causa: dato persistido incorrecto (UT8.horas = 1010).
 Estado: ✅ Resuelto
 
 ## BUG-003
-Descripción: Las medias no se recalculan al modificar una nota.
-Estado: 🔄 Pendiente
+Descripción: La media no se actualizaba al modificar una nota.
+Causa: Se actualizaba la caché pero no el DOM.
+Estado: ✅ Resuelto
+Commit: f0268a7
 
 ## BUG-004
 Descripción: El terminal del módulo IA no refleja correctamente el progreso.
