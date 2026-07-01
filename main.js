@@ -4,6 +4,7 @@ const path   = require('path')
 const { spawn } = require('child_process')
 const fs     = require('fs')
 const os     = require('os')
+const keytar = require('keytar')
 
 // ── Rutas ─────────────────────────────────────────────────────────────────────
 const scriptsDir = () => app.isPackaged
@@ -15,6 +16,21 @@ const modulesDataPath = () => path.join(__dirname, 'renderer', 'modules_data.jso
 
 const outputDir = () => path.join(os.homedir(), 'Documents', 'EvalFP')
 const python    = () => process.platform === 'win32' ? 'python' : 'python3'
+
+// ── Secure API Key Storage with keytar ─────────────────────────────────────────
+async function loadApiKeysFromSecureStorage() {
+  try {
+    const openaiKey = await keytar.getPassword('EvalFP', 'openai_api_key')
+    const anthropicKey = await keytar.getPassword('EvalFP', 'anthropic_api_key')
+    
+    if (openaiKey) process.env.OPENAI_API_KEY = openaiKey
+    if (anthropicKey) process.env.ANTHROPIC_API_KEY = anthropicKey
+    
+    console.log('✓ API keys loaded from secure storage')
+  } catch (e) {
+    console.warn('⚠ Error loading API keys from keytar:', e.message)
+  }
+}
 
 // Cache en memoria del JSON de módulos
 let _modulesData = null
@@ -42,7 +58,8 @@ function createWindow() {
   win.loadFile(path.join(__dirname, 'renderer', 'index.html'))
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  await loadApiKeysFromSecureStorage()
   createWindow()
   // Cargar config API keys al entorno
   try {
@@ -94,6 +111,25 @@ ipcMain.handle('db:getModuloData', (_, key) => {
 
 ipcMain.handle('db:addModulo', (_, payload) => db.addModulo(payload))
 ipcMain.handle('db:deleteModulo', (_, id) => db.deleteModulo(id))
+
+// ── IPC: API Keys (Secure Storage) ─────────────────────────────────────────────
+ipcMain.handle('api:saveKeys', async (_, keys) => {
+  try {
+    if (keys.openai) {
+      await keytar.setPassword('EvalFP', 'openai_api_key', keys.openai)
+      process.env.OPENAI_API_KEY = keys.openai
+    }
+    if (keys.anthropic) {
+      await keytar.setPassword('EvalFP', 'anthropic_api_key', keys.anthropic)
+      process.env.ANTHROPIC_API_KEY = keys.anthropic
+    }
+    console.log('✓ API keys saved securely')
+    return { success: true, message: 'Keys saved securely' }
+  } catch (e) {
+    console.error('Error saving API keys:', e)
+    return { success: false, error: e.message }
+  }
+})
 
 // ── IPC: Alumnos ──────────────────────────────────────────────────────────────
 ipcMain.handle('db:getAlumnos',    (_, mid)  => db.getAlumnos(mid))

@@ -34,6 +34,9 @@ contextBridge.exposeInMainWorld('api', {
   getAllConfig:           ()            => ipcRenderer.invoke('db:getAllConfig'),
   setConfig:             (k,v)         => ipcRenderer.invoke('db:setConfig', k, v),
 
+  // API Keys (Secure Storage)
+  saveApiKeys:           (keys)        => ipcRenderer.invoke('api:saveKeys', keys),
+
   // IA
   genIA:                 opts          => ipcRenderer.send('gen-ia', opts),
   onIA:                  cb            => ipcRenderer.on('gen-ia-reply', (_,d) => cb(d)),
