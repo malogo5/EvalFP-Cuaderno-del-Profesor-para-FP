@@ -1,0 +1,10 @@
+# EvalFP — Dependencias Python
+# Instalar con: pip install -r requirements.txt
+
+# ── Obligatoria ───────────────────────────────────────────────────────────────
+openpyxl>=3.1.0          # Generación del libro Excel
+
+# ── Opcional: Asistente IA (Sprint 2.6) ──────────────────────────────────────
+# Instala solo una de las dos según tu preferencia:
+# anthropic>=0.25.0       # API de Claude (recomendado)
+# openai>=1.10.0          # API de OpenAI (alternativa)
