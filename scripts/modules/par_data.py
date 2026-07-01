@@ -17,6 +17,9 @@ MODULO = {
     "total_horas": 155,
     "anno":        "2026-2027",
     "eval_count":  3,
+    "ciclo_clave": "ASIR",
+    "ciclo_nivel": "CFGS",
+    "decreto": "RD 1629/2009, de 30 de octubre · Decreto CLM 200/2010, de 3 de agosto (DOCM)",
 }
 
 # ─── UNIDADES DE TRABAJO ─────────────────────────────────────────────────────
@@ -150,4 +153,68 @@ RA_INSTRUMENTOS = {
     "RA4": ["examen", "practica"],
     "RA5": ["practica"],
     "RA6": ["empresa"],
+}
+
+# ─── CRITERIOS DE EVALUACIÓN (BOE RD 1629/2009) ──────────────────────────────
+CES = {
+    "RA1": [
+        {"id": "CR1", "texto": "Se han descrito los principios de las comunicaciones entre dispositivos."},
+        {"id": "CR2", "texto": "Se han identificado los estándares de comunicaciones en redes de área local."},
+        {"id": "CR3", "texto": "Se han descrito las topologías de red y sus características."},
+        {"id": "CR4", "texto": "Se han descrito los modelos de referencia OSI y TCP/IP."},
+        {"id": "CR5", "texto": "Se han relacionado los modelos OSI y TCP/IP identificando los protocolos de cada capa."},
+        {"id": "CR6", "texto": "Se ha descrito el encapsulamiento de la información en los distintos niveles de los modelos de referencia."},
+        {"id": "CR7", "texto": "Se han identificado las principales tecnologías Ethernet y sus características."},
+        {"id": "CR8", "texto": "Se ha analizado el direccionamiento en redes IPv4 e IPv6."},
+    ],
+    "RA2": [
+        {"id": "CR1", "texto": "Se han instalado y configurado adaptadores de red."},
+        {"id": "CR2", "texto": "Se han utilizado aplicaciones para configurar y verificar el direccionamiento en redes."},
+        {"id": "CR3", "texto": "Se han conectado equipos y dispositivos de red utilizando distintos medios."},
+        {"id": "CR4", "texto": "Se han instalado y configurado conmutadores."},
+        {"id": "CR5", "texto": "Se han instalado y configurado puntos de acceso inalámbrico."},
+        {"id": "CR6", "texto": "Se han establecido los parámetros de configuración de los dispositivos de red."},
+        {"id": "CR7", "texto": "Se ha evaluado la idoneidad de distintos medios de transmisión para cada aplicación."},
+    ],
+    "RA3": [
+        {"id": "CR1", "texto": "Se han descrito las funciones de los conmutadores en la red."},
+        {"id": "CR2", "texto": "Se han configurado VLANs en un conmutador."},
+        {"id": "CR3", "texto": "Se han configurado enlaces troncales entre conmutadores."},
+        {"id": "CR4", "texto": "Se ha analizado y configurado el protocolo Spanning Tree."},
+        {"id": "CR5", "texto": "Se han configurado protocolos de agregación de enlaces."},
+        {"id": "CR6", "texto": "Se han aplicado medidas de seguridad en el acceso a los conmutadores."},
+        {"id": "CR7", "texto": "Se han configurado listas de control de acceso en los puertos del conmutador."},
+        {"id": "CR8", "texto": "Se ha verificado el funcionamiento de las VLANs en una red conmutada."},
+    ],
+    "RA4": [
+        {"id": "CR1",  "texto": "Se han descrito las funciones y características de los routers."},
+        {"id": "CR2",  "texto": "Se han configurado los parámetros básicos de un router."},
+        {"id": "CR3",  "texto": "Se han configurado rutas estáticas."},
+        {"id": "CR4",  "texto": "Se han configurado protocolos de enrutamiento dinámico (RIP, OSPF)."},
+        {"id": "CR5",  "texto": "Se han configurado listas de control de acceso (ACL)."},
+        {"id": "CR6",  "texto": "Se ha configurado el servicio NAT."},
+        {"id": "CR7",  "texto": "Se han configurado interfaces WAN."},
+        {"id": "CR8",  "texto": "Se han verificado los parámetros de configuración y funcionamiento del router."},
+        {"id": "CR9",  "texto": "Se han documentado los procedimientos de configuración y las incidencias."},
+        {"id": "CR10", "texto": "Se ha configurado el acceso a Internet desde una red local."},
+        {"id": "CR11", "texto": "Se han configurado servicios DHCP en el router."},
+        {"id": "CR12", "texto": "Se han configurado servicios DNS en el router."},
+    ],
+    "RA5": [
+        {"id": "CR1", "texto": "Se han descrito los estándares de redes inalámbricas."},
+        {"id": "CR2", "texto": "Se han descrito los modos de funcionamiento de las redes inalámbricas."},
+        {"id": "CR3", "texto": "Se han configurado redes inalámbricas en modo infraestructura."},
+        {"id": "CR4", "texto": "Se han aplicado protocolos de seguridad en redes inalámbricas."},
+        {"id": "CR5", "texto": "Se han establecido parámetros de acceso de usuarios a la red inalámbrica."},
+        {"id": "CR6", "texto": "Se ha verificado el funcionamiento de la red inalámbrica."},
+    ],
+    "RA6": [
+        {"id": "CR1", "texto": "Se han descrito los procedimientos para el diagnóstico de incidencias."},
+        {"id": "CR2", "texto": "Se han utilizado herramientas de diagnóstico de red."},
+        {"id": "CR3", "texto": "Se han identificado las causas de problemas de conectividad."},
+        {"id": "CR4", "texto": "Se han resuelto problemas de configuración de los dispositivos de red."},
+        {"id": "CR5", "texto": "Se han aplicado medidas correctoras a las incidencias detectadas."},
+        {"id": "CR6", "texto": "Se han documentado las incidencias y las soluciones aplicadas."},
+        {"id": "CR7", "texto": "Se han interpretado los registros de los dispositivos de red."},
+    ],
 }

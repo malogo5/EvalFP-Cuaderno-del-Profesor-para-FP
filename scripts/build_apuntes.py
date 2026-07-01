@@ -426,16 +426,38 @@ def _secciones_ia(mod, ut: dict, ia) -> list[dict]:
         Responde SOLO con el array JSON, sin markdown, sin explicaciones, sin ```json.
     """)
 
-    raw = ia._llamar(_SYSTEM_IA, user)
+    # Apuntes necesitan mucho más contexto: ~4000 tokens para HTML completo
+    raw = ia._llamar(_SYSTEM_IA, user, max_tokens=4096)
 
-    # Intentar parsear JSON
+    # Parsear JSON con múltiples estrategias de recuperación
     try:
-        # Limpiar posibles bloques markdown
+        # 1. Limpiar bloques markdown (GPT suele añadirlos aunque se le pida que no)
         raw_clean = re.sub(r"```(?:json)?|```", "", raw).strip()
-        secciones = json.loads(raw_clean)
+
+        # 2. Intentar parsear directamente
+        try:
+            return json.loads(raw_clean)
+        except json.JSONDecodeError:
+            pass
+
+        # 3. Extraer el array JSON más externo [...] de la respuesta
+        m = re.search(r'(\[.*\])', raw_clean, re.DOTALL)
+        if m:
+            return json.loads(m.group(1))
+
+        # 4. Si el JSON está truncado, intentar cerrar el array
+        truncated = raw_clean.rstrip().rstrip(',')
+        if not truncated.endswith(']'):
+            # Cerrar el objeto y el array incompletos
+            depth_obj   = truncated.count('{') - truncated.count('}')
+            depth_arr   = truncated.count('[') - truncated.count(']')
+            truncated  += '}' * max(0, depth_obj) + ']' * max(0, depth_arr)
+        secciones = json.loads(truncated)
+        print(f"  ⚠️  Respuesta truncada, recuperada parcialmente ({len(secciones)} secciones).")
         return secciones
-    except Exception:
-        print(f"  ⚠️  Error parseando JSON de IA, usando modo DEMO para esta UT.")
+
+    except Exception as exc:
+        print(f"  ⚠️  Error parseando JSON de IA ({exc}), usando modo DEMO para esta UT.")
         return _secciones_demo(mod, ut)
 
 
