@@ -90,6 +90,7 @@
     "electron-builder": "^26.15.3"
   },
   "dependencies": {
-    "keytar": "^7.9.0"
+    "keytar": "^7.9.0",
+    "node-schedule": "^2.1.1"
   }
 }
