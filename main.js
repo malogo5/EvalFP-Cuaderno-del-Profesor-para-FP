@@ -6,6 +6,7 @@ const fs     = require('fs')
 const os     = require('os')
 const keytar = require('keytar')
 const schedule = require('node-schedule')
+const logger = require('./main/logger')
 
 // ── Rutas ─────────────────────────────────────────────────────────────────────
 const scriptsDir = () => app.isPackaged
@@ -27,9 +28,9 @@ async function loadApiKeysFromSecureStorage() {
     if (openaiKey) process.env.OPENAI_API_KEY = openaiKey
     if (anthropicKey) process.env.ANTHROPIC_API_KEY = anthropicKey
     
-    console.log('✓ API keys loaded from secure storage')
+    logger.info('API keys loaded from secure storage')
   } catch (e) {
-    console.warn('⚠ Error loading API keys from keytar:', e.message)
+    logger.logError('Failed to load API keys from keytar', e)
   }
 }
 
@@ -44,29 +45,29 @@ function setupBackups() {
     
     // Ejecutar backup diario a las 2 AM
     schedule.scheduleJob('0 2 * * *', async () => {
-      console.log('📅 Ejecutando backup automático...')
+      logger.logEvent('AUTOMATIC_BACKUP_STARTED')
       try {
         await performBackup()
         await cleanOldBackups()
       } catch (e) {
-        console.error('❌ Error en backup automático:', e.message)
+        logger.logError('Automatic backup failed', e)
       }
     })
     
     // También ejecutar backup al cierre (graceful shutdown)
     process.on('SIGINT', async () => {
-      console.log('💾 Backup final antes de cerrar...')
+      logger.logEvent('GRACEFUL_SHUTDOWN', { message: 'Final backup before closing' })
       try {
         await performBackup()
       } catch (e) {
-        console.error('Error en backup final:', e.message)
+        logger.logError('Error in final backup', e)
       }
       process.exit(0)
     })
     
-    console.log('✓ Automatic backups initialized (daily at 2 AM)')
+    logger.info('Automatic backups initialized', { schedule: 'daily at 2 AM' })
   } catch (e) {
-    console.warn('⚠ Error initializing backups:', e.message)
+    logger.logError('Error initializing backups', e)
   }
 }
 
@@ -78,7 +79,7 @@ async function performBackup() {
     
     // Hacer copia del archivo
     fs.copyFileSync(src, dest)
-    console.log(`✓ Backup created: ${path.basename(dest)}`)
+    logger.info('Backup created', { filename: path.basename(dest) })
     return dest
   } catch (e) {
     throw new Error(`Failed to create backup: ${e.message}`)
@@ -103,15 +104,15 @@ async function cleanOldBackups() {
       if (file.time < thirtyDaysAgo) {
         fs.unlinkSync(file.path)
         deleted++
-        console.log(`  🗑 Deleted old backup: ${file.name}`)
+        logger.debug(`Old backup deleted: ${file.name}`)
       }
     }
     
     if (deleted > 0) {
-      console.log(`✓ Cleanup: ${deleted} old backups removed`)
+      logger.info('Backup cleanup completed', { backupsDeleted: deleted })
     }
   } catch (e) {
-    console.warn('⚠ Error cleaning old backups:', e.message)
+    logger.logError('Error cleaning old backups', e)
   }
 }
 
@@ -200,10 +201,10 @@ ipcMain.handle('api:saveKeys', async (_, keys) => {
       await keytar.setPassword('EvalFP', 'anthropic_api_key', keys.anthropic)
       process.env.ANTHROPIC_API_KEY = keys.anthropic
     }
-    console.log('✓ API keys saved securely')
+    logger.info('API keys saved securely')
     return { success: true, message: 'Keys saved securely' }
   } catch (e) {
-    console.error('Error saving API keys:', e)
+    logger.logError('Error saving API keys', e)
     return { success: false, error: e.message }
   }
 })
