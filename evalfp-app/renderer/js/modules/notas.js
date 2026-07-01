@@ -69,6 +69,37 @@ function renderNotasGrid() {
 
 function onNotaChange(el) {
   colorNota(el)
+  function updateMediaFila(aid) {
+  const ev = parseInt(document.getElementById('notas-ev-sel').value)
+  const acts = ev ? _actividades.filter(a => a.eval === ev) : _actividades
+
+  const vals = acts
+    .map(act => _notasGrid[aid]?.[act.id])
+    .filter(n => n != null && n !== '')
+
+  const media = vals.length
+    ? (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1)
+    : '—'
+
+  const fila = document.querySelector(`input[data-aid="${aid}"]`)?.closest('tr')
+  if (!fila) return
+
+  const td = fila.lastElementChild
+  td.textContent = media
+
+  td.classList.remove('nota-apto','nota-riesgo','nota-noapto')
+
+  if (media !== '—') {
+    const n = parseFloat(media)
+    td.classList.add(
+      n >= 5
+        ? 'nota-apto'
+        : n >= 4
+          ? 'nota-riesgo'
+          : 'nota-noapto'
+    )
+  }
+}
   const aid = parseInt(el.dataset.aid)
   const actId = parseInt(el.dataset.actid)
   const val = el.value.trim()
@@ -76,6 +107,9 @@ function onNotaChange(el) {
   // Actualizar caché local
   if (!_notasGrid[aid]) _notasGrid[aid] = {}
   _notasGrid[aid][actId] = val === '' ? null : parseFloat(val)
+ 
+  updateMediaFila(aid) 
+ 
 }
 
 function colorNota(el) {
