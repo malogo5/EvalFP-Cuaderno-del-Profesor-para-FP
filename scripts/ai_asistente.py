@@ -100,14 +100,16 @@ class IAAsistente:
 
     # ── Llamada genérica ──────────────────────────────────────────────────────
 
-    def _llamar(self, system: str, user: str) -> str:
+    def _llamar(self, system: str, user: str, max_tokens: int | None = None) -> str:
         if self._proveedor == "demo":
             return self._demo_response(user)
+
+        _max = max_tokens or MAX_TOKENS
 
         if self._proveedor == "claude":
             msg = self._cliente.messages.create(
                 model=MODELO_CLAUDE,
-                max_tokens=MAX_TOKENS,
+                max_tokens=_max,
                 temperature=TEMPERATURA,
                 system=system,
                 messages=[{"role": "user", "content": user}],
@@ -117,7 +119,7 @@ class IAAsistente:
         if self._proveedor == "openai":
             resp = self._cliente.chat.completions.create(
                 model=MODELO_OPENAI,
-                max_tokens=MAX_TOKENS,
+                max_tokens=_max,
                 temperature=TEMPERATURA,
                 messages=[
                     {"role": "system", "content": system},
@@ -448,16 +450,42 @@ def _cmd_informe(args: list[str]):
 
 
 def _cmd_generar_todo(args: list[str]):
-    opts    = _parse_opts(args, ["--modulo", "--salida", "--proveedor"])
-    mod     = _cargar_modulo(opts.get("--modulo", "iso_data"))
-    salida  = Path(opts.get("--salida", f"ia_output/{mod.MODULO['abrev'].lower()}"))
-    ia      = IAAsistente(proveedor=opts.get("--proveedor", "auto"))
+    opts      = _parse_opts(args, ["--modulo", "--salida", "--proveedor"])
+    mod_name  = opts.get("--modulo", "iso_data")
+    mod       = _cargar_modulo(mod_name)
+    abrev     = mod.MODULO['abrev'].lower()
+    salida    = Path(opts.get("--salida", f"ia_output/{abrev}"))
+    proveedor = opts.get("--proveedor", "auto")
+    ia        = IAAsistente(proveedor=proveedor)
 
+    # ── 1. Rúbricas + actividades ────────────────────────────────────────────
     print(f"Generando contenido IA para módulo {mod.MODULO['abrev']}…")
     archivos = ia.generar_todo_modulo(mod, salida)
+
+    # ── 2. Apuntes HTML ──────────────────────────────────────────────────────
+    print(f"\n📄 Generando apuntes HTML…")
+    try:
+        from build_apuntes import generar_apunte, apunte_path
+        from pathlib import Path as _Path
+        apuntes_base = salida / "apuntes"
+        apuntes_generados: list[Path] = []
+        for ut in mod.UTS:
+            print(f"  📄 {ut['id']}: {ut['nombre']}")
+            try:
+                out_path = generar_apunte(mod, ut, ia, apuntes_base)
+                apuntes_generados.append(out_path)
+                archivos.append(out_path)
+                print(f"     ✅ {out_path.name}")
+            except Exception as e:
+                print(f"     ⚠️  Error en {ut['id']}: {e}")
+        print(f"  → {len(apuntes_generados)} apunte(s) generado(s) en {apuntes_base}/")
+    except ImportError as e:
+        print(f"  ⚠️  No se pudo importar build_apuntes.py: {e}")
+
+    # ── Resumen ──────────────────────────────────────────────────────────────
     print(f"\n✅ {len(archivos)} archivos generados en {salida}/")
     for f in archivos:
-        print(f"   📄 {f.name}")
+        print(f"   📄 {f if isinstance(f, str) else f.name}")
 
 
 def _parse_opts(args: list[str], keys: list[str]) -> dict[str, str]:
