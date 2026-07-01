@@ -51,7 +51,7 @@ async function loadProgramacion() {
   </div>`
 
   // ── 1. TABLA DE UNIDADES DE TRABAJO ──────────────────────────
-  const _sumUtH  = uts.reduce((s,u) => s+(u.horas||0), 0)
+  const _sumUtH = uts.reduce((s, u) => s + (parseInt(u.horas, 10) || 0), 0)
   const _modH    = mod.horas || 0
   const _hOk     = _sumUtH === _modH
   const _hBadgeSt = _hOk
