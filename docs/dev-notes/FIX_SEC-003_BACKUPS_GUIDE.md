@@ -236,7 +236,6 @@ Backups are stored in ~/Documents/EvalFP/backups/ with timestamps
 Automatic cleanup keeps only backups from the last 30 days
 
 Fixes data loss risk and enables recovery scenarios
-Co-Authored-By: Abacus.AI CLI <agent@abacus.ai>"
 ```
 
 ---

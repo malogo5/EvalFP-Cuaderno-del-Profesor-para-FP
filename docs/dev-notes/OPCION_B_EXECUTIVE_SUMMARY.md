@@ -147,7 +147,6 @@ This approach prioritizes **security** over speed, ensuring the application is h
 ### Initial Commit
 ```
 commit 1a22045 [master]
-Author: Abacus.AI CLI <agent@abacus.ai>
 
     security: prevent XSS by escaping user input in innerHTML
     
@@ -319,5 +318,4 @@ You're making excellent progress on the Opción B path. The security-first appro
 
 **Report Generated**: Tuesday, July 1, 2026  
 **Report Type**: Executive Summary  
-**Prepared By**: Abacus.AI CLI  
 **Next Review**: Wednesday, July 2, 2026 (after SEC-002)

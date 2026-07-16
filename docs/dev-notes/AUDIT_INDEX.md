@@ -340,7 +340,6 @@ Severidad vs Probabilidad
 
 ## 📞 Contacto y Seguimiento
 
-**Auditoría completada por**: Abacus.AI CLI  
 **Fecha**: 1 de julio de 2026  
 **Duración total**: ~3 horas  
 **Próxima revisión**: 30 de septiembre de 2026

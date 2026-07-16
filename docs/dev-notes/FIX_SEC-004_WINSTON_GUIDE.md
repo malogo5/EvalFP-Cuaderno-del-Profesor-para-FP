@@ -343,7 +343,6 @@ git commit -m "feat: add centralized winston logger (SEC-004)
 Provides auditability and debugging capabilities
 Enables production issue tracking and analysis
 
-Co-Authored-By: Abacus.AI CLI <agent@abacus.ai>"
 ```
 
 ---
