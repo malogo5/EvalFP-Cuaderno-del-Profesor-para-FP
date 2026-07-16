@@ -177,7 +177,6 @@ renderer/js/modules/notas.js        (+3 lines of esc() calls)
 
 ```
 commit 1a22045
-Author: Abacus.AI CLI <agent@abacus.ai>
 
     security: prevent XSS by escaping user input in innerHTML
     

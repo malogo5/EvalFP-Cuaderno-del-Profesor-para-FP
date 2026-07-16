@@ -235,7 +235,6 @@ git commit -m "security: encrypt API keys with keytar OS-level storage
 - package.json: Add keytar dependency for OS-level encryption
 
 Fixes SEC-002 vulnerability - prevents plaintext API key storage
-Co-Authored-By: Abacus.AI CLI <agent@abacus.ai>"
 ```
 
 ---

@@ -811,7 +811,6 @@ Testing               ░░░░░░░░░░ 0/10  🔴
 
 ## 📞 CONTACTO Y SEGUIMIENTO
 
-**Auditoría realizada por**: Abacus.AI CLI  
 **Fecha**: 1 de julio de 2026  
 **Próxima revisión recomendada**: 30 de septiembre de 2026
 
