@@ -30,7 +30,7 @@ export default [
   // ── Proceso principal Electron y utilidades Node (CommonJS) ───────────
   // main.js, preload.js, db.js, main/*.js
   {
-    files: ['main.js', 'preload.js', 'db.js', 'main/**/*.js'],
+    files: ['main.js', 'preload.js', 'db.js', 'main/**/*.js', 'scripts/run_prebake.js'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType:  'commonjs',

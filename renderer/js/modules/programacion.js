@@ -26,7 +26,7 @@ async function loadProgramacion() {
   try {
     const rows = await window.api.getRaPonderaciones(parseInt(mid))
     rows.forEach(r => { raPondOverrides[r.ra_id] = r.pond })
-  } catch(e) {}
+  } catch(e) { /* sin overrides — usar ponderaciones por defecto del JSON */ }
   // Aplicar overrides al raMap
   ras.forEach(ra => {
     if (raPondOverrides[ra.id] !== undefined) ra.pond = raPondOverrides[ra.id]
@@ -50,168 +50,7 @@ async function loadProgramacion() {
     ${mod.decreto ? `<div style="font-size:11px;color:var(--accent2);margin-top:6px">📜 ${esc(mod.decreto)}</div>` : ''}
   </div>`
 
-  // ── 1. TABLA DE UNIDADES DE TRABAJO ──────────────────────────
-  const _sumUtH = uts.reduce((s, u) => s + (parseInt(u.horas, 10) || 0), 0)
-  const _modH    = mod.horas || 0
-  const _hOk     = _sumUtH === _modH
-  const _hBadgeSt = _hOk
-    ? 'background:rgba(16,185,129,.12);color:var(--green)'
-    : 'background:rgba(245,158,11,.15);color:var(--amber)'
-  h += `<div class="card" style="margin-bottom:16px">
-    <div class="prog-section-title" style="display:flex;align-items:center;gap:10px">
-      📚 Unidades de Trabajo
-      <span id="ut-horas-badge" style="font-size:10.5px;padding:2px 10px;border-radius:8px;font-weight:700;${_hBadgeSt}">
-        Σ ${_sumUtH}h / ${_modH}h${_hOk?' ✓':' ⚠'}
-      </span>
-    </div>
-    <div style="overflow-x:auto">
-    <table class="prog-table">
-      <thead><tr>
-        <th style="width:52px">UT</th>
-        <th>Nombre</th>
-        <th style="width:62px;text-align:center">Horas</th>
-        <th style="width:48px;text-align:center">Eval</th>
-        <th style="width:52px;text-align:center">RA</th>
-        <th>Contenidos clave</th>
-        <th style="width:96px;text-align:center">Acciones</th>
-      </tr></thead>
-      <tbody>`
-  for (const ut of uts) {
-    const asig = asigs.find(a => a.ut === ut.id)
-    const raId = asig ? asig.ra : '—'
-    const raColor = raId !== '—' ? 'var(--accent2)' : 'var(--text2)'
-    h += `<tr>
-      <td style="font-weight:700;color:var(--accent2);white-space:nowrap">${ut.id}</td>
-      <td><input class="nota-cell" type="text" value="${esc(ut.nombre)}"
-        style="width:100%;min-width:160px;text-align:left;font-weight:500"
-        onchange="saveUtField(${mid},'${ut.id}','nombre',this.value)"/></td>
-      <td style="text-align:center">
-        <input class="peso-cell ut-horas-inp" type="number" min="0" max="999" value="${ut.horas||0}"
-          oninput="_refreshUtHoras(this,${_modH})"
-          onchange="saveUtField(${mid},'${ut.id}','horas',this.value)"/></td>
-      <td style="text-align:center">
-        <select class="nota-cell" style="width:46px;padding:3px 2px;text-align:center;font-weight:600"
-          onchange="saveUtField(${mid},'${ut.id}','eval',this.value)">
-          ${evals.map(e=>`<option value="${e}"${ut.eval==e?' selected':''}>${e}</option>`).join('')}
-        </select></td>
-      <td style="text-align:center;font-weight:700;color:${raColor}">${raId}</td>
-      <td><input class="nota-cell" type="text" value="${esc(ut.tags||'')}"
-        style="width:100%;text-align:left;font-size:11px;color:var(--text2)"
-        onchange="saveUtField(${mid},'${ut.id}','tags',this.value)"/></td>
-      <td style="text-align:center;white-space:nowrap">
-        <button onclick="openUtRasModal(${mid},'${ut.id}')" title="Asignar RAs y CEs"
-          style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:3px 9px;font-size:11px;font-weight:700;cursor:pointer;margin-right:4px">RA/CE</button>
-        <button onclick="deleteUt(${mid},'${ut.id}')" title="Eliminar UT"
-          style="background:transparent;color:#ef4444;border:1px solid rgba(239,68,68,.35);border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer">✕</button>
-      </td>
-    </tr>`
-  }
-  h += `</tbody></table></div>
-    <div style="padding:10px 2px 2px">
-      <button onclick="addUt(${mid})"
-        style="background:transparent;color:var(--accent);border:1.5px solid var(--accent);border-radius:8px;padding:5px 16px;font-size:12px;font-weight:700;cursor:pointer">+ Añadir UT</button>
-    </div>
-  </div>`
-
-  // ── 2. RESULTADOS DE APRENDIZAJE Y CRITERIOS DE EVALUACIÓN ───
-  const totalRaPond = ras.reduce((s, r) => s + (r.pond || 0), 0)
-  const raPondOk    = ras.every(r => r.pond) && Math.abs(totalRaPond - 100) < 0.1
-  const raSumBadge  = ras.some(r => r.pond)
-    ? (raPondOk
-        ? `<span data-rapond-total style="font-size:10.5px;padding:2px 9px;border-radius:8px;background:rgba(16,185,129,.12);color:var(--green);font-weight:700;margin-left:auto">✓ 100%</span>`
-        : `<span data-rapond-total style="font-size:10.5px;padding:2px 9px;border-radius:8px;background:rgba(245,158,11,.15);color:var(--amber);font-weight:700;margin-left:auto">⚠ suma ${totalRaPond}%</span>`)
-    : ''
-
-  h += `<div class="card" style="margin-bottom:16px">
-    <div class="prog-section-title">🎯 Resultados de Aprendizaje y Criterios de Evaluación
-      ${raSumBadge}
-    </div>
-    <div style="display:flex;flex-direction:column;gap:10px">`
-
-  for (const ra of ras) {
-    const raCes = ces[ra.id] || []
-    // saber en qué eval cae este RA
-    let raEval = '—'
-    for (const [ev, raList] of Object.entries(evalRas)) {
-      if (raList.includes(ra.id)) { raEval = `Eval ${ev}`; break }
-    }
-    const instrList = raInstr[ra.id] || []
-    const instrStr  = instrList.map(i =>
-      i==='practica'?'Práctica':i==='examen'?'Examen':i==='proyecto'?'Proyecto':
-      i==='informe'?'Informe':i==='presentacion'?'Presentación':i
-    ).join(' + ')
-    // qué UT(s) evalúa
-    const utAsigs = asigs.filter(a => a.ra === ra.id).map(a => a.ut)
-
-    // Input editable de ponderación (con tooltip explicativo)
-    const pondInput = `<span style="display:inline-flex;align-items:center;gap:4px;background:rgba(0,0,0,.15);border-radius:8px;padding:2px 8px 2px 4px">
-      <input class="ra-pond-cell" type="number" min="0" max="100" step="1"
-        value="${ra.pond || ''}" placeholder="—"
-        data-mid="${mid}" data-raid="${ra.id}"
-        oninput="_refreshRaPondTotal(this)"
-        onchange="updateRaPond(this)"
-        title="Ponderación de este RA en la nota final (%)"/>
-      <span style="font-size:11px;color:rgba(255,255,255,.6);font-weight:600">%</span>
-    </span>`
-
-    h += `<div style="border:1px solid var(--border);border-left:4px solid var(--accent2);border-radius:8px;overflow:hidden">
-      <div style="background:var(--bg3);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-         <span style="font-size:13px;font-weight:800;color:var(--accent2);min-width:38px">${esc(ra.id)}</span>
-         <span style="font-size:13px;font-weight:600;flex:1">${esc(ra.nombre)}</span>
-         ${pondInput}
-         <span class="badge">${raEval}</span>
-         ${utAsigs.length ? `<span class="badge">${esc(utAsigs.join(', '))}</span>` : ''}
-         ${instrStr ? `<span class="badge badge-green">${esc(instrStr)}</span>` : ''}
-       </div>`
-
-     if (raCes.length) {
-       h += `<div style="padding:8px 16px 10px 16px">
-         <table style="width:100%;border-collapse:collapse">`
-       for (const ce of raCes) {
-         h += `<tr style="border-top:1px solid var(--border)">
-           <td style="padding:4px 10px 4px 0;font-size:12px;font-weight:700;color:var(--accent);white-space:nowrap;vertical-align:top">${esc(ce.id)}</td>
-           <td style="padding:4px 0;font-size:12px;color:var(--text2);line-height:1.5">${esc(ce.texto)}</td>
-         </tr>`
-       }
-       h += `</table></div>`
-     }
-     h += `</div>`
-  }
-  h += `</div></div>`
-
-  // ── 3. MAPA DE ASIGNACIONES UT → RA → CEs ────────────────────
-  if (asigs.length) {
-    h += `<div class="card" style="margin-bottom:16px">
-      <div class="prog-section-title">🔗 Mapa UT → RA → Criterios</div>
-      <div style="overflow-x:auto">
-      <table class="prog-table">
-        <thead><tr>
-          <th style="width:50px">UT</th>
-          <th style="width:110px">Unidad</th>
-          <th style="width:50px;text-align:center">RA</th>
-          <th>Criterios de evaluación asignados</th>
-        </tr></thead>
-        <tbody>`
-    for (const a of asigs) {
-      const ut = utMap[a.ut] || {}
-      const ra = raMap[a.ra] || {}
-      const ceList = (ces[a.ra] || []).filter(ce => a.ces.includes(ce.id))
-       h += `<tr>
-         <td style="font-weight:700;color:var(--accent2);vertical-align:top;padding-top:8px">${esc(a.ut)}</td>
-         <td style="font-size:11px;color:var(--text2);vertical-align:top;padding-top:8px;line-height:1.4">${esc(ut.nombre||'')}</td>
-         <td style="text-align:center;font-weight:700;color:var(--accent2);vertical-align:top;padding-top:8px">${esc(a.ra)}</td>
-         <td style="padding:4px 0">${ceList.map(ce =>
-           `<div style="display:flex;gap:6px;padding:3px 0;border-top:1px solid var(--border);font-size:11px">
-             <span style="color:var(--accent);font-weight:700;white-space:nowrap">${esc(ce.id)}</span>
-             <span style="color:var(--text2)">${esc(ce.texto)}</span>
-           </div>`
-         ).join('')}</td>
-       </tr>`
-    }
-    h += `</tbody></table></div></div>`
-  }
-
-  // ── 4. PLAN DE ACTIVIDADES POR EVALUACIÓN ────────────────────
+  // ── 1. PLAN DE ACTIVIDADES POR EVALUACIÓN ────────────────────
   {
     const _e0acts = actividades.filter(a => a.eval === evals[0])
     const _initPrac = Math.round(_e0acts.filter(a => a.tipo==='practica').reduce((s,a)=>s+(a.peso||0),0)) || 30
@@ -281,22 +120,24 @@ async function loadProgramacion() {
           : `<span data-pesobadge style="font-size:10.5px;padding:2px 9px;border-radius:8px;background:rgba(16,185,129,.12);color:var(--green);font-weight:700;margin-left:8px">✓ 100%</span>`)
         : ''
       const btnSt = 'border:none;border-radius:7px;padding:4px 12px;font-size:11.5px;font-weight:700;cursor:pointer'
-      h += `<div style="margin-bottom:14px">
+      h += `<div style="margin-bottom:14px" id="eval-section-${ev}"
+        ondragover="actDragOver(event)" ondragleave="actDragLeave(event)" ondrop="actDrop(event,${ev})">
         <div style="font-size:12px;font-weight:700;color:var(--ice);background:var(--navy3);padding:7px 14px;border-radius:6px;margin-bottom:6px;display:flex;gap:12px;align-items:center">
-          <span>Evaluación ${ev}</span>
+          <span>${evalLabel(ev)}</span>
           ${rasEvalStr ? `<span style="font-size:11px;font-weight:400;color:var(--text2)">${rasEvalStr}</span>` : ''}
           ${pesoWarn}
         </div>`
       if (acts.length) {
         h += `<table class="prog-table">
           <thead><tr>
-            <th style="width:30px">#</th>
+            <th style="width:24px"></th>
             <th>Actividad</th>
-            <th style="width:80px;text-align:center">Instrumento</th>
+            <th style="width:88px;text-align:center">Instrumento</th>
             <th style="width:55px;text-align:center">Tipo</th>
-            <th class="th-editable" style="width:70px;text-align:center">Peso %</th>
-            <th class="th-editable" style="width:70px;text-align:center">Nota máx</th>
-            <th style="width:50px;text-align:center">UT/RA</th>
+            <th class="th-editable" style="width:72px;text-align:center">Peso %</th>
+            <th class="th-editable" style="width:72px;text-align:center">Nota máx</th>
+            <th class="th-editable" style="width:78px;text-align:center">UT</th>
+            <th style="width:62px;text-align:center" title="Criterios de evaluación asignados">CEs</th>
             <th style="width:30px"></th>
           </tr></thead>
           <tbody>`
@@ -305,8 +146,10 @@ async function loadProgramacion() {
             ? 'background:rgba(224,160,58,.2);color:var(--amber)'
             : 'background:rgba(74,144,217,.15);color:var(--accent2)'
           const actId = act.id || ''
-          h += `<tr>
-            <td style="text-align:center;color:var(--text2);font-size:11px">${act.orden||''}</td>
+          h += `<tr draggable="${actId?'true':'false'}" data-actid="${actId}" data-fromeval="${ev}"
+            ondragstart="actDragStart(event)" ondragend="actDragEnd(event)"
+            style="cursor:${actId?'grab':'default'}">
+            <td style="text-align:center;color:var(--text2);font-size:16px;padding:0 4px;line-height:1" title="Arrastrar a otra evaluación">⠿</td>
             <td>${actId
               ? `<input class="nota-cell" type="text" value="${esc(act.descripcion)}"
                   data-actid="${actId}" data-field="descripcion"
@@ -315,7 +158,7 @@ async function loadProgramacion() {
               : `<span style="font-size:12px">${esc(act.descripcion)}</span>`}
             </td>
             <td style="text-align:center"><span style="font-size:11px;padding:2px 7px;border-radius:8px;${badge}">${esc(act.instrumento)}</span></td>
-            <td style="text-align:center;font-size:11px;color:var(--text2)">${act.tipo}</td>
+            <td style="text-align:center;font-size:11px;color:var(--text2)">${act.tipo||''}</td>
             <td style="text-align:center">
               ${actId ? `<input class="peso-cell" type="number" min="0" max="100" step="1"
                 value="${act.peso}" data-actid="${actId}"
@@ -329,9 +172,53 @@ async function loadProgramacion() {
                 onchange="updateActividadPeso(this)"
                 title="Nota máxima"/>` : `<span style="color:var(--text2)">${act.nota_max}</span>`}
             </td>
-            <td style="text-align:center;font-size:11px;color:var(--text2)">${act.ut_id||act.ra_id||'—'}</td>
+            <td style="text-align:center">
+              ${actId ? (() => {
+                const utIds = (act.ut_id||'').split(',').filter(Boolean)
+                if (act.tipo === 'examen') {
+                  const chips = utIds.map(id =>
+                    `<span style="font-size:10px;font-weight:700;color:var(--accent2);background:rgba(74,144,217,.12);padding:1px 5px;border-radius:4px;white-space:nowrap">${esc(id)}</span>`
+                  ).join('')
+                  return `<div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+                    <div style="display:flex;flex-wrap:wrap;gap:2px;justify-content:center">${chips||'<span style="font-size:11px;color:var(--text3)">—</span>'}</div>
+                    <button onclick="openActUtsModal(${actId},${mid},'${(act.ut_id||'').replace(/'/g,"\\'")}')"
+                      style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:2px 8px;font-size:10px;font-weight:700;cursor:pointer;margin-top:1px">UT</button>
+                  </div>`
+                }
+                return `<select class="nota-cell" data-actid="${actId}"
+                  style="width:68px;font-size:11px;padding:2px 2px;text-align:center"
+                  onchange="updateActividadUT(this)">
+                  <option value="">—</option>
+                  ${uts.map(ut => `<option value="${ut.id}"${act.ut_id===ut.id?' selected':''}>${esc(ut.id)}</option>`).join('')}
+                </select>`
+              })() : `<span style="font-size:11px;color:var(--text2)">${act.ut_id||'—'}</span>`}
+            </td>
+            <td style="text-align:center">${(() => {
+              if (!actId) return '<span style="font-size:11px;color:var(--text3)">—</span>'
+              let actCes = []
+              try { actCes = JSON.parse(act.ces || '[]') } catch { /* ces inválido */ }
+              const count = actCes.length
+              // Soporta UT única (prácticas) y varias UTs separadas por coma (exámenes)
+              const utIds = (act.ut_id || '').split(',').map(s => s.trim()).filter(Boolean)
+              const utAsigsCes = asigs
+                .filter(a => utIds.includes(a.ut))
+                .flatMap(a => (ces[a.ra] || []).filter(ce => a.ces.includes(ce.id)))
+              const raCeList = act.ra_id ? (ces[act.ra_id] || []) : []
+              const total = utAsigsCes.length || raCeList.length
+              if (!total) return '<span style="font-size:11px;color:var(--text3)">—</span>'
+              const btnColor = count > 0 ? 'var(--green)' : 'var(--text3)'
+              const currentCesStr = JSON.stringify(actCes).replace(/"/g,'&quot;')
+              const utIdSafe = (act.ut_id || '').replace(/'/g,"\\'")
+              const raIdSafe = (act.ra_id || '').replace(/'/g,"\\'")
+              return `<button onclick="openActCesModal(${actId},${mid},'${utIdSafe}','${raIdSafe}',this.dataset.ces)"
+                data-ces="${currentCesStr}"
+                title="${count}/${total} CEs asignados"
+                style="background:transparent;color:${btnColor};border:1px solid ${btnColor};border-radius:6px;padding:2px 7px;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap">
+                ${count}/${total}
+              </button>`
+            })()}</td>
             <td style="text-align:center">${actId
-              ? `<button onclick="deleteActividadRow(${actId})" title="Eliminar"
+              ? `<button onclick="deleteActividadRow(${actId})" title="Eliminar" aria-label="Eliminar actividad"
                   style="background:transparent;color:#ef4444;border:1px solid rgba(239,68,68,.3);border-radius:6px;padding:2px 6px;font-size:11px;cursor:pointer;line-height:1">✕</button>`
               : ''}</td>
           </tr>`
@@ -349,8 +236,7 @@ async function loadProgramacion() {
     h += `</div>`
   }
 
-  // ── 5. DISTRIBUCIÓN EVALUACIÓN (RAs por eval) ─────────────────
-  // Distribución derivada de las UTs: qué RA está asignado a cada UT y en qué eval está
+  // ── 2. DISTRIBUCIÓN EVALUACIÓN (RAs por eval) ─────────────────
   const distRasMap = {}
   for (let e = 1; e <= evalCount; e++) distRasMap[e] = []
   for (const ut of uts) {
@@ -360,16 +246,15 @@ async function loadProgramacion() {
     if (asig?.ra && !distRasMap[ev].includes(asig.ra)) distRasMap[ev].push(asig.ra)
   }
 
-  // Renderizar todas las evaluaciones activas
   if (evals.length) {
-    h += `<div class="card" style="margin-bottom:8px">
+    h += `<div class="card" style="margin-bottom:16px">
       <div class="prog-section-title">📊 Distribución de RAs por Evaluación</div>
       <div style="display:flex;gap:12px;flex-wrap:wrap">`
     for (const ev of evals) {
       const raList = distRasMap[ev] || []
       const totalPond = raList.reduce((s, raId) => s + (raMap[raId]?.pond||0), 0)
       h += `<div style="flex:1;min-width:180px;background:var(--navy3);border-radius:8px;padding:12px 16px">
-        <div style="font-size:12px;font-weight:700;color:var(--ice);margin-bottom:8px">Evaluación ${ev}
+        <div style="font-size:12px;font-weight:700;color:var(--ice);margin-bottom:8px">${evalLabel(ev)}
           <span style="font-weight:400;color:var(--text2);font-size:11px;margin-left:6px">${totalPond}% del módulo</span>
         </div>`
       if (!raList.length) {
@@ -393,6 +278,175 @@ async function loadProgramacion() {
     h += `</div></div>`
   }
 
+  // ── 3. TABLA DE UNIDADES DE TRABAJO ──────────────────────────
+  const _sumUtH = uts.reduce((s, u) => s + (parseInt(u.horas, 10) || 0), 0)
+  const _modH    = mod.horas || 0
+  const _hOk     = _sumUtH === _modH
+  const _hBadgeSt = _hOk
+    ? 'background:rgba(16,185,129,.12);color:var(--green)'
+    : 'background:rgba(245,158,11,.15);color:var(--amber)'
+  h += `<div class="card" style="margin-bottom:16px">
+    <div class="prog-section-title" style="display:flex;align-items:center;gap:10px">
+      📚 Unidades de Trabajo
+      <span id="ut-horas-badge" style="font-size:10.5px;padding:2px 10px;border-radius:8px;font-weight:700;${_hBadgeSt}">
+        Σ ${_sumUtH}h / ${_modH}h${_hOk?' ✓':' ⚠'}
+      </span>
+    </div>
+    <div style="overflow-x:auto">
+    <table class="prog-table">
+      <thead><tr>
+        <th style="width:56px">UT</th>
+        <th style="min-width:180px">Nombre</th>
+        <th style="width:82px;text-align:center">Horas</th>
+        <th style="width:58px;text-align:center">Eval</th>
+        <th style="width:60px;text-align:center">RA</th>
+        <th style="min-width:160px">Contenidos clave</th>
+        <th style="width:106px;text-align:center">Acciones</th>
+      </tr></thead>
+      <tbody>`
+  for (const ut of uts) {
+    const utAsigs = asigs.filter(a => a.ut === ut.id)
+    const raIds   = utAsigs.map(a => a.ra)
+    const raCellContent = raIds.length
+      ? raIds.map(id => `<span style="font-weight:700;color:var(--accent2);display:inline-block">${esc(id)}</span>`).join('<br>')
+      : '<span style="color:var(--text2)">—</span>'
+    h += `<tr>
+      <td style="font-weight:700;color:var(--accent2);white-space:nowrap">${ut.id}</td>
+      <td><input class="nota-cell" type="text" value="${esc(ut.nombre)}"
+        style="width:100%;min-width:160px;text-align:left;font-weight:500"
+        onchange="saveUtField(${mid},'${ut.id}','nombre',this.value)"/></td>
+      <td style="text-align:center">
+        <input class="peso-cell ut-horas-inp" type="number" min="0" max="999" value="${ut.horas||0}"
+          style="width:70px"
+          oninput="_refreshUtHoras(this,${_modH})"
+          onchange="saveUtField(${mid},'${ut.id}','horas',this.value)"/></td>
+      <td style="text-align:center">
+        <select class="nota-cell" style="width:52px;padding:3px 4px;text-align:center;font-weight:600"
+          onchange="saveUtField(${mid},'${ut.id}','eval',this.value)">
+          ${evals.map(e=>`<option value="${e}"${ut.eval==e?' selected':''}>${e}</option>`).join('')}
+        </select></td>
+      <td style="text-align:center;line-height:1.6">${raCellContent}</td>
+      <td><input class="nota-cell" type="text" value="${esc(ut.tags||'')}"
+        style="width:100%;text-align:left;font-size:11px;color:var(--text2)"
+        onchange="saveUtField(${mid},'${ut.id}','tags',this.value)"/></td>
+      <td style="text-align:center;white-space:nowrap">
+        <button onclick="openUtRasModal(${mid},'${ut.id}')" title="Asignar RAs y CEs"
+          style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:3px 9px;font-size:11px;font-weight:700;cursor:pointer;margin-right:4px">RA/CE</button>
+        <button onclick="deleteUt(${mid},'${ut.id}')" title="Eliminar UT" aria-label="Eliminar UT"
+          style="background:transparent;color:#ef4444;border:1px solid rgba(239,68,68,.35);border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer">✕</button>
+      </td>
+    </tr>`
+  }
+  h += `</tbody></table></div>
+    <div style="padding:10px 2px 2px">
+      <button onclick="addUt(${mid})"
+        style="background:transparent;color:var(--accent);border:1.5px solid var(--accent);border-radius:8px;padding:5px 16px;font-size:12px;font-weight:700;cursor:pointer">+ Añadir UT</button>
+    </div>
+  </div>`
+
+  // ── 4. RESULTADOS DE APRENDIZAJE Y CRITERIOS DE EVALUACIÓN ───
+  const totalRaPond = ras.reduce((s, r) => s + (r.pond || 0), 0)
+  const raPondOk    = ras.every(r => r.pond) && Math.abs(totalRaPond - 100) < 0.1
+  const raSumBadge  = ras.some(r => r.pond)
+    ? (raPondOk
+        ? `<span data-rapond-total style="font-size:10.5px;padding:2px 9px;border-radius:8px;background:rgba(16,185,129,.12);color:var(--green);font-weight:700;margin-left:auto">✓ 100%</span>`
+        : `<span data-rapond-total style="font-size:10.5px;padding:2px 9px;border-radius:8px;background:rgba(245,158,11,.15);color:var(--amber);font-weight:700;margin-left:auto">⚠ suma ${totalRaPond}%</span>`)
+    : ''
+
+  h += `<div class="card" style="margin-bottom:16px">
+    <div class="prog-section-title">🎯 Resultados de Aprendizaje y Criterios de Evaluación
+      ${raSumBadge}
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">`
+
+  for (const ra of ras) {
+    const raCes = ces[ra.id] || []
+    // saber en qué eval cae este RA
+    let raEval = '—'
+    for (const [ev, raList] of Object.entries(evalRas)) {
+      if (raList.includes(ra.id)) { raEval = `Eval ${ev}`; break }
+    }
+    const instrList = raInstr[ra.id] || []
+    const instrStr  = instrList.map(i =>
+      i==='practica'?'Práctica':i==='examen'?'Examen':i==='proyecto'?'Proyecto':
+      i==='informe'?'Informe':i==='presentacion'?'Presentación':i
+    ).join(' + ')
+    // qué UT(s) evalúa
+    const utAsigs = asigs.filter(a => a.ra === ra.id).map(a => a.ut)
+
+    // Input editable de ponderación (con tooltip explicativo)
+    const pondInput = `<span style="display:inline-flex;align-items:center;gap:4px;background:rgba(0,0,0,.15);border-radius:8px;padding:2px 8px 2px 4px">
+      <input class="ra-pond-cell" type="number" min="0" max="100" step="1"
+        value="${ra.pond || ''}" placeholder="—"
+        data-mid="${mid}" data-raid="${ra.id}"
+        oninput="_refreshRaPondTotal(this)"
+        onchange="updateRaPond(this)"
+        title="Ponderación de este RA en la nota final (%)"/>
+      <span style="font-size:11px;color:rgba(255,255,255,.6);font-weight:600">%</span>
+    </span>`
+
+    h += `<div style="border:1px solid var(--border);border-left:4px solid var(--accent2);border-radius:8px;overflow:hidden">
+      <div style="background:var(--bg3);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+         <span style="font-size:13px;font-weight:800;color:var(--accent2);min-width:38px">${esc(ra.id)}</span>
+         <span style="font-size:13px;font-weight:600;flex:1">${esc(ra.nombre)}</span>
+         ${pondInput}
+         <span class="badge">${raEval}</span>
+         ${utAsigs.length ? `<span class="badge">${esc(utAsigs.join(', '))}</span>` : ''}
+         ${instrStr ? `<span class="badge badge-green">${esc(instrStr)}</span>` : ''}
+       </div>`
+
+     if (raCes.length) {
+       h += `<div style="padding:8px 16px 10px 16px">
+         <table style="width:100%;border-collapse:collapse">`
+       for (const ce of raCes) {
+         h += `<tr style="border-top:1px solid var(--border)">
+           <td style="padding:4px 10px 4px 0;font-size:12px;font-weight:700;color:var(--accent);white-space:nowrap;vertical-align:top">${esc(ce.id)}</td>
+           <td style="padding:4px 0;font-size:12px;color:var(--text2);line-height:1.5">${esc(ce.texto)}</td>
+         </tr>`
+       }
+       h += `</table></div>`
+     }
+     h += `</div>`
+  }
+  h += `</div></div>`
+
+  // ── 5. MAPA DE ASIGNACIONES UT → RA → CEs ────────────────────
+  if (asigs.length) {
+    h += `<div class="card" style="margin-bottom:16px">
+      <div class="prog-section-title">🔗 Mapa UT → RA → Criterios</div>
+      <div style="overflow-x:auto">
+      <table class="prog-table">
+        <thead><tr>
+          <th style="width:50px">UT</th>
+          <th style="width:110px">Unidad</th>
+          <th style="width:50px;text-align:center">RA</th>
+          <th>Criterios de evaluación asignados</th>
+        </tr></thead>
+        <tbody>`
+    const asigsSorted = asigs.slice().sort((x, y) => {
+      const nx = parseInt(x.ut.replace(/\D/g, ''), 10) || 0
+      const ny = parseInt(y.ut.replace(/\D/g, ''), 10) || 0
+      return nx - ny
+    })
+    for (const a of asigsSorted) {
+      const ut = utMap[a.ut] || {}
+      const ra = raMap[a.ra] || {}
+      const ceList = (ces[a.ra] || []).filter(ce => a.ces.includes(ce.id))
+       h += `<tr>
+         <td style="font-weight:700;color:var(--accent2);vertical-align:top;padding-top:8px">${esc(a.ut)}</td>
+         <td style="font-size:11px;color:var(--text2);vertical-align:top;padding-top:8px;line-height:1.4">${esc(ut.nombre||'')}</td>
+         <td style="text-align:center;font-weight:700;color:var(--accent2);vertical-align:top;padding-top:8px">${esc(a.ra)}</td>
+         <td style="padding:4px 0">${ceList.map(ce =>
+           `<div style="display:flex;gap:6px;padding:3px 0;border-top:1px solid var(--border);font-size:11px">
+             <span style="color:var(--accent);font-weight:700;white-space:nowrap">${esc(ce.id)}</span>
+             <span style="color:var(--text2)">${esc(ce.texto)}</span>
+           </div>`
+         ).join('')}</td>
+       </tr>`
+    }
+    h += `</tbody></table></div></div>`
+  }
+
   panel.innerHTML = h
 }
 
@@ -402,14 +456,24 @@ async function updateRaPond(el) {
   const mid  = parseInt(el.dataset.mid)
   const raId = el.dataset.raid
   const pond = parseFloat(el.value)
-  if (!mid || !raId || isNaN(pond) || pond < 0) return
+  if (!mid || !raId) return
+
+  // Validate ponderacion (0-100)
+  if (!validators.ponderacion(pond)) {
+    alert('Ponderación inválida. Debe estar entre 0 y 100.')
+    el.value = ''
+    return
+  }
 
   clearTimeout(_raPondTimers[mid + raId])
   _raPondTimers[mid + raId] = setTimeout(async () => {
     try {
       await window.api.setRaPonderacion(mid, raId, pond)
       showSaved()
-    } catch(e) { console.error('Error guardando ponderación RA:', e) }
+    } catch(e) {
+      alert('Error guardando ponderación: ' + validators.sanitizeErrorMessage(e, 'updateRaPond'))
+      console.error(e)
+    }
   }, 350)
 }
 
@@ -435,7 +499,15 @@ async function updateActividadPeso(el) {
   const actId = parseInt(el.dataset.actid)
   const field  = el.dataset.field || 'peso'
   const val    = parseFloat(el.value)
-  if (isNaN(val) || val < 0) return
+
+  if (isNaN(val)) return
+
+  // Validate peso (0-100%)
+  if (!validators.numberRange(val, 0, 100)) {
+    alert('Peso inválido. Debe estar entre 0 y 100.')
+    el.value = ''
+    return
+  }
 
   clearTimeout(_pesoTimers[actId + field])
   _pesoTimers[actId + field] = setTimeout(async () => {
@@ -449,17 +521,35 @@ async function updateActividadPeso(el) {
       const acts = await window.api.getActividades(mid)
       const act  = acts.find(a => a.id === actId)
       if (!act) return
+
+      // Validate complete actividad object
       act[field] = val
+      if (!validators.actividad(act)) {
+        alert('Datos de actividad inválidos.')
+        return
+      }
+
       await window.api.saveActividad(act)
       showSaved()
       _refreshPesoTotal(el, acts)
-    } catch(e) { console.error('Error guardando actividad:', e) }
+    } catch(e) {
+      alert('Error guardando actividad: ' + validators.sanitizeErrorMessage(e, 'updateActividadPeso'))
+      console.error(e)
+    }
   }, 350)
 }
 
 async function updateActividadDesc(el) {
   const actId = parseInt(el.dataset.actid)
   if (!actId) return
+
+  // Validate description
+  if (!validators.description(el.value)) {
+    alert('Descripción inválida. Máximo 500 caracteres.')
+    el.value = ''
+    return
+  }
+
   const mid = parseInt(document.getElementById('prog-mod-sel')?.value || document.getElementById('eval-mod-sel')?.value || 0)
   if (!mid) return
   clearTimeout(_pesoTimers['desc' + actId])
@@ -469,17 +559,102 @@ async function updateActividadDesc(el) {
       const act  = acts.find(a => a.id === actId)
       if (!act) return
       act.descripcion = el.value
-      await window.api.saveActividad(act)
-      showSaved()
-    } catch(e) { console.error('Error guardando descripción:', e) }
+
+      // Validate complete actividad object
+      if (!validators.actividad(act)) {
+        alert('Datos de actividad inválidos.')
+        return
+      }
+
+       await window.api.saveActividad(act)
+       showSaved()
+     } catch(e) {
+       alert('Error guardando descripción: ' + validators.sanitizeErrorMessage(e, 'updateActividadDesc'))
+       console.error(e)
+     }
   }, 400)
+}
+
+async function updateActividadUT(el) {
+  const actId = parseInt(el.dataset.actid)
+  if (!actId) return
+  // Handle both single-select and multi-select (examen)
+  const selected = Array.from(el.selectedOptions).map(o => o.value).filter(Boolean)
+  const utId = selected.join(',')
+  const mid = parseInt(document.getElementById('prog-mod-sel')?.value || document.getElementById('eval-mod-sel')?.value || 0)
+  if (!mid) return
+  try {
+    const acts = await window.api.getActividades(mid)
+    const act = acts.find(a => a.id === actId)
+    if (!act) return
+    act.ut_id = utId
+    // Auto-set ra_id only when a single UT is selected
+    if (selected.length === 1) {
+      const data = _getModData(mid)
+      const asig = (data?.asignaciones || []).find(a => a.ut === selected[0])
+      if (asig) act.ra_id = asig.ra
+    }
+    await window.api.saveActividad(act)
+    showSaved()
+  } catch(e) { console.error('updateActividadUT:', e) }
+}
+
+function actDragStart(event) {
+  const tr = event.currentTarget
+  if (!tr.dataset.actid) { event.preventDefault(); return }
+  event.dataTransfer.setData('text/plain', JSON.stringify({
+    actId: tr.dataset.actid,
+    fromEval: tr.dataset.fromeval
+  }))
+  event.dataTransfer.effectAllowed = 'move'
+  tr.classList.add('drag-ghost')
+  setTimeout(() => tr.classList.remove('drag-ghost'), 0)
+}
+
+function actDragOver(event) {
+  event.preventDefault()
+  event.dataTransfer.dropEffect = 'move'
+  event.currentTarget.style.outline = '2px dashed var(--accent2)'
+  event.currentTarget.style.borderRadius = '8px'
+}
+
+function actDragLeave(event) {
+  // Solo quitar el borde cuando el ratón sale del div entero, no de elementos hijo
+  if (event.currentTarget.contains(event.relatedTarget)) return
+  event.currentTarget.style.outline = ''
+}
+
+function actDragEnd(event) {
+  // Limpiar todos los bordes si el drag termina fuera de cualquier zona
+  document.querySelectorAll('[id^="eval-section-"]').forEach(el => {
+    el.style.outline = ''
+  })
+}
+
+async function actDrop(event, toEval) {
+  event.preventDefault()
+  const div = event.currentTarget
+  div.style.outline = ''
+  let payload
+  try { payload = JSON.parse(event.dataTransfer.getData('text/plain')) } catch(e) { return }
+  const { actId, fromEval } = payload
+  if (parseInt(fromEval) === toEval) return
+  const mid = parseInt(document.getElementById('prog-mod-sel')?.value || document.getElementById('eval-mod-sel')?.value || 0)
+  if (!mid) return
+  try {
+    const acts = await window.api.getActividades(mid)
+    const act = acts.find(a => a.id === parseInt(actId))
+    if (!act) return
+    act.eval = toEval
+    await window.api.saveActividad(act)
+    loadProgramacion()
+  } catch(e) { console.error('actDrop:', e) }
 }
 
 async function setEvalCount(mid, count) {
   const newCount  = parseInt(count)
   const data      = _getModData(mid)
   if (!data) return
-  const oldCount  = data.modulo?.eval_count || evals?.length || 3
   data.modulo     = data.modulo || {}
   data.modulo.eval_count = newCount
 
@@ -538,8 +713,8 @@ async function addActividad(mid, ev, tipo) {
   const evActs = allActs.filter(a => a.eval === ev)
   const sameType = evActs.filter(a => a.tipo === tipo)
   const desc = sameType.length
-    ? `${instrumento} ${sameType.length + 1} — Evaluación ${ev}`
-    : `${instrumento} — Evaluación ${ev}`
+    ? `${instrumento} ${sameType.length + 1} — ${evalLabel(ev)}`
+    : `${instrumento} — ${evalLabel(ev)}`
   await window.api.saveActividad({
     modulo_id: parseInt(mid), ut_id: null, ra_id: null,
     descripcion: desc, instrumento, tipo,
@@ -604,7 +779,10 @@ async function saveUtField(mid, utId, field, value) {
 async function addUt(mid) {
   const data = _getModData(mid)
   if (!data) return
-  const n = (data.uts?.length || 0) + 1
+  // Siguiente número LIBRE: evita IDs duplicados si se borró una UT intermedia
+  const usados = new Set((data.uts||[]).map(u => u.id))
+  let n = (data.uts?.length || 0) + 1
+  while (usados.has(`UT${n}`)) n++
   data.uts = [...(data.uts||[]), {id:`UT${n}`, nombre:'Nueva unidad de trabajo', horas:0, eval:1, tags:''}]
   await _saveModData(mid, data, true)
 }
@@ -661,7 +839,7 @@ function openUtRasModal(mid, utId) {
 
   document.getElementById('ut-ras-body').innerHTML = html ||
     '<p style="color:var(--text2);font-size:13px">Este módulo no tiene RAs definidos.</p>'
-  document.getElementById('modal-ut-ras').classList.add('open')
+  document.getElementById('modal-ut-ras').showModal()
 }
 
 function _refreshUtHoras(inp, modHoras) {
@@ -697,8 +875,163 @@ async function saveUtRas() {
 }
 
 function closeUtRasModal() {
-  document.getElementById('modal-ut-ras').classList.remove('open')
+  const dlg = document.getElementById('modal-ut-ras')
+  if (dlg.open) dlg.close()
   _utRasState = null
+}
+
+// ── Modal UT para actividades de examen ──────────────────────────
+let _actUtsState = null
+
+function openActUtsModal(actId, mid, currentUtId) {
+  const data = _getModData(mid)
+  if (!data) return
+  _actUtsState = { actId, mid }
+
+  // Título: descripción de la actividad si está disponible
+  document.getElementById('act-uts-title').textContent = `Examen · UTs relacionadas`
+
+  const selIds = (currentUtId||'').split(',').filter(Boolean)
+  const uts = data.uts || []
+  const evals = [...new Set(uts.map(u => u.eval||1))].sort((a,b)=>a-b)
+
+  let html = ''
+  for (const ev of evals) {
+    const evUts = uts.filter(u => (u.eval||1) === ev)
+    if (!evUts.length) continue
+    html += `<div style="margin-bottom:14px">
+      <div style="font-size:10.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">${evalLabel(ev)}</div>`
+    for (const ut of evUts) {
+      const checked = selIds.includes(ut.id)
+      // Find associated RA for display
+      const asig = (data.asignaciones||[]).find(a => a.ut === ut.id)
+      const raLabel = asig ? `<span style="font-size:10px;font-weight:700;color:var(--accent2);background:rgba(74,144,217,.1);padding:1px 5px;border-radius:4px;margin-left:4px">${esc(asig.ra)}</span>` : ''
+      html += `<label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);margin-bottom:5px">
+        <input type="checkbox" data-utid="${ut.id}" class="act-ut-chk" ${checked?'checked':''}
+          style="accent-color:var(--accent);width:14px;height:14px;flex-shrink:0"/>
+        <span style="font-weight:700;color:var(--accent2);min-width:36px;font-size:12px">${esc(ut.id)}</span>
+        <span style="font-size:12px;color:var(--text);flex:1">${esc(ut.nombre||'')}</span>
+        ${raLabel}
+        <span style="font-size:11px;color:var(--text3);white-space:nowrap">${ut.horas||0}h</span>
+      </label>`
+    }
+    html += `</div>`
+  }
+
+  document.getElementById('act-uts-body').innerHTML = html ||
+    '<p style="color:var(--text2);font-size:13px">Este módulo no tiene UTs definidas.</p>'
+  document.getElementById('modal-act-uts').showModal()
+}
+
+async function saveActUts() {
+  if (!_actUtsState) return
+  const { actId, mid } = _actUtsState
+  const selected = Array.from(document.querySelectorAll('.act-ut-chk:checked')).map(cb => cb.dataset.utid)
+  const utId = selected.join(',')
+  try {
+    const acts = await window.api.getActividades(mid)
+    const act = acts.find(a => a.id === actId)
+    if (!act) return
+    act.ut_id = utId
+    await window.api.saveActividad(act)
+    closeActUtsModal()
+    loadProgramacion()
+  } catch(e) { console.error('saveActUts:', e) }
+}
+
+function closeActUtsModal() {
+  const dlg = document.getElementById('modal-act-uts')
+  if (dlg.open) dlg.close()
+  _actUtsState = null
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CRITERIOS DE EVALUACIÓN POR ACTIVIDAD
+// ═══════════════════════════════════════════════════════════════
+let _actCesState = null
+
+function openActCesModal(actId, mid, utId, raId, currentCesEncoded) {
+  const data = _getModData(mid)
+  if (!data) return
+  _actCesState = { actId, mid }
+
+  let selCes = []
+  try { selCes = JSON.parse(currentCesEncoded || '[]') } catch { /* ces inválido */ }
+
+  document.getElementById('act-ces-title').textContent = `${utId || raId} — Criterios de evaluación`
+
+  // CEs disponibles: todos los que cubre la UT de esta actividad (por asignaciones),
+  // agrupados por RA. Si la actividad no tiene UT, usamos solo los CEs del RA.
+  const asigs  = data.asignaciones || []
+  const cesMap = data.ces || {}
+  // Soporta UT única ("UT4") y múltiples separadas por coma ("UT4,UT5") — caso examen
+  const utIds = utId ? utId.split(',').map(s => s.trim()).filter(Boolean) : []
+  const utAsigs = utIds.length ? asigs.filter(a => utIds.includes(a.ut)) : []
+
+  // Construir lista [{raId, ces:[{id,texto}]}]
+  let grupos = []
+  if (utAsigs.length) {
+    for (const asig of utAsigs) {
+      const allRaCes = cesMap[asig.ra] || []
+      const cesFiltrados = allRaCes.filter(ce => asig.ces.includes(ce.id))
+      if (cesFiltrados.length) grupos.push({ raId: asig.ra, ces: cesFiltrados })
+    }
+  }
+  // Fallback: solo el RA de la actividad
+  if (!grupos.length) {
+    const fallback = cesMap[raId] || []
+    if (fallback.length) grupos.push({ raId, ces: fallback })
+  }
+
+  if (!grupos.length) {
+    document.getElementById('act-ces-body').innerHTML =
+      '<p style="color:var(--text2);font-size:13px">No hay CEs disponibles para esta actividad. Asigna la UT y los CEs en la programación primero.</p>'
+    document.getElementById('modal-act-ces').showModal()
+    return
+  }
+
+  let html = `<div style="font-size:11px;color:var(--text3);margin-bottom:10px">
+    Marca los criterios que evalúa esta actividad. La nota de cada RA se calcula como media de sus CEs cubiertos.
+  </div>`
+
+  for (const grupo of grupos) {
+    if (grupos.length > 1) {
+      html += `<div style="font-size:10.5px;font-weight:700;color:var(--accent2);text-transform:uppercase;letter-spacing:.5px;margin:10px 0 5px">${esc(grupo.raId)}</div>`
+    }
+    for (const ce of grupo.ces) {
+      const checked = selCes.includes(ce.id)
+      html += `<label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;padding:8px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);margin-bottom:5px">
+        <input type="checkbox" data-ceid="${ce.id}" class="act-ce-chk" ${checked ? 'checked' : ''}
+          style="accent-color:var(--accent);width:14px;height:14px;flex-shrink:0;margin-top:2px"/>
+        <span style="font-size:11.5px;font-weight:700;color:var(--accent);white-space:nowrap;min-width:28px">${esc(ce.id)}</span>
+        <span style="font-size:11.5px;color:var(--text);line-height:1.5">${esc(ce.texto)}</span>
+      </label>`
+    }
+  }
+
+  document.getElementById('act-ces-body').innerHTML = html
+  document.getElementById('modal-act-ces').showModal()
+}
+
+async function saveActCes() {
+  if (!_actCesState) return
+  const { actId, mid } = _actCesState
+  const selected = Array.from(document.querySelectorAll('.act-ce-chk:checked')).map(cb => cb.dataset.ceid)
+  try {
+    const acts = await window.api.getActividades(mid)
+    const act = acts.find(a => a.id === actId)
+    if (!act) return
+    act.ces = selected
+    await window.api.saveActividad(act)
+    closeActCesModal()
+    loadProgramacion()
+  } catch(e) { console.error('saveActCes:', e) }
+}
+
+function closeActCesModal() {
+  const dlg = document.getElementById('modal-act-ces')
+  if (dlg?.open) dlg.close()
+  _actCesState = null
 }
 
 async function applyModuloPesos() {

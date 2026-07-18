@@ -5,11 +5,12 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "prebake": "python3 scripts/prebake_modules.py",
+    "prebake": "node scripts/run_prebake.js",
     "build:mac": "npm run prebake && electron-builder --mac",
     "build:win": "npm run prebake && electron-builder --win",
     "build:all": "npm run prebake && electron-builder --mac --win",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
@@ -25,23 +26,30 @@
     },
     "files": [
       "main.js",
+      "main/**/*",
       "preload.js",
       "db.js",
+      "scripts/run_prebake.js",
       "renderer/**/*",
-      "!node_modules/**/*"
+      "assets/**/*"
     ],
     "extraResources": [
       {
-        "from": "../scripts",
+        "from": "scripts",
         "to": "scripts",
         "filter": [
           "**/*.py",
           "modules/**/*.py"
         ]
+      },
+      {
+        "from": "requirements.txt",
+        "to": "requirements.txt"
       }
     ],
     "mac": {
       "category": "public.app-category.education",
+      "icon": "assets/icon.icns",
       "entitlementsInherit": "entitlements.mac.plist",
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
@@ -92,13 +100,14 @@
     }
   },
   "devDependencies": {
-    "electron": "^42.5.1",
-    "electron-builder": "^26.15.3",
     "@eslint/js": "^9.0.0",
     "@playwright/test": "^1.44.0",
-    "globals": "^15.0.0",
+    "@vitest/coverage-v8": "^4.1.10",
+    "electron": "^42.5.1",
+    "electron-builder": "^26.15.3",
     "eslint": "^9.0.0",
-    "vitest": "^1.6.0"
+    "globals": "^15.0.0",
+    "vitest": "^4.1.10"
   },
   "dependencies": {
     "node-schedule": "^2.1.1",
@@ -106,5 +115,8 @@
   },
   "optionalDependencies": {
     "keytar": "^7.9.0"
+  },
+  "engines": {
+    "node": ">=22.12 <26"
   }
 }

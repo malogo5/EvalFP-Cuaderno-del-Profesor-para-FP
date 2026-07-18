@@ -6,6 +6,9 @@ yarn-error.log
 .yarn/
 dist/
 out/
+test-results/
+playwright-report/
+coverage/
 
 # Electron
 .DS_Store_MOVED

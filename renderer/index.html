@@ -2,6 +2,8 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"/>
+<meta http-equiv="Content-Security-Policy"
+  content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:">
 <title>EvalFP</title>
 <link rel="stylesheet" href="css/app.css">
 </head>
@@ -9,28 +11,37 @@
 <div class="app">
 
 <!-- ═══ SIDEBAR ═══ -->
-<nav class="sidebar">
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-resizer" id="sidebar-resizer"></div>
   <div class="logo">
-    <div class="logo-icon">E</div>
+    <div class="logo-icon" style="padding:0;overflow:hidden;box-shadow:0 4px 16px rgba(201,104,45,.45)">
+      <img src="../assets/logo.svg" style="width:100%;height:100%">
+    </div>
     <div class="logo-text">
       <div class="logo-mark">EvalFP</div>
       <div class="logo-sub">Cuaderno del Profesor</div>
     </div>
   </div>
-  <div id="mod-badge" style="display:none"><div id="mod-badge-name"></div><div id="mod-dropdown"></div></div>
+  <div id="mod-badge" class="mod-badge" onclick="toggleModDropdown(event)">
+    <div class="mod-badge-label">Módulo activo</div>
+    <div class="mod-badge-row">
+      <div id="mod-badge-name" class="mod-badge-name">Sin módulo</div>
+      <div class="mod-badge-arrow">▾</div>
+    </div>
+    <div id="mod-badge-sub" style="font-size:10px;color:var(--sb-logo-sub);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%">Toca para añadir</div>
+    <div class="mod-dropdown" id="mod-dropdown"></div>
+  </div>
   <div class="nav">
-    <div class="nav-item active" data-sec="inicio"      onclick="go(this)"><span class="icon">🏠</span>Inicio</div>
-    <div class="nav-item"       data-sec="modulos"     onclick="go(this)"><span class="icon">📚</span>Módulos</div>
-    <div class="nav-item"       data-sec="programacion"onclick="go(this)"><span class="icon">📋</span>Programación</div>
-    <div class="nav-item"       data-sec="alumnos"     onclick="go(this)"><span class="icon">👥</span>Alumnos</div>
-    <div class="nav-item"       data-sec="notas"       onclick="go(this)"><span class="icon">📝</span>Notas</div>
-    <div class="nav-item"       data-sec="evaluaciones"onclick="go(this)"><span class="icon">📊</span>Evaluaciones</div>
-    <div class="nav-item"       data-sec="dashboard"   onclick="go(this)"><span class="icon">📈</span>Dashboard</div>
-    <div class="nav-divider"></div>
-    <div class="nav-item"       data-sec="ia"          onclick="go(this)"><span class="icon">🤖</span>Asistente IA</div>
+    <div class="nav-item" data-sec="programacion" onclick="go(this)"><span class="icon">📋</span>Programación</div>
+    <div class="nav-item" data-sec="alumnos"      onclick="go(this)"><span class="icon">👥</span>Alumnos</div>
+    <div class="nav-item" data-sec="notas"        onclick="go(this)"><span class="icon">📝</span>Notas</div>
+    <div class="nav-item" data-sec="evaluaciones" onclick="go(this)"><span class="icon">📊</span>Evaluaciones</div>
+    <div class="nav-item" data-sec="dashboard"    onclick="go(this)"><span class="icon">📈</span>Dashboard</div>
   </div>
   <div class="nav-bottom">
+    <div class="nav-item" data-sec="ia"      onclick="go(this)"><span class="icon">🤖</span>Asistente IA</div>
     <div class="nav-divider"></div>
+    <div class="nav-item" data-sec="modulos" onclick="go(this)" style="font-size:11.5px;opacity:.75"><span class="icon">📚</span>Módulos</div>
     <div class="nav-item" data-sec="ajustes" onclick="go(this)"><span class="icon">⚙️</span>Ajustes</div>
   </div>
   <div class="sidebar-footer">v3.0.0 · FP CLM</div>
@@ -47,7 +58,9 @@
     <!-- ══ INICIO ══ -->
     <section id="sec-inicio">
       <div class="welcome">
-        <div class="welcome-hero">E</div>
+        <div class="welcome-hero" style="padding:0;overflow:hidden;box-shadow:0 12px 40px rgba(201,104,45,.4)">
+          <img src="../assets/logo.svg" style="width:100%;height:100%">
+        </div>
         <h1><span>Eval</span>FP</h1>
         <p>Tu cuaderno digital para la Formación Profesional de Castilla-La Mancha</p>
         <div class="quick-grid">
@@ -78,11 +91,8 @@
 
     <!-- ══ PROGRAMACIÓN ══ -->
     <section id="sec-programacion" style="display:none">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-        <div class="field" style="max-width:280px;margin:0">
-          <label>Módulo</label>
-          <select id="prog-mod-sel" onchange="loadProgramacion()"></select>
-        </div>
+      <div style="display:none">
+        <select id="prog-mod-sel" onchange="loadProgramacion()"></select>
       </div>
       <div id="prog-panel" style="color:var(--text2);padding:20px">Selecciona un módulo.</div>
     </section>
@@ -90,8 +100,7 @@
     <!-- ══ ALUMNOS ══ -->
     <section id="sec-alumnos" style="display:none">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-        <div class="field" style="max-width:240px;margin:0">
-          <label>Módulo</label>
+        <div style="display:none">
           <select id="alumnos-mod-sel" onchange="loadAlumnos()"></select>
         </div>
         <div style="display:flex;gap:8px">
@@ -106,11 +115,10 @@
               <th style="width:40px">Nº</th>
               <th class="th-editable">Apellidos</th>
               <th class="th-editable">Nombre</th>
-              <th class="th-editable">NIA/Exp.</th>
               <th class="th-editable">Email</th>
               <th>Estado</th><th style="width:60px"></th>
             </tr></thead>
-            <tbody id="alumnos-tbody"><tr><td colspan="7" style="color:var(--text2);text-align:center;padding:20px">Selecciona un módulo</td></tr></tbody>
+            <tbody id="alumnos-tbody"><tr><td colspan="6" style="color:var(--text2);text-align:center;padding:20px">Selecciona un módulo</td></tr></tbody>
 
           </table>
         </div>
@@ -137,8 +145,7 @@
     <!-- ══ NOTAS ══ -->
     <section id="sec-notas" style="display:none">
       <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:16px;flex-wrap:wrap">
-        <div class="field" style="max-width:220px;margin:0">
-          <label>Módulo</label>
+        <div style="display:none">
           <select id="notas-mod-sel" onchange="loadNotas()"></select>
         </div>
         <div class="field" style="max-width:160px;margin:0">
@@ -159,28 +166,23 @@
 
     <!-- ══ EVALUACIONES ══ -->
     <section id="sec-evaluaciones" style="display:none">
-      <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:16px">
-        <div class="field" style="max-width:220px;margin:0">
-          <label>Módulo</label>
-          <select id="eval-mod-sel" onchange="loadEvaluaciones()"></select>
-        </div>
+      <div style="display:none">
+        <select id="eval-mod-sel" onchange="loadEvaluaciones()"></select>
       </div>
       <div id="eval-content"><div style="color:var(--text2);padding:20px">Selecciona un módulo.</div></div>
     </section>
 
     <!-- ══ DASHBOARD ══ -->
     <section id="sec-dashboard" style="display:none">
-      <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:16px">
-        <div class="field" style="max-width:220px;margin:0">
-          <label>Módulo</label>
-          <select id="dash-mod-sel" onchange="loadDashboard()"></select>
-        </div>
+      <div style="display:none">
+        <select id="dash-mod-sel" onchange="loadDashboard()"></select>
       </div>
       <div id="dash-content"><div style="color:var(--text2);padding:20px">Selecciona un módulo.</div></div>
     </section>
 
     <!-- ══ ASISTENTE IA ══ -->
     <section id="sec-ia" style="display:none">
+      <div id="ia-python-status" class="card" style="margin-bottom:12px;font-size:12px;color:var(--text2)">Comprobando entorno de generación…</div>
       <div class="tabs">
         <div class="tab active" onclick="iaTab(this,'rubrica')">📋 Rúbrica</div>
         <div class="tab" onclick="iaTab(this,'actividad')">🔧 Actividades</div>
@@ -191,9 +193,9 @@
       <div id="ia-rubrica" class="card">
         <div class="card-title">Generar Rúbrica</div>
         <div class="form-row">
-          <div class="field"><label>Módulo</label><select id="ia-r-mod"><option value="iso_data">ISO</option><option value="par_data">PAR</option></select></div>
-          <div class="field"><label>RA</label><select id="ia-r-ra"><option>RA1</option><option>RA2</option><option>RA3</option><option>RA4</option><option>RA5</option><option>RA6</option><option>RA7</option><option>RA8</option></select></div>
-          <div class="field"><label>Proveedor</label><select id="ia-r-prov"><option value="auto">Auto</option><option value="openai">OpenAI</option><option value="claude">Claude</option><option value="demo">Demo</option></select></div>
+          <div class="field"><label>Módulo</label><select id="ia-r-mod"><option value="">Sin módulos</option></select></div>
+          <div class="field"><label>RA</label><select id="ia-r-ra"><option value="">—</option></select></div>
+          <div class="field"><label>Proveedor</label><select id="ia-r-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
           <button class="btn btn-primary" onclick="runIA('rubrica')">⚡ Generar</button>
         </div>
         <div id="ia-rubrica-term" class="terminal"><span class="placeholder">El resultado aparecerá aquí…</span></div>
@@ -201,10 +203,10 @@
       <div id="ia-actividad" class="card" style="display:none">
         <div class="card-title">Propuestas de Actividades</div>
         <div class="form-row">
-          <div class="field"><label>Módulo</label><select id="ia-a-mod"><option value="iso_data">ISO</option><option value="par_data">PAR</option></select></div>
-          <div class="field"><label>RA</label><select id="ia-a-ra"><option>RA1</option><option>RA2</option><option>RA3</option><option>RA4</option><option>RA5</option><option>RA6</option></select></div>
+          <div class="field"><label>Módulo</label><select id="ia-a-mod"><option value="">Sin módulos</option></select></div>
+          <div class="field"><label>RA</label><select id="ia-a-ra"><option value="">—</option></select></div>
           <div class="field" style="max-width:70px"><label>Núm.</label><input type="number" id="ia-a-n" value="3" min="1" max="10"/></div>
-          <div class="field"><label>Proveedor</label><select id="ia-a-prov"><option value="auto">Auto</option><option value="openai">OpenAI</option><option value="claude">Claude</option><option value="demo">Demo</option></select></div>
+          <div class="field"><label>Proveedor</label><select id="ia-a-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
           <button class="btn btn-primary" onclick="runIA('actividad')">⚡ Generar</button>
         </div>
         <div id="ia-actividad-term" class="terminal"><span class="placeholder">El resultado aparecerá aquí…</span></div>
@@ -212,12 +214,26 @@
       <div id="ia-informe" class="card" style="display:none">
         <div class="card-title">Informe Individual</div>
         <div class="form-row">
-          <div class="field" style="flex:2"><label>Alumno/a</label><input type="text" id="ia-i-alumno" placeholder="García López, Marta"/></div>
-          <div class="field"><label>Proveedor</label><select id="ia-i-prov"><option value="auto">Auto</option><option value="openai">OpenAI</option><option value="claude">Claude</option><option value="demo">Demo</option></select></div>
+          <div class="field"><label>Módulo</label><select id="ia-i-mod" onchange="iaInformeLoadAlumnos()"><option value="">Sin módulos</option></select></div>
+          <div class="field" style="flex:2"><label>Alumno/a</label><select id="ia-i-alumno-sel" onchange="iaInformeAutoNotas()"><option value="">— selecciona —</option></select></div>
+          <div class="field"><label>Proveedor</label><select id="ia-i-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
         </div>
         <div class="form-row">
-          <div class="field"><label>Notas (RA1:7, RA2:5.5…)</label><input type="text" id="ia-i-notas" placeholder="RA1:7,RA2:5.5,RA3:8"/></div>
+          <div class="field" style="flex:3">
+            <label>Notas por RA <span style="font-size:11px;color:var(--text3)">(auto-rellenadas desde la BD al elegir alumno)</span></label>
+            <input type="text" id="ia-i-notas" placeholder="RA1:7,RA2:5.5,RA3:8 — o edita manualmente"/>
+          </div>
           <button class="btn btn-primary" onclick="runIA('informe')">⚡ Generar</button>
+        </div>
+        <div style="margin-top:10px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:11px;color:var(--text2);line-height:1.45">
+          <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer">
+            <input type="checkbox" id="ia-i-consent" style="margin-top:2px"/>
+            <span>Entiendo que, al generar el informe, se enviarán las notas y, salvo anonimización, el nombre del alumno/a al proveedor IA seleccionado.</span>
+          </label>
+          <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer;margin-top:7px">
+            <input type="checkbox" id="ia-i-anonimizar" style="margin-top:2px"/>
+            <span>Anonimizar nombre (recomendado).</span>
+          </label>
         </div>
         <div id="ia-informe-term" class="terminal"><span class="placeholder">El resultado aparecerá aquí…</span></div>
       </div>
@@ -225,20 +241,20 @@
         <div class="card-title">Generar Apuntes HTML</div>
         <div class="card-sub">Crea un index.html por UT con contenido pedagógico completo. Guardado en Documentos/EvalFP/apuntes/</div>
         <div class="form-row">
-          <div class="field"><label>Módulo</label><select id="ia-ap-mod"><option value="iso_data">ISO</option><option value="par_data">PAR</option></select></div>
+          <div class="field"><label>Módulo</label><select id="ia-ap-mod"><option value="">Sin módulos</option></select></div>
           <div class="field"><label>UT (vacío = todas)</label><input type="text" id="ia-ap-ut" placeholder="UT1 (opcional)"/></div>
-          <div class="field"><label>Proveedor</label><select id="ia-ap-prov"><option value="auto">Auto</option><option value="openai">OpenAI</option><option value="claude">Claude</option><option value="demo">Demo</option></select></div>
+          <div class="field"><label>Proveedor</label><select id="ia-ap-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
           <button class="btn btn-primary" onclick="runApuntes()">⚡ Generar</button>
           <button class="btn btn-ghost" onclick="window.api.openOutput()">📂 Ver archivos</button>
         </div>
-        <div id="ia-apuntes-term" class="terminal"><span class="placeholder">El resultado aparecerá aquí…</span></div>
+        <div id="ia-apuntes-term" class="terminal-lg"><span class="placeholder">Pulsa ⚡ Generar para empezar. El proceso tarda varios minutos — aquí verás el progreso en tiempo real.</span></div>
       </div>
       <div id="ia-todo" class="card" style="display:none">
         <div class="card-title">Todo el módulo</div>
         <div class="card-sub">Genera rúbricas + actividades para todos los RAs y apuntes HTML para todas las UTs. Todo junto en Documentos/EvalFP/ia_output/</div>
         <div class="form-row">
-          <div class="field"><label>Módulo</label><select id="ia-t-mod"><option value="iso_data">ISO</option><option value="par_data">PAR</option></select></div>
-          <div class="field"><label>Proveedor</label><select id="ia-t-prov"><option value="auto">Auto</option><option value="openai">OpenAI</option><option value="claude">Claude</option><option value="demo">Demo</option></select></div>
+          <div class="field"><label>Módulo</label><select id="ia-t-mod"><option value="">Sin módulos</option></select></div>
+          <div class="field"><label>Proveedor</label><select id="ia-t-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
           <button class="btn btn-success" onclick="runIA('todo')">🚀 Generar todo</button>
           <button class="btn btn-ghost" onclick="window.api.openOutput()">📂 Ver archivos</button>
         </div>
@@ -250,10 +266,16 @@
     <section id="sec-ajustes" style="display:none">
       <div class="card">
         <div class="card-title">Claves de API</div>
-        <div class="card-sub">Se guardan localmente en tu ordenador. Nunca salen de él.</div>
+        <div class="card-sub">Se guardan de forma segura en tu ordenador. Nunca salen de él.</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-          <div class="field"><label>OpenAI API Key</label><input type="password" id="cfg-openai" placeholder="sk-…"/></div>
-          <div class="field"><label>Anthropic (Claude) API Key</label><input type="password" id="cfg-anthropic" placeholder="sk-ant-…"/></div>
+          <div class="field">
+            <label>OpenAI API Key <span id="cfg-openai-status" style="font-size:11px;margin-left:6px"></span></label>
+            <input type="password" id="cfg-openai" placeholder="sk-… (dejar vacío para no cambiar)"/>
+          </div>
+          <div class="field">
+            <label>Anthropic (Claude) API Key <span id="cfg-anthropic-status" style="font-size:11px;margin-left:6px"></span></label>
+            <input type="password" id="cfg-anthropic" placeholder="sk-ant-… (dejar vacío para no cambiar)"/>
+          </div>
         </div>
       </div>
       <div class="card">
@@ -268,6 +290,20 @@
           </select>
         </div>
       </div>
+      <div class="card">
+        <div class="card-title">🎨 Apariencia</div>
+        <label style="font-size:10.5px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:14px">Color de la barra lateral</label>
+        <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start">
+          <button onclick="setTheme('')" data-theme-id="" class="sb-swatch active" title="Cacao">
+            <span class="sw-body" style="background:#1C0F08"><span class="sw-dot" style="background:#F97316"></span></span>
+            <span class="sw-label">Cacao</span>
+          </button>
+          <button onclick="setTheme('light')" data-theme-id="light" class="sb-swatch" title="Claro">
+            <span class="sw-body" style="background:#f4eee0;outline:2px solid rgba(0,0,0,.1);outline-offset:0"><span class="sw-dot" style="background:#0D9488"></span></span>
+            <span class="sw-label">Claro</span>
+          </button>
+        </div>
+      </div>
       <div style="display:flex;gap:10px;align-items:center">
         <button class="btn btn-success" onclick="saveAjustes()">💾 Guardar</button>
         <span id="ajustes-ok" style="font-size:12px;color:var(--green)"></span>
@@ -280,8 +316,10 @@
 
 <!-- ═══ MODAL Añadir Módulo ═══ -->
 <!-- Modal asignar RAs/CEs a una UT -->
-<div class="modal-overlay" id="modal-ut-ras" onclick="if(event.target===this)closeUtRasModal()">
-  <div class="modal" style="max-width:620px;max-height:82vh;display:flex;flex-direction:column;gap:0">
+<dialog id="modal-ut-ras" aria-labelledby="ut-ras-title"
+        oncancel="closeUtRasModal()"
+        onclick="if(event.target===this)closeUtRasModal()">
+  <div class="modal" style="max-height:82vh;display:flex;flex-direction:column;gap:0">
     <div style="display:flex;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--border)">
       <span style="font-size:16px">🔗</span>
       <div>
@@ -295,31 +333,108 @@
       <button class="btn btn-primary" onclick="saveUtRas()">Guardar asignaciones</button>
     </div>
   </div>
-</div>
+</dialog>
 
-<div class="modal-overlay" id="modal-add-mod">
-  <div class="modal">
-    <div class="modal-title">Añadir módulo</div>
-    <div class="card-sub">Módulos disponibles según normativa DOCM Castilla-La Mancha</div>
-    <div class="field" style="margin-bottom:14px">
-      <label>Módulo</label>
-      <select id="add-mod-key" onchange="previewModulo()">
-        <option value="">— Selecciona un módulo —</option>
-      </select>
+<!-- Modal seleccionar UTs para una actividad de examen -->
+<dialog id="modal-act-uts" aria-labelledby="act-uts-title"
+        oncancel="closeActUtsModal()"
+        onclick="if(event.target===this)closeActUtsModal()">
+  <div class="modal" style="max-height:80vh;display:flex;flex-direction:column;gap:0">
+    <div style="display:flex;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+      <span style="font-size:16px">📋</span>
+      <div>
+        <div class="modal-title" id="act-uts-title" style="margin:0;padding:0;border:none"></div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">Selecciona las UTs que cubre este examen</div>
+      </div>
     </div>
-    <div id="add-mod-preview" style="background:var(--navy3);border-radius:8px;padding:12px;font-size:12px;color:var(--text2);margin-bottom:14px;min-height:50px">
-      Selecciona un módulo para ver sus datos.
-    </div>
-    <div class="field">
-      <label>Grupo / Clase</label>
-      <input type="text" id="add-mod-grupo" placeholder="Ej: 1º ASIR — Grupo A (opcional)" value="" style="opacity:0.6" onfocus="this.style.opacity='1'" onblur="this.style.opacity=this.value?'1':'0.6'"/>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-primary" onclick="confirmAddModulo()">Añadir módulo</button>
+    <div id="act-uts-body" style="overflow-y:auto;flex:1;padding:14px 0 4px"></div>
+    <div class="modal-footer" style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px">
+      <button class="btn btn-ghost" onclick="closeActUtsModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveActUts()">Guardar</button>
     </div>
   </div>
-</div>
+</dialog>
+
+<!-- Modal seleccionar CEs para una actividad -->
+<dialog id="modal-act-ces" aria-labelledby="act-ces-title"
+        oncancel="closeActCesModal()"
+        onclick="if(event.target===this)closeActCesModal()">
+  <div class="modal" style="max-height:80vh;display:flex;flex-direction:column;gap:0">
+    <div style="display:flex;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+      <span style="font-size:16px">🎯</span>
+      <div>
+        <div class="modal-title" id="act-ces-title" style="margin:0;padding:0;border:none"></div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">Criterios de evaluación que cubre esta actividad</div>
+      </div>
+    </div>
+    <div id="act-ces-body" style="overflow-y:auto;flex:1;padding:14px 0 4px"></div>
+    <div class="modal-footer" style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px">
+      <button class="btn btn-ghost" onclick="closeActCesModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveActCes()">Guardar</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Dialog nativo: tiene focus trap, Escape integrado, y es accesible por defecto -->
+<!-- ══ MODAL CATÁLOGO DE MÓDULOS ══ -->
+<dialog id="modal-add-mod" class="cat-dialog" aria-labelledby="cat-title">
+  <div class="cat-layout">
+
+    <!-- Cabecera -->
+    <div class="cat-header">
+      <div>
+        <div class="modal-title" id="cat-title" style="margin:0 0 2px">Catálogo de módulos</div>
+        <div style="font-size:11px;color:var(--text2)">Normativa DOCM Castilla-La Mancha · <span id="cat-count">—</span> módulos disponibles</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input id="cat-search" type="search" placeholder="🔍 Buscar módulo…"
+          oninput="filterCatalogo()"
+          style="width:200px;padding:6px 10px;border-radius:8px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-size:12px"/>
+        <button class="btn btn-ghost btn-sm" onclick="closeModal()">✕ Cerrar</button>
+      </div>
+    </div>
+
+    <div class="cat-body">
+
+      <!-- Nav izquierdo: familias y ciclos -->
+      <nav class="cat-nav" id="cat-nav">
+        <div class="cat-fam-label">🖥 Informática y Comunicaciones</div>
+        <div class="cat-ciclo-item active" data-clave="CFGB"     onclick="selectCatCiclo(this)">CFGB · Informática de Oficina</div>
+        <div class="cat-ciclo-item"        data-clave="SMR"      onclick="selectCatCiclo(this)">CFGM · SMR</div>
+        <div class="cat-ciclo-item"        data-clave="ASIR"     onclick="selectCatCiclo(this)">CFGS · ASIR</div>
+        <div class="cat-ciclo-item"        data-clave="DAM"      onclick="selectCatCiclo(this)">CFGS · DAM</div>
+        <div class="cat-ciclo-item"        data-clave="DAW"      onclick="selectCatCiclo(this)">CFGS · DAW</div>
+        <div class="cat-ciclo-item"        data-clave="CE_CIBER" onclick="selectCatCiclo(this)">CE · Ciberseguridad</div>
+        <div class="cat-ciclo-item"        data-clave="CE_IABD"  onclick="selectCatCiclo(this)">CE · IA y Big Data</div>
+        <div class="cat-ciclo-item"        data-clave="CE_PYTHON"onclick="selectCatCiclo(this)">CE · Python</div>
+        <div class="cat-fam-label" style="margin-top:12px">📋 Administración y Gestión</div>
+        <div class="cat-ciclo-item"        data-clave="SA"       onclick="selectCatCiclo(this)">CFGB · SA</div>
+        <div class="cat-ciclo-item"        data-clave="GA"       onclick="selectCatCiclo(this)">CFGM · GA</div>
+        <div class="cat-ciclo-item"        data-clave="AF"       onclick="selectCatCiclo(this)">CFGS · AF</div>
+        <div class="cat-ciclo-item"        data-clave="AD"       onclick="selectCatCiclo(this)">CFGS · AD</div>
+      </nav>
+
+      <!-- Grid de tarjetas -->
+      <div class="cat-cards-wrap">
+        <div class="cat-ciclo-title" id="cat-ciclo-title">CFGB — Informática de Oficina</div>
+        <div class="cat-cards" id="cat-cards"></div>
+      </div>
+
+    </div>
+
+    <!-- Barra inferior: módulo seleccionado + acción -->
+    <div class="cat-footer" id="cat-footer" style="display:none">
+      <div class="cat-sel-info" id="cat-sel-info"></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="text" id="add-mod-grupo"
+          placeholder="Grupo / Clase (opcional)"
+          style="width:210px;padding:6px 10px;border-radius:8px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-size:12px"/>
+        <button class="btn btn-primary btn-sm" onclick="confirmAddModulo()">＋ Añadir módulo</button>
+      </div>
+    </div>
+
+  </div>
+</dialog>
 
 <script src="js/app.js"></script>
 </body>

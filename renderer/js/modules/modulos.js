@@ -4,13 +4,13 @@ async function renderModulos() {
   _modulos = await window.api.getModulos()
   const el = document.getElementById('mod-cards-list')
   if (!_modulos.length) {
-    el.innerHTML = '<div style="color:var(--text2);padding:20px;grid-column:1/-1">No hay módulos. Añade uno para empezar.</div>'
-    document.getElementById('mod-badge').style.display = 'none'
+    el.innerHTML = '<div style="color:var(--text2);padding:28px 20px;grid-column:1/-1;text-align:center"><p style="margin-bottom:14px">No hay módulos. Añade uno para empezar.</p><button class="btn btn-primary" onclick="openAddModulo()">+ Añadir primer módulo</button></div>'
+    updateModBadge()
     return
   }
   el.innerHTML = _modulos.map(m => `
     <div class="mod-card ${_curMod?.id===m.id?'active-mod':''}" onclick="selectMod(${m.id})">
-      <button class="mod-card-del" onclick="event.stopPropagation();delModulo(${m.id})" title="Eliminar">✕</button>
+      <button class="mod-card-del" onclick="event.stopPropagation();delModulo(${m.id})" title="Eliminar" aria-label="Eliminar módulo">✕</button>
       <div class="mod-card-abrev">${esc(m.abrev)}</div>
       <div class="mod-card-nombre">${esc(m.nombre)}</div>
       <div class="mod-card-meta">
@@ -20,26 +20,33 @@ async function renderModulos() {
       </div>
     </div>
   `).join('')
-  // Actualizar badge sidebar
-  if (_curMod) {
-    updateModBadge()
-  }
+  updateModBadge()
 }
 
 function selectMod(id) {
   _curMod = _modulos.find(m => m.id === id)
   updateModBadge()
-  renderModulos()
-  renderModRasPanel(_curMod)
   closeModDropdown()
+  // Recargar la sección activa con el nuevo módulo
+  const activeNav = document.querySelector('.nav-item.active')
+  const sec = activeNav?.dataset?.sec
+  if (sec) goSection(sec)
+  else { renderModulos(); renderModRasPanel(_curMod) }
 }
 
 // ── Dropdown sidebar ────────────────────────────────────────────
 function updateModBadge() {
-  // Badge oculto por diseño — solo actualizamos el nombre interno para que el JS no rompa
+  const nameEl = document.getElementById('mod-badge-name')
+  const subEl  = document.getElementById('mod-badge-sub')
   if (_curMod) {
-    document.getElementById('mod-badge-name').textContent =
-      _curMod.abrev + ' · ' + (_curMod.curso || '') + (_curMod.grupo ? ' · ' + _curMod.grupo : '')
+    if (nameEl) nameEl.textContent = _curMod.abrev
+    if (subEl) {
+      const parts = [_curMod.nombre, _curMod.curso, _curMod.grupo].filter(Boolean)
+      subEl.textContent = parts.join(' · ')
+    }
+  } else {
+    if (nameEl) nameEl.textContent = 'Sin módulo'
+    if (subEl) subEl.textContent = 'Toca para añadir'
   }
 }
 
@@ -113,73 +120,124 @@ async function delModulo(id) {
   renderModRasPanel(_curMod)
 }
 
-// ── Modal añadir módulo ──
+// ── Catálogo de módulos ──────────────────────────────────────────
+
+const CAT_CICLO_LABELS = {
+  'CFGB':      'CFGB — Informática de Oficina',
+  'SMR':       'CFGM — Sistemas Microinformáticos y Redes',
+  'ASIR':      'CFGS — Administración de Sistemas Informáticos en Red',
+  'DAM':       'CFGS — Desarrollo de Aplicaciones Multiplataforma',
+  'DAW':       'CFGS — Desarrollo de Aplicaciones Web',
+  'CE_CIBER':  'CE — Ciberseguridad en Entornos de las TI',
+  'CE_IABD':   'CE — Inteligencia Artificial y Big Data',
+  'CE_PYTHON': 'CE — Desarrollo de Aplicaciones en Python',
+  'SA':        'CFGB — Servicios Administrativos',
+  'GA':        'CFGM — Gestión Administrativa',
+  'AF':        'CFGS — Administración y Finanzas',
+  'AD':        'CFGS — Asistencia a la Dirección',
+}
+
+let _catCicloActual = 'CFGB'
+let _catSearch = ''
+let _catSelectedKey = null
 
 async function openAddModulo() {
   _modsDisponibles = await window.api.listModulosDisponibles()
-  const sel = document.getElementById('add-mod-key')
-
-  // Agrupar por ciclo_clave
-  const CICLO_LABELS = {
-    'CFGB':     'CFGB — Informática de Oficina',
-    'SMR':      'CFGM — Sistemas Microinformáticos y Redes (SMR)',
-    'ASIR':     'CFGS — Administración de Sistemas Informáticos en Red (ASIR)',
-    'DAM':      'CFGS — Desarrollo de Aplicaciones Multiplataforma (DAM)',
-    'DAW':      'CFGS — Desarrollo de Aplicaciones Web (DAW)',
-    'CE_CIBER': 'CE — Ciberseguridad en Entornos de las TI',
-    'CE_IABD':   'CE — Inteligencia Artificial y Big Data',
-    'CE_PYTHON': 'CE — Desarrollo de Aplicaciones en Python',
-    'OTRO':     'Otros módulos',
-  }
-  const grupos = {}
-  for (const m of _modsDisponibles) {
-    const clave = m.ciclo_clave || 'OTRO'
-    if (!grupos[clave]) grupos[clave] = []
-    grupos[clave].push(m)
-  }
-  const orden = ['CFGB','SMR','ASIR','DAM','DAW','CE_CIBER','CE_IABD','CE_PYTHON','OTRO']
-  let html = '<option value="">— Selecciona un módulo —</option>'
-  for (const clave of orden) {
-    if (!grupos[clave]) continue
-    const label = CICLO_LABELS[clave] || clave
-    html += `<optgroup label="${label}">`
-    for (const m of grupos[clave]) {
-      html += `<option value="${m.key}">${m.abrev} — ${m.nombre}${m.curso ? ' ('+m.curso+')' : ''}</option>`
-    }
-    html += '</optgroup>'
-  }
-  sel.innerHTML = html
-
-  document.getElementById('add-mod-preview').textContent = 'Selecciona un módulo para ver sus datos.'
-  document.getElementById('add-mod-grupo').value = ''
-  document.getElementById('add-mod-grupo').style.opacity = '0.6'
   _modData = null
-  document.getElementById('modal-add-mod').classList.add('open')
+  _catSelectedKey = null
+  document.getElementById('add-mod-grupo').value = ''
+  document.getElementById('cat-footer').style.display = 'none'
+  document.getElementById('cat-count').textContent = _modsDisponibles.length
+  document.getElementById('cat-search').value = ''
+  _catSearch = ''
+  // Activar primer ciclo con módulos disponibles
+  selectCatCiclo(document.querySelector('.cat-ciclo-item.active') ||
+                 document.querySelector('.cat-ciclo-item'))
+  document.getElementById('modal-add-mod').showModal()
 }
 
-async function previewModulo() {
-   const key = document.getElementById('add-mod-key').value
-   if (!key) { _modData = null; return }
-   document.getElementById('add-mod-preview').textContent = 'Cargando datos normativos…'
-   try {
-     _modData = await window.api.getModuloData(key)
-     const m = _modData.modulo
-     const horas = m.total_horas || m.horas || '?'
-     document.getElementById('add-mod-preview').innerHTML =
-       `<b style="color:var(--ice)">${esc(m.abrev)} — ${esc(m.nombre)}</b><br>
-       ${[esc(m.ciclo), esc(m.curso), esc(m.anno)].filter(Boolean).join(' · ')}<br>
-       ${esc(String(horas))}h · ${_modData.ras.length} RAs · ${_modData.uts.length} UTs · ${_modData.actividades.length} actividades`
-     if (m.decreto) document.getElementById('add-mod-preview').innerHTML +=
-       `<br><span style="color:var(--accent2)">${esc(m.decreto)}</span>`
-   } catch(e) {
-     document.getElementById('add-mod-preview').textContent = '⚠️ Error cargando módulo: ' + e.message
-     _modData = null
-   }
+function selectCatCiclo(el) {
+  document.querySelectorAll('.cat-ciclo-item').forEach(i => i.classList.remove('active'))
+  if (!el) return
+  el.classList.add('active')
+  _catCicloActual = el.dataset.clave
+  _catSearch = ''
+  document.getElementById('cat-search').value = ''
+  renderCatCards()
+}
+
+function filterCatalogo() {
+  _catSearch = document.getElementById('cat-search').value.toLowerCase().trim()
+  renderCatCards()
+}
+
+function renderCatCards() {
+  const addedKeys = new Set(_modulos.map(m => m.key))
+  let lista = _modsDisponibles
+
+  if (_catSearch) {
+    // Búsqueda global: ignorar ciclo seleccionado
+    lista = lista.filter(m =>
+      m.nombre.toLowerCase().includes(_catSearch) ||
+      m.abrev.toLowerCase().includes(_catSearch) ||
+      (m.ciclo||'').toLowerCase().includes(_catSearch))
+  } else {
+    lista = lista.filter(m => m.ciclo_clave === _catCicloActual)
+  }
+
+  const label = _catSearch
+    ? `Resultados para "${_catSearch}"`
+    : (CAT_CICLO_LABELS[_catCicloActual] || _catCicloActual)
+  document.getElementById('cat-ciclo-title').textContent = label
+
+  const cards = document.getElementById('cat-cards')
+  if (!lista.length) {
+    cards.innerHTML = '<div style="color:var(--text2);font-size:13px;padding:20px 0">No hay módulos.</div>'
+    return
+  }
+
+  cards.innerHTML = lista.map(m => {
+    const added = addedKeys.has(m.key)
+    const sel   = _catSelectedKey === m.key
+    const horas = m.total_horas || m.horas || ''
+    const nRas  = m.n_ras || ''
+    return `
+    <div class="cat-card ${added?'already-added':''} ${sel?'selected':''}"
+         onclick="${added?'':` selectCatCard('${m.key}')`}">
+      <div class="cat-card-abrev">${esc(m.abrev)}</div>
+      <div class="cat-card-nombre">${esc(m.nombre)}</div>
+      <div class="cat-card-meta">
+        ${horas ? `<span class="cat-card-pill">${esc(String(horas))}h</span>` : ''}
+        ${nRas  ? `<span class="cat-card-pill">${esc(String(nRas))} RA</span>` : ''}
+        ${m.curso ? `<span class="cat-card-pill">${esc(m.curso)}</span>` : ''}
+      </div>
+    </div>`
+  }).join('')
+}
+
+async function selectCatCard(key) {
+  const m_idx = _modsDisponibles.find(m => m.key === key)
+  if (!m_idx) return
+  try {
+    _catSelectedKey = key
+    _modData = await window.api.getModuloData(key)
+    const m = _modData.modulo
+    const horas = m.total_horas || m.horas || '?'
+    const info = document.getElementById('cat-sel-info')
+    info.innerHTML = `
+      <b>${esc(m.abrev)}</b> — ${esc(m.nombre)}
+      <span style="color:var(--text2);margin-left:10px">${esc(m.ciclo||'')} · ${esc(String(horas))}h · ${_modData.ras.length} RAs</span>`
+    document.getElementById('cat-footer').style.display = 'flex'
+    renderCatCards()   // re-render to show selected state
+  } catch(e) {
+    alert('Error cargando módulo: ' + e.message)
+    _modData = null
+  }
 }
 
 async function confirmAddModulo() {
-  if (!_modData) return alert('Selecciona un módulo primero.')
-  const key = document.getElementById('add-mod-key').value
+  if (!_modData || !_catSelectedKey) return alert('Selecciona un módulo primero.')
+  const key = _catSelectedKey
   // Comprobar si ya existe
   if (_modulos.find(m => m.key === key)) {
     return alert(`El módulo "${key.replace('_data','').toUpperCase()}" ya está añadido.\nPara cambiar el grupo, elimínalo y vuelve a añadirlo.`)
@@ -210,5 +268,6 @@ async function confirmAddModulo() {
 }
 
 function closeModal() {
-  document.getElementById('modal-add-mod').classList.remove('open')
+  const dlg = document.getElementById('modal-add-mod')
+  if (dlg.open) dlg.close()
 }

@@ -1,22 +1,24 @@
 'use strict'
 const { app, BrowserWindow, ipcMain, shell } = require('electron')
 const path   = require('path')
-const { spawn } = require('child_process')
+const { spawn, spawnSync } = require('child_process')
 const fs     = require('fs')
 const os     = require('os')
-const Database = require('better-sqlite3')
 const schedule = require('node-schedule')
 const logger = require('./main/logger')
 const keytarSafe = require('./main/keytar-safe')
+const db = require('./db')
+
+// Los tests E2E nunca deben usar la base de datos real del profesor.
+if (process.env.EVALFP_TEST === '1') {
+  app.setPath('userData', path.join(os.tmpdir(), `evalfp-test-${process.pid}`))
+}
 
 // ── Initialize Keytar (Safe Mode) ──────────────────────────────────────────
 // Keytar is optional. Initialize it but don't crash if unavailable.
-let keytarReady = false
-
 async function initializeKeytar() {
   try {
     const success = await keytarSafe.initialize()
-    keytarReady = success
     logger.logEvent('KEYTAR_INIT_COMPLETE', { 
       status: success ? 'available' : 'unavailable',
       mode: success ? 'native' : 'database_fallback'
@@ -24,25 +26,25 @@ async function initializeKeytar() {
     return success
   } catch (err) {
     logger.logEvent('KEYTAR_INIT_ERROR', { message: err.message })
-    keytarReady = false
     return false
   }
 }
 
-// Don't await here - let it initialize async
-initializeKeytar().catch(err => {
+const keytarInitialization = initializeKeytar().catch(err => {
   logger.logError('Failed to initialize keytar', err)
+  return false
 })
 
 // ── Rutas ─────────────────────────────────────────────────────────────────────
 const scriptsDir = () => app.isPackaged
   ? path.join(process.resourcesPath, 'scripts')
-  : path.join(__dirname, '..', 'scripts')
+  : path.join(__dirname, 'scripts')
 
 // JSON pre-horneado con todos los módulos (generado por prebake_modules.py)
 const modulesDataPath = () => path.join(__dirname, 'renderer', 'modules_data.json')
 
 const outputDir = () => path.join(os.homedir(), 'Documents', 'EvalFP')
+const materialDir = () => path.join(outputDir(), 'Material IA')
 const python    = () => process.platform === 'win32' ? 'python' : 'python3'
 
 // ── Secure API Key Storage with keytar (or database fallback) ──────────────────────
@@ -64,26 +66,12 @@ async function loadApiKeysFromSecureStorage() {
       }
     }
     
-    // Always try database as fallback (or if keytar not available)
+    // No se almacenan claves en SQLite: un fichero local no ofrece el nivel de
+    // protección del llavero del sistema operativo.
     if (!openaiKey || !anthropicKey) {
-      logger.logEvent('LOADING_API_KEYS_FROM_DATABASE', { 
-        hasKeytar: keytarSafe.isAvailable(),
-        source: 'database'
+      logger.logEvent('API_KEYS_NOT_AVAILABLE', {
+        hasKeytar: keytarSafe.isAvailable()
       })
-      try {
-        const db = new Database(dbPath())
-        const cfg = db.prepare('SELECT openaiKey, anthropicKey FROM cfg LIMIT 1').get()
-        if (cfg) {
-          if (!openaiKey) openaiKey = cfg.openaiKey || ''
-          if (!anthropicKey) anthropicKey = cfg.anthropicKey || ''
-          logger.logEvent('API_KEYS_LOADED_FROM_DATABASE_SUCCESS', { 
-            hasOpenAI: !!openaiKey, 
-            hasAnthropic: !!anthropicKey 
-          })
-        }
-      } catch (dbErr) {
-        logger.logError('Failed to load API keys from database', dbErr)
-      }
     }
     
     if (openaiKey) process.env.OPENAI_API_KEY = openaiKey
@@ -99,9 +87,48 @@ async function loadApiKeysFromSecureStorage() {
   }
 }
 
+const SENSITIVE_CONFIG_KEYS = new Set(['openaiKey', 'anthropicKey'])
+const SAFE_CONFIG_KEY = /^(proveedor|theme|sidebarWidth|minexam_\d+|pardones_\d+|rec2notas_\d+|recmigra_avisado_\d+)$/
+const PROVIDERS = new Set(['auto', 'claude', 'openai', 'demo'])
+
+function assertSafeConfigKey(key) {
+  if (typeof key !== 'string' || !SAFE_CONFIG_KEY.test(key)) throw new Error('Clave de configuración no permitida')
+}
+
+function assertTrustedSender(event) {
+  const url = event.senderFrame?.url || ''
+  if (!url.startsWith('file:')) throw new Error('Origen IPC no permitido')
+}
+
+async function migrateLegacyApiKeys() {
+  for (const [configKey, account] of [['openaiKey', 'openai_api_key'], ['anthropicKey', 'anthropic_api_key']]) {
+    const legacyKey = db.getConfig(configKey)
+    if (!legacyKey) continue
+    if (keytarSafe.isAvailable()) {
+      const stored = await keytarSafe.getPassword('EvalFP', account)
+      if (!stored) await keytarSafe.setPassword('EvalFP', account, legacyKey)
+      db.deleteConfig(configKey)
+      logger.logEvent('LEGACY_API_KEY_MIGRATED', { key: configKey })
+    } else {
+      // No conservar secretos sin cifrar: se pedirá introducirlos de nuevo cuando
+      // el llavero del sistema esté disponible.
+      db.deleteConfig(configKey)
+      logger.logEvent('LEGACY_API_KEY_REMOVED', { key: configKey })
+    }
+  }
+}
+
+async function getPublicConfig() {
+  const config = db.getAllConfig()
+  for (const key of SENSITIVE_CONFIG_KEYS) delete config[key]
+  config.hasOpenAI = keytarSafe.isAvailable() && !!await keytarSafe.getPassword('EvalFP', 'openai_api_key')
+  config.hasAnthropic = keytarSafe.isAvailable() && !!await keytarSafe.getPassword('EvalFP', 'anthropic_api_key')
+  return config
+}
+
 // ── Automatic Database Backups ────────────────────────────────────────────────
-const backupsDir = () => path.join(os.homedir(), 'Documents', 'EvalFP', 'backups')
-const dbPath = () => path.join(os.homedir(), 'Documents', 'EvalFP', 'evalfp.db')
+const backupsDir = () => path.join(app.getPath('userData'), 'backups')
+const dbPath = () => path.join(app.getPath('userData'), 'evalfp.db')
 
 function setupBackups() {
   try {
@@ -138,12 +165,10 @@ function setupBackups() {
 
 async function performBackup() {
   try {
-    const src = dbPath()
     const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-')
     const dest = path.join(backupsDir(), `evalfp_${timestamp}.db`)
-    
-    // Hacer copia del archivo
-    fs.copyFileSync(src, dest)
+
+    db.backupTo(dest)
     logger.info('Backup created', { filename: path.basename(dest) })
     return dest
   } catch (e) {
@@ -202,18 +227,31 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
+      sandbox: true,
     },
   })
   win.loadFile(path.join(__dirname, 'renderer', 'index.html'))
 }
 
 app.whenReady().then(async () => {
+  await keytarInitialization
+  await migrateLegacyApiKeys()
   await loadApiKeysFromSecureStorage()
   setupBackups()
   createWindow()
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow() })
 })
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit() })
+
+let isQuitting = false
+app.on('before-quit', event => {
+  if (isQuitting) return
+  event.preventDefault()
+  isQuitting = true
+  performBackup()
+    .catch(err => logger.logError('Final backup failed', err))
+    .finally(() => app.quit())
+})
 
 // ── Helper Python ─────────────────────────────────────────────────────────────
 function runPython(event, scriptName, args, replyChannel) {
@@ -238,9 +276,7 @@ function runPythonSync(scriptName, args) {
 }
 
 // ── IPC: Módulos ──────────────────────────────────────────────────────────────
-const db = require('./db')
-
-ipcMain.handle('db:getModulos', () => db.getModulos())
+ipcMain.handle('db:getModulos', event => { assertTrustedSender(event); return db.getModulos() })
 
 ipcMain.handle('db:listModulosDisponibles', () => {
   return getModulesData().index
@@ -256,8 +292,15 @@ ipcMain.handle('db:addModulo', (_, payload) => db.addModulo(payload))
 ipcMain.handle('db:deleteModulo', (_, id) => db.deleteModulo(id))
 
 // ── IPC: API Keys (Secure Storage with Fallback) ────────────────────────────
-ipcMain.handle('api:saveKeys', async (_, keys) => {
+ipcMain.handle('api:saveKeys', async (event, keys) => {
   try {
+    assertTrustedSender(event)
+    if (!keys || typeof keys !== 'object') throw new Error('Claves inválidas')
+    for (const key of [keys.openai, keys.anthropic]) {
+      if (key !== undefined && (typeof key !== 'string' || key.length < 10 || key.length > 500)) {
+        throw new Error('Formato de clave inválido')
+      }
+    }
     let saved = false
     
     // Try keytar first if available
@@ -279,33 +322,17 @@ ipcMain.handle('api:saveKeys', async (_, keys) => {
       }
     }
     
-    // Save to database as backup or primary storage
     if (!saved) {
-      logger.logEvent('SAVING_API_KEYS_TO_DATABASE', { 
-        keytar_available: keytarSafe.isAvailable(),
-        source: 'database'
-      })
-      try {
-        const db = new Database(dbPath())
-        if (keys.openai) {
-          db.prepare('UPDATE cfg SET openaiKey = ?').run(keys.openai)
-          process.env.OPENAI_API_KEY = keys.openai
-        }
-        if (keys.anthropic) {
-          db.prepare('UPDATE cfg SET anthropicKey = ?').run(keys.anthropic)
-          process.env.ANTHROPIC_API_KEY = keys.anthropic
-        }
-        logger.logEvent('API_KEYS_SAVED_TO_DATABASE', { success: true })
-        saved = true
-      } catch (dbErr) {
-        logger.logError('Failed to save API keys to database', dbErr)
+      return {
+        success: false,
+        error: 'El almacenamiento seguro del sistema no está disponible. No se guardarán claves en texto plano.'
       }
     }
     
     return { 
       success: saved, 
       message: saved 
-        ? (keytarSafe.isAvailable() ? 'Keys saved securely' : 'Keys saved to database')
+        ? 'Keys saved securely'
         : 'Failed to save keys'
     }
   } catch (e) {
@@ -327,6 +354,7 @@ ipcMain.handle('db:deleteActividad',  (_, id)   => db.deleteActividad(id))
 // ── IPC: Notas ────────────────────────────────────────────────────────────────
 ipcMain.handle('db:getNotasGrid',  (_, mid)             => db.getNotasGrid(mid))
 ipcMain.handle('db:saveNota',      (_, aid, actId, nota) => db.saveNota(aid, actId, nota))
+ipcMain.handle('db:saveNotaRec',   (_, aid, actId, nota) => db.saveNotaRec(aid, actId, nota))
 
 // ── IPC: Ponderaciones RA ─────────────────────────────────────────────────────
 ipcMain.handle('db:getRaPonderaciones',  (_, mid)             => db.getRaPonderaciones(mid))
@@ -334,15 +362,31 @@ ipcMain.handle('db:setRaPonderacion',    (_, mid, raId, pond) => db.setRaPondera
 ipcMain.handle('db:setModuloDataJson',   (_, id, data)        => db.setModuloDataJson(id, data))
 
 // ── IPC: Config ───────────────────────────────────────────────────────────────
-ipcMain.handle('db:getAllConfig', ()      => db.getAllConfig())
-ipcMain.handle('db:setConfig',   (_, k, v) => {
+ipcMain.handle('db:getAllConfig', async event => {
+  assertTrustedSender(event)
+  return getPublicConfig()
+})
+ipcMain.handle('db:setConfig',   (event, k, v) => {
+  assertTrustedSender(event)
+  assertSafeConfigKey(k)
+  if (typeof v !== 'string' || v.length > 60000) throw new Error('Valor de configuración inválido')
   db.setConfig(k, v)
-  if (k === 'openaiKey')    process.env.OPENAI_API_KEY    = v
-  if (k === 'anthropicKey') process.env.ANTHROPIC_API_KEY = v
+})
+
+ipcMain.handle('system:pythonStatus', event => {
+  assertTrustedSender(event)
+  const result = spawnSync(python(), ['--version'], { encoding: 'utf8', timeout: 5_000 })
+  return { available: !result.error && result.status === 0, version: (result.stdout || result.stderr || '').trim() }
 })
 
 // ── IPC: IA + Apuntes ─────────────────────────────────────────────────────────
-ipcMain.on('gen-ia', (event, { comando, modulo, ra, n, alumno, notas, proveedor }) => {
+ipcMain.on('gen-ia', (event, { comando, modulo, ra, n, alumno, notas, proveedor, consent, anonimizar }) => {
+  assertTrustedSender(event)
+  if (!['rubrica', 'actividad', 'informe', 'todo'].includes(comando)) throw new Error('Comando IA no permitido')
+  if (typeof modulo !== 'string' || !getModulesData().modules[modulo]) throw new Error('Módulo IA no válido')
+  if (!PROVIDERS.has(proveedor || 'auto')) throw new Error('Proveedor IA no válido')
+  if (comando === 'informe' && consent !== true) throw new Error('Debes confirmar el envío de datos académicos')
+  if (n != null && (!Number.isInteger(Number(n)) || Number(n) < 1 || Number(n) > 10)) throw new Error('Número de actividades no válido')
   const od = outputDir()
   const salida = path.join(od, 'ia_output', modulo || 'modulo')
   fs.mkdirSync(salida, { recursive: true })
@@ -350,7 +394,7 @@ ipcMain.on('gen-ia', (event, { comando, modulo, ra, n, alumno, notas, proveedor 
   if (modulo)    args.push('--modulo', modulo)
   if (ra)        args.push('--ra', ra)
   if (n)         args.push('--n', String(n))
-  if (alumno)    args.push('--alumno', alumno)
+  if (alumno)    args.push('--alumno', anonimizar ? 'Alumno/a' : alumno)
   if (notas)     args.push('--notas', notas)
   if (proveedor) args.push('--proveedor', proveedor)
   if (comando === 'todo') args.push('--salida', salida)
@@ -358,6 +402,10 @@ ipcMain.on('gen-ia', (event, { comando, modulo, ra, n, alumno, notas, proveedor 
 })
 
 ipcMain.on('gen-apuntes', (event, { modulo, ut, proveedor }) => {
+  assertTrustedSender(event)
+  if (typeof modulo !== 'string' || !getModulesData().modules[modulo]) throw new Error('Módulo de apuntes no válido')
+  if (!PROVIDERS.has(proveedor || 'auto')) throw new Error('Proveedor IA no válido')
+  if (ut != null && (typeof ut !== 'string' || ut.length > 30 || !/^[A-Za-z0-9_-]+$/.test(ut))) throw new Error('UT no válida')
   const salida = path.join(outputDir(), 'apuntes')
   fs.mkdirSync(salida, { recursive: true })
   const args = ['--salida', salida]
@@ -368,6 +416,10 @@ ipcMain.on('gen-apuntes', (event, { modulo, ut, proveedor }) => {
 })
 
 ipcMain.on('open-output', () => shell.openPath(outputDir()))
+ipcMain.on('open-material', () => {
+  fs.mkdirSync(materialDir(), { recursive: true })
+  shell.openPath(materialDir())
+})
 
 // ── IPC: PDF Boletín ──────────────────────────────────────────────────────────
 ipcMain.handle('pdf:exportBoletin', async (_, htmlContent, alumnoNombre) => {

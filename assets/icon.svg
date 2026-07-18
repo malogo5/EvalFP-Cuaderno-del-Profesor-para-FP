@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title">
+  <title id="title">EvalFP</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#173a70"/>
+      <stop offset="1" stop-color="#0b1e3e"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4fd1c5"/>
+      <stop offset="1" stop-color="#72e0b4"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="210" fill="url(#background)"/>
+  <path d="M230 216h340c132 0 224 74 224 194v372H454c-123 0-224 56-224 126V216Z" fill="#f8fbff"/>
+  <path d="M794 216H454c-132 0-224 74-224 194v372h340c123 0 224 56 224 126V216Z" fill="#dcecff"/>
+  <path d="M512 361c-65 0-118 40-118 89v242c33-18 71-28 113-28h5V361Zm0 0c65 0 118 40 118 89v242c-33-18-71-28-113-28h-5V361Z" fill="url(#accent)"/>
+  <path d="M454 476h116M454 536h116M454 596h82" fill="none" stroke="#173a70" stroke-linecap="round" stroke-width="28"/>
+</svg>

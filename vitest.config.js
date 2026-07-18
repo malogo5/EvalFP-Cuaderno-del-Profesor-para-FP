@@ -9,5 +9,10 @@ export default defineConfig({
     setupFiles: ['./tests/unit/setup.js'],
     // Excluir tests E2E de Playwright — los ejecuta `npm run test:e2e`
     exclude: ['tests/e2e/**', 'node_modules/**'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov'],
+      include: ['db.js', 'renderer/js/modules/evaluaciones.js'],
+    },
   },
 })

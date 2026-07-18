@@ -31,6 +31,7 @@ async function launchApp() {
   })
   const page = await electronApp.firstWindow()
   await page.waitForSelector('.nav-item', { timeout: 15_000 })
+  await page.waitForFunction(() => typeof window.updateModBadge === 'function')
   // Los alert() nativos bloquean Electron bajo Playwright — neutralizarlos
   await page.evaluate(() => { window.alert = () => {} })
   return { electronApp, page }

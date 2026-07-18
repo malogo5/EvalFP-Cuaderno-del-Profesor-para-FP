@@ -3,7 +3,7 @@
 # build-mac.sh — Genera EvalFP.dmg (arm64 + x64) para macOS
 #
 # Uso:
-#   cd evalfp-app
+#   cd evalfp
 #   bash build-mac.sh
 #
 # Requisitos:
@@ -45,7 +45,7 @@ fi
 
 # ── 2. Pre-hornear módulos → renderer/modules_data.json ──────────────────────
 echo "🐍  Pre-horneando módulos Python → modules_data.json…"
-python3 ../scripts/prebake_modules.py
+python3 scripts/prebake_modules.py
 
 # ── 3. Limpiar dist anterior ──────────────────────────────────────────────────
 if [ -d "dist" ]; then
