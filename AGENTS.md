@@ -18,6 +18,9 @@ npm start              # arrancar la app en desarrollo
 npm run prebake        # regenerar datos de módulos antes de build
 npm run build:mac      # build macOS (incluye prebake)
 npm run build:win      # build Windows (incluye prebake)
+npm test               # tests unitarios (Vitest)
+npm run test:e2e       # tests end-to-end (Playwright)
+npm run lint           # ESLint
 pip install -r requirements.txt   # dependencias Python de scripts/
 ```
 

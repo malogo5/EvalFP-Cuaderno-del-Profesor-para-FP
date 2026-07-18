@@ -8,7 +8,13 @@
     "prebake": "python3 scripts/prebake_modules.py",
     "build:mac": "npm run prebake && electron-builder --mac",
     "build:win": "npm run prebake && electron-builder --win",
-    "build:all": "npm run prebake && electron-builder --mac --win"
+    "build:all": "npm run prebake && electron-builder --mac --win",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "build": {
     "appId": "com.evalfp.app",
@@ -87,7 +93,12 @@
   },
   "devDependencies": {
     "electron": "^42.5.1",
-    "electron-builder": "^26.15.3"
+    "electron-builder": "^26.15.3",
+    "@eslint/js": "^9.0.0",
+    "@playwright/test": "^1.44.0",
+    "globals": "^15.0.0",
+    "eslint": "^9.0.0",
+    "vitest": "^1.6.0"
   },
   "dependencies": {
     "node-schedule": "^2.1.1",
