@@ -16,6 +16,13 @@ function getDb() {
   _db = new DatabaseSync(dbPath)
   _db.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;')
   _initSchema()
+
+  // Migración: añade nota_rec a bases de datos creadas antes de esta versión
+  const cols = _db.prepare("PRAGMA table_info(notas)").all()
+  if (!cols.some(c => c.name === 'nota_rec')) {
+    _db.exec('ALTER TABLE notas ADD COLUMN nota_rec REAL')
+  }
+
   return _db
 }
 
@@ -77,6 +84,7 @@ function _initSchema() {
       alumno_id    INTEGER NOT NULL,
       actividad_id INTEGER NOT NULL,
       nota         REAL,
+      nota_rec     REAL,
       fecha        TEXT DEFAULT (date('now')),
       observaciones TEXT,
       UNIQUE (alumno_id, actividad_id),
@@ -181,7 +189,7 @@ function saveActividad(a) {
 // ── Notas ──────────────────────────────────────────────────────────────────────
 function getNotasGrid(moduloId) {
   return getDb().prepare(`
-    SELECT n.alumno_id, n.actividad_id, n.nota
+    SELECT n.alumno_id, n.actividad_id, n.nota, n.nota_rec
     FROM notas n
     JOIN alumnos al ON n.alumno_id = al.id
     WHERE al.modulo_id = ?
@@ -196,6 +204,27 @@ function saveNota(alumnoId, actividadId, nota) {
     ON CONFLICT (alumno_id, actividad_id)
     DO UPDATE SET nota=excluded.nota, fecha=date('now')
   `).run(alumnoId, actividadId, val)
+}
+
+// Nota de recuperación: se guarda aparte de la nota original, sin sobreescribirla.
+// Si la actividad todavía no tiene fila en `notas`, se crea con nota=NULL.
+function saveNotaRec(alumnoId, actividadId, notaRec) {
+  const val = notaRec === '' || notaRec === null ? null : parseFloat(notaRec)
+  getDb().prepare(`
+    INSERT INTO notas (alumno_id, actividad_id, nota_rec)
+    VALUES (?,?,?)
+    ON CONFLICT (alumno_id, actividad_id)
+    DO UPDATE SET nota_rec=excluded.nota_rec, fecha=date('now')
+  `).run(alumnoId, actividadId, val)
+}
+
+// Cierra la conexión activa y resetea el singleton — necesario para que los
+// tests puedan aislar cada caso con una base de datos limpia.
+function closeDb() {
+  if (_db) {
+    _db.close()
+    _db = null
+  }
 }
 
 // ── Ponderaciones de RAs ───────────────────────────────────────────────────────
@@ -225,7 +254,7 @@ module.exports = {
   getModulos, addModulo, deleteModulo, setModuloDataJson,
   getAlumnos, saveAlumno, deleteAlumno,
   getActividades, saveActividad, deleteActividad,
-  getNotasGrid, saveNota,
+  getNotasGrid, saveNota, saveNotaRec, closeDb,
   getRaPonderaciones, setRaPonderacion,
   getConfig, setConfig, getAllConfig,
 }
