@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "prebake": "python3 ../scripts/prebake_modules.py",
+    "prebake": "python3 scripts/prebake_modules.py",
     "build:mac": "npm run prebake && electron-builder --mac",
     "build:win": "npm run prebake && electron-builder --win",
     "build:all": "npm run prebake && electron-builder --mac --win"
