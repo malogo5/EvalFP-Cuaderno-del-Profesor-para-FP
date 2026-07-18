@@ -1,4 +1,49 @@
+# Node.js / npm / yarn
 node_modules/
+npm-debug.log
+yarn-error.log
+.npm/
+.yarn/
 dist/
+out/
+
+# Electron
+.DS_Store_MOVED
+*.swp
+.vscode-test/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+venv/
+.venv/
+
+# Excel / LibreOffice lock files
+src/.~lock.*.xlsx#
+src/~$*.xlsx
+*.~lock.*
+~$*
+
+# macOS
 .DS_Store
+**/.DS_Store
+
+# Outputs temporales
+*.tmp
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Database
+*.db
+*.db-journal
+
+# Logs
+logs/
 *.log
