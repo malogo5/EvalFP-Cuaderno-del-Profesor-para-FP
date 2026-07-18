@@ -39,8 +39,7 @@ function goSection(sec) {
   })
   SECS.forEach(s => document.getElementById('sec-'+s).style.display = s===sec ? '' : 'none')
   document.getElementById('topbar-title').textContent = TITLES[sec] || sec
-  document.getElementById('topbar-sub').textContent = _curMod
-    ? ([_curMod.abrev, _curMod.curso||null, _curMod.grupo].filter(Boolean).join(' · ')) : ''
+  document.getElementById('topbar-sub').textContent = ''
   // Cargar datos de la sección
   if (sec === 'modulos')      renderModulos().then(() => renderModRasPanel(_curMod))
   if (sec === 'programacion') initModSelect('prog-mod-sel', loadProgramacion)
@@ -48,6 +47,7 @@ function goSection(sec) {
   if (sec === 'notas')        initModSelect('notas-mod-sel',   loadNotas)
   if (sec === 'evaluaciones') initModSelect('eval-mod-sel',    loadEvaluaciones)
   if (sec === 'dashboard')    initModSelect('dash-mod-sel',    loadDashboard)
+  if (sec === 'ia')           initIaSection()
   if (sec === 'ajustes')      loadAjustes()
 }
 
@@ -57,8 +57,12 @@ function initModSelect(selId, cb) {
   sel.innerHTML = _modulos.length
     ? _modulos.map(m => `<option value="${m.id}">${[m.abrev, m.curso||null, m.grupo].filter(Boolean).join(' · ')}</option>`).join('')
     : '<option value="">Sin módulos</option>'
-  if (prev && _modulos.find(m => m.id == prev)) sel.value = prev
-  else if (_curMod) sel.value = _curMod.id
+  // El módulo activo del sidebar (_curMod) es la fuente de verdad: si el
+  // profesor cambia de módulo en el desplegable lateral, TODAS las secciones
+  // deben reflejarlo. (Antes `prev` tenía prioridad y las secciones ya
+  // visitadas se quedaban clavadas en el módulo anterior.)
+  if (_curMod && _modulos.find(m => m.id == _curMod.id)) sel.value = _curMod.id
+  else if (prev && _modulos.find(m => m.id == prev)) sel.value = prev
   cb()
 }
 
@@ -66,12 +70,17 @@ function initModSelect(selId, cb) {
 // Utils
 // ═══════════════════════════════════════════════════════════════
 const v   = id => { const e=document.getElementById(id); return e?e.value:'' }
-const esc = s  => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')
+const esc = s  => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
 
 // ═══════════════════════════════════════════════════════════════
 // Bootstrap
 // ═══════════════════════════════════════════════════════════════
 const MODULE_SCRIPTS = [
+  'js/utils/validators.js',
+  'js/utils/rate-limiter.js',
+  // csrf-token.js y session-manager.js eliminados: son utilidades web sin uso
+  // en una app Electron local sin servidor ni autenticación de usuarios.
+  // password-validator.js eliminado: la validación de API keys la hace validators.js.
   'js/modules/modulos.js',
   'js/modules/programacion.js',
   'js/modules/alumnos.js',
@@ -96,18 +105,20 @@ function registerWindowHandlers() {
   Object.assign(window, {
     go, goSection, initModSelect,
     renderModulos, selectMod, updateModBadge, renderModDropdown, toggleModDropdown, closeModDropdown,
-    renderModRasPanel, delModulo, openAddModulo, previewModulo, confirmAddModulo, closeModal,
+    renderModRasPanel, delModulo, openAddModulo, confirmAddModulo, closeModal,
+    selectCatCiclo, filterCatalogo, selectCatCard,
     loadProgramacion, updateRaPond, _refreshRaPondTotal, updateActividadPeso, updateActividadDesc,
     setEvalCount, addActividad, deleteActividadRow, _refreshPesoTotal, _getModData, _saveModData,
     saveUtField, addUt, deleteUt, openUtRasModal, _refreshUtHoras, _toggleRaSection, saveUtRas,
     closeUtRasModal, applyModuloPesos,
     loadAlumnos, renderAlumnosTable, updateAlumno, addAlumno, importAlumnos, confirmImportAlumnos, removeAlumno,
-    loadNotas, renderNotasGrid, onNotaChange, colorNota,
-    loadEvaluaciones,
-    loadDashboard, genBoletin,
-    iaTab, termAppend, runIA, runApuntes,
-    loadAjustes, saveAjustes,
-    v, esc, showSaved,
+    loadNotas, renderNotasGrid, onNotaChange, colorNota, exportNotasPDF, toggleRecMode,
+    loadEvaluaciones, setEvalTab, toggleEvalCard, toggleEvalCard2, toggleOrd2ShowAll, saveMinExam,
+    loadDashboard, genBoletin, togglePardonCe, saveRec2Nota, setRecSort, toggleRecCard, setOrd1Sort, toggleOrd1Card,
+    initIaSection, iaTab, termAppend, runIA, runApuntes,
+    iaInformeLoadAlumnos, iaInformeAutoNotas,
+    loadAjustes, saveAjustes, setTheme,
+    v, esc, showSaved, evalLabel,
   })
 }
 
@@ -119,6 +130,9 @@ async function init() {
   if (_modulos.length) {
     _curMod = _modulos[0]
     updateModBadge()
+    goSection('programacion')
+  } else {
+    goSection('modulos')
   }
 }
 
@@ -154,11 +168,64 @@ function showSaved() {
   _toastTimer = setTimeout(() => _toastEl.classList.remove('show'), 1400)
 }
 
+// Etiqueta canónica de evaluación: 1 → "1ª Evaluación", 2 → "2ª Evaluación"…
+function evalLabel(n) {
+  const ord = ['', '1ª', '2ª', '3ª', '4ª', '5ª'][n] || `${n}ª`
+  return `${ord} Evaluación`
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Sidebar redimensionable
+// ═══════════════════════════════════════════════════════════════
+function initSidebarResize() {
+  const sidebar  = document.getElementById('sidebar')
+  const resizer  = document.getElementById('sidebar-resizer')
+  if (!sidebar || !resizer) return
+
+  // Restaurar ancho y tema guardados
+  window.api.getAllConfig().then(cfg => {
+    const w = parseInt(cfg.sidebarWidth)
+    if (w >= 160 && w <= 400) {
+      sidebar.style.width = w + 'px'
+      document.documentElement.style.setProperty('--sidebar-w', w + 'px')
+    }
+    const theme = (cfg.theme || '').trim()
+    if (theme) document.documentElement.dataset.theme = theme
+  }).catch(() => {})
+
+  let startX, startW
+  resizer.addEventListener('mousedown', e => {
+    e.preventDefault()
+    startX = e.clientX
+    startW = sidebar.offsetWidth
+    resizer.classList.add('dragging')
+    document.body.style.cursor = 'col-resize'
+    document.body.style.userSelect = 'none'
+
+    function onMove(e) {
+      const w = Math.min(400, Math.max(160, startW + e.clientX - startX))
+      sidebar.style.width = w + 'px'
+      document.documentElement.style.setProperty('--sidebar-w', w + 'px')
+    }
+    function onUp() {
+      resizer.classList.remove('dragging')
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+      document.removeEventListener('mousemove', onMove)
+      document.removeEventListener('mouseup', onUp)
+      window.api.setConfig('sidebarWidth', String(sidebar.offsetWidth)).catch(() => {})
+    }
+    document.addEventListener('mousemove', onMove)
+    document.addEventListener('mouseup', onUp)
+  })
+}
+
 async function bootstrap() {
   for (const src of MODULE_SCRIPTS) await loadScript(src)
   registerWindowHandlers()
   init()
   setupInlineEditing()
+  initSidebarResize()
 }
 
 bootstrap()

@@ -1,0 +1,1096 @@
+{
+ "config": {
+  "PRAC": 0.33,
+  "EXAM": 0.67,
+  "totalPond": 100,
+  "ras": [
+   {
+    "id": "RA1",
+    "pond": 13,
+    "eval": 1
+   },
+   {
+    "id": "RA2",
+    "pond": 19,
+    "eval": 1
+   },
+   {
+    "id": "RA3",
+    "pond": 9,
+    "eval": 2
+   },
+   {
+    "id": "RA4",
+    "pond": 16,
+    "eval": 2
+   },
+   {
+    "id": "RA5",
+    "pond": 13,
+    "eval": 2
+   },
+   {
+    "id": "RA6",
+    "pond": 12,
+    "eval": 3
+   },
+   {
+    "id": "RA7",
+    "pond": 13,
+    "eval": 3
+   },
+   {
+    "id": "RA8",
+    "pond": 5,
+    "eval": 3
+   }
+  ],
+  "actividades": [
+   {
+    "id": 1,
+    "ra": "RA1",
+    "tipo": "practica",
+    "peso": 30,
+    "eval": 1,
+    "desc": "Práctica UT1"
+   },
+   {
+    "id": 2,
+    "ra": "RA1",
+    "tipo": "examen",
+    "peso": 70,
+    "eval": 1,
+    "desc": "Examen RA1"
+   },
+   {
+    "id": 3,
+    "ra": "RA2",
+    "tipo": "practica",
+    "peso": 30,
+    "eval": 1,
+    "desc": "Práctica UT2"
+   },
+   {
+    "id": 4,
+    "ra": "RA2",
+    "tipo": "examen",
+    "peso": 70,
+    "eval": 1,
+    "desc": "Examen RA2"
+   },
+   {
+    "id": 5,
+    "ra": "RA3",
+    "tipo": "practica",
+    "peso": 30,
+    "eval": 2,
+    "desc": "Práctica UT3"
+   },
+   {
+    "id": 6,
+    "ra": "RA3",
+    "tipo": "examen",
+    "peso": 70,
+    "eval": 2,
+    "desc": "Examen RA3"
+   },
+   {
+    "id": 7,
+    "ra": "RA4",
+    "tipo": "practica",
+    "peso": 30,
+    "eval": 2,
+    "desc": "Práctica UT4"
+   },
+   {
+    "id": 8,
+    "ra": "RA4",
+    "tipo": "examen",
+    "peso": 70,
+    "eval": 2,
+    "desc": "Examen RA4"
+   },
+   {
+    "id": 9,
+    "ra": "RA5",
+    "tipo": "practica",
+    "peso": 30,
+    "eval": 2,
+    "desc": "Práctica UT5"
+   },
+   {
+    "id": 10,
+    "ra": "RA5",
+    "tipo": "examen",
+    "peso": 70,
+    "eval": 2,
+    "desc": "Examen RA5"
+   },
+   {
+    "id": 11,
+    "ra": "RA6",
+    "tipo": "practica",
+    "peso": 30,
+    "eval": 3,
+    "desc": "Práctica UT6"
+   },
+   {
+    "id": 12,
+    "ra": "RA6",
+    "tipo": "examen",
+    "peso": 70,
+    "eval": 3,
+    "desc": "Examen RA6"
+   },
+   {
+    "id": 13,
+    "ra": "RA7",
+    "tipo": "practica",
+    "peso": 30,
+    "eval": 3,
+    "desc": "Práctica UT7"
+   },
+   {
+    "id": 14,
+    "ra": "RA7",
+    "tipo": "examen",
+    "peso": 70,
+    "eval": 3,
+    "desc": "Examen RA7"
+   },
+   {
+    "id": 15,
+    "ra": "RA8",
+    "tipo": "practica",
+    "peso": 30,
+    "eval": 3,
+    "desc": "Práctica UT8"
+   }
+  ],
+  "minExamen": 4
+ },
+ "alumnos": [
+  {
+   "id": 1,
+   "nombre": "Aguado Pérez, Ana",
+   "perfil": "Brillante",
+   "estado": "Activo",
+   "evals": {
+    "ev1": {
+     "porRA": {
+      "RA1": 9.16,
+      "RA2": 8.66
+     },
+     "boletin": 8.87,
+     "pendientes": []
+    },
+    "ev2": {
+     "porRA": {
+      "RA1": 9.16,
+      "RA2": 8.66,
+      "RA3": 9.3,
+      "RA4": 8.87,
+      "RA5": 9.16
+     },
+     "boletin": 8.98,
+     "pendientes": []
+    },
+    "ev3": {
+     "porRA": {
+      "RA1": 9.16,
+      "RA2": 8.66,
+      "RA3": 9.3,
+      "RA4": 8.87,
+      "RA5": 9.16,
+      "RA6": 9.27,
+      "RA7": 9.23,
+      "RA8": 9.5
+     },
+     "boletin": 9.07,
+     "pendientes": []
+    }
+   },
+   "ord1": {
+    "porRA": {
+     "RA1": 9.16,
+     "RA2": 8.66,
+     "RA3": 9.3,
+     "RA4": 8.87,
+     "RA5": 9.16,
+     "RA6": 9.27,
+     "RA7": 9.23,
+     "RA8": 9.5
+    },
+    "app": {
+     "final": 9.07,
+     "resultado": "APTO/A"
+    },
+    "guia": {
+     "pendientes": [],
+     "media": 9.07,
+     "notaActa": 9,
+     "resultado": "SUPERADO"
+    },
+    "discrepancia": false
+   }
+  },
+  {
+   "id": 2,
+   "nombre": "Barrios Luna, Bruno",
+   "perfil": "Bueno",
+   "estado": "Activo",
+   "evals": {
+    "ev1": {
+     "porRA": {
+      "RA1": 7.33,
+      "RA2": 7.3
+     },
+     "boletin": 7.31,
+     "pendientes": []
+    },
+    "ev2": {
+     "porRA": {
+      "RA1": 7.33,
+      "RA2": 7.3,
+      "RA3": 7.19,
+      "RA4": 7.34,
+      "RA5": 7.33
+     },
+     "boletin": 7.3,
+     "pendientes": []
+    },
+    "ev3": {
+     "porRA": {
+      "RA1": 7.33,
+      "RA2": 7.3,
+      "RA3": 7.19,
+      "RA4": 7.34,
+      "RA5": 7.33,
+      "RA6": 7.7,
+      "RA7": 7.27,
+      "RA8": 8
+     },
+     "boletin": 7.38,
+     "pendientes": []
+    }
+   },
+   "ord1": {
+    "porRA": {
+     "RA1": 7.33,
+     "RA2": 7.3,
+     "RA3": 7.19,
+     "RA4": 7.34,
+     "RA5": 7.33,
+     "RA6": 7.7,
+     "RA7": 7.27,
+     "RA8": 8
+    },
+    "app": {
+     "final": 7.38,
+     "resultado": "APTO/A"
+    },
+    "guia": {
+     "pendientes": [],
+     "media": 7.38,
+     "notaActa": 7,
+     "resultado": "SUPERADO"
+    },
+    "discrepancia": false
+   }
+  },
+  {
+   "id": 3,
+   "nombre": "Cifuentes Roca, Carla",
+   "perfil": "Media",
+   "estado": "Activo",
+   "evals": {
+    "ev1": {
+     "porRA": {
+      "RA1": 6.33,
+      "RA2": 6.3
+     },
+     "boletin": 6.31,
+     "pendientes": []
+    },
+    "ev2": {
+     "porRA": {
+      "RA1": 6.33,
+      "RA2": 6.3,
+      "RA3": 6.19,
+      "RA4": 6.34,
+      "RA5": 6.16
+     },
+     "boletin": 6.27,
+     "pendientes": []
+    },
+    "ev3": {
+     "porRA": {
+      "RA1": 6.33,
+      "RA2": 6.3,
+      "RA3": 6.19,
+      "RA4": 6.34,
+      "RA5": 6.16,
+      "RA6": 6.46,
+      "RA7": 6.27,
+      "RA8": 7
+     },
+     "boletin": 6.33,
+     "pendientes": []
+    }
+   },
+   "ord1": {
+    "porRA": {
+     "RA1": 6.33,
+     "RA2": 6.3,
+     "RA3": 6.19,
+     "RA4": 6.34,
+     "RA5": 6.16,
+     "RA6": 6.46,
+     "RA7": 6.27,
+     "RA8": 7
+    },
+    "app": {
+     "final": 6.33,
+     "resultado": "APTO/A"
+    },
+    "guia": {
+     "pendientes": [],
+     "media": 6.33,
+     "notaActa": 6,
+     "resultado": "SUPERADO"
+    },
+    "discrepancia": false
+   }
+  },
+  {
+   "id": 4,
+   "nombre": "Delgado Sanz, David",
+   "perfil": "Justo (todo ≥5 por poco)",
+   "estado": "Activo",
+   "evals": {
+    "ev1": {
+     "porRA": {
+      "RA1": 5.33,
+      "RA2": 5.3
+     },
+     "boletin": 5.31,
+     "pendientes": []
+    },
+    "ev2": {
+     "porRA": {
+      "RA1": 5.33,
+      "RA2": 5.3,
+      "RA3": 5.19,
+      "RA4": 5.34,
+      "RA5": 5.33
+     },
+     "boletin": 5.3,
+     "pendientes": []
+    },
+    "ev3": {
+     "porRA": {
+      "RA1": 5.33,
+      "RA2": 5.3,
+      "RA3": 5.19,
+      "RA4": 5.34,
+      "RA5": 5.33,
+      "RA6": 5.43,
+      "RA7": 5.4,
+      "RA8": 6
+     },
+     "boletin": 5.37,
+     "pendientes": []
+    }
+   },
+   "ord1": {
+    "porRA": {
+     "RA1": 5.33,
+     "RA2": 5.3,
+     "RA3": 5.19,
+     "RA4": 5.34,
+     "RA5": 5.33,
+     "RA6": 5.43,
+     "RA7": 5.4,
+     "RA8": 6
+    },
+    "app": {
+     "final": 5.37,
+     "resultado": "APTO/A"
+    },
+    "guia": {
+     "pendientes": [],
+     "media": 5.37,
+     "notaActa": 5,
+     "resultado": "SUPERADO"
+    },
+    "discrepancia": false
+   }
+  },
+  {
+   "id": 5,
+   "nombre": "Escudero Vidal, Elena",
+   "perfil": "Suspende RA2 en Ev1, recupera en Ev2",
+   "estado": "Activo",
+   "evals": {
+    "ev1": {
+     "porRA": {
+      "RA1": 6.66,
+      "RA2": 3.99
+     },
+     "boletin": 5.07,
+     "pendientes": [
+      "RA2"
+     ]
+    },
+    "ev2": {
+     "porRA": {
+      "RA1": 6.66,
+      "RA2": 6,
+      "RA3": 6.66,
+      "RA4": 6.16,
+      "RA5": 6.66
+     },
+     "boletin": 6.37,
+     "pendientes": []
+    },
+    "ev3": {
+     "porRA": {
+      "RA1": 6.66,
+      "RA2": 6,
+      "RA3": 6.66,
+      "RA4": 6.16,
+      "RA5": 6.66,
+      "RA6": 6.87,
+      "RA7": 6.57,
+      "RA8": 7
+     },
+     "boletin": 6.49,
+     "pendientes": []
+    }
+   },
+   "ord1": {
+    "porRA": {
+     "RA1": 6.66,
+     "RA2": 6,
+     "RA3": 6.66,
+     "RA4": 6.16,
+     "RA5": 6.66,
+     "RA6": 6.87,
+     "RA7": 6.57,
+     "RA8": 7
+    },
+    "app": {
+     "final": 6.49,
+     "resultado": "APTO/A"
+    },
+    "guia": {
+     "pendientes": [],
+     "media": 6.49,
+     "notaActa": 6,
+     "resultado": "SUPERADO"
+    },
+    "discrepancia": false
+   }
+  },
+  {
+   "id": 6,
+   "nombre": "Ferrer Ortiz, Fran",
+   "perfil": "Suspende RA4+RA5 en Ev2, recupera en Ev3 y final",
+   "estado": "Activo",
+   "evals": {
+    "ev1": {
+     "porRA": {
+      "RA1": 5.66,
+      "RA2": 6.03
+     },
+     "boletin": 5.88,
+     "pendientes": []
+    },
+    "ev2": {
+     "porRA": {
+      "RA1": 5.66,
+      "RA2": 6.03,
+      "RA3": 5.66,
+      "RA4": 3.99,
+      "RA5": 4.36
+     },
+     "boletin": 5.14,
+     "pendientes": [
+      "RA4",
+      "RA5"
+     ]
+    },
+    "ev3": {
+     "porRA": {
+      "RA1": 5.66,
+      "RA2": 6.03,
+      "RA3": 5.66,
+      "RA4": 5.34,
+      "RA5": 4.36,
+      "RA6": 5.66,
+      "RA7": 5.46,
+      "RA8": 6
+     },
+     "boletin": 5.5,
+     "pendientes": [
+      "RA5"
+     ]
+    }
+   },
+   "ord1": {
+    "porRA": {
+     "RA1": 5.66,
+     "RA2": 6.03,
+     "RA3": 5.66,
+     "RA4": 5.34,
+     "RA5": 5.16,
+     "RA6": 5.66,
+     "RA7": 5.46,
+     "RA8": 6
+    },
+    "app": {
+     "final": 5.61,
+     "resultado": "APTO/A"
+    },
+    "guia": {
+     "pendientes": [],
+     "media": 5.61,
+     "notaActa": 6,
+     "resultado": "SUPERADO"
+    },
+    "discrepancia": false
+   }
+  },
+  {
+   "id": 7,
+   "nombre": "Gil Moreno, Gema",
+   "perfil": "REGLA DE ORO: media ≥5 pero RA3 <5 tras recs",
+   "estado": "Activo",
+   "evals": {
+    "ev1": {
+     "porRA": {
+      "RA1": 7.16,
+      "RA2": 6.87
+     },
+     "boletin": 6.99,
+     "pendientes": []
+    },
+    "ev2": {
+     "porRA": {
+      "RA1": 7.16,
+      "RA2": 6.87,
+      "RA3": 3.16,
+      "RA4": 6.66,
+      "RA5": 6.7
+     },
+     "boletin": 6.37,
+     "pendientes": [
+      "RA3"
+     ]
+    },
+    "ev3": {
+     "porRA": {
+      "RA1": 7.16,
+      "RA2": 6.87,
+      "RA3": 3.83,
+      "RA4": 6.66,
+      "RA5": 6.7,
+      "RA6": 6.73,
+      "RA7": 6.93,
+      "RA8": 7
+     },
+     "boletin": 6.58,
+     "pendientes": [
+      "RA3"
+     ]
+    }
+   },
+   "ord1": {
+    "porRA": {
+     "RA1": 7.16,
+     "RA2": 6.87,
+     "RA3": 4.16,
+     "RA4": 6.66,
+     "RA5": 6.7,
+     "RA6": 6.73,
+     "RA7": 6.93,
+     "RA8": 7
+    },
+    "app": {
+     "final": 6.61,
+     "resultado": "APTO/A"
+    },
+    "guia": {
+     "pendientes": [
+      "RA3"
+     ],
+     "media": 6.61,
+     "notaActa": 4,
+     "resultado": "NO SUPERADO"
+    },
+    "discrepancia": true
+   },
+   "ord2": {
+    "recIntroducidas": {
+     "RA3": 6
+    },
+    "app": {
+     "porRA": {
+      "RA1": {
+       "nota": 7.16,
+       "fuente": "orig_ok"
+      },
+      "RA2": {
+       "nota": 6.87,
+       "fuente": "orig_ok"
+      },
+      "RA3": {
+       "nota": 6,
+       "fuente": "rec"
+      },
+      "RA4": {
+       "nota": 6.66,
+       "fuente": "orig_ok"
+      },
+      "RA5": {
+       "nota": 6.7,
+       "fuente": "orig_ok"
+      },
+      "RA6": {
+       "nota": 6.73,
+       "fuente": "orig_ok"
+      },
+      "RA7": {
+       "nota": 6.93,
+       "fuente": "orig_ok"
+      },
+      "RA8": {
+       "nota": 7,
+       "fuente": "orig_ok"
+      }
+     },
+     "final": 6.77,
+     "resultado": "APTO/A"
+    },
+    "guia": {
+     "pendientes": [],
+     "media": 6.77,
+     "notaActa": 7,
+     "resultado": "SUPERADO"
+    }
+   }
+  },
+  {
+   "id": 8,
+   "nombre": "Herrera Bravo, Hugo",
+   "perfil": "Múltiples RA pendientes → 2ª ordinaria (colisión CEs)",
+   "estado": "Activo",
+   "evals": {
+    "ev1": {
+     "porRA": {
+      "RA1": 3.33,
+      "RA2": 4.66
+     },
+     "boletin": 4.12,
+     "pendientes": [
+      "RA1",
+      "RA2"
+     ]
+    },
+    "ev2": {
+     "porRA": {
+      "RA1": 4.34,
+      "RA2": 4.66,
+      "RA3": 4.16,
+      "RA4": 5.16,
+      "RA5": 3.66
+     },
+     "boletin": 4.47,
+     "pendientes": [
+      "RA1",
+      "RA2",
+      "RA3",
+      "RA5"
+     ]
+    },
+    "ev3": {
+     "porRA": {
+      "RA1": 4.34,
+      "RA2": 4.66,
+      "RA3": 4.16,
+      "RA4": 5.16,
+      "RA5": 3.66,
+      "RA6": 4.46,
+      "RA7": 4.16,
+      "RA8": 4.5
+     },
+     "boletin": 4.43,
+     "pendientes": [
+      "RA1",
+      "RA2",
+      "RA3",
+      "RA5",
+      "RA6",
+      "RA7",
+      "RA8"
+     ]
+    }
+   },
+   "ord1": {
+    "porRA": {
+     "RA1": 5.01,
+     "RA2": 5,
+     "RA3": 4.16,
+     "RA4": 5.16,
+     "RA5": 3.66,
+     "RA6": 4.46,
+     "RA7": 4.16,
+     "RA8": 4.5
+    },
+    "app": {
+     "final": 4.58,
+     "resultado": "NO APTO/A"
+    },
+    "guia": {
+     "pendientes": [
+      "RA3",
+      "RA5",
+      "RA6",
+      "RA7",
+      "RA8"
+     ],
+     "media": 4.58,
+     "notaActa": 4,
+     "resultado": "NO SUPERADO"
+    },
+    "discrepancia": false
+   },
+   "ord2": {
+    "recIntroducidas": {
+     "RA3": 5.5
+    },
+    "app": {
+     "porRA": {
+      "RA1": {
+       "nota": 5.01,
+       "fuente": "orig_ok"
+      },
+      "RA2": {
+       "nota": 5,
+       "fuente": "orig_ok"
+      },
+      "RA3": {
+       "nota": 5.5,
+       "fuente": "rec"
+      },
+      "RA4": {
+       "nota": 5.16,
+       "fuente": "orig_ok"
+      },
+      "RA5": {
+       "nota": 5.5,
+       "fuente": "rec"
+      },
+      "RA6": {
+       "nota": 5.5,
+       "fuente": "rec"
+      },
+      "RA7": {
+       "nota": 5.5,
+       "fuente": "rec"
+      },
+      "RA8": {
+       "nota": 5.5,
+       "fuente": "rec"
+      }
+     },
+     "final": 5.29,
+     "resultado": "APTO/A"
+    },
+    "guia": {
+     "pendientes": [
+      "RA5",
+      "RA6",
+      "RA7",
+      "RA8"
+     ],
+     "media": 4.7,
+     "notaActa": 4,
+     "resultado": "NO SUPERADO"
+    }
+   }
+  },
+  {
+   "id": 9,
+   "nombre": "Ibáñez Calvo, Irene",
+   "perfil": "Mínimo de instrumento: examen RA6 = 3.5 pero media RA ≥5",
+   "estado": "Activo",
+   "evals": {
+    "ev1": {
+     "porRA": {
+      "RA1": 6.46,
+      "RA2": 6.16
+     },
+     "boletin": 6.29,
+     "pendientes": []
+    },
+    "ev2": {
+     "porRA": {
+      "RA1": 6.46,
+      "RA2": 6.16,
+      "RA3": 6.33,
+      "RA4": 6.3,
+      "RA5": 6.33
+     },
+     "boletin": 6.3,
+     "pendientes": []
+    },
+    "ev3": {
+     "porRA": {
+      "RA1": 6.46,
+      "RA2": 6.16,
+      "RA3": 6.33,
+      "RA4": 6.3,
+      "RA5": 6.33,
+      "RA6": 5.31,
+      "RA7": 6.16,
+      "RA8": 7
+     },
+     "boletin": 6.2,
+     "pendientes": []
+    }
+   },
+   "ord1": {
+    "porRA": {
+     "RA1": 6.46,
+     "RA2": 6.16,
+     "RA3": 6.33,
+     "RA4": 6.3,
+     "RA5": 6.33,
+     "RA6": 6.32,
+     "RA7": 6.16,
+     "RA8": 7
+    },
+    "app": {
+     "final": 6.32,
+     "resultado": "APTO/A"
+    },
+    "guia": {
+     "pendientes": [],
+     "media": 6.32,
+     "notaActa": 6,
+     "resultado": "SUPERADO"
+    },
+    "discrepancia": false
+   }
+  },
+  {
+   "id": 10,
+   "nombre": "Jurado Prieto, Jorge",
+   "perfil": "Baja tras la 1ª evaluación",
+   "estado": "Baja",
+   "evals": {
+    "ev1": {
+     "porRA": {
+      "RA1": 5.03,
+      "RA2": 4.46
+     },
+     "boletin": 4.69,
+     "pendientes": [
+      "RA2"
+     ]
+    },
+    "ev2": {
+     "excluido": true
+    },
+    "ev3": {
+     "excluido": true
+    }
+   }
+  },
+  {
+   "id": 11,
+   "nombre": "Lozano Ruiz, Lucía",
+   "perfil": "Buena con bajón en Ev3, recupera RA6+RA7 en final",
+   "estado": "Activo",
+   "evals": {
+    "ev1": {
+     "porRA": {
+      "RA1": 7.66,
+      "RA2": 7.73
+     },
+     "boletin": 7.7,
+     "pendientes": []
+    },
+    "ev2": {
+     "porRA": {
+      "RA1": 7.66,
+      "RA2": 7.73,
+      "RA3": 7.6,
+      "RA4": 7.66,
+      "RA5": 7.73
+     },
+     "boletin": 7.69,
+     "pendientes": []
+    },
+    "ev3": {
+     "porRA": {
+      "RA1": 7.66,
+      "RA2": 7.73,
+      "RA3": 7.6,
+      "RA4": 7.66,
+      "RA5": 7.73,
+      "RA6": 4.79,
+      "RA7": 4.03,
+      "RA8": 8
+     },
+     "boletin": 6.88,
+     "pendientes": [
+      "RA6",
+      "RA7"
+     ]
+    }
+   },
+   "ord1": {
+    "porRA": {
+     "RA1": 7.66,
+     "RA2": 7.73,
+     "RA3": 7.6,
+     "RA4": 7.66,
+     "RA5": 7.73,
+     "RA6": 5.66,
+     "RA7": 5.51,
+     "RA8": 8
+    },
+    "app": {
+     "final": 7.18,
+     "resultado": "APTO/A"
+    },
+    "guia": {
+     "pendientes": [],
+     "media": 7.18,
+     "notaActa": 7,
+     "resultado": "SUPERADO"
+    },
+    "discrepancia": false
+   }
+  },
+  {
+   "id": 12,
+   "nombre": "Mena Salas, Marcos",
+   "perfil": "Solo RA6 pendiente → recupera limpio en 2ª ordinaria",
+   "estado": "Activo",
+   "evals": {
+    "ev1": {
+     "porRA": {
+      "RA1": 5.66,
+      "RA2": 5.87
+     },
+     "boletin": 5.78,
+     "pendientes": []
+    },
+    "ev2": {
+     "porRA": {
+      "RA1": 5.66,
+      "RA2": 5.87,
+      "RA3": 5.83,
+      "RA4": 5.73,
+      "RA5": 5.66
+     },
+     "boletin": 5.76,
+     "pendientes": []
+    },
+    "ev3": {
+     "porRA": {
+      "RA1": 5.66,
+      "RA2": 5.87,
+      "RA3": 5.83,
+      "RA4": 5.73,
+      "RA5": 5.66,
+      "RA6": 3.33,
+      "RA7": 5.66,
+      "RA8": 6
+     },
+     "boletin": 5.46,
+     "pendientes": [
+      "RA6"
+     ]
+    }
+   },
+   "ord1": {
+    "porRA": {
+     "RA1": 5.66,
+     "RA2": 5.87,
+     "RA3": 5.83,
+     "RA4": 5.73,
+     "RA5": 5.66,
+     "RA6": 4,
+     "RA7": 5.66,
+     "RA8": 6
+    },
+    "app": {
+     "final": 5.55,
+     "resultado": "APTO/A"
+    },
+    "guia": {
+     "pendientes": [
+      "RA6"
+     ],
+     "media": 5.55,
+     "notaActa": 4,
+     "resultado": "NO SUPERADO"
+    },
+    "discrepancia": true
+   },
+   "ord2": {
+    "recIntroducidas": {
+     "RA6": 6
+    },
+    "app": {
+     "porRA": {
+      "RA1": {
+       "nota": 5.66,
+       "fuente": "orig_ok"
+      },
+      "RA2": {
+       "nota": 5.87,
+       "fuente": "orig_ok"
+      },
+      "RA3": {
+       "nota": 5.83,
+       "fuente": "orig_ok"
+      },
+      "RA4": {
+       "nota": 5.73,
+       "fuente": "orig_ok"
+      },
+      "RA5": {
+       "nota": 5.66,
+       "fuente": "orig_ok"
+      },
+      "RA6": {
+       "nota": 6,
+       "fuente": "rec"
+      },
+      "RA7": {
+       "nota": 5.66,
+       "fuente": "orig_ok"
+      },
+      "RA8": {
+       "nota": 6,
+       "fuente": "orig_ok"
+      }
+     },
+     "final": 5.79,
+     "resultado": "APTO/A"
+    },
+    "guia": {
+     "pendientes": [],
+     "media": 5.79,
+     "notaActa": 6,
+     "resultado": "SUPERADO"
+    }
+   }
+  }
+ ]
+}

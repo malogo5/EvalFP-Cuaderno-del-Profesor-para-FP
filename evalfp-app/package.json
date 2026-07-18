@@ -4,17 +4,29 @@
   "description": "EvalFP — Cuaderno del Profesor para FP",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
-    "prebake": "python3 ../scripts/prebake_modules.py",
-    "build:mac": "npm run prebake && electron-builder --mac",
-    "build:win": "npm run prebake && electron-builder --win",
-    "build:all": "npm run prebake && electron-builder --mac --win"
+    "start":          "electron .",
+    "test":           "vitest run",
+    "test:watch":     "vitest",
+    "rebuild:node":   "npm rebuild better-sqlite3",
+    "rebuild:electron": "npx @electron/rebuild -f -w better-sqlite3 && npm run sign:native",
+    "sign:native":    "find node_modules -name '*.node' -exec codesign --force --sign - {} \\;",
+    "test:e2e":       "playwright test",
+    "test:e2e:ui":    "playwright test --ui",
+    "lint":           "eslint .",
+    "lint:fix":       "eslint . --fix",
+    "prebake":        "python3 ../scripts/prebake_modules.py",
+    "build:mac":      "npm run prebake && electron-builder --mac",
+    "build:win":      "npm run prebake && electron-builder --win",
+    "build:all":      "npm run prebake && electron-builder --mac --win",
+    "build:staging":  "npm run prebake && electron-builder --mac --config.productName=EvalFP-Staging --config.appId=com.evalfp.staging --config.directories.output=dist-staging"
   },
   "build": {
     "appId": "com.evalfp.app",
     "productName": "EvalFP",
     "copyright": "© 2026 EvalFP",
-    "directories": { "output": "dist" },
+    "directories": {
+      "output": "dist"
+    },
     "files": [
       "main.js",
       "preload.js",
@@ -26,7 +38,10 @@
       {
         "from": "../scripts",
         "to": "scripts",
-        "filter": ["**/*.py", "modules/**/*.py"]
+        "filter": [
+          "**/*.py",
+          "modules/**/*.py"
+        ]
       }
     ],
     "mac": {
@@ -35,20 +50,41 @@
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "target": [
-        { "target": "dmg", "arch": ["arm64", "x64"] }
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
       ]
     },
     "dmg": {
       "title": "EvalFP ${version}",
       "icon": "assets/icon.icns",
       "contents": [
-        { "x": 130, "y": 220 },
-        { "x": 410, "y": 220, "type": "link", "path": "/Applications" }
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
       ]
     },
     "win": {
       "icon": "assets/icon.ico",
-      "target": [{ "target": "nsis", "arch": ["x64"] }]
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
     },
     "nsis": {
       "oneClick": false,
@@ -60,7 +96,20 @@
     }
   },
   "devDependencies": {
-    "electron": "^42.5.1",
-    "electron-builder": "^26.15.3"
+    "@eslint/js": "^9.0.0",
+    "@playwright/test": "^1.44.0",
+    "electron": "^22.0.0",
+    "electron-builder": "^26.15.3",
+    "globals": "^15.0.0",
+    "eslint": "^9.0.0",
+    "vitest": "^1.6.0"
+  },
+  "dependencies": {
+    "better-sqlite3": "^9.2.2",
+    "node-schedule": "^2.1.1",
+    "winston": "^3.19.0"
+  },
+  "optionalDependencies": {
+    "keytar": "^7.9.0"
   }
 }

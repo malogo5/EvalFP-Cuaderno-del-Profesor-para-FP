@@ -100,17 +100,26 @@ class IAAsistente:
 
     # ── Llamada genérica ──────────────────────────────────────────────────────
 
-    def _llamar(self, system: str, user: str, max_tokens: int | None = None) -> str:
+    def _llamar(
+        self,
+        system: str,
+        user: str,
+        max_tokens: int | None = None,
+        modelo: str | None = None,
+        temperatura: float | None = None,
+    ) -> str:
         if self._proveedor == "demo":
             return self._demo_response(user)
 
-        _max = max_tokens or MAX_TOKENS
+        _max   = max_tokens or MAX_TOKENS
+        _model = modelo or MODELO_CLAUDE
+        _temp  = temperatura if temperatura is not None else TEMPERATURA
 
         if self._proveedor == "claude":
             msg = self._cliente.messages.create(
-                model=MODELO_CLAUDE,
+                model=_model,
                 max_tokens=_max,
-                temperature=TEMPERATURA,
+                temperature=_temp,
                 system=system,
                 messages=[{"role": "user", "content": user}],
             )
@@ -118,9 +127,9 @@ class IAAsistente:
 
         if self._proveedor == "openai":
             resp = self._cliente.chat.completions.create(
-                model=MODELO_OPENAI,
+                model=modelo or MODELO_OPENAI,
                 max_tokens=_max,
-                temperature=TEMPERATURA,
+                temperature=_temp,
                 messages=[
                     {"role": "system", "content": system},
                     {"role": "user",   "content": user},

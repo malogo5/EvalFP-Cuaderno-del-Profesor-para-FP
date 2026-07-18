@@ -1,0 +1,113 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# EvalFP — Pipeline de Integración Continua
+#
+# Se ejecuta automáticamente en cada push y pull request.
+# Fases:
+#   1. lint        → ESLint sobre todo el código JS
+#   2. unit-tests  → Vitest (db.js, lógica de negocio)
+#   3. e2e         → Playwright sobre la app Electron (solo en Linux/CI headless)
+# ──────────────────────────────────────────────────────────────────────────────
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+defaults:
+  run:
+    working-directory: evalfp-app   # todos los comandos se ejecutan aquí
+
+jobs:
+  # ── Fase 1: Linting ──────────────────────────────────────────────────────
+  lint:
+    name: 'Fase 1 · Lint'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: evalfp-app/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Ejecutar ESLint
+        run: npm run lint
+
+  # ── Fase 2a: Tests unitarios ──────────────────────────────────────────────
+  unit-tests:
+    name: 'Fase 2 · Unit Tests'
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: evalfp-app/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Ejecutar Vitest
+        run: npm test
+
+      - name: Subir cobertura (si existe)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: evalfp-app/coverage/
+          if-no-files-found: ignore
+
+  # ── Fase 3: Tests E2E con Playwright ─────────────────────────────────────
+  e2e:
+    name: 'Fase 3 · E2E Tests'
+    needs: unit-tests
+    runs-on: ubuntu-latest
+    env:
+      DISPLAY: ':99'    # Xvfb virtual display para Electron headless
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: evalfp-app/package-lock.json
+
+      - name: Instalar dependencias del sistema (Electron + Xvfb)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libnss3 libatk-bridge2.0-0 libgtk-3-0 libx11-xcb1
+
+      - name: Instalar dependencias npm
+        run: npm ci
+
+      - name: Instalar navegadores Playwright
+        run: npx playwright install chromium
+
+      - name: Iniciar Xvfb
+        run: Xvfb :99 -screen 0 1280x720x24 &
+
+      - name: Ejecutar tests E2E
+        run: npm run test:e2e
+
+      - name: Subir capturas de fallos
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-screenshots
+          path: evalfp-app/tests/e2e/screenshots/
+          if-no-files-found: ignore
