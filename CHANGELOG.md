@@ -2,6 +2,15 @@
 
 Todos los cambios notables realizados en el proyecto EvalFP se documentarán en este archivo.
 
+## [3.0.0] - 2026-07-01
+### Seguridad y estabilidad
+*   **XSS:** Escapado de entradas de usuario en `innerHTML` para prevenir inyección de scripts.
+*   **API keys:** Cifrado de claves de API mediante almacenamiento a nivel de sistema operativo con `keytar`, con fallback opcional para evitar fallos de compilación nativa en macOS.
+*   **Backups:** Copias de seguridad automáticas diarias de la base de datos, con limpieza de backups antiguos.
+*   **Logging:** Logger centralizado (Winston) para sustituir los `console.log` dispersos.
+*   **Compatibilidad macOS:** Wrapper seguro para `keytar` que evita errores de módulo nativo en macOS.
+*   **Calidad:** 24/24 tests superados en el módulo de dashboard (QA).
+
 ## [2.0.1] - 2026-06-29
 ### Corrección: diálogo de reparación de Excel eliminado
 *   **Problema:** Excel 365 para Mac mostraba el diálogo "Hemos encontrado un problema con el contenido de EvalFP.xlsx" en cada apertura, causado por múltiples violaciones OOXML que openpyxl 3.1.x genera de forma incorrecta.
