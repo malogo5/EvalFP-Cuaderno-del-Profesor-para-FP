@@ -233,6 +233,12 @@ describe('Config', () => {
   it('getConfig devuelve null para clave inexistente', () => {
     expect(db.getConfig('no_existe_esta_clave')).toBeNull()
   })
+
+  it('deleteConfig elimina una clave de configuración', () => {
+    db.setConfig('temporal', 'valor')
+    db.deleteConfig('temporal')
+    expect(db.getConfig('temporal')).toBeNull()
+  })
 })
 
 // ── Tests: Integridad referencial ──────────────────────────────────────────────

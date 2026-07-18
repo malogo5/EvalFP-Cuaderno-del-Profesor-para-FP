@@ -31,7 +31,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
@@ -52,15 +52,18 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
       - name: Instalar dependencias
         run: npm ci
 
+      - name: Regenerar catálogo de módulos
+        run: npm run prebake
+
       - name: Ejecutar Vitest
-        run: npm test
+        run: npm run test:coverage
 
       - name: Subir cobertura (si existe)
         if: always()
@@ -83,7 +86,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
@@ -94,6 +97,9 @@ jobs:
 
       - name: Instalar dependencias npm
         run: npm ci
+
+      - name: Regenerar catálogo de módulos
+        run: npm run prebake
 
       - name: Instalar navegadores Playwright
         run: npx playwright install chromium
@@ -111,3 +117,36 @@ jobs:
           name: playwright-screenshots
           path: tests/e2e/screenshots/
           if-no-files-found: ignore
+
+  package-smoke:
+    name: 'Fase 4 · Paquete ${{ matrix.name }}'
+    needs: e2e
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macOS
+            os: macos-latest
+            command: npx electron-builder --dir --mac --config.mac.identity=null
+          - name: Windows
+            os: windows-latest
+            command: npx electron-builder --dir --win
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Regenerar catálogo de módulos
+        run: npm run prebake
+
+      - name: Construir paquete verificable
+        run: ${{ matrix.command }}

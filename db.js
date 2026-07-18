@@ -227,6 +227,15 @@ function closeDb() {
   }
 }
 
+// Crea una copia consistente incluso cuando la base está en modo WAL.
+// VACUUM INTO trabaja sobre un snapshot de SQLite, a diferencia de copiar el
+// archivo `.db` mientras puede haber escrituras pendientes en el archivo WAL.
+function backupTo(destPath) {
+  const escapedPath = String(destPath).replace(/'/g, "''")
+  getDb().exec(`VACUUM INTO '${escapedPath}'`)
+  return destPath
+}
+
 // ── Ponderaciones de RAs ───────────────────────────────────────────────────────
 const getRaPonderaciones = moduloId =>
   getDb().prepare('SELECT ra_id, pond FROM ra_ponderaciones WHERE modulo_id=?').all(moduloId)
@@ -248,13 +257,14 @@ const deleteActividad = id => getDb().prepare('DELETE FROM actividades WHERE id=
 // ── Config ─────────────────────────────────────────────────────────────────────
 const getConfig  = key  => getDb().prepare('SELECT value FROM config WHERE key=?').get(key)?.value ?? null
 const setConfig  = (k,v) => getDb().prepare('INSERT OR REPLACE INTO config VALUES(?,?)').run(k,v)
+const deleteConfig = key => getDb().prepare('DELETE FROM config WHERE key=?').run(key)
 const getAllConfig = ()  => Object.fromEntries(getDb().prepare('SELECT key,value FROM config').all().map(r=>[r.key,r.value]))
 
 module.exports = {
   getModulos, addModulo, deleteModulo, setModuloDataJson,
   getAlumnos, saveAlumno, deleteAlumno,
   getActividades, saveActividad, deleteActividad,
-  getNotasGrid, saveNota, saveNotaRec, closeDb,
+  getNotasGrid, saveNota, saveNotaRec, closeDb, backupTo,
   getRaPonderaciones, setRaPonderacion,
-  getConfig, setConfig, getAllConfig,
+  getConfig, setConfig, deleteConfig, getAllConfig,
 }

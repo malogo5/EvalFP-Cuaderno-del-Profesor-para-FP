@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 prebake_modules.py
-Genera evalfp-app/renderer/modules_data.json con TODOS los módulos.
+Genera renderer/modules_data.json con TODOS los módulos.
 Ejecutar antes de npm run build:
     python3 scripts/prebake_modules.py
 """
@@ -9,7 +9,7 @@ import sys, json, os, importlib
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 MODS = os.path.join(ROOT, "modules")
-OUT  = os.path.join(ROOT, "..", "evalfp-app", "renderer", "modules_data.json")
+OUT  = os.path.join(ROOT, "..", "renderer", "modules_data.json")
 
 sys.path.insert(0, ROOT)
 

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- EvalFP logo — Lápiz sobre fondo CSS -->
+
+  <!-- Pencil body -->
+  <rect x="432" y="192" width="160" height="480" rx="44" fill="#ffffff"/>
+
+  <!-- Eraser cap -->
+  <rect x="432" y="130" width="160" height="120" rx="44" fill="#0D9488"/>
+
+  <!-- Eraser band -->
+  <rect x="432" y="296" width="160" height="40" fill="rgba(255,255,255,.35)"/>
+
+  <!-- Tip (wood) -->
+  <polygon points="432,672 592,672 512,820" fill="#FDE68A"/>
+
+  <!-- Tip (graphite) -->
+  <polygon points="472,768 552,768 512,820" fill="#374151"/>
+
+  <!-- Lines on pencil body -->
+  <rect x="452" y="390" width="120" height="18" rx="9" fill="rgba(255,255,255,.4)"/>
+  <rect x="452" y="424" width="120" height="18" rx="9" fill="rgba(255,255,255,.4)"/>
+</svg>
