@@ -1,11 +1,11 @@
 # EvalFP — Cuaderno del Profesor para FP
 
 [![Licencia: GPLv3](https://img.shields.io/badge/Licencia-GPLv3-blue.svg)](LICENSE)
-[![Versión](https://img.shields.io/badge/versión-2.0--alpha.5-orange.svg)](CHANGELOG.md)
+[![Versión](https://img.shields.io/badge/versión-3.0.0-orange.svg)](CHANGELOG.md)
 
 EvalFP automatiza la gestión del cuaderno del profesor de Formación Profesional en España: programación didáctica, registro de notas, cálculo de calificaciones, informes y dashboard, todo dentro de un único libro Excel generado por Python.
 
-**Versión actual:** 2.0-alpha.5 · Consulta el [ROADMAP](ROADMAP.md) y el [CHANGELOG](CHANGELOG.md) para el historial completo.
+**Versión actual:** 3.0.0 · Consulta el [ROADMAP](ROADMAP.md) y el [CHANGELOG](CHANGELOG.md) para el historial completo.
 
 ## ¿Por qué existe EvalFP?
 
