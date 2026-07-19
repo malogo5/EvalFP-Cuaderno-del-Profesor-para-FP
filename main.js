@@ -12,7 +12,8 @@ const keytarSafe = require('./main/keytar-safe')
 const db = require('./db')
 
 // Los tests E2E nunca deben usar la base de datos real del profesor.
-if (process.env.EVALFP_TEST === '1') {
+const isTestMode = process.env.EVALFP_TEST === '1'
+if (isTestMode) {
   app.setPath('userData', path.join(os.tmpdir(), `evalfp-test-${process.pid}`))
 }
 
@@ -254,7 +255,9 @@ app.whenReady().then(async () => {
   await keytarInitialization
   await migrateLegacyApiKeys()
   await loadApiKeysFromSecureStorage()
-  setupBackups()
+  // Las copias de seguridad no forman parte de los E2E: usan una BD temporal y
+  // el backup durante before-quit puede bloquear el cierre de Electron en Xvfb.
+  if (!isTestMode) setupBackups()
   createWindow()
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow() })
 })
@@ -262,6 +265,7 @@ app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(
 
 let isQuitting = false
 app.on('before-quit', event => {
+  if (isTestMode) return
   if (isQuitting) return
   event.preventDefault()
   isQuitting = true
