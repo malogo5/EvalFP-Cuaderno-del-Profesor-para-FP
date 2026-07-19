@@ -328,13 +328,17 @@ test.describe('Flujo completo', () => {
     await expect(page.locator('#mod-badge-name')).toHaveText('ISO')
     await page.click('[data-sec="alumnos"]')
     await expect(page.locator('#alumnos-mod-sel')).toHaveValue(String(ids.iso))
-    // El alumno E2E de ISO reaparece. En CI (Linux) el render de la tabla puede
-    // tardar y "first()" a veces no existe aún: esperamos a que haya *algún*
-    // input de apellidos con el valor esperado.
-    await expect(page.locator('#alumnos-tbody')).not.toContainText('Sin alumnos', { timeout: 20_000 })
+    // El alumno E2E de ISO reaparece. En CI (Linux) a veces tarda la persistencia
+    // y/o el repintado del DOM: primero esperamos a que exista en la BD…
+    await page.waitForFunction(async ({ mid, apellidos }) => {
+      const alumnos = await window.api.getAlumnos(mid)
+      return alumnos.some(a => a.apellidos === apellidos)
+    }, { mid: ids.iso, apellidos: ALUMNO_APELLIDOS }, { timeout: 30_000 })
+
+    // …y luego a que el DOM refleje esos datos.
     await page.waitForFunction(expected => {
       const inputs = document.querySelectorAll('#alumnos-tbody td:nth-child(2) input')
       return Array.from(inputs).some(i => i.value === expected)
-    }, ALUMNO_APELLIDOS, { timeout: 20_000 })
+    }, ALUMNO_APELLIDOS, { timeout: 30_000 })
   })
 })
