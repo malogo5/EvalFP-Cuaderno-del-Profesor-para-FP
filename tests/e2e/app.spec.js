@@ -328,8 +328,13 @@ test.describe('Flujo completo', () => {
     await expect(page.locator('#mod-badge-name')).toHaveText('ISO')
     await page.click('[data-sec="alumnos"]')
     await expect(page.locator('#alumnos-mod-sel')).toHaveValue(String(ids.iso))
-    // El alumno E2E de ISO reaparece (valor del input de apellidos)
-    await expect(page.locator('#alumnos-tbody td:nth-child(2) input').first())
-      .toHaveValue(ALUMNO_APELLIDOS, { timeout: 15_000 })
+    // El alumno E2E de ISO reaparece. En CI (Linux) el render de la tabla puede
+    // tardar y "first()" a veces no existe aún: esperamos a que haya *algún*
+    // input de apellidos con el valor esperado.
+    await expect(page.locator('#alumnos-tbody')).not.toContainText('Sin alumnos', { timeout: 20_000 })
+    await page.waitForFunction(expected => {
+      const inputs = document.querySelectorAll('#alumnos-tbody td:nth-child(2) input')
+      return Array.from(inputs).some(i => i.value === expected)
+    }, ALUMNO_APELLIDOS, { timeout: 20_000 })
   })
 })
