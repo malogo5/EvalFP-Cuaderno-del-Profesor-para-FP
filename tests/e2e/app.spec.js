@@ -290,13 +290,15 @@ test.describe('Flujo completo', () => {
 
   // ── 2f. Multi-módulo: el desplegable del sidebar manda ───────────────────
   test('cambiar de módulo en el sidebar actualiza todas las secciones', async () => {
-    // Crear un 2º módulo (PAR) y activarlo como haría el desplegable lateral
+    // Crear un 2º módulo (E2E2) y activarlo como haría el desplegable lateral.
+    // Nota: esto solo existe en la BD temporal de tests (EVALFP_TEST), no en la app real.
     const ids = await page.evaluate(async () => {
-      if (!(await window.api.getModulos()).some(m => m.key === 'par_data')) {
-        const data = await window.api.getModuloData('par_data')
-        const m = data.modulo
+      const KEY = 'par_data' // clave de datos existente, pero se muestra como "E2E2"
+      if (!(await window.api.getModulos()).some(m => m.key === KEY)) {
+        const data = await window.api.getModuloData(KEY)
+        const m = { ...data.modulo, abrev: 'E2E2', nombre: 'Módulo E2E2 (solo tests)' }
         await window.api.addModulo({
-          key: 'par_data', abrev: m.abrev, nombre: m.nombre, ciclo: m.ciclo,
+          key: KEY, abrev: m.abrev, nombre: m.nombre, ciclo: m.ciclo,
           curso: m.curso, anno: m.anno, grupo: 'Grupo E2E',
           horas: m.total_horas || m.horas || 0, decreto: m.decreto || null,
           actividades: data.actividades, data,
@@ -304,24 +306,24 @@ test.describe('Flujo completo', () => {
       }
       _modulos = await window.api.getModulos()
       const iso = _modulos.find(x => x.key === 'iso_data')
-      const par = _modulos.find(x => x.key === 'par_data')
-      selectMod(par.id)   // ← equivale al clic en el desplegable del sidebar
-      return { iso: iso.id, par: par.id }
+      const e2e2 = _modulos.find(x => x.key === KEY)
+      selectMod(e2e2.id)   // ← equivale al clic en el desplegable del sidebar
+      return { iso: iso.id, e2e2: e2e2.id }
     })
     await page.waitForTimeout(400)
 
     // Regresión: todas las secciones deben seguir al módulo activo del sidebar
     await page.click('[data-sec="alumnos"]')
-    await expect(page.locator('#alumnos-mod-sel')).toHaveValue(String(ids.par))
-    // El alumno de ISO no debe aparecer en PAR (los nombres van en <input value>,
+    await expect(page.locator('#alumnos-mod-sel')).toHaveValue(String(ids.e2e2))
+    // El alumno de ISO no debe aparecer en E2E2 (los nombres van en <input value>,
     // no en texto, así que se comprueba el placeholder de tabla vacía)
     await expect(page.locator('#alumnos-tbody')).toContainText('Sin alumnos')
 
     await page.click('[data-sec="notas"]')
-    await expect(page.locator('#notas-mod-sel')).toHaveValue(String(ids.par))
+    await expect(page.locator('#notas-mod-sel')).toHaveValue(String(ids.e2e2))
 
     await page.click('[data-sec="evaluaciones"]')
-    await expect(page.locator('#eval-mod-sel')).toHaveValue(String(ids.par))
+    await expect(page.locator('#eval-mod-sel')).toHaveValue(String(ids.e2e2))
 
     // Volver a ISO: las secciones vuelven a mostrar sus datos
     await page.evaluate(id => selectMod(id), ids.iso)
