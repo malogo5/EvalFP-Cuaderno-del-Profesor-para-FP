@@ -110,6 +110,7 @@ contextBridge.exposeInMainWorld('api', {
   // ── Config ────────────────────────────────────────────────────────────────────
   getAllConfig: ()      => ipcRenderer.invoke('db:getAllConfig'),
   getAppInfo:   ()      => ipcRenderer.invoke('app:getInfo'),
+  isTestMode:   ()      => process.env.EVALFP_TEST === '1',
   setConfig:   (k, v)  => {
     if (!_isStr(k, 50))     throw new Error('config key inválida')
     if (!_isStr(v, 60000))  throw new Error('config value demasiado largo')

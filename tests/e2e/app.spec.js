@@ -106,12 +106,13 @@ test.describe('Arranque y navegación', () => {
     expect(logoText).toBe('EvalFP')
   })
 
-  test('arranca en Módulos con la BD de test vacía', async () => {
-    // init(): sin módulos → sección "modulos"; con módulos → "programacion".
+  test('arranca en Inicio con la BD de test vacía', async () => {
+    // init(): sin módulos → sección "inicio"; con módulos → "inicio".
     // La BD de test (EVALFP_TEST) siempre parte vacía.
     const activeItem = page.locator('.nav-item.active')
     await expect(activeItem).toHaveCount(1)
-    await expect(activeItem).toHaveAttribute('data-sec', 'modulos')
+    await expect(activeItem).toHaveAttribute('data-sec', 'inicio')
+    await expect(page.locator('#home-guide')).toContainText('Primeros pasos')
   })
 
   test('navega a Módulos', async () => {
