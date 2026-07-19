@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 'use strict'
 const { contextBridge, ipcRenderer } = require('electron')
 
@@ -108,6 +109,7 @@ contextBridge.exposeInMainWorld('api', {
 
   // ── Config ────────────────────────────────────────────────────────────────────
   getAllConfig: ()      => ipcRenderer.invoke('db:getAllConfig'),
+  getAppInfo:   ()      => ipcRenderer.invoke('app:getInfo'),
   setConfig:   (k, v)  => {
     if (!_isStr(k, 50))     throw new Error('config key inválida')
     if (!_isStr(v, 60000))  throw new Error('config value demasiado largo')
