@@ -49,6 +49,7 @@ function goSection(sec) {
   if (sec === 'notas')        initModSelect('notas-mod-sel',   loadNotas)
   if (sec === 'evaluaciones') initModSelect('eval-mod-sel',    loadEvaluaciones)
   if (sec === 'dashboard')    initModSelect('dash-mod-sel',    loadDashboard)
+  if (sec === 'inicio')       renderHomeGuide()
   if (sec === 'ia')           initIaSection()
   if (sec === 'ajustes')      loadAjustes()
 }
@@ -130,12 +131,13 @@ function registerWindowHandlers() {
 // ═══════════════════════════════════════════════════════════════
 async function init() {
   _modulos = await window.api.getModulos()
+  await renderHomeGuide()
   if (_modulos.length) {
     _curMod = _modulos[0]
     updateModBadge()
-    goSection('programacion')
+    goSection('inicio')
   } else {
-    goSection('modulos')
+    goSection('inicio')
   }
 }
 
@@ -177,6 +179,89 @@ function evalLabel(n) {
   return `${ord} Evaluación`
 }
 
+async function renderHomeGuide() {
+  const box = document.getElementById('home-guide')
+  if (!box) return
+  const hasModules = _modulos.length > 0
+  let alumnosCount = 0
+  if (_curMod?.id) {
+    try {
+      alumnosCount = (await window.api.getAlumnos(_curMod.id)).length
+    } catch {
+      alumnosCount = 0
+    }
+  }
+
+  const steps = [
+    {
+      title: '1. Añade tu módulo',
+      note: hasModules
+        ? `Ya tienes ${_modulos.length} módulo${_modulos.length === 1 ? '' : 's'} cargado${_modulos.length === 1 ? '' : 's'}.`
+        : 'Empieza por crear o importar tu primer módulo.',
+      state: hasModules ? 'done' : 'next',
+      action: hasModules ? 'Ir a módulos' : 'Abrir catálogo',
+      onclick: hasModules ? "goSection('modulos')" : 'openAddModulo()',
+    },
+    {
+      title: '2. Importa alumnos',
+      note: alumnosCount > 0
+        ? `Tu módulo activo ya tiene ${alumnosCount} alumno${alumnosCount === 1 ? '' : 's'}.`
+        : hasModules
+          ? 'Trae tu lista de alumnos para empezar a registrar progreso.'
+          : 'Cuando el módulo esté listo, importa la clase en un minuto.',
+      state: alumnosCount > 0 ? 'done' : hasModules ? 'next' : 'pending',
+      action: 'Ir a alumnos',
+      onclick: "goSection('alumnos')",
+    },
+    {
+      title: '3. Registra notas',
+      note: 'Introduce actividades, recuperaciones y evaluaciones desde una sola pantalla.',
+      state: hasModules ? 'pending' : 'locked',
+      action: 'Abrir notas',
+      onclick: "goSection('notas')",
+    },
+    {
+      title: '4. Revisa resultados',
+      note: 'Usa Dashboard, informes y boletines para cerrar la evaluación con rapidez.',
+      state: hasModules ? 'pending' : 'locked',
+      action: 'Ir al dashboard',
+      onclick: "goSection('dashboard')",
+    },
+  ]
+
+  const stateLabel = {
+    done: 'Hecho',
+    next: 'Siguiente',
+    pending: 'Pendiente',
+    locked: 'Bloqueado',
+  }
+  const stateStyle = {
+    done: 'background:rgba(79,121,66,.12);color:var(--green);border-color:rgba(79,121,66,.2)',
+    next: 'background:rgba(201,104,45,.12);color:var(--accent);border-color:rgba(201,104,45,.2)',
+    pending: 'background:rgba(106,96,80,.10);color:var(--text2);border-color:var(--border)',
+    locked: 'background:rgba(106,96,80,.08);color:var(--text3);border-color:var(--border)',
+  }
+
+  box.innerHTML = `
+    <div class="card-title" style="margin-bottom:10px">Primeros pasos</div>
+    <div class="card-sub" style="margin-bottom:14px">Una ruta corta para empezar sin perder tiempo. La marca verde señala lo que ya tienes listo.</div>
+    <div style="display:grid;gap:10px">
+      ${steps.map(step => `
+        <div style="display:flex;justify-content:space-between;gap:14px;align-items:flex-start;padding:12px 14px;border:1px solid var(--border);border-radius:12px;background:var(--bg3)">
+          <div style="min-width:0">
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:4px">
+              <div style="font-size:12.5px;font-weight:700;color:var(--text)">${esc(step.title)}</div>
+              <span class="badge" style="${stateStyle[step.state]}">${stateLabel[step.state]}</span>
+            </div>
+            <div style="font-size:12px;line-height:1.5;color:var(--text2)">${esc(step.note)}</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" style="flex-shrink:0" onclick="${step.onclick}">${esc(step.action)}</button>
+        </div>
+      `).join('')}
+    </div>
+  `
+}
+
 async function loadAppInfo() {
   try {
     _appInfo = await window.api.getAppInfo()
@@ -201,6 +286,7 @@ async function loadAppInfo() {
 
 async function maybeAutoOpenAbout() {
   if (!_appInfo?.version) return
+  if (window.api.isTestMode?.()) return
   try {
     const cfg = await window.api.getAllConfig()
     if (cfg.aboutSeenVersion === _appInfo.version) return
