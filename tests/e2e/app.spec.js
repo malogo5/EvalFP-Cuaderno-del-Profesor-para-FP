@@ -39,29 +39,17 @@ async function launchApp() {
 
 /**
  * Cierra Electron sin dejar que un proceso atascado bloquee el worker de
- * Playwright. En Ubuntu/Xvfb el cierre elegante puede quedarse esperando a un
- * subproceso de Electron; en ese caso se fuerza la terminación tras 8 s.
+ * Playwright. Si el cierre elegante no termina, se fuerza la terminación.
  */
 async function closeApp(electronApp) {
   if (!electronApp) return
 
-  // En GitHub Actions, Electron puede bloquearse en app.quit() bajo Xvfb aun
-  // después de que todos los tests hayan terminado. Cerrar el proceso principal
-  // directamente evita que Playwright agote el timeout de teardown del worker.
-  if (process.env.CI) {
-    const child = electronApp.process()
-    if (child?.exitCode === null && !child.killed) child.kill('SIGKILL')
-    await Promise.race([
-      new Promise(resolve => child?.once('exit', resolve)),
-      new Promise(resolve => setTimeout(resolve, 5_000)),
-    ])
-    return
-  }
-
+  let timer
   const closed = await Promise.race([
     electronApp.close().then(() => true).catch(() => true),
-    new Promise(resolve => setTimeout(() => resolve(false), 8_000)),
+    new Promise(resolve => { timer = setTimeout(() => resolve(false), 8_000) }),
   ])
+  clearTimeout(timer)
 
   if (!closed) {
     try { electronApp.process()?.kill('SIGKILL') } catch { /* ya cerrado */ }
