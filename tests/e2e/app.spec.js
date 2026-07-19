@@ -325,9 +325,11 @@ test.describe('Flujo completo', () => {
 
     // Volver a ISO: las secciones vuelven a mostrar sus datos
     await page.evaluate(id => selectMod(id), ids.iso)
-    await page.waitForTimeout(400)
+    await expect(page.locator('#mod-badge-name')).toHaveText('ISO')
     await page.click('[data-sec="alumnos"]')
     await expect(page.locator('#alumnos-mod-sel')).toHaveValue(String(ids.iso))
+    await expect(page.locator('#alumnos-tbody td:nth-child(2) input').first())
+      .toHaveCount(1)
     // El alumno E2E de ISO reaparece (valor del input de apellidos)
     await expect(page.locator('#alumnos-tbody td:nth-child(2) input').first())
       .toHaveValue(ALUMNO_APELLIDOS)
