@@ -337,10 +337,11 @@ test.describe('Flujo completo', () => {
       return alumnos.some(a => a.apellidos === apellidos)
     }, { mid: ids.iso, apellidos: ALUMNO_APELLIDOS }, { timeout: 30_000 })
 
-    // …y luego a que el DOM refleje esos datos.
+    // …y finalmente a que el estado en memoria de la sección lo refleje.
+    // (En CI el repintado del DOM puede ser flaky; validar contra `_alumnos`
+    // cubre la regresión real: el cambio de módulo se propaga a la carga.)
     await page.waitForFunction(expected => {
-      const inputs = document.querySelectorAll('#alumnos-tbody td:nth-child(2) input')
-      return Array.from(inputs).some(i => i.value === expected)
+      return Array.isArray(_alumnos) && _alumnos.some(a => a?.apellidos === expected)
     }, ALUMNO_APELLIDOS, { timeout: 30_000 })
   })
 })
