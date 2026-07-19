@@ -38,6 +38,24 @@ async function launchApp() {
 }
 
 /**
+ * Cierra Electron sin dejar que un proceso atascado bloquee el worker de
+ * Playwright. En Ubuntu/Xvfb el cierre elegante puede quedarse esperando a un
+ * subproceso de Electron; en ese caso se fuerza la terminación tras 8 s.
+ */
+async function closeApp(electronApp) {
+  if (!electronApp) return
+
+  const closed = await Promise.race([
+    electronApp.close().then(() => true).catch(() => true),
+    new Promise(resolve => setTimeout(() => resolve(false), 8_000)),
+  ])
+
+  if (!closed) {
+    try { electronApp.process()?.kill('SIGKILL') } catch { /* ya cerrado */ }
+  }
+}
+
+/**
  * Selecciona el módulo ISO en un <select> dado su id.
  * Los selectores de módulo están ocultos por diseño (la selección se hace en
  * el sidebar), así que se fija el valor por JS y se dispara su onchange.
@@ -98,7 +116,7 @@ test.describe('Arranque y navegación', () => {
     ;({ electronApp, page } = await launchApp())
   })
   test.afterEach(async () => {
-    await electronApp.close()
+    await closeApp(electronApp)
   })
 
   test('muestra el título EvalFP en el sidebar', async () => {
@@ -154,7 +172,7 @@ test.describe('Flujo completo', () => {
 
   test.afterAll(async () => {
     // La BD es temporal (EVALFP_TEST) — no hace falta limpiar datos
-    await electronApp.close()
+    await closeApp(electronApp)
   })
 
   // ── 2a. El módulo ISO existe ─────────────────────────────────────────────
