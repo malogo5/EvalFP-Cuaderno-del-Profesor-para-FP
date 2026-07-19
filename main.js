@@ -455,6 +455,8 @@ ipcMain.handle('pdf:exportBoletin', async (_, htmlContent, alumnoNombre) => {
   const pdfData = await pdfWin.webContents.printToPDF({ printBackground: true, pageSize: 'A4' })
   pdfWin.close()
   fs.writeFileSync(outPath, pdfData)
-  shell.openPath(outPath)
+  // En E2E no se abre una aplicación externa: bajo Linux/Xvfb xdg-open puede
+  // dejar procesos pendientes y bloquear el cierre de Electron.
+  if (!isTestMode) shell.openPath(outPath)
   return outPath
 })
