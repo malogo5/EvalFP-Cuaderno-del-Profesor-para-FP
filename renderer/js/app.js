@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 // ═══════════════════════════════════════════════════════════════
 // Estado global
 // ═══════════════════════════════════════════════════════════════
@@ -6,6 +7,7 @@ let _curMod  = null     // módulo activo seleccionado
 let _alumnos = []
 let _actividades = []
 let _notasGrid = {}     // {alumno_id: {act_id: nota}}
+let _appInfo = null
 
 const SECS = ['inicio','modulos','programacion','alumnos','notas','evaluaciones','dashboard','ia','ajustes']
 const TITLES = {inicio:'Inicio',modulos:'Módulos',programacion:'Programación del Módulo',alumnos:'Alumnos',notas:'Registro de Notas',
@@ -117,6 +119,7 @@ function registerWindowHandlers() {
     loadDashboard, genBoletin, togglePardonCe, saveRec2Nota, setRecSort, toggleRecCard, setOrd1Sort, toggleOrd1Card,
     initIaSection, iaTab, termAppend, runIA, runApuntes,
     iaInformeLoadAlumnos, iaInformeAutoNotas,
+    openAbout, closeAbout, loadAppInfo,
     loadAjustes, saveAjustes, setTheme,
     v, esc, showSaved, evalLabel,
   })
@@ -174,6 +177,70 @@ function evalLabel(n) {
   return `${ord} Evaluación`
 }
 
+async function loadAppInfo() {
+  try {
+    _appInfo = await window.api.getAppInfo()
+    const versionEl = document.getElementById('app-version')
+    if (versionEl && _appInfo?.version) versionEl.textContent = _appInfo.version
+    const aboutVersion = document.getElementById('about-version')
+    if (aboutVersion && _appInfo?.version) aboutVersion.textContent = _appInfo.version
+    const aboutProduct = document.getElementById('about-product')
+    if (aboutProduct && _appInfo?.productName) aboutProduct.textContent = _appInfo.productName
+    const aboutLicense = document.getElementById('about-license')
+    if (aboutLicense && _appInfo?.license) aboutLicense.textContent = _appInfo.license
+    const aboutCopyright = document.getElementById('about-copyright')
+    if (aboutCopyright && _appInfo?.copyright) aboutCopyright.textContent = _appInfo.copyright
+    const aboutNotes = document.getElementById('about-notes')
+    if (aboutNotes && Array.isArray(_appInfo?.releaseNotes)) {
+      aboutNotes.innerHTML = _appInfo.releaseNotes.map(note => `<li>${esc(note)}</li>`).join('')
+    }
+  } catch (err) {
+    console.error('No se pudo cargar la información de la app', err)
+  }
+}
+
+async function maybeAutoOpenAbout() {
+  if (!_appInfo?.version) return
+  try {
+    const cfg = await window.api.getAllConfig()
+    if (cfg.aboutSeenVersion === _appInfo.version) return
+    openAbout()
+    await window.api.setConfig('aboutSeenVersion', _appInfo.version)
+  } catch (err) {
+    console.error('No se pudo registrar el aviso de Acerca de', err)
+  }
+}
+
+function openAbout() {
+  const dlg = document.getElementById('dlg-about')
+  if (!dlg) return
+  if (_appInfo) {
+    const versionEl = document.getElementById('app-version')
+    if (versionEl && _appInfo.version) versionEl.textContent = _appInfo.version
+    const aboutVersion = document.getElementById('about-version')
+    if (aboutVersion && _appInfo.version) aboutVersion.textContent = _appInfo.version
+    const aboutProduct = document.getElementById('about-product')
+    if (aboutProduct && _appInfo.productName) aboutProduct.textContent = _appInfo.productName
+    const aboutLicense = document.getElementById('about-license')
+    if (aboutLicense && _appInfo.license) aboutLicense.textContent = _appInfo.license
+    const aboutCopyright = document.getElementById('about-copyright')
+    if (aboutCopyright && _appInfo.copyright) aboutCopyright.textContent = _appInfo.copyright
+    const aboutNotes = document.getElementById('about-notes')
+    if (aboutNotes && Array.isArray(_appInfo.releaseNotes)) {
+      aboutNotes.innerHTML = _appInfo.releaseNotes.map(note => `<li>${esc(note)}</li>`).join('')
+    }
+  }
+  if (typeof dlg.showModal === 'function') dlg.showModal()
+  else dlg.setAttribute('open', 'open')
+}
+
+function closeAbout() {
+  const dlg = document.getElementById('dlg-about')
+  if (!dlg) return
+  if (typeof dlg.close === 'function') dlg.close()
+  else dlg.removeAttribute('open')
+}
+
 // ═══════════════════════════════════════════════════════════════
 // Sidebar redimensionable
 // ═══════════════════════════════════════════════════════════════
@@ -223,9 +290,11 @@ function initSidebarResize() {
 async function bootstrap() {
   for (const src of MODULE_SCRIPTS) await loadScript(src)
   registerWindowHandlers()
+  await loadAppInfo()
   init()
   setupInlineEditing()
   initSidebarResize()
+  maybeAutoOpenAbout()
 }
 
 bootstrap()

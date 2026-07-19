@@ -1,9 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 'use strict'
 const { app, BrowserWindow, ipcMain, shell } = require('electron')
 const path   = require('path')
 const { spawn, spawnSync } = require('child_process')
 const fs     = require('fs')
 const os     = require('os')
+const pkg    = require('./package.json')
 const schedule = require('node-schedule')
 const logger = require('./main/logger')
 const keytarSafe = require('./main/keytar-safe')
@@ -88,7 +90,7 @@ async function loadApiKeysFromSecureStorage() {
 }
 
 const SENSITIVE_CONFIG_KEYS = new Set(['openaiKey', 'anthropicKey'])
-const SAFE_CONFIG_KEY = /^(proveedor|theme|sidebarWidth|minexam_\d+|pardones_\d+|rec2notas_\d+|recmigra_avisado_\d+)$/
+const SAFE_CONFIG_KEY = /^(proveedor|theme|sidebarWidth|aboutSeenVersion|minexam_\d+|pardones_\d+|rec2notas_\d+|recmigra_avisado_\d+)$/
 const PROVIDERS = new Set(['auto', 'claude', 'openai', 'demo'])
 
 function assertSafeConfigKey(key) {
@@ -124,6 +126,21 @@ async function getPublicConfig() {
   config.hasOpenAI = keytarSafe.isAvailable() && !!await keytarSafe.getPassword('EvalFP', 'openai_api_key')
   config.hasAnthropic = keytarSafe.isAvailable() && !!await keytarSafe.getPassword('EvalFP', 'anthropic_api_key')
   return config
+}
+
+function getAppInfo() {
+  return {
+    name: app.getName(),
+    productName: pkg.build?.productName || app.getName(),
+    version: app.getVersion(),
+    license: pkg.license || 'GPL-3.0-or-later',
+    copyright: pkg.build?.copyright || '',
+    releaseNotes: [
+      'Instalador y documentación base incluidos en el paquete final.',
+      'Modal "Acerca de" con versión y licencia visibles dentro de la app.',
+      'Autoapertura del aviso una sola vez por versión nueva.',
+    ],
+  }
 }
 
 // ── Automatic Database Backups ────────────────────────────────────────────────
@@ -366,6 +383,7 @@ ipcMain.handle('db:getAllConfig', async event => {
   assertTrustedSender(event)
   return getPublicConfig()
 })
+ipcMain.handle('app:getInfo', () => getAppInfo())
 ipcMain.handle('db:setConfig',   (event, k, v) => {
   assertTrustedSender(event)
   assertSafeConfigKey(k)
