@@ -4,7 +4,7 @@ const { contextBridge, ipcRenderer } = require('electron')
 
 // ── Validación en preload (contexto aislado, sin acceso a validators.js) ──────
 function _isPositiveInt(v) {
-  const n = typeof v === 'string' ? parseInt(v) : v
+  const n = typeof v === 'string' ? parseInt(v, 10) : v
   return Number.isInteger(n) && n > 0
 }
 function _isStr(v, maxLen = 500) {
@@ -16,11 +16,11 @@ function _validateId(id, label = 'id') {
 function _validateAlumno(a) {
   if (!a || typeof a !== 'object') throw new Error('alumno inválido')
   if (!a.id && !_isPositiveInt(a.modulo_id)) throw new Error('modulo_id inválido')
-  if (a.apellidos != null && !_isStr(a.apellidos, 100)) throw new Error('apellidos muy largo')
-  if (a.nombre    != null && !_isStr(a.nombre, 100))    throw new Error('nombre muy largo')
-  if (a.estado    != null && !['Activo','Pendiente','Baja'].includes(a.estado)) throw new Error('estado inválido')
-  if (a.email     != null && !_isStr(a.email, 200))     throw new Error('email muy largo')
-  if (a.nia       != null && !_isStr(a.nia, 20))        throw new Error('NIA muy largo')
+  if (a.apellidos !== null && a.apellidos !== undefined && !_isStr(a.apellidos, 100)) throw new Error('apellidos muy largo')
+  if (a.nombre !== null && a.nombre !== undefined && !_isStr(a.nombre, 100)) throw new Error('nombre muy largo')
+  if (a.estado !== null && a.estado !== undefined && !['Activo','Pendiente','Baja'].includes(a.estado)) throw new Error('estado inválido')
+  if (a.email !== null && a.email !== undefined && !_isStr(a.email, 200)) throw new Error('email muy largo')
+  if (a.nia !== null && a.nia !== undefined && !_isStr(a.nia, 20)) throw new Error('NIA muy largo')
 }
 function _validateNota(n) {
   if (n === null || n === undefined) return

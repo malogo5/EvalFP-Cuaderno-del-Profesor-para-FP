@@ -41,7 +41,7 @@ function goSection(sec) {
   })
   SECS.forEach(s => document.getElementById('sec-'+s).style.display = s===sec ? '' : 'none')
   document.getElementById('topbar-title').textContent = TITLES[sec] || sec
-  document.getElementById('topbar-sub').textContent = ''
+  document.getElementById('topbar-sub').textContent = getTopbarSub(sec)
   // Cargar datos de la sección
   if (sec === 'modulos')      renderModulos().then(() => renderModRasPanel(_curMod))
   if (sec === 'programacion') initModSelect('prog-mod-sel', loadProgramacion)
@@ -52,6 +52,24 @@ function goSection(sec) {
   if (sec === 'inicio')       renderHomeGuide()
   if (sec === 'ia')           initIaSection()
   if (sec === 'ajustes')      loadAjustes()
+}
+
+function getTopbarSub(sec) {
+  const moduleLabel = _curMod
+    ? [_curMod.abrev, _curMod.curso || null, _curMod.grupo || null].filter(Boolean).join(' · ')
+    : 'Sin módulo activo'
+  const hints = {
+    inicio: 'Ruta de trabajo rápida',
+    modulos: 'Catálogo y gestión de módulos',
+    programacion: moduleLabel,
+    alumnos: moduleLabel,
+    notas: moduleLabel,
+    evaluaciones: moduleLabel,
+    dashboard: moduleLabel,
+    ia: 'Generación asistida de contenidos',
+    ajustes: 'Preferencias y seguridad',
+  }
+  return hints[sec] || moduleLabel
 }
 
 function initModSelect(selId, cb) {
@@ -245,9 +263,15 @@ async function renderHomeGuide() {
   box.innerHTML = `
     <div class="card-title" style="margin-bottom:10px">Primeros pasos</div>
     <div class="card-sub" style="margin-bottom:14px">Una ruta corta para empezar sin perder tiempo. La marca verde señala lo que ya tienes listo.</div>
-    <div style="display:grid;gap:10px">
+    <div class="home-ribbon">
+      <span class="home-ribbon-pill">Local</span>
+      <span class="home-ribbon-pill">SQLite</span>
+      <span class="home-ribbon-pill">macOS</span>
+      <span class="home-ribbon-pill">Windows</span>
+    </div>
+    <div style="display:grid;gap:10px;margin-top:14px">
       ${steps.map(step => `
-        <div style="display:flex;justify-content:space-between;gap:14px;align-items:flex-start;padding:12px 14px;border:1px solid var(--border);border-radius:12px;background:var(--bg3)">
+        <div class="home-step">
           <div style="min-width:0">
             <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:4px">
               <div style="font-size:12.5px;font-weight:700;color:var(--text)">${esc(step.title)}</div>

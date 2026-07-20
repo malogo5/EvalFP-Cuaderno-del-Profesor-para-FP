@@ -20,7 +20,7 @@ class KeytarStub {
       this.instance = require('keytar')
       this.available = true
       return true
-    } catch (err) {
+    } catch {
       // Keytar not available - use stub mode
       this.available = false
       return false
