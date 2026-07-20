@@ -50,3 +50,4 @@ src/~$*.xlsx
 # Logs
 logs/
 *.log
+EvalFP.zip
