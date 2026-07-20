@@ -6,7 +6,7 @@
  * (requiere npm install primero)
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import os   from 'os'
 import path from 'path'
 import fs   from 'fs'
@@ -52,7 +52,9 @@ afterEach(() => {
     const dbDir  = path.join(os.tmpdir(), `evalfp-test-${process.pid}`)
     const dbFile = path.join(dbDir, 'evalfp.db')
     if (fs.existsSync(dbFile)) fs.unlinkSync(dbFile)
-  } catch (_) {}
+  } catch {
+    // Limpieza best-effort: si la base ya se cerró o el fichero no existe, seguimos.
+  }
 })
 
 // ── Tests: Módulos ─────────────────────────────────────────────────────────────

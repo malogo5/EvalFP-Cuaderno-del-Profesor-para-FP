@@ -3,153 +3,73 @@
 [![Licencia: GPL-3.0-or-later](https://img.shields.io/badge/Licencia-GPL--3.0--or--later-blue.svg)](LICENSE)
 [![Versión](https://img.shields.io/badge/versión-3.0.0-orange.svg)](CHANGELOG.md)
 
-EvalFP automatiza la gestión del cuaderno del profesor de Formación Profesional en España: programación didáctica, registro de notas, cálculo de calificaciones, informes y dashboard, todo dentro de un único libro Excel generado por Python.
+EvalFP es una aplicación de escritorio Electron para profesorado de Formación Profesional en España. Gestiona programación didáctica, alumnado, notas, evaluaciones, informes y materiales de apoyo en una base de datos SQLite local, sin backend remoto.
 
-**Versión actual:** 3.0.0 · Consulta el [ROADMAP](ROADMAP.md) y el [CHANGELOG](CHANGELOG.md) para el historial completo.
+**Versión actual:** 3.0.0 · Consulta el [CHANGELOG](CHANGELOG.md) y la [ruta del proyecto](docs/refactor/03_ROADMAP.md) para el historial y la evolución.
 
-## ¿Por qué existe EvalFP?
+## Lo esencial
 
-El profesorado de FP en España gestiona programación didáctica, evaluación por resultados de aprendizaje (RA) y boletines sin herramientas específicas: la alternativa habitual son hojas de cálculo genéricas o cuadernos en papel. EvalFP nace de la experiencia directa en el aula para cubrir ese hueco con una herramienta abierta, gratuita y adaptada al sistema de evaluación real de la FP española.
+- Funcionamiento local en macOS y Windows.
+- Datos de alumnado guardados solo en tu equipo.
+- Motor de módulos ampliable con archivos `*_data.py`.
+- Generación opcional de materiales con Python e IA.
 
-## Captura de pantalla
+## Primeros pasos
 
-![Panel Diario de EvalFP](Captura%20de%20pantalla%202026-06-29%20a%20las%2011.29.07.png)
-
----
-
-## Características de EvalFP 2.0
-
-- **Multi-módulo y multi-grupo** — un único `.xlsx` para toda la carga docente del profesor
-- **Motor de evaluación** 100% en fórmulas Excel: Actividades → Reg. Notas → Evaluaciones → Nota Final
-- **Cascada automática** sin macros: introduce la nota de una actividad y la nota final se recalcula sola
-- **Hojas globales** — Inicio · Configuración · Mis Módulos · Biblioteca · Calendario · Panel Diario · Dashboard Global
-- **Hojas por módulo** (prefijadas `{ABREV} · `) — Programación · Alumnos · Actividades · Reg. Notas · Evaluación 1/2/3 · 1ªORD · 2ªORD · Rúbricas · Informe Grupo · Boletín · Dashboard
-- **Asistente IA** — genera descriptores de rúbricas, propuestas de actividades e informes individuales via API Claude/OpenAI
-- **Arquitectura módulo-agnóstica** — añade un nuevo módulo creando un `*_data.py` y añadiendo una línea en `teacher_config.py`
-
----
-
-## Estructura del proyecto
-
-```text
-cuaderno-del-profesor/
-├── README.md                         # Este archivo
-├── ROADMAP.md                        # Plan de ruta v1.0 y v2.0
-├── CHANGELOG.md                      # Historial de versiones
-├── requirements.txt                  # Dependencias Python
-├── docs/
-│   ├── version_2.md                  # Visión EvalFP 2.0
-│   ├── casos_uso.md                  # Casos de uso CU01–CU15
-│   ├── decisiones_arquitectura.md    # Architecture Decision Records ADR-001–007
-│   └── guia_desarrollo.md            # Filosofía y flujo de sprints
-├── scripts/
-│   ├── build_template.py             # Generador principal del libro Excel
-│   ├── ai_asistente.py               # Asistente IA (Sprint 2.6)
-│   ├── teacher_config.py             # Carga docente del profesor/a
-│   └── modules/
-│       ├── iso_data.py               # Módulo ISO (Implantación de Sistemas Operativos)
-│       └── par_data.py               # Módulo PAR (Planificación y Administración de Redes)
-├── src/
-│   └── EvalFP.xlsx                   # Libro Excel generado (artefacto)
-└── ia_output/                        # Contenido generado por el Asistente IA (opcional)
-    ├── iso/
-    └── par/
-```
-
----
-
-## Requisitos
-
-- Python 3.10+
-- `openpyxl` (obligatorio): `pip install openpyxl`
-- `anthropic` o `openai` (opcional, para el Asistente IA): `pip install anthropic`
-
-O instala todo de una vez:
+1. Instala dependencias.
+2. Arranca la app en local.
+3. Selecciona o crea un módulo.
+4. Importa tu alumnado.
+5. Empieza a registrar actividades y notas.
 
 ```bash
-pip install -r requirements.txt
+npm install
+npm start
 ```
 
----
+Si quieres el flujo completo de instalación y uso, abre [INSTALACION_Y_USO.md](INSTALACION_Y_USO.md).
 
-## Generar el libro Excel
+## Funcionalidades
+
+- Gestión de módulos y grupos.
+- Alumnado con edición rápida.
+- Registro de notas por actividades y evaluaciones.
+- Dashboard y boletines.
+- Asistente IA opcional para rúbricas, actividades e informes.
+- Generación de instaladores para macOS y Windows.
+
+## Desarrollo y pruebas
 
 ```bash
-# Genera src/EvalFP.xlsx con todos los módulos configurados en teacher_config.py
-python3 scripts/build_template.py
-
-# Genera el xlsx + contenido IA para todos los módulos (requiere API key)
-python3 scripts/build_template.py --ia
+npm run prebake
+npm test
+npm run test:e2e
+npm run lint
+npm run build:mac
+npm run build:win
 ```
 
----
+## Estructura principal
 
-## Configurar tu carga docente
+- `main.js`, `preload.js`, `db.js`: núcleo de Electron.
+- `renderer/`: interfaz de usuario.
+- `scripts/`: generación de módulos, plantilla y asistente IA.
+- `docs/`: decisiones, guía de desarrollo y notas técnicas.
 
-Edita `scripts/teacher_config.py`:
+## Añadir un módulo
 
-```python
-import modules.iso_data as iso_data
-import modules.par_data as par_data
+1. Crea un archivo nuevo en `scripts/modules/` siguiendo el patrón de `iso_data.py`.
+2. Regístralo en `scripts/teacher_config.py`.
+3. Ejecuta `npm run prebake`.
+4. Vuelve a abrir la app o genera el instalador.
 
-TEACHER_MODULES = [
-    (iso_data, "1º ASIR-A"),
-    (par_data, "1º ASIR-A"),
-]
-```
+## Documentación útil
 
-Añade un nuevo módulo copiando `iso_data.py` o `par_data.py`, adaptando los datos, y añadiendo una línea a la lista.
-
----
-
-## Asistente IA
-
-El asistente genera contenido pedagógico en lenguaje natural a partir de los datos de tu módulo.
-
-```bash
-# Ver ayuda completa
-python3 scripts/ai_asistente.py --ayuda
-
-# Generar rúbrica para un RA
-python3 scripts/ai_asistente.py rubrica --modulo iso_data --ra RA1
-
-# Proponer actividades
-python3 scripts/ai_asistente.py actividad --modulo par_data --ra RA3 --n 3
-
-# Borrador de informe individual
-python3 scripts/ai_asistente.py informe --alumno "García López, Marta" --notas "RA1:7,RA2:4,RA3:8"
-
-# Generar todo el contenido de un módulo
-python3 scripts/ai_asistente.py todo --modulo iso_data --salida ia_output/iso
-```
-
-Configura tu API key en el entorno antes de ejecutar:
-
-```bash
-export ANTHROPIC_API_KEY=sk-ant-...   # Claude (recomendado)
-# o
-export OPENAI_API_KEY=sk-...          # OpenAI (alternativa)
-```
-
-Sin API key, el asistente funciona en **modo DEMO** con texto de ejemplo.
-
----
-
-## Documentación técnica
-
-| Documento | Descripción |
-|---|---|
-| [docs/version_2.md](docs/version_2.md) | Visión y alcance de EvalFP 2.0 |
-| [docs/casos_uso.md](docs/casos_uso.md) | Catálogo de casos de uso CU01–CU15 |
-| [docs/decisiones_arquitectura.md](docs/decisiones_arquitectura.md) | ADRs y decisiones de diseño |
-| [docs/guia_desarrollo.md](docs/guia_desarrollo.md) | Reglas de codificación y flujo de sprints |
-
----
-
-## Contribuir
-
-Las contribuciones son bienvenidas: nuevos módulos de FP (`*_data.py`), correcciones, traducciones o documentación. Consulta [docs/guia_desarrollo.md](docs/guia_desarrollo.md) para la filosofía del proyecto y abre un issue o pull request.
+- [docs/guia_desarrollo.md](docs/guia_desarrollo.md)
+- [docs/decisiones_arquitectura.md](docs/decisiones_arquitectura.md)
+- [docs/version_2.md](docs/version_2.md)
+- [docs/casos_uso.md](docs/casos_uso.md)
 
 ## Licencia
 
-EvalFP se distribuye bajo la licencia GNU GPL v3.0 o posterior. Puedes usarlo, estudiarlo, modificarlo y redistribuirlo, siempre que las obras derivadas mantengan la misma licencia. El texto completo está disponible en [LICENSE](LICENSE).
+EvalFP se distribuye bajo [GNU GPL v3.0 o posterior](LICENSE).
