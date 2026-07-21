@@ -372,12 +372,130 @@ def _cargar_modulo(nombre: str):
 
 
 def _parse_notas(notas_str: str) -> dict[str, float]:
-    """Parsea "RA1:7,RA2:5.5,RA3:8" → {"RA1": 7.0, "RA2": 5.5, "RA3": 8.0}"""
-    resultado = {}
-    for parte in notas_str.split(","):
-        ra, nota = parte.strip().split(":")
-        resultado[ra.strip()] = float(nota.strip())
+    """Parsea "RA1:7,RA2:5.5,RA3:8" → {"RA1": 7.0, "RA2": 5.5, "RA3": 8.0}
+
+    Reglas:
+    - ignora espacios alrededor de separadores
+    - permite separadores "," o ";" entre pares
+    - valida formato y rango 0..10
+    """
+    s = (notas_str or "").strip()
+    if not s:
+        raise ValueError("notas vacías")
+
+    resultado: dict[str, float] = {}
+    partes = [p.strip() for p in s.replace(";", ",").split(",") if p.strip()]
+    for parte in partes:
+        if ":" not in parte:
+            raise ValueError(f"formato inválido: '{parte}' (usa RA1:7,RA2:5.5)")
+        ra, nota = parte.split(":", 1)
+        ra = ra.strip()
+        if not ra:
+            raise ValueError(f"RA vacío en '{parte}'")
+        try:
+            n = float(nota.strip())
+        except Exception:
+            raise ValueError(f"nota inválida en '{parte}'")
+        if n < 0 or n > 10:
+            raise ValueError(f"nota fuera de rango 0-10 en '{parte}'")
+        resultado[ra] = n
     return resultado
+
+
+def _parse_min_exam(val: str | None) -> float | None:
+    if val is None:
+        return None
+    s = str(val).strip()
+    if s == "":
+        return None
+    try:
+        n = float(s)
+    except Exception:
+        raise ValueError("mínimo de examen inválido")
+    if n < 0 or n > 10:
+        raise ValueError("mínimo de examen fuera de rango 0-10")
+    return n
+
+
+def _norm_ponds(ras: list[dict]) -> dict[str, float]:
+    """Devuelve ponderaciones normalizadas por RA.
+
+    - Si la suma es 0: reparte por igual.
+    - Si la suma != 100: normaliza proporcionalmente.
+    """
+    p = {r["id"]: float(r.get("pond") or 0) for r in ras}
+    total = sum(p.values())
+    if total <= 0:
+        if not ras:
+            return {}
+        eq = 100.0 / len(ras)
+        return {r["id"]: eq for r in ras}
+    return {k: (v * 100.0 / total) for k, v in p.items()}
+
+
+def _calc_informe_estado(mod, notas: dict[str, float], min_exam: float | None):
+    """Criterio de informe alineado con la app:
+    - Nota final: media ponderada reponderada SOLO sobre RA evaluados (notas presentes)
+    - Regla de oro: APTO ⇔ todos los RA calificados >=5 y sin mínimos KO
+    - Si faltan RA sin nota: resultado PENDIENTE
+    """
+    ras = list(mod.RAS)
+    if not ras:
+        return {"nota_final": None, "resultado": "PENDIENTE", "pendientes": [], "sin_nota": []}
+
+    ponds = _norm_ponds(ras)
+
+    sin_nota: list[str] = []
+    pendientes: list[str] = []
+    sum_w = 0.0
+    sum_wn = 0.0
+
+    # Para el mínimo de examen en Python solo podemos aplicarlo si llega una nota
+    # específica de examen por RA; en el flujo actual no existe. Permitimos
+    # pasar claves tipo "RA1_EX" o "RA1_EXAM" como nota de examen.
+    def _ex_for(ra_id: str) -> float | None:
+        for k in (f"{ra_id}_EX", f"{ra_id}_EXAM", f"{ra_id}_EXAMEN"):
+            if k in notas:
+                return notas.get(k)
+        return None
+
+    for ra in ras:
+        ra_id = ra["id"]
+        n = notas.get(ra_id)
+        if n is None:
+            sin_nota.append(ra_id)
+            continue
+        w = float(ponds.get(ra_id, 0))
+        sum_w += w
+        sum_wn += n * w
+
+        min_ko = False
+        if min_exam is not None:
+            ex = _ex_for(ra_id)
+            if ex is not None and ex < min_exam:
+                min_ko = True
+
+        if n < 5 or min_ko:
+            pendientes.append(ra_id)
+
+    if sum_w > 0:
+        nota_final = sum_wn / sum_w
+    else:
+        # No debería pasar si hay notas presentes, pero por seguridad:
+        nota_final = None
+
+    if sin_nota:
+        resultado = "PENDIENTE"
+    else:
+        resultado = "APTO" if (nota_final is not None and nota_final >= 5 and not pendientes) else "NO APTO"
+
+    nota_final_2 = None if nota_final is None else round(nota_final + 1e-12, 2)
+    return {
+        "nota_final": nota_final_2,
+        "resultado": resultado,
+        "pendientes": pendientes,
+        "sin_nota": sin_nota,
+    }
 
 
 def _cmd_rubrica(args: list[str]):
@@ -408,7 +526,14 @@ def _cmd_actividad(args: list[str]):
     opts = _parse_opts(args, ["--modulo", "--ra", "--n", "--proveedor"])
     mod = _cargar_modulo(opts.get("--modulo", "iso_data"))
     ra_id = opts.get("--ra", mod.RAS[0]["id"])
-    n = int(opts.get("--n", "3"))
+    try:
+        n = int(str(opts.get("--n", "3")).strip())
+    except Exception:
+        print("❌ --n debe ser un entero (1-10).")
+        sys.exit(1)
+    if n < 1 or n > 10:
+        print("❌ --n fuera de rango (1-10).")
+        sys.exit(1)
     ra = next((r for r in mod.RAS if r["id"] == ra_id), None)
     if not ra:
         print(f"❌ RA '{ra_id}' no encontrado en el módulo.")
@@ -430,16 +555,24 @@ def _cmd_actividad(args: list[str]):
 
 
 def _cmd_informe(args: list[str]):
-    opts = _parse_opts(args, ["--modulo", "--alumno", "--notas", "--proveedor"])
+    opts = _parse_opts(args, ["--modulo", "--alumno", "--notas", "--proveedor", "--min-exam"])
     mod    = _cargar_modulo(opts.get("--modulo", "iso_data"))
     alumno = opts.get("--alumno", "Alumno Ejemplo")
-    notas  = _parse_notas(opts.get("--notas", ",".join(
-        f"{r['id']}:5" for r in mod.RAS
-    )))
-    nota_final = sum(
-        notas.get(r["id"], 5) * r["pond"] / 100 for r in mod.RAS
-    )
-    resultado = "APTO" if nota_final >= 5 else "NO APTO"
+    try:
+        notas = _parse_notas(opts.get("--notas", ""))
+    except ValueError as e:
+        print(f"❌ Notas inválidas: {e}")
+        sys.exit(1)
+
+    try:
+        min_exam = _parse_min_exam(opts.get("--min-exam"))
+    except ValueError as e:
+        print(f"❌ {e}")
+        sys.exit(1)
+
+    st = _calc_informe_estado(mod, notas, min_exam)
+    nota_final = st["nota_final"]
+    resultado = st["resultado"]
 
     ia  = IAAsistente(proveedor=opts.get("--proveedor", "auto"))
     out = ia.borrador_informe_alumno(alumno, mod.MODULO, notas, nota_final, resultado)
