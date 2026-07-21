@@ -60,6 +60,17 @@ def generate(project: Project, output_dir: Path) -> None:
     lines.extend(
         [
             "",
+            "## Configuration",
+            "",
+        ]
+    )
+
+    for file in sorted(project.configuration, key=lambda f: f.relative_path):
+        lines.append(f"- {file.relative_path}")
+
+    lines.extend(
+        [
+            "",
             "---",
             "",
             "Generated automatically by AI Toolkit.",

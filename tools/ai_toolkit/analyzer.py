@@ -11,6 +11,20 @@ DOCUMENTATION_FILES = {
     "LICENSE.md",
 }
 
+CONFIGURATION_FILES = {
+    "package.json",
+    "package-lock.json",
+    "pyproject.toml",
+    "requirements.txt",
+    "tsconfig.json",
+    "vite.config.js",
+    "vite.config.ts",
+    "electron-builder.yml",
+    "docker-compose.yml",
+    "Dockerfile",
+    ".gitignore",
+    ".env.example",
+}
 
 def analyze(project_root: Path) -> Project:
     """
@@ -41,7 +55,7 @@ def _analyze_files(project: Project) -> None:
         _classify_structure(project, file)
         _update_statistics(project, file)
         _classify_documentation(project, file)
-
+        _classify_configuration(project, file)
 
 def _classify_structure(project: Project, file: FileInfo) -> None:
     """
@@ -81,3 +95,11 @@ def _classify_documentation(project: Project, file: FileInfo) -> None:
         or file.extension in {".md", ".txt", ".pdf"}
     ):
         project.documentation.append(file)
+
+def _classify_configuration(project: Project, file: FileInfo) -> None:
+    """
+    Detecta archivos de configuración del proyecto.
+    """
+
+    if file.name in CONFIGURATION_FILES:
+        project.configuration.append(file)
