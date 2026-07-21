@@ -8,7 +8,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import argparse
 from pathlib import Path
 
-from ai_toolkit.generators.project_index import generate
+from ai_toolkit.analyzer import analyze
+from ai_toolkit.generators.project_index import generate as generate_project_index
+from ai_toolkit.generators.current_context import generate as generate_current_context
 
 VERSION = "0.2.0"
 
@@ -19,10 +21,12 @@ def prepare():
 
     print("Escaneando proyecto...")
 
-    generate(project_root, output)
+    project = analyze(project_root)
+
+    generate_project_index(project, output)
+    generate_current_context(project, output)
 
     print("Proceso finalizado.")
-
 
 def main():
     parser = argparse.ArgumentParser()
