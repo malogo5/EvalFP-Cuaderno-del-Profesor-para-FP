@@ -38,6 +38,17 @@ def generate(project: Project, output_dir: Path) -> None:
     lines.extend(
         [
             "",
+            "## Technologies",
+            "",
+        ]
+    )
+
+    for technology in sorted(project.technologies):
+        lines.append(f"- {technology}")
+
+    lines.extend(
+        [
+            "",
             "## Main directories",
             "",
         ]
