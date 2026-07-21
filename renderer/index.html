@@ -75,8 +75,8 @@
           <div class="qcard" onclick="goSection('dashboard')"><div class="qi">📈</div><div class="ql">Dashboard</div></div>
           <div class="qcard" onclick="goSection('ia')"><div class="qi">🤖</div><div class="ql">Asistente IA</div></div>
         </div>
-        <div id="home-guide" class="card" style="max-width:760px;margin:28px auto 0;text-align:left"></div>
-      </div>
+      <div id="home-guide" class="card" style="max-width:760px;margin:28px auto 0;text-align:left"></div>
+    </div>
     </section>
 
     <!-- ══ MÓDULOS ══ -->
@@ -100,7 +100,7 @@
       <div style="display:none">
         <select id="prog-mod-sel" onchange="loadProgramacion()"></select>
       </div>
-      <div id="prog-panel" style="color:var(--text2);padding:20px">Selecciona un módulo.</div>
+      <div id="prog-panel" class="empty-state">Selecciona un módulo para ver y editar la programación. Si no tienes ninguno, empieza por el catálogo.</div>
     </section>
 
     <!-- ══ ALUMNOS ══ -->
@@ -124,7 +124,7 @@
               <th class="th-editable">Email</th>
               <th>Estado</th><th style="width:60px"></th>
             </tr></thead>
-            <tbody id="alumnos-tbody"><tr><td colspan="6" style="color:var(--text2);text-align:center;padding:20px">Selecciona un módulo</td></tr></tbody>
+            <tbody id="alumnos-tbody"><tr><td colspan="6" style="color:var(--text2);text-align:center;padding:20px">Selecciona un módulo para gestionar alumnado.</td></tr></tbody>
 
           </table>
         </div>
@@ -166,7 +166,7 @@
         <button class="btn btn-ghost btn-sm" onclick="exportNotasPDF()">📄 Exportar PDF</button>
       </div>
       <div id="notas-grid-wrap">
-        <div style="color:var(--text2);padding:20px">Selecciona un módulo para ver las notas.</div>
+        <div class="empty-state">Selecciona un módulo para ver el registro de notas. Aquí podrás editar actividades, recuperar notas y exportar el resumen.</div>
       </div>
     </section>
 
@@ -175,7 +175,7 @@
       <div style="display:none">
         <select id="eval-mod-sel" onchange="loadEvaluaciones()"></select>
       </div>
-      <div id="eval-content"><div style="color:var(--text2);padding:20px">Selecciona un módulo.</div></div>
+      <div id="eval-content"><div class="empty-state">Selecciona un módulo para revisar evaluaciones, 1ª ordinaria y 2ª ordinaria.</div></div>
     </section>
 
     <!-- ══ DASHBOARD ══ -->
@@ -183,7 +183,7 @@
       <div style="display:none">
         <select id="dash-mod-sel" onchange="loadDashboard()"></select>
       </div>
-      <div id="dash-content"><div style="color:var(--text2);padding:20px">Selecciona un módulo.</div></div>
+      <div id="dash-content"><div class="empty-state">Selecciona un módulo para ver el dashboard, los boletines y los resúmenes de progreso.</div></div>
     </section>
 
     <!-- ══ ASISTENTE IA ══ -->

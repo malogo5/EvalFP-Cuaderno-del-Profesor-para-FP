@@ -9,8 +9,20 @@ function renderAlumnosTable() {
   const tbody = document.getElementById('alumnos-tbody')
   const mod = _modulos.find(m => m.id == document.getElementById('alumnos-mod-sel').value)
   if (!_alumnos.length) {
-    tbody.innerHTML = '<tr><td colspan="6" style="color:var(--text2);text-align:center;padding:20px">Sin alumnos. Añade el primero.</td></tr>'
-    document.getElementById('alumnos-footer').textContent = ''
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" style="padding:0">
+          <div class="empty-state" style="margin:0">
+            <div style="font-weight:700;color:var(--text);margin-bottom:6px">Todavía no hay alumnado en este módulo</div>
+            <div style="margin-bottom:12px">Importa una lista o añade el primer alumno para empezar a trabajar.</div>
+            <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+              <button class="btn btn-ghost btn-sm" onclick="importAlumnos()">📋 Importar lista</button>
+              <button class="btn btn-primary btn-sm" onclick="addAlumno()">＋ Añadir alumno</button>
+            </div>
+          </div>
+        </td>
+      </tr>`
+    document.getElementById('alumnos-footer').textContent = 'Consejo: puedes importar apellidos y nombre en una sola línea por alumno.'
     return
   }
   tbody.innerHTML = _alumnos.map(a => `
@@ -31,7 +43,7 @@ function renderAlumnosTable() {
   `).join('')
   const activos = _alumnos.filter(a => a.estado === 'Activo').length
   document.getElementById('alumnos-footer').textContent =
-    `${_alumnos.length} alumnos/as · ${activos} activos`
+    `${_alumnos.length} alumnos/as · ${activos} activos · ${_alumnos.length - activos} fuera de activo`
 }
 
 function updateAlumno(id, field, val) {
@@ -125,6 +137,7 @@ async function addAlumno() {
     const id = await window.api.saveAlumno(newAlumno)
     _alumnos.push({ id, ...newAlumno })
     renderAlumnosTable()
+    document.getElementById('alumnos-footer').textContent = `${_alumnos.length} alumnos/as · ${_alumnos.filter(a => a.estado === 'Activo').length} activos · nuevo alumno añadido`
     setTimeout(() => {
       const rows = document.getElementById('alumnos-tbody').querySelectorAll('tr')
       const last = rows[rows.length-1]

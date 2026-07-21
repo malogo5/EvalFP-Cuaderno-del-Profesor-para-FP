@@ -147,7 +147,16 @@ function renderNotasGrid() {
   const alumnos = _alumnos.filter(a => a.estado === 'Activo')
   const wrap = document.getElementById('notas-grid-wrap')
   if (!acts.length || !alumnos.length) {
-    wrap.innerHTML = '<div style="color:var(--text2);padding:20px">Sin datos.</div>'
+    const hasModule = !!document.getElementById('notas-mod-sel').value
+    wrap.innerHTML = hasModule
+      ? `<div class="empty-state">
+          <div style="font-weight:700;color:var(--text);margin-bottom:6px">Aún no hay datos para mostrar</div>
+          <div>Cuando cargues alumnado y actividades, aquí verás el registro de notas listo para editar.</div>
+        </div>`
+      : `<div class="empty-state">
+          <div style="font-weight:700;color:var(--text);margin-bottom:6px">Selecciona un módulo para empezar</div>
+          <div>El registro de notas se construye sobre alumnado y actividades del módulo activo.</div>
+        </div>`
     return
   }
   const thead = `<tr>
