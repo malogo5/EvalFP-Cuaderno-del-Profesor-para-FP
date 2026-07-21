@@ -20,7 +20,6 @@ IGNORED_FILES = {
     ".DS_Store",
 }
 
-
 LANGUAGE_MAP = {
     ".py": ("Python", "code"),
     ".js": ("JavaScript", "code"),
@@ -60,6 +59,8 @@ def scan(project_root: Path) -> list[FileInfo]:
         if path.name.startswith(".~lock"):
             continue
 
+        relative = path.relative_to(project_root).as_posix()
+
         extension = path.suffix.lower()
 
         language, category = LANGUAGE_MAP.get(
@@ -67,12 +68,20 @@ def scan(project_root: Path) -> list[FileInfo]:
             ("Unknown", "other"),
         )
 
+        size = path.stat().st_size
+
+        parent = str(Path(relative).parent)
+        if parent == ".":
+            parent = ""
+
         files.append(
             FileInfo(
                 path=path,
-                relative_path=str(path.relative_to(project_root)),
-                extension=extension or "-",
-                size=path.stat().st_size,
+                relative_path=relative,
+                name=path.name,
+                parent=parent,
+                extension=extension,
+                size=size,
                 language=language,
                 category=category,
             )
