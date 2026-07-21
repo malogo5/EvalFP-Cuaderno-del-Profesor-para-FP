@@ -2,7 +2,7 @@ from pathlib import Path
 
 from ai_toolkit.models import FileInfo, Project
 from ai_toolkit.scanner import scan
-
+from ai_toolkit.detectors.package_json import detect as detect_package_json
 
 DOCUMENTATION_FILES = {
     "README.md",
@@ -110,18 +110,19 @@ def _detect_technologies(project: Project, file: FileInfo) -> None:
     Detecta tecnologías utilizadas por el proyecto.
     """
 
-    technologies = {
-        "package.json": "Node.js",
-        "pyproject.toml": "Python",
-        "requirements.txt": "Python",
-        "electron-builder.yml": "Electron",
-        "Dockerfile": "Docker",
-        "docker-compose.yml": "Docker Compose",
-        "vite.config.js": "Vite",
-        "vite.config.ts": "Vite",
-    }
+    if file.name == "package.json":
+        project.technologies.update(
+            detect_package_json(file.path)
+        )
 
-    technology = technologies.get(file.name)
+    elif file.name == "requirements.txt":
+        project.technologies.add("Python")
 
-    if technology:
-        project.technologies.add(technology)
+    elif file.name == "pyproject.toml":
+        project.technologies.add("Python")
+
+    elif file.name == "Dockerfile":
+        project.technologies.add("Docker")
+
+    elif file.name == "docker-compose.yml":
+        project.technologies.add("Docker Compose")
