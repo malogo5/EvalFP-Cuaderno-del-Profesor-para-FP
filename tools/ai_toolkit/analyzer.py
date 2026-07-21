@@ -1,7 +1,15 @@
 from pathlib import Path
 
-from ai_toolkit.models import Project
+from ai_toolkit.models import FileInfo, Project
 from ai_toolkit.scanner import scan
+
+
+DOCUMENTATION_FILES = {
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "LICENSE.md",
+}
 
 
 def analyze(project_root: Path) -> Project:
@@ -25,25 +33,51 @@ def analyze(project_root: Path) -> Project:
 
 def _analyze_files(project: Project) -> None:
     """
-    Analiza los archivos del proyecto y completa
-    la información derivada del modelo Project.
+    Recorre todos los archivos del proyecto y delega
+    su clasificación en funciones especializadas.
     """
 
     for file in project.files:
-        parts = Path(file.relative_path).parts
+        _classify_structure(project, file)
+        _update_statistics(project, file)
+        _classify_documentation(project, file)
 
-        # Archivos en la raíz del proyecto
-        if len(parts) == 1:
-            project.root_files.append(file)
-        else:
-            project.directories.add(parts[0])
 
-        # Estadísticas por lenguaje
-        project.languages[file.language] = (
-            project.languages.get(file.language, 0) + 1
-        )
+def _classify_structure(project: Project, file: FileInfo) -> None:
+    """
+    Clasifica la estructura del proyecto.
+    """
 
-        # Estadísticas por categoría
-        project.categories[file.category] = (
-            project.categories.get(file.category, 0) + 1
-        )
+    parts = Path(file.relative_path).parts
+
+    if len(parts) == 1:
+        project.root_files.append(file)
+    else:
+        project.directories.add(parts[0])
+
+
+def _update_statistics(project: Project, file: FileInfo) -> None:
+    """
+    Actualiza estadísticas generales.
+    """
+
+    project.languages[file.language] = (
+        project.languages.get(file.language, 0) + 1
+    )
+
+    project.categories[file.category] = (
+        project.categories.get(file.category, 0) + 1
+    )
+
+
+def _classify_documentation(project: Project, file: FileInfo) -> None:
+    """
+    Detecta archivos de documentación.
+    """
+
+    if (
+        file.parent == "docs"
+        or file.name in DOCUMENTATION_FILES
+        or file.extension in {".md", ".txt", ".pdf"}
+    ):
+        project.documentation.append(file)
