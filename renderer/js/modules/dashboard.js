@@ -211,6 +211,23 @@ async function loadDashboard() {
   const cesDict = modData?.ces          || {}
   const asigs   = modData?.asignaciones || []
 
+  if (!alumnos.length || !actividades.length) {
+    const why = !alumnos.length
+      ? 'No hay alumnado activo en este módulo.'
+      : 'No hay actividades configuradas todavía.'
+    document.getElementById('dash-content').innerHTML = `
+      <div class="empty-state">
+        <div style="font-weight:700;color:var(--text);margin-bottom:6px">Dashboard sin datos suficientes</div>
+        <div style="margin-bottom:10px">${esc(why)} Cuando añadas alumnado y actividades, aquí aparecerán KPIs, 1ª ordinaria y 2ª ordinaria.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" onclick="goSection('alumnos')">👥 Ir a alumnos</button>
+          <button class="btn btn-ghost btn-sm" onclick="goSection('programacion')">📋 Ir a programación</button>
+          <button class="btn btn-ghost btn-sm" onclick="goSection('notas')">📝 Ir a notas</button>
+        </div>
+      </div>`
+    return
+  }
+
   // H2 — migrar claves legacy de recuperaciones/pardones al formato RA|CE
   {
     const sPP = actividades.filter(a => a.tipo === 'practica').reduce((s, a) => s + (a.peso || 0), 0)

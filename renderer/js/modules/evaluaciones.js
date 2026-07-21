@@ -306,7 +306,13 @@ async function loadEvaluaciones() {
       ? rasActivos.filter(ra => raIdsConf.includes(ra.id))
       : rasActivos.filter(ra => acts.some(a => String(a.ra_id) === String(ra.id)))
 
-    if (!acts.length && !rasCov.length) return `<div class="card"><p style="color:var(--text2);font-size:13px;padding:6px 0">Sin actividades configuradas para esta evaluación.</p></div>`
+    if (!acts.length && !rasCov.length) return `
+      <div class="card" style="padding:0">
+        <div class="empty-state" style="margin:0">
+          <div style="font-weight:700;color:var(--text);margin-bottom:6px">Sin actividades para esta evaluación</div>
+          <div>Ve a <b>Programación</b> para añadir prácticas o exámenes y asignarlos a UT/RA.</div>
+        </div>
+      </div>`
 
     const pracs = acts.filter(a => a.tipo === 'practica')
     const exams = acts.filter(a => a.tipo === 'examen')
@@ -318,7 +324,13 @@ async function loadEvaluaciones() {
       </div>
     </div>`
 
-    if (!rasCov.length) return actsBar + `<div class="card"><p style="color:var(--text2);font-size:13px;padding:6px 0">Sin RAs vinculados a esta evaluación.</p></div>`
+    if (!rasCov.length) return actsBar + `
+      <div class="card" style="padding:0">
+        <div class="empty-state" style="margin:0">
+          <div style="font-weight:700;color:var(--text);margin-bottom:6px">Sin RAs vinculados a esta evaluación</div>
+          <div>Asigna RAs a las actividades (o a las UTs) desde <b>Programación</b> para que aquí se calcule el progreso.</div>
+        </div>
+      </div>`
 
     // ── H5: Boletín de la evaluación (media reponderada acumulada + pendientes) ──
     const rasVistos = rasActivos.filter(ra => raEvalMap[ra.id] <= ev)
@@ -431,7 +443,13 @@ async function loadEvaluaciones() {
   // H1: APTO exige todos los RA superados. H8: columna Acta.
   // ════════════════════════════════════════════════════════════
   function renderOrd1Panel() {
-    if (!rasActivos.length) return `<div class="card"><p style="color:var(--text2);font-size:13px;padding:6px 0">Sin RAs con actividades calificables.</p></div>`
+    if (!rasActivos.length) return `
+      <div class="card" style="padding:0">
+        <div class="empty-state" style="margin:0">
+          <div style="font-weight:700;color:var(--text);margin-bottom:6px">Aún no hay RAs calificables</div>
+          <div>Primero añade alumnado y actividades, y asigna RA/CE en <b>Programación</b>. Luego verás aquí la 1ª ordinaria.</div>
+        </div>
+      </div>`
 
     const estados = {}
     alumnos.forEach(al => { estados[al.id] = estadoAlumno(al.id) })
@@ -563,7 +581,13 @@ async function loadEvaluaciones() {
   // RAs/CEs aprobados en 1ª Ordinaria: nota bloqueada (solo lectura).
   // ════════════════════════════════════════════════════════════
   function renderOrd2Panel() {
-    if (!rasActivos.length) return `<div class="card"><p style="color:var(--text2);font-size:13px;padding:6px 0">Sin RAs con actividades calificables.</p></div>`
+    if (!rasActivos.length) return `
+      <div class="card" style="padding:0">
+        <div class="empty-state" style="margin:0">
+          <div style="font-weight:700;color:var(--text);margin-bottom:6px">Aún no hay RAs calificables</div>
+          <div>La 2ª ordinaria se activa cuando hay notas y RAs evaluables en el módulo.</div>
+        </div>
+      </div>`
 
     const ceKey = (raId, ceId) => `${raId}|${ceId}`   // H2
 
@@ -827,5 +851,8 @@ async function loadEvaluaciones() {
     + `<div id="epanel-ord2" class="epanel${_evalTab === 'ord2' ? ' on' : ''}">${renderOrd2Panel()}</div>`
 
   document.getElementById('eval-content').innerHTML = content
-    || '<div style="color:var(--text2);padding:20px">Sin datos de notas aún.</div>'
+    || `<div class="empty-state">
+          <div style="font-weight:700;color:var(--text);margin-bottom:6px">Sin datos de notas todavía</div>
+          <div>Añade alumnado y registra alguna calificación en <b>Notas</b> para ver el cálculo por RA y las ordinarias.</div>
+        </div>`
 }

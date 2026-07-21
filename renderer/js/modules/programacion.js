@@ -8,7 +8,15 @@ async function loadProgramacion() {
   const data = mod.data_json ? JSON.parse(mod.data_json) : null
   const panel = document.getElementById('prog-panel')
   if (!data || !data.ras?.length) {
-    panel.innerHTML = '<div style="color:var(--text2);padding:20px">Este módulo no tiene datos de RAs/CEs cargados.</div>'
+    panel.innerHTML = `
+      <div class="empty-state">
+        <div style="font-weight:700;color:var(--text);margin-bottom:6px">Este módulo aún no tiene programación cargada</div>
+        <div style="margin-bottom:12px">Cuando añadas los RAs y CE en el catálogo del módulo, aquí verás el plan de actividades, la distribución por evaluaciones y el mapa UT → RA.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-primary btn-sm" onclick="openAddModulo()">＋ Añadir módulo</button>
+          <button class="btn btn-ghost btn-sm" onclick="goSection('modulos')">📚 Ver catálogo</button>
+        </div>
+      </div>`
     return
   }
 
@@ -46,6 +54,10 @@ async function loadProgramacion() {
       <span style="font-size:15px;font-weight:600">${esc(mod.nombre)}</span>
       <span style="font-size:12px;background:var(--navy3);padding:2px 10px;border-radius:10px;color:var(--text2)">${esc(String(mod.horas||'?'))} h</span>
       <span style="font-size:12px;background:var(--navy3);padding:2px 10px;border-radius:10px;color:var(--text2)">${ras.length} RAs · ${uts.length} UTs</span>
+    </div>
+    <div style="margin-top:10px;font-size:11.5px;color:var(--text2);line-height:1.55">
+      Edita aquí la estructura del módulo: ponderaciones de evaluación, distribución de RAs, unidades de trabajo y asignaciones.
+      Todo el resto de pantallas se alimenta de esta base.
     </div>
     ${mod.decreto ? `<div style="font-size:11px;color:var(--accent2);margin-top:6px">📜 ${esc(mod.decreto)}</div>` : ''}
   </div>`
@@ -224,6 +236,17 @@ async function loadProgramacion() {
           </tr>`
         }
         h += `</tbody></table>`
+      } else {
+        h += `<div class="empty-state" style="margin:0 0 8px">
+          <div style="font-weight:700;color:var(--text);margin-bottom:6px">No hay actividades en esta evaluación</div>
+          <div style="margin-bottom:10px">Puedes empezar añadiendo una práctica o un examen; luego asigna UT, RA, peso y criterios.</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button onclick="addActividad(${mid},${ev},'practica')"
+              style="background:rgba(74,144,217,.12);color:var(--accent2);border:none;border-radius:8px;padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer">+ Práctica</button>
+            <button onclick="addActividad(${mid},${ev},'examen')"
+              style="background:rgba(224,160,58,.12);color:var(--amber);border:none;border-radius:8px;padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer">+ Examen</button>
+          </div>
+        </div>`
       }
       h += `<div style="display:flex;gap:8px;padding:8px 2px 2px">
           <button onclick="addActividad(${mid},${ev},'practica')"
