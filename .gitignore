@@ -51,3 +51,4 @@ src/~$*.xlsx
 logs/
 *.log
 EvalFP.zip
+.evalfp-ai/
