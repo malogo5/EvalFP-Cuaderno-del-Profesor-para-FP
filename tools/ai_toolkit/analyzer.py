@@ -56,6 +56,7 @@ def _analyze_files(project: Project) -> None:
         _update_statistics(project, file)
         _classify_documentation(project, file)
         _classify_configuration(project, file)
+        _detect_technologies(project, file)
 
 def _classify_structure(project: Project, file: FileInfo) -> None:
     """
@@ -103,3 +104,24 @@ def _classify_configuration(project: Project, file: FileInfo) -> None:
 
     if file.name in CONFIGURATION_FILES:
         project.configuration.append(file)
+
+def _detect_technologies(project: Project, file: FileInfo) -> None:
+    """
+    Detecta tecnologías utilizadas por el proyecto.
+    """
+
+    technologies = {
+        "package.json": "Node.js",
+        "pyproject.toml": "Python",
+        "requirements.txt": "Python",
+        "electron-builder.yml": "Electron",
+        "Dockerfile": "Docker",
+        "docker-compose.yml": "Docker Compose",
+        "vite.config.js": "Vite",
+        "vite.config.ts": "Vite",
+    }
+
+    technology = technologies.get(file.name)
+
+    if technology:
+        project.technologies.add(technology)

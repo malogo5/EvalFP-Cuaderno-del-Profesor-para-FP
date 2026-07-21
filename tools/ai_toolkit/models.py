@@ -36,6 +36,7 @@ class Project:
     # Agrupaciones
     documentation: list[FileInfo] = field(default_factory=list)
     configuration: list[FileInfo] = field(default_factory=list)
+    technologies: set[str] = field(default_factory=set)
     scripts: list[FileInfo] = field(default_factory=list)
     assets: list[FileInfo] = field(default_factory=list)
     tests: list[FileInfo] = field(default_factory=list)
