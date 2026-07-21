@@ -1,19 +1,9 @@
 from pathlib import Path
 
-
-IGNORED = {
-    ".git",
-    ".evalfp-ai",
-    "node_modules",
-    ".venv",
-    "__pycache__",
-    "dist",
-    "build",
-}
+from ai_toolkit.analyzer import analyze
 
 
-def file_size(path: Path) -> str:
-    size = path.stat().st_size
+def file_size(size: int) -> str:
 
     if size < 1024:
         return f"{size} B"
@@ -25,32 +15,30 @@ def file_size(path: Path) -> str:
 
 
 def generate(project_root: Path, output_dir: Path):
+
     output_dir.mkdir(parents=True, exist_ok=True)
 
     output = output_dir / "PROJECT_INDEX.md"
 
+    project = analyze(project_root)
+
     with output.open("w", encoding="utf-8") as f:
 
         f.write("# PROJECT INDEX\n\n")
-        f.write(f"Proyecto: **{project_root.name}**\n\n")
+        f.write(f"Proyecto: **{project.root.name}**\n\n")
 
-        f.write("| Tipo | Archivo | Tamaño |\n")
-        f.write("|------|---------|--------|\n")
+        f.write(f"Archivos analizados: **{project.total_files}**\n\n")
 
-        for path in sorted(project_root.rglob("*")):
+        f.write("| Lenguaje | Categoría | Archivo | Tamaño |\n")
+        f.write("|-----------|-----------|---------|--------|\n")
 
-            if any(part in IGNORED for part in path.parts):
-                continue
-
-            rel = path.relative_to(project_root)
-
-            if path.is_dir():
-                continue
-
-            ext = path.suffix.lower() or "-"
+        for file in project.files:
 
             f.write(
-                f"| {ext} | `{rel}` | {file_size(path)} |\n"
+                f"| {file.language} | "
+                f"{file.category} | "
+                f"`{file.relative_path}` | "
+                f"{file_size(file.size)} |\n"
             )
 
     print(f"✓ Generado {output}")
