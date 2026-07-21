@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
 
+import argparse
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import argparse
-from pathlib import Path
-
 from ai_toolkit.analyzer import analyze
 from ai_toolkit.generators.project_index import generate as generate_project_index
 from ai_toolkit.generators.current_context import generate as generate_current_context
 
-VERSION = "0.2.0"
+VERSION = "0.3.0"
 
 
 def prepare():

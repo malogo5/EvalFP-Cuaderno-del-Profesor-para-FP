@@ -36,10 +36,17 @@ class Project:
     # Agrupaciones
     documentation: list[FileInfo] = field(default_factory=list)
     configuration: list[FileInfo] = field(default_factory=list)
-    technologies: set[str] = field(default_factory=set)
     scripts: list[FileInfo] = field(default_factory=list)
     assets: list[FileInfo] = field(default_factory=list)
     tests: list[FileInfo] = field(default_factory=list)
 
     # Archivos especiales
     entry_points: list[FileInfo] = field(default_factory=list)
+
+    # Conocimiento del proyecto
+    technologies: set[str] = field(default_factory=set)
+    frameworks: set[str] = field(default_factory=set)
+    runtime: set[str] = field(default_factory=set)
+
+    package_manager: str | None = None
+    project_type: str | None = None
