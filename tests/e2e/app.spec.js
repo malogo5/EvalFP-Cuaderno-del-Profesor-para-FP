@@ -336,7 +336,7 @@ test.describe('Flujo completo', () => {
     await expect(page.locator('#alumnos-mod-sel')).toHaveValue(String(ids.e2e2))
     // El alumno de ISO no debe aparecer en E2E2 (los nombres van en <input value>,
     // no en texto, así que se comprueba el placeholder de tabla vacía)
-    await expect(page.locator('#alumnos-tbody')).toContainText('Sin alumnos')
+    await expect(page.locator('#alumnos-tbody')).toContainText(/Todavía no hay alumnado|Sin alumnos/i)
 
     await page.click('[data-sec="notas"]')
     await expect(page.locator('#notas-mod-sel')).toHaveValue(String(ids.e2e2))
