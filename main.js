@@ -91,7 +91,7 @@ async function loadApiKeysFromSecureStorage() {
 }
 
 const SENSITIVE_CONFIG_KEYS = new Set(['openaiKey', 'anthropicKey'])
-const SAFE_CONFIG_KEY = /^(proveedor|theme|sidebarWidth|aboutSeenVersion|minexam_\d+|pardones_\d+|rec2notas_\d+|recmigra_avisado_\d+)$/
+const SAFE_CONFIG_KEY = /^(proveedor|theme|sidebarWidth|aboutSeenVersion|minexam_\d+|pardones_\d+|rec2notas_\d+|recmigra_avisado_\d+|faltas_\d+|rasllave_\d+)$/
 const PROVIDERS = new Set(['auto', 'claude', 'openai', 'demo'])
 
 function assertSafeConfigKey(key) {
@@ -402,7 +402,7 @@ ipcMain.handle('system:pythonStatus', event => {
 })
 
 // ── IPC: IA + Apuntes ─────────────────────────────────────────────────────────
-ipcMain.on('gen-ia', (event, { comando, modulo, ra, n, alumno, notas, proveedor, consent, anonimizar, minExam, ponderaciones }) => {
+ipcMain.on('gen-ia', (event, { comando, modulo, ra, n, alumno, notas, proveedor, consent, anonimizar, minExam, ponderaciones, faltasPorcentaje, rasLlave, alumnosJson, notasGridJson, actividadesJson }) => {
   assertTrustedSender(event)
   if (!['rubrica', 'actividad', 'informe', 'todo'].includes(comando)) throw new Error('Comando IA no permitido')
   if (typeof modulo !== 'string' || !getModulesData().modules[modulo]) throw new Error('Módulo IA no válido')
@@ -421,6 +421,11 @@ ipcMain.on('gen-ia', (event, { comando, modulo, ra, n, alumno, notas, proveedor,
   if (notas)     args.push('--notas', notas)
   if (comando === 'informe' && minExam != null && String(minExam).trim() !== '') args.push('--min-exam', String(minExam).trim())
   if (comando === 'informe' && ponderaciones != null && String(ponderaciones).trim() !== '') args.push('--ponderaciones', String(ponderaciones).trim())
+  if (comando === 'informe' && faltasPorcentaje != null && String(faltasPorcentaje).trim() !== '') args.push('--faltas-porcentaje', String(faltasPorcentaje).trim())
+  if (comando === 'informe' && rasLlave != null && String(rasLlave).trim() !== '') args.push('--ras-llave', String(rasLlave).trim())
+  if (comando === 'todo' && alumnosJson != null && String(alumnosJson).trim() !== '') args.push('--alumnos-json', String(alumnosJson).trim())
+  if (comando === 'todo' && notasGridJson != null && String(notasGridJson).trim() !== '') args.push('--notas-grid-json', String(notasGridJson).trim())
+  if (comando === 'todo' && actividadesJson != null && String(actividadesJson).trim() !== '') args.push('--actividades-json', String(actividadesJson).trim())
   if (proveedor) args.push('--proveedor', proveedor)
   if (comando === 'todo') args.push('--salida', salida)
   runPython(event, 'ai_asistente.py', args, 'gen-ia-reply')

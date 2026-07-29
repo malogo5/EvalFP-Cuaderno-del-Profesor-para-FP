@@ -254,6 +254,33 @@ function _isValidNotasClientFormat(text) {
   return /^(?:[A-Za-z0-9_]+:\s*(?:10(?:\.0+)?|[0-9](?:\.[0-9]+)?))(?:\s*,\s*[A-Za-z0-9_]+:\s*(?:10(?:\.0+)?|[0-9](?:\.[0-9]+)?))*$/.test(raw)
 }
 
+function _extractMetaFromMod(mod) {
+  try {
+    return typeof mod?.data_json === 'string' ? JSON.parse(mod.data_json) : (mod?.data_json || {})
+  } catch (_) {
+    return {}
+  }
+}
+
+function _extractRaLlave(mod) {
+  const data = _extractMetaFromMod(mod)
+  const raw = data?.ras_llave ?? data?.rasLlave ?? data?.ra_llave ?? data?.raLlave ?? ''
+  if (Array.isArray(raw)) return raw.map(String).filter(Boolean).join(',')
+  return String(raw || '').trim()
+}
+
+async function _extractFaltasPorcentaje(mod) {
+  const data = _extractMetaFromMod(mod)
+  const raw = data?.faltas_porcentaje ?? data?.faltasPorcentaje ?? data?.absentismo ?? ''
+  if (raw != null && String(raw).trim() !== '') return String(raw).trim()
+  try {
+    const cfgAll = await window.api.getAllConfig()
+    const cfgKey = `faltas_${mod?.id}`
+    if (cfgAll?.[cfgKey] != null && String(cfgAll[cfgKey]).trim() !== '') return String(cfgAll[cfgKey]).trim()
+  } catch (_) { /* sin configuración de absentismo */ }
+  return ''
+}
+
 function _hasNormativeCode(text) {
   const raw = String(text || '')
   return ['RA_NO_EVALUADO', 'RA_SUSPENDIDO', 'NOTA_INVALIDA', 'PONDERACION_CERO']
@@ -283,7 +310,7 @@ function termAppend(id, d) {
 }
 
 // ── Ejecutar comandos IA ──────────────────────────────────────────────────────
-function runIA(cmd) {
+async function runIA(cmd) {
   const VALID = ['rubrica', 'actividad', 'informe', 'todo']
   if (!VALID.includes(cmd)) return
 
@@ -329,12 +356,29 @@ function runIA(cmd) {
     opts.consent = document.getElementById('ia-i-consent')?.checked === true
     opts.anonimizar = document.getElementById('ia-i-anonimizar')?.checked === true
     if (!opts.consent) { alert('Confirma que entiendes el envío de datos académicos al proveedor IA.'); return }
+
+    const mod = _modulos.find(m => m.key === opts.modulo)
+    if (mod) {
+      const faltasPorcentaje = await _extractFaltasPorcentaje(mod)
+      if (faltasPorcentaje) opts.faltasPorcentaje = faltasPorcentaje
+      const rasLlave = _extractRaLlave(mod)
+      if (rasLlave) opts.rasLlave = rasLlave
+    }
   }
 
   if (cmd === 'todo') {
     opts.modulo    = v('ia-t-mod')
     opts.proveedor = v('ia-t-prov')
     if (!opts.modulo) { alert('Selecciona un módulo.'); return }
+    const mod = _modulos.find(m => m.key === opts.modulo)
+    if (mod) {
+      try {
+        const alumnos = (await window.api.getAlumnos(mod.id)).filter(a => a.estado === 'Activo')
+        opts.alumnosJson = JSON.stringify(alumnos)
+        opts.notasGridJson = JSON.stringify(await window.api.getNotasGrid(mod.id))
+        opts.actividadesJson = JSON.stringify(await window.api.getActividades(mod.id))
+      } catch (_) { /* sin exportación de datos auxiliares */ }
+    }
   }
 
   _activeIaCmd = cmd

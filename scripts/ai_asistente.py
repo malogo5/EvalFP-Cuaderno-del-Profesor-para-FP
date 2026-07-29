@@ -513,6 +513,16 @@ def _parse_ponderaciones(pond_str: str | None) -> dict[str, float]:
     return res
 
 
+def _parse_json_list(raw: str | None) -> list[dict]:
+    if not raw:
+        return []
+    try:
+        data = json.loads(raw)
+        return data if isinstance(data, list) else []
+    except Exception:
+        return []
+
+
 def _norm_ponds(ras: list[dict]) -> dict[str, float]:
     """Devuelve ponderaciones normalizadas por RA.
 
@@ -560,6 +570,8 @@ def _calc_informe_estado(mod, notas: dict[str, float], min_exam: float | None, p
 
     sin_nota: list[str] = []
     pendientes: list[str] = []
+    alerta_absentismo: tuple[str, str] | None = None
+    alerta_ra_llave: tuple[str, str] | None = None
     sum_w = 0.0
     sum_wn = 0.0
 
@@ -599,6 +611,32 @@ def _calc_informe_estado(mod, notas: dict[str, float], min_exam: float | None, p
         if n < 5 or min_ko:
             pendientes.append(ra_id)
 
+    faltas_pct = getattr(mod, "_faltas_porcentaje", None)
+    if faltas_pct is not None:
+        try:
+            faltas_num = float(faltas_pct)
+            if faltas_num >= 15:
+                alerta_absentismo = (
+                    "ABSENTISMO_CRITICO",
+                    f"Absentismo crítico detectado ({faltas_num:.1f}%). Puede implicar pérdida del derecho a la evaluación continua.",
+                )
+        except Exception:
+            pass
+
+    ras_llave = set(getattr(mod, "_ras_llave", []) or [])
+    if ras_llave and pendientes:
+        criticos = sorted(r for r in pendientes if r in ras_llave)
+        if criticos:
+            alerta_ra_llave = (
+                "RA_LLAVE_SUSPENDIDO",
+                f"Ha suspendido un RA crítico obligatorio: {', '.join(criticos)}.",
+            )
+            resultado = "NO APTO"
+        else:
+            resultado = None
+    else:
+        resultado = None
+
     if sum_w > 0:
         nota_final = sum_wn / sum_w
     else:
@@ -614,6 +652,11 @@ def _calc_informe_estado(mod, notas: dict[str, float], min_exam: float | None, p
 
     if not sin_nota and pendientes:
         alerta = ("RA_SUSPENDIDO", f"El alumno tiene suspendido el RA: {', '.join(pendientes)}.")
+    if alerta_absentismo:
+        alerta = alerta_absentismo
+    if alerta_ra_llave:
+        alerta = alerta_ra_llave
+        resultado = "NO APTO"
 
     nota_final_2 = None if nota_final is None else round(nota_final + 1e-12, 2)
     return {
@@ -672,7 +715,7 @@ def _cmd_actividad(args: list[str]):
 
 
 def _cmd_informe(args: list[str]):
-    opts = _parse_opts(args, ["--modulo", "--alumno", "--notas", "--proveedor", "--min-exam", "--ponderaciones", "--anonimizar"])
+    opts = _parse_opts(args, ["--modulo", "--alumno", "--notas", "--proveedor", "--min-exam", "--ponderaciones", "--anonimizar", "--faltas-porcentaje", "--ras-llave"])
     mod    = _cargar_modulo(opts.get("--modulo", "iso_data"))
     alumno_raw = opts.get("--alumno", "Alumno Ejemplo")
     anonimizar = True
@@ -691,6 +734,16 @@ def _cmd_informe(args: list[str]):
         sys.exit(1)
 
     pond_dinamicas = _parse_ponderaciones(opts.get("--ponderaciones"))
+    faltas_porcentaje = None
+    if "--faltas-porcentaje" in opts:
+        try:
+            faltas_porcentaje = float(str(opts.get("--faltas-porcentaje", "")).strip())
+        except Exception:
+            print("❌ --faltas-porcentaje debe ser numérico.")
+            sys.exit(1)
+    ras_llave = [r.strip() for r in str(opts.get("--ras-llave", "")).split(",") if r.strip()]
+    setattr(mod, "_faltas_porcentaje", faltas_porcentaje)
+    setattr(mod, "_ras_llave", ras_llave)
     st = _calc_informe_estado(mod, notas, min_exam, pond_dinamicas)
     alerta = st.get("alerta")
     if alerta:
@@ -711,7 +764,7 @@ def _cmd_informe(args: list[str]):
 
 
 def _cmd_generar_todo(args: list[str]):
-    opts      = _parse_opts(args, ["--modulo", "--salida", "--proveedor"])
+    opts      = _parse_opts(args, ["--modulo", "--salida", "--proveedor", "--alumnos-json", "--notas-grid-json", "--actividades-json"])
     mod_name  = opts.get("--modulo", "iso_data")
     mod       = _cargar_modulo(mod_name)
     abrev     = mod.MODULO['abrev'].lower()
@@ -742,6 +795,47 @@ def _cmd_generar_todo(args: list[str]):
         print(f"  → {len(apuntes_generados)} apunte(s) generado(s) en {apuntes_base}/")
     except Exception:
         print("EVALFP_WARN_APUNTES: Error al generar los apuntes HTML del módulo.")
+
+    alumnos = _parse_json_list(opts.get("--alumnos-json"))
+    notas_grid = _parse_json_list(opts.get("--notas-grid-json"))
+    actividades = _parse_json_list(opts.get("--actividades-json"))
+
+    if alumnos:
+        print(f"\n🧾 Generando informes individuales…")
+        for alumno in alumnos:
+            try:
+                nombre = f"{alumno.get('apellidos','')}{', ' if alumno.get('apellidos') and alumno.get('nombre') else ''}{alumno.get('nombre','')}".strip()
+                notas = {}
+                ra_map: dict[str, list[tuple[float, float]]] = {}
+                act_by_id = {str(a.get("id")): a for a in actividades if a.get("id") is not None}
+                for row in notas_grid:
+                    if row.get('alumno_id') != alumno.get('id'):
+                        continue
+                    act = act_by_id.get(str(row.get('actividad_id')))
+                    ra_id = str((act or {}).get('ra_id') or row.get('ra_id') or '').strip()
+                    if not ra_id:
+                        continue
+                    nota_val = row.get('nota_rec') if row.get('nota_rec') is not None else row.get('nota')
+                    try:
+                        nota_num = float(nota_val)
+                    except Exception:
+                        continue
+                    peso = float((act or {}).get('peso') or 1)
+                    ra_map.setdefault(ra_id, []).append((nota_num, peso))
+                for ra_id, vals in ra_map.items():
+                    den = sum(p for _, p in vals) or len(vals)
+                    num = sum(n * p for n, p in vals)
+                    notas[ra_id] = num / den if den else 0.0
+                setattr(mod, "_faltas_porcentaje", None)
+                setattr(mod, "_ras_llave", [])
+                st = _calc_informe_estado(mod, notas, None, None)
+                out_txt = ia.borrador_informe_alumno(nombre, mod.MODULO, notas, st["nota_final"] or 0.0, st["resultado"])
+                out_path = salida / f"informe_{alumno.get('id','alumno')}.md"
+                out_path.write_text(out_txt, encoding="utf-8")
+                archivos.append(out_path)
+                print(f"  ✅ {out_path.name}")
+            except Exception as e:
+                print(f"  ⚠️  Error en informe de {alumno.get('id','?')}: {e}")
 
     # ── Resumen ──────────────────────────────────────────────────────────────
     print(f"\n✅ {len(archivos)} archivos generados en {salida}/")
