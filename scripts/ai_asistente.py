@@ -692,16 +692,32 @@ def _cmd_generar_todo(args: list[str]):
         print(f"   📄 {f if isinstance(f, str) else f.name}")
 
 
-def _parse_opts(args: list[str], keys: list[str]) -> dict[str, str]:
-    """Parsea una lista de args ["--key", "value", …] → dict."""
+def _parse_opts(args: list[str], valid_flags: list[str] | None = None) -> dict[str, str]:
+    """Parsea una lista de args ["--key", "value", …] → dict.
+
+    Si se proporciona valid_flags, rechaza flags desconocidos y exige valor
+    para cada flag reconocido.
+    """
     opts: dict[str, str] = {}
+    valid_set = set(valid_flags or [])
     i = 0
     while i < len(args):
-        if args[i] in keys and i + 1 < len(args):
-            opts[args[i]] = args[i + 1]
-            i += 2
-        else:
+        tok = args[i]
+        if not isinstance(tok, str) or not tok.startswith("--"):
             i += 1
+            continue
+
+        if valid_flags is not None and tok not in valid_set:
+            print(f"❌ Flag desconocido detectado: {tok}")
+            sys.exit(1)
+
+        if i + 1 >= len(args) or (isinstance(args[i + 1], str) and args[i + 1].startswith("--")):
+            print(f"❌ Falta el valor obligatorio para el flag: {tok}")
+            sys.exit(1)
+
+        opts[tok] = args[i + 1]
+        i += 2
+
     return opts
 
 
