@@ -417,6 +417,7 @@ ipcMain.on('gen-ia', (event, { comando, modulo, ra, n, alumno, notas, proveedor,
   if (ra)        args.push('--ra', ra)
   if (n)         args.push('--n', String(n))
   if (alumno)    args.push('--alumno', anonimizar ? 'Alumno/a' : alumno)
+  if (comando === 'informe') args.push('--anonimizar', anonimizar ? 'true' : 'false')
   if (notas)     args.push('--notas', notas)
   if (comando === 'informe' && minExam != null && String(minExam).trim() !== '') args.push('--min-exam', String(minExam).trim())
   if (comando === 'informe' && ponderaciones != null && String(ponderaciones).trim() !== '') args.push('--ponderaciones', String(ponderaciones).trim())

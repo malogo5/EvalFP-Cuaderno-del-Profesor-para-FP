@@ -4,6 +4,8 @@
 // Guarda el comando activo para enrutar respuestas al terminal correcto
 let _activeIaCmd = null
 let _activeIaBannerType = null
+let _iaProgressTimer = null
+let _iaProgressPhase = 0
 
 // IDs de los selects de módulo en cada pestaña
 const IA_MOD_SELS = ['ia-r-mod', 'ia-a-mod', 'ia-i-mod', 'ia-ap-mod', 'ia-t-mod']
@@ -114,6 +116,7 @@ function _humanizeIaMessage(text) {
     ['RA_SUSPENDIDO', 'El alumno no cumple los criterios mínimos en algún RA. El resultado normativo es NO APTO.'],
     ['NOTA_INVALIDA', 'Se ha detectado un formato o rango de nota incorrecto (debe ser entre 0 y 10).'],
     ['PONDERACION_CERO', 'La suma de las ponderaciones de los RA es 0%. Revisa la configuración del módulo.'],
+    ['ERROR_RED', 'No se ha podido conectar con el servidor de IA. Revisa tu conexión a internet o inténtalo más tarde.'],
   ]
   for (const [prefix, msg] of map) {
     if (raw.includes(prefix)) return msg
@@ -178,6 +181,79 @@ function _showIaAlert(type, rawText) {
   el.scrollTop = 0
 }
 
+function _setIaLoading(cmd, active) {
+  if (!active) {
+    if (_iaProgressTimer) {
+      clearInterval(_iaProgressTimer)
+      _iaProgressTimer = null
+    }
+    _iaProgressPhase = 0
+    document.querySelectorAll('.ia-loading-banner').forEach(b => b.remove())
+    return
+  }
+
+  const termId = cmd ? `ia-${cmd}-term` : 'ia-todo-term'
+  const el = document.getElementById(termId)
+  if (!el) return
+
+  const phases = [
+    'Fase 1: Validando expediente…',
+    'Fase 2: Conectando con el motor de IA…',
+    'Fase 3: Redactando informe…',
+  ]
+
+  const render = () => {
+    let banner = el.querySelector('.ia-loading-banner')
+    if (!banner) {
+      banner = document.createElement('div')
+      banner.className = 'ia-loading-banner'
+      banner.style.display = 'flex'
+      banner.style.gap = '12px'
+      banner.style.alignItems = 'center'
+      banner.style.padding = '12px 14px'
+      banner.style.margin = '0 0 12px 0'
+      banner.style.borderRadius = '12px'
+      banner.style.border = '1px solid #9ab7e6'
+      banner.style.background = '#eef5ff'
+      banner.style.color = '#1f2937'
+      banner.style.boxShadow = '0 8px 24px rgba(0,0,0,0.06)'
+      const spin = document.createElement('div')
+      spin.className = 'ia-loading-spinner'
+      spin.textContent = '⏳'
+      spin.style.fontSize = '18px'
+      spin.style.lineHeight = '1'
+      const body = document.createElement('div')
+      body.className = 'ia-loading-body'
+      const title = document.createElement('div')
+      title.textContent = 'Procesando IA'
+      title.style.fontWeight = '700'
+      const msg = document.createElement('div')
+      msg.className = 'ia-loading-msg'
+      msg.style.marginTop = '4px'
+      body.appendChild(title)
+      body.appendChild(msg)
+      banner.appendChild(spin)
+      banner.appendChild(body)
+      el.prepend(banner)
+    }
+    const msg = banner.querySelector('.ia-loading-msg')
+    if (msg) msg.textContent = phases[_iaProgressPhase % phases.length]
+  }
+
+  render()
+  if (_iaProgressTimer) clearInterval(_iaProgressTimer)
+  _iaProgressTimer = setInterval(() => {
+    _iaProgressPhase = (_iaProgressPhase + 1) % phases.length
+    render()
+  }, 1800)
+}
+
+function _isValidNotasClientFormat(text) {
+  const raw = String(text || '').trim()
+  if (!raw) return false
+  return /^(?:[A-Za-z0-9_]+:\s*(?:10(?:\.0+)?|[0-9](?:\.[0-9]+)?))(?:\s*,\s*[A-Za-z0-9_]+:\s*(?:10(?:\.0+)?|[0-9](?:\.[0-9]+)?))*$/.test(raw)
+}
+
 function _hasNormativeCode(text) {
   const raw = String(text || '')
   return ['RA_NO_EVALUADO', 'RA_SUSPENDIDO', 'NOTA_INVALIDA', 'PONDERACION_CERO']
@@ -186,7 +262,7 @@ function _hasNormativeCode(text) {
 
 function _iaAlertTypeForCode(code) {
   if (code === 'RA_SUSPENDIDO') return 'warning'
-  if (code === 'RA_NO_EVALUADO' || code === 'NOTA_INVALIDA' || code === 'PONDERACION_CERO') return 'error'
+  if (code === 'RA_NO_EVALUADO' || code === 'NOTA_INVALIDA' || code === 'PONDERACION_CERO' || code === 'ERROR_RED') return 'error'
   return null
 }
 
@@ -242,6 +318,10 @@ function runIA(cmd) {
     if (!opts.modulo) { alert('Selecciona un módulo.'); return }
     if (!opts.alumno) { alert('Selecciona un alumno/a.'); return }
     if (!opts.notas)  { alert('Las notas por RA están vacías. Selecciona un alumno/a con notas guardadas.'); return }
+    if (!_isValidNotasClientFormat(opts.notas)) {
+      _showIaAlert('error', 'El formato de las notas en el cliente es incorrecto. Limpie los caracteres extraños antes de enviar.')
+      return
+    }
     const minExam = document.getElementById('ia-i-notas')?.dataset?.minExam
     if (minExam != null && String(minExam).trim() !== '') opts.minExam = String(minExam).trim()
     const pondStr = document.getElementById('ia-i-notas')?.dataset?.ponderaciones
@@ -258,6 +338,7 @@ function runIA(cmd) {
   }
 
   _activeIaCmd = cmd
+  _setIaLoading(cmd, true)
   window.api.genIA(opts)
 }
 
@@ -287,6 +368,7 @@ window.api.onIA(d => {
   if (d.type === 'done' || d.type === 'error') {
     _activeIaCmd = null
     _activeIaBannerType = null
+    _setIaLoading(null, false)
   }
 })
 
@@ -350,6 +432,7 @@ window.api.onApuntes(d => {
       // Añadir botón para abrir la carpeta de apuntes
       _addMaterialBtn(TID)
     }
+    _setIaLoading(null, false)
     return
   }
 

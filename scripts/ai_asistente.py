@@ -470,6 +470,18 @@ def _agrupar_ces_por_ra(mod) -> dict[str, list[str]]:
     return ces_por_ra
 
 
+def _anonimizar_alumno_nombre(alumno: str, activo: bool = True) -> str:
+    """Devuelve un identificador opaco si la anonimización está activa."""
+    nombre = (alumno or "").strip()
+    if not activo or not nombre:
+        return nombre
+    piezas = [p for p in nombre.replace(",", " ").split() if p]
+    if not piezas:
+        return "Alumno_ANON"
+    iniciales = "".join(p[0] for p in piezas[:3]).upper()
+    return f"Alumno_ANON_{iniciales or 'X'}"
+
+
 def _parse_ponderaciones(pond_str: str | None) -> dict[str, float]:
     """Parsea "--ponderaciones" tipo "RA1:20,RA2:30,RA3:50" → {"RA1": 20.0, ...}
 
@@ -660,9 +672,13 @@ def _cmd_actividad(args: list[str]):
 
 
 def _cmd_informe(args: list[str]):
-    opts = _parse_opts(args, ["--modulo", "--alumno", "--notas", "--proveedor", "--min-exam", "--ponderaciones"])
+    opts = _parse_opts(args, ["--modulo", "--alumno", "--notas", "--proveedor", "--min-exam", "--ponderaciones", "--anonimizar"])
     mod    = _cargar_modulo(opts.get("--modulo", "iso_data"))
-    alumno = opts.get("--alumno", "Alumno Ejemplo")
+    alumno_raw = opts.get("--alumno", "Alumno Ejemplo")
+    anonimizar = True
+    if "--anonimizar" in opts:
+        anonimizar = opts["--anonimizar"].strip().lower() not in ("0", "false", "no", "off")
+    alumno = _anonimizar_alumno_nombre(alumno_raw, activo=anonimizar)
     try:
         notas = _parse_notas(opts.get("--notas", ""))
     except ValueError as e:
@@ -724,8 +740,8 @@ def _cmd_generar_todo(args: list[str]):
             except Exception as e:
                 print(f"     ⚠️  Error en {ut['id']}: {e}")
         print(f"  → {len(apuntes_generados)} apunte(s) generado(s) en {apuntes_base}/")
-    except ImportError as e:
-        print(f"  ⚠️  No se pudo importar build_apuntes.py: {e}")
+    except Exception:
+        print("EVALFP_WARN_APUNTES: Error al generar los apuntes HTML del módulo.")
 
     # ── Resumen ──────────────────────────────────────────────────────────────
     print(f"\n✅ {len(archivos)} archivos generados en {salida}/")
