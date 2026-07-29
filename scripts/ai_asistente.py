@@ -417,6 +417,12 @@ def _parse_min_exam(val: str | None) -> float | None:
     return n
 
 
+def _emit_ia_code(code: str, msg: str, exit_code: int = 1):
+    print(f"{code}: {msg}")
+    if exit_code is not None:
+        sys.exit(exit_code)
+
+
 def _parse_ponderaciones(pond_str: str | None) -> dict[str, float]:
     """Parsea "--ponderaciones" tipo "RA1:20,RA2:30,RA3:50" → {"RA1": 20.0, ...}
 
@@ -451,16 +457,13 @@ def _parse_ponderaciones(pond_str: str | None) -> dict[str, float]:
 def _norm_ponds(ras: list[dict]) -> dict[str, float]:
     """Devuelve ponderaciones normalizadas por RA.
 
-    - Si la suma es 0: reparte por igual.
+    - Si la suma es 0: devuelve vacío; el llamador debe tratarlo como error.
     - Si la suma != 100: normaliza proporcionalmente.
     """
     p = {r["id"]: float(r.get("pond") or 0) for r in ras}
     total = sum(p.values())
     if total <= 0:
-        if not ras:
-            return {}
-        eq = 100.0 / len(ras)
-        return {r["id"]: eq for r in ras}
+        return {}
     return {k: (v * 100.0 / total) for k, v in p.items()}
 
 
@@ -477,7 +480,24 @@ def _calc_informe_estado(mod, notas: dict[str, float], min_exam: float | None, p
     pond_overrides = pond_overrides or {}
     # Consolidar ponderaciones (prioriza overrides dinámicos; fallback al estático del módulo)
     ras_pond = [{"id": r["id"], "pond": pond_overrides.get(r["id"], float(r.get("pond") or 0))} for r in ras]
+    raw_total = sum(float(r.get("pond") or 0) for r in ras_pond)
+    if raw_total <= 0:
+        return {
+            "nota_final": None,
+            "resultado": "ERROR",
+            "pendientes": [],
+            "sin_nota": [],
+            "alerta": ("PONDERACION_CERO", "La suma de ponderaciones es cero."),
+        }
     ponds = _norm_ponds(ras_pond)
+    if not ponds:
+        return {
+            "nota_final": None,
+            "resultado": "ERROR",
+            "pendientes": [],
+            "sin_nota": [],
+            "alerta": ("PONDERACION_CERO", "La suma de ponderaciones es cero."),
+        }
 
     sin_nota: list[str] = []
     pendientes: list[str] = []
@@ -499,6 +519,14 @@ def _calc_informe_estado(mod, notas: dict[str, float], min_exam: float | None, p
         if n is None:
             sin_nota.append(ra_id)
             continue
+        if n < 0 or n > 10:
+            return {
+                "nota_final": None,
+                "resultado": "ERROR",
+                "pendientes": [],
+                "sin_nota": [],
+                "alerta": ("NOTA_INVALIDA", f"Rango incorrecto en {ra_id}. Debe estar entre 0 y 10."),
+            }
         w = float(ponds.get(ra_id, 0))
         sum_w += w
         sum_wn += n * w
@@ -520,8 +548,13 @@ def _calc_informe_estado(mod, notas: dict[str, float], min_exam: float | None, p
 
     if sin_nota:
         resultado = "PENDIENTE"
+        alerta = ("RA_NO_EVALUADO", f"Faltan notas para el RA: {', '.join(sin_nota)}.")
     else:
         resultado = "APTO" if (nota_final is not None and nota_final >= 5 and not pendientes) else "NO APTO"
+        alerta = None
+
+    if not sin_nota and pendientes:
+        alerta = ("RA_SUSPENDIDO", f"El alumno tiene suspendido el RA: {', '.join(pendientes)}.")
 
     nota_final_2 = None if nota_final is None else round(nota_final + 1e-12, 2)
     return {
@@ -529,6 +562,7 @@ def _calc_informe_estado(mod, notas: dict[str, float], min_exam: float | None, p
         "resultado": resultado,
         "pendientes": pendientes,
         "sin_nota": sin_nota,
+        "alerta": alerta,
     }
 
 
@@ -595,8 +629,7 @@ def _cmd_informe(args: list[str]):
     try:
         notas = _parse_notas(opts.get("--notas", ""))
     except ValueError as e:
-        print(f"❌ Notas inválidas: {e}")
-        sys.exit(1)
+        _emit_ia_code("NOTA_INVALIDA", f"Formato o rango de nota incorrecto: {e}")
 
     try:
         min_exam = _parse_min_exam(opts.get("--min-exam"))
@@ -606,6 +639,13 @@ def _cmd_informe(args: list[str]):
 
     pond_dinamicas = _parse_ponderaciones(opts.get("--ponderaciones"))
     st = _calc_informe_estado(mod, notas, min_exam, pond_dinamicas)
+    alerta = st.get("alerta")
+    if alerta:
+        code, msg = alerta
+        if code == "RA_NO_EVALUADO" or code == "PONDERACION_CERO" or code == "NOTA_INVALIDA":
+            _emit_ia_code(code, msg)
+        if code == "RA_SUSPENDIDO":
+            print(f"{code}: {msg}")
     nota_final = st["nota_final"]
     resultado = st["resultado"]
 
