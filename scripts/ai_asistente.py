@@ -396,7 +396,7 @@ class IAAsistente:
 
 def _cargar_modulo(nombre: str):
     """Importa un módulo de datos por nombre (iso_data, par_data, …)."""
-    scripts_dir = Path(__file__).parent
+    scripts_dir = Path(__file__).resolve().parent
     sys.path.insert(0, str(scripts_dir))
     import importlib
     nombre_limpio = nombre.replace("scripts/modules/", "").replace(".py", "")
@@ -780,7 +780,6 @@ def _cmd_generar_todo(args: list[str]):
     print(f"\n📄 Generando apuntes HTML…")
     try:
         from build_apuntes import generar_apunte, apunte_path
-        from pathlib import Path as _Path
         apuntes_base = salida / "apuntes"
         apuntes_generados: list[Path] = []
         for ut in mod.UTS:

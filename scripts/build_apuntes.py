@@ -1287,7 +1287,7 @@ def generar_modulo(mod, ia, output_base: Path, ut_filtro: str | None = None) -> 
 # ─── CLI ──────────────────────────────────────────────────────────────────────
 
 def _cargar_modulo(nombre: str):
-    scripts_dir = Path(__file__).parent
+    scripts_dir = Path(__file__).resolve().parent
     sys.path.insert(0, str(scripts_dir))
     nombre_limpio = nombre.replace("scripts/modules/", "").replace(".py", "")
     try:
@@ -1343,7 +1343,7 @@ if __name__ == "__main__":
 
     opts    = _parse_opts(args, ["--modulo", "--datos", "--ut", "--salida", "--proveedor"])
     ut_id   = opts.get("--ut")
-    salida  = Path(opts.get("--salida", str(Path(__file__).parent.parent / "apuntes")))
+    salida  = Path(opts.get("--salida", str(Path(__file__).resolve().parent.parent / "apuntes")))
     proveedor = opts.get("--proveedor", "auto")
 
     # --datos (JSON de SQLite) tiene prioridad sobre --modulo (módulo Python estático)
