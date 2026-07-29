@@ -417,6 +417,37 @@ def _parse_min_exam(val: str | None) -> float | None:
     return n
 
 
+def _parse_ponderaciones(pond_str: str | None) -> dict[str, float]:
+    """Parsea "--ponderaciones" tipo "RA1:20,RA2:30,RA3:50" → {"RA1": 20.0, ...}
+
+    Reglas:
+    - tolera espacios y separadores "," o ";"
+    - ignora pares corruptos de forma segura (no revienta el comando)
+    - valida que el peso sea >= 0 (valores negativos se ignoran)
+    """
+    s = (pond_str or "").strip()
+    if not s:
+        return {}
+
+    res: dict[str, float] = {}
+    partes = [p.strip() for p in s.replace(";", ",").split(",") if p.strip()]
+    for parte in partes:
+        if ":" not in parte:
+            continue
+        ra, valor = parte.split(":", 1)
+        ra = ra.strip()
+        if not ra:
+            continue
+        try:
+            n = float(valor.strip())
+        except Exception:
+            continue
+        if n < 0:
+            continue
+        res[ra] = n
+    return res
+
+
 def _norm_ponds(ras: list[dict]) -> dict[str, float]:
     """Devuelve ponderaciones normalizadas por RA.
 
@@ -433,7 +464,7 @@ def _norm_ponds(ras: list[dict]) -> dict[str, float]:
     return {k: (v * 100.0 / total) for k, v in p.items()}
 
 
-def _calc_informe_estado(mod, notas: dict[str, float], min_exam: float | None):
+def _calc_informe_estado(mod, notas: dict[str, float], min_exam: float | None, pond_overrides: dict[str, float] | None = None):
     """Criterio de informe alineado con la app:
     - Nota final: media ponderada reponderada SOLO sobre RA evaluados (notas presentes)
     - Regla de oro: APTO ⇔ todos los RA calificados >=5 y sin mínimos KO
@@ -443,7 +474,10 @@ def _calc_informe_estado(mod, notas: dict[str, float], min_exam: float | None):
     if not ras:
         return {"nota_final": None, "resultado": "PENDIENTE", "pendientes": [], "sin_nota": []}
 
-    ponds = _norm_ponds(ras)
+    pond_overrides = pond_overrides or {}
+    # Consolidar ponderaciones (prioriza overrides dinámicos; fallback al estático del módulo)
+    ras_pond = [{"id": r["id"], "pond": pond_overrides.get(r["id"], float(r.get("pond") or 0))} for r in ras]
+    ponds = _norm_ponds(ras_pond)
 
     sin_nota: list[str] = []
     pendientes: list[str] = []
@@ -555,7 +589,7 @@ def _cmd_actividad(args: list[str]):
 
 
 def _cmd_informe(args: list[str]):
-    opts = _parse_opts(args, ["--modulo", "--alumno", "--notas", "--proveedor", "--min-exam"])
+    opts = _parse_opts(args, ["--modulo", "--alumno", "--notas", "--proveedor", "--min-exam", "--ponderaciones"])
     mod    = _cargar_modulo(opts.get("--modulo", "iso_data"))
     alumno = opts.get("--alumno", "Alumno Ejemplo")
     try:
@@ -570,7 +604,8 @@ def _cmd_informe(args: list[str]):
         print(f"❌ {e}")
         sys.exit(1)
 
-    st = _calc_informe_estado(mod, notas, min_exam)
+    pond_dinamicas = _parse_ponderaciones(opts.get("--ponderaciones"))
+    st = _calc_informe_estado(mod, notas, min_exam, pond_dinamicas)
     nota_final = st["nota_final"]
     resultado = st["resultado"]
 
@@ -652,7 +687,7 @@ AYUDA = textwrap.dedent("""\
     Opciones por comando:
       rubrica   --ra <RA_ID>
       actividad --ra <RA_ID>  --n <num_propuestas>
-      informe   --alumno "<Nombre Apellidos>"  --notas "RA1:7,RA2:5.5"
+      informe   --alumno "<Nombre Apellidos>"  --notas "RA1:7,RA2:5.5"  [--min-exam 5]  [--ponderaciones "RA1:20,RA2:30,RA3:50"]
       todo      --salida <directorio>
 
     Variables de entorno:

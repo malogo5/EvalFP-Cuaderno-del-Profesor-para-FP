@@ -160,6 +160,8 @@ function runIA(cmd) {
     if (!opts.notas)  { alert('Las notas por RA están vacías. Selecciona un alumno/a con notas guardadas.'); return }
     const minExam = document.getElementById('ia-i-notas')?.dataset?.minExam
     if (minExam != null && String(minExam).trim() !== '') opts.minExam = String(minExam).trim()
+    const pondStr = document.getElementById('ia-i-notas')?.dataset?.ponderaciones
+    if (pondStr != null && String(pondStr).trim() !== '') opts.ponderaciones = String(pondStr).trim()
     opts.consent = document.getElementById('ia-i-consent')?.checked === true
     opts.anonimizar = document.getElementById('ia-i-anonimizar')?.checked === true
     if (!opts.consent) { alert('Confirma que entiendes el envío de datos académicos al proveedor IA.'); return }
@@ -365,7 +367,11 @@ async function iaInformeAutoNotas() {
         : 'Criterio: APTO exige todos los RA >=5 (la media no compensa un RA suspenso).'
     }
     const notasEl = document.getElementById('ia-i-notas')
-    if (notasEl) notasEl.dataset.minExam = minExam != null ? String(minExam) : ''
+    if (notasEl) {
+      notasEl.dataset.minExam = minExam != null ? String(minExam) : ''
+      const pondPairs = ras.map(ra => `${ra.id}:${(raPondOverrides[ra.id] !== undefined ? raPondOverrides[ra.id] : (ra.pond || 0))}`)
+      notasEl.dataset.ponderaciones = pondPairs.join(',')
+    }
   } catch(_) { /* sin notas disponibles */ }
 }
 

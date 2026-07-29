@@ -402,7 +402,7 @@ ipcMain.handle('system:pythonStatus', event => {
 })
 
 // ── IPC: IA + Apuntes ─────────────────────────────────────────────────────────
-ipcMain.on('gen-ia', (event, { comando, modulo, ra, n, alumno, notas, proveedor, consent, anonimizar, minExam }) => {
+ipcMain.on('gen-ia', (event, { comando, modulo, ra, n, alumno, notas, proveedor, consent, anonimizar, minExam, ponderaciones }) => {
   assertTrustedSender(event)
   if (!['rubrica', 'actividad', 'informe', 'todo'].includes(comando)) throw new Error('Comando IA no permitido')
   if (typeof modulo !== 'string' || !getModulesData().modules[modulo]) throw new Error('Módulo IA no válido')
@@ -419,6 +419,7 @@ ipcMain.on('gen-ia', (event, { comando, modulo, ra, n, alumno, notas, proveedor,
   if (alumno)    args.push('--alumno', anonimizar ? 'Alumno/a' : alumno)
   if (notas)     args.push('--notas', notas)
   if (comando === 'informe' && minExam != null && String(minExam).trim() !== '') args.push('--min-exam', String(minExam).trim())
+  if (comando === 'informe' && ponderaciones != null && String(ponderaciones).trim() !== '') args.push('--ponderaciones', String(ponderaciones).trim())
   if (proveedor) args.push('--proveedor', proveedor)
   if (comando === 'todo') args.push('--salida', salida)
   runPython(event, 'ai_asistente.py', args, 'gen-ia-reply')
