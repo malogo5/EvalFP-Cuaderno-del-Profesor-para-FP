@@ -73,3 +73,29 @@ npm run build:win
 ## Licencia
 
 EvalFP se distribuye bajo [GNU GPL v3.0 o posterior](LICENSE).
+
+## Estado del proyecto
+
+EvalFP queda muy bien blindado a nivel de código y listo para empaquetado.  
+Los 20 puntos de control del sprint están implementados y validados con compilación y lint básicos, pero la validación definitiva del comportamiento en producción debe hacerse con el binario nativo ejecutándose en macOS y Windows.
+
+### Qué está cubierto
+- Lógica de evaluación y notas reforzada.
+- Ponderaciones dinámicas y control estricto de casos límite.
+- Informes IA con banners de error y advertencia amigables.
+- Validación previa del cliente para reducir errores evitables.
+- Parser de opciones endurecido.
+- Robustez ante caídas de red y errores de API.
+- Anonimización de datos personales antes del envío a IA.
+- Generación masiva de materiales e informes individuales.
+- Resolución de rutas preparada para desarrollo y producción.
+
+### Qué queda por validar fuera del código
+- Empaquetado real en macOS y Windows.
+- Ejecución del instalador nativo en un sistema limpio.
+- Comportamiento del flujo completo con datos reales de un centro.
+- Verificación final de rutas, permisos y recursos empaquetados.
+
+### Conclusión
+La base técnica está cerrada y sólidamente implementada.  
+La siguiente fase ya no es tanto de desarrollo como de validación de distribución: confirmar que el instalador nativo reproduce exactamente este comportamiento en el entorno final del usuario.
