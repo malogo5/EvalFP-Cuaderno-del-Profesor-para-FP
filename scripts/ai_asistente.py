@@ -317,12 +317,7 @@ class IAAsistente:
         modulo = mod.MODULO
 
         # Construir CES_POR_RA desde ASIGNACIONES del módulo (sin depender de build_template)
-        ces_por_ra: dict[str, list[str]] = {}
-        for _ut, ra_id, ces in mod.ASIGNACIONES:
-            ces_por_ra.setdefault(ra_id, [])
-            for ce in ces:
-                if ce not in ces_por_ra[ra_id]:
-                    ces_por_ra[ra_id].append(ce)
+        ces_por_ra = _agrupar_ces_por_ra(mod)
 
         for ra in mod.RAS:
             ra_id = ra["id"]
@@ -421,6 +416,17 @@ def _emit_ia_code(code: str, msg: str, exit_code: int = 1):
     print(f"{code}: {msg}")
     if exit_code is not None:
         sys.exit(exit_code)
+
+
+def _agrupar_ces_por_ra(mod) -> dict[str, list[str]]:
+    """Agrupa los Criterios de Evaluación (CE) correspondientes a cada RA."""
+    ces_por_ra: dict[str, list[str]] = {}
+    for _ut, ra_id, ces in mod.ASIGNACIONES:
+        ces_por_ra.setdefault(ra_id, [])
+        for ce in ces:
+            if ce not in ces_por_ra[ra_id]:
+                ces_por_ra[ra_id].append(ce)
+    return ces_por_ra
 
 
 def _parse_ponderaciones(pond_str: str | None) -> dict[str, float]:
@@ -575,12 +581,7 @@ def _cmd_rubrica(args: list[str]):
         print(f"❌ RA '{ra_id}' no encontrado en el módulo.")
         sys.exit(1)
 
-    ces_por_ra: dict[str, list[str]] = {}
-    for _ut, rid, ces in mod.ASIGNACIONES:
-        ces_por_ra.setdefault(rid, [])
-        for ce in ces:
-            if ce not in ces_por_ra[rid]:
-                ces_por_ra[rid].append(ce)
+    ces_por_ra = _agrupar_ces_por_ra(mod)
 
     ia  = IAAsistente(proveedor=opts.get("--proveedor", "auto"))
     out = ia.descriptores_rubrica(ra, ces_por_ra.get(ra_id, []), mod.MODULO)
@@ -607,12 +608,7 @@ def _cmd_actividad(args: list[str]):
         print(f"❌ RA '{ra_id}' no encontrado en el módulo.")
         sys.exit(1)
 
-    ces_por_ra: dict[str, list[str]] = {}
-    for _ut, rid, ces in mod.ASIGNACIONES:
-        ces_por_ra.setdefault(rid, [])
-        for ce in ces:
-            if ce not in ces_por_ra[rid]:
-                ces_por_ra[rid].append(ce)
+    ces_por_ra = _agrupar_ces_por_ra(mod)
 
     ia  = IAAsistente(proveedor=opts.get("--proveedor", "auto"))
     out = ia.propuesta_actividades(ra, ces_por_ra.get(ra_id, []), mod.MODULO, n)
