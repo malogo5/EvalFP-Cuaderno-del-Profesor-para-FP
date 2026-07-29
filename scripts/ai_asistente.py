@@ -105,28 +105,69 @@ class IAAsistente:
             return self._demo_response(user)
 
         _max = max_tokens or MAX_TOKENS
+        timeout_s = 15.0
+
+        def _emit_red_error(exc: Exception):
+            _emit_ia_code(
+                "ERROR_RED",
+                "No se ha podido conectar con el servidor de IA. Revisa tu conexión a internet o inténtalo más tarde.",
+            )
 
         if self._proveedor == "claude":
-            msg = self._cliente.messages.create(
-                model=MODELO_CLAUDE,
-                max_tokens=_max,
-                temperature=TEMPERATURA,
-                system=system,
-                messages=[{"role": "user", "content": user}],
-            )
-            return msg.content[0].text
+            try:
+                import anthropic  # noqa: PLC0415
+                try:
+                    msg = self._cliente.messages.create(
+                        model=MODELO_CLAUDE,
+                        max_tokens=_max,
+                        temperature=TEMPERATURA,
+                        system=system,
+                        messages=[{"role": "user", "content": user}],
+                        timeout=timeout_s,
+                    )
+                    return msg.content[0].text
+                except (
+                    anthropic.APIConnectionError,
+                    anthropic.APITimeoutError,
+                    anthropic.RateLimitError,
+                    anthropic.APIError,
+                    TimeoutError,
+                    OSError,
+                ) as exc:
+                    _emit_red_error(exc)
+                except Exception as exc:
+                    _emit_red_error(exc)
+            except ImportError:
+                _emit_ia_code("ERROR_RED", "No se ha podido cargar el SDK de Claude.")
 
         if self._proveedor == "openai":
-            resp = self._cliente.chat.completions.create(
-                model=MODELO_OPENAI,
-                max_tokens=_max,
-                temperature=TEMPERATURA,
-                messages=[
-                    {"role": "system", "content": system},
-                    {"role": "user",   "content": user},
-                ],
-            )
-            return resp.choices[0].message.content
+            try:
+                import openai  # noqa: PLC0415
+                try:
+                    resp = self._cliente.chat.completions.create(
+                        model=MODELO_OPENAI,
+                        max_tokens=_max,
+                        temperature=TEMPERATURA,
+                        messages=[
+                            {"role": "system", "content": system},
+                            {"role": "user",   "content": user},
+                        ],
+                        timeout=timeout_s,
+                    )
+                    return resp.choices[0].message.content
+                except (
+                    openai.APIConnectionError,
+                    openai.APITimeoutError,
+                    openai.RateLimitError,
+                    openai.APIError,
+                    TimeoutError,
+                    OSError,
+                ) as exc:
+                    _emit_red_error(exc)
+                except Exception as exc:
+                    _emit_red_error(exc)
+            except ImportError:
+                _emit_ia_code("ERROR_RED", "No se ha podido cargar el SDK de OpenAI.")
 
         raise RuntimeError(f"Proveedor desconocido: {self._proveedor}")
 
