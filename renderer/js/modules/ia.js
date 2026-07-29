@@ -3,6 +3,7 @@
 
 // Guarda el comando activo para enrutar respuestas al terminal correcto
 let _activeIaCmd = null
+let _activeIaBannerType = null
 
 // IDs de los selects de módulo en cada pestaña
 const IA_MOD_SELS = ['ia-r-mod', 'ia-a-mod', 'ia-i-mod', 'ia-ap-mod', 'ia-t-mod']
@@ -106,6 +107,89 @@ function iaTab(el, id) {
 }
 
 // ── Terminal ──────────────────────────────────────────────────────────────────
+function _humanizeIaMessage(text) {
+  const raw = String(text || '')
+  const map = [
+    ['RA_NO_EVALUADO', 'Faltan calificaciones en algunos Resultados de Aprendizaje. Completa la pestaña de Notas antes de generar el informe.'],
+    ['RA_SUSPENDIDO', 'El alumno no cumple los criterios mínimos en algún RA. El resultado normativo es NO APTO.'],
+    ['NOTA_INVALIDA', 'Se ha detectado un formato o rango de nota incorrecto (debe ser entre 0 y 10).'],
+    ['PONDERACION_CERO', 'La suma de las ponderaciones de los RA es 0%. Revisa la configuración del módulo.'],
+  ]
+  for (const [prefix, msg] of map) {
+    if (raw.includes(prefix)) return msg
+  }
+  return raw.trim()
+}
+
+function _showIaAlert(type, rawText) {
+  const cmd = _activeIaCmd || 'informe'
+  const el = document.getElementById(`ia-${cmd}-term`)
+  if (!el) return
+
+  const text = _humanizeIaMessage(rawText)
+  const existing = el.querySelector('.ia-alert-banner')
+  if (existing) existing.remove()
+
+  const banner = document.createElement('div')
+  banner.className = `ia-alert-banner ia-alert-${type === 'warning' ? 'warning' : 'error'}`
+  banner.setAttribute('role', type === 'warning' ? 'status' : 'alert')
+  banner.style.display = 'flex'
+  banner.style.gap = '12px'
+  banner.style.alignItems = 'flex-start'
+  banner.style.padding = '12px 14px'
+  banner.style.margin = '0 0 12px 0'
+  banner.style.borderRadius = '12px'
+  banner.style.border = type === 'warning' ? '1px solid #d9b200' : '1px solid #cc3d3d'
+  banner.style.background = type === 'warning' ? '#fff7d6' : '#ffe2e2'
+  banner.style.color = '#1f2937'
+  banner.style.boxShadow = '0 8px 24px rgba(0,0,0,0.08)'
+  banner.style.fontSize = '14px'
+
+  const icon = type === 'warning' ? '⚠️' : '⛔'
+  const iconWrap = document.createElement('div')
+  iconWrap.className = 'ia-alert-banner__icon'
+  iconWrap.textContent = icon
+  iconWrap.style.fontSize = '18px'
+  iconWrap.style.lineHeight = '1.2'
+  iconWrap.style.flex = '0 0 auto'
+
+  const body = document.createElement('div')
+  body.className = 'ia-alert-banner__body'
+  body.style.display = 'flex'
+  body.style.flexDirection = 'column'
+  body.style.gap = '4px'
+
+  const title = document.createElement('div')
+  title.className = 'ia-alert-banner__title'
+  title.textContent = type === 'warning' ? 'Advertencia' : 'Error bloqueante'
+  title.style.fontWeight = '700'
+  title.style.fontSize = '14px'
+
+  const msg = document.createElement('div')
+  msg.className = 'ia-alert-banner__text'
+  msg.textContent = text
+  msg.style.whiteSpace = 'pre-wrap'
+  msg.style.lineHeight = '1.4'
+  body.appendChild(title)
+  body.appendChild(msg)
+  banner.appendChild(iconWrap)
+  banner.appendChild(body)
+  el.prepend(banner)
+  el.scrollTop = 0
+}
+
+function _hasNormativeCode(text) {
+  const raw = String(text || '')
+  return ['RA_NO_EVALUADO', 'RA_SUSPENDIDO', 'NOTA_INVALIDA', 'PONDERACION_CERO']
+    .find(prefix => raw.includes(prefix)) || null
+}
+
+function _iaAlertTypeForCode(code) {
+  if (code === 'RA_SUSPENDIDO') return 'warning'
+  if (code === 'RA_NO_EVALUADO' || code === 'NOTA_INVALIDA' || code === 'PONDERACION_CERO') return 'error'
+  return null
+}
+
 function termAppend(id, d) {
   const el = document.getElementById(id)
   if (!el) return
@@ -180,10 +264,30 @@ function runIA(cmd) {
 // Registrar listener de respuestas IA (una sola vez al cargar el módulo)
 window.api.onIA(d => {
   const termId = _activeIaCmd ? `ia-${_activeIaCmd}-term` : 'ia-todo-term'
+  const rawText = d && typeof d.text === 'string' ? d.text : ''
+  const normCode = _hasNormativeCode(rawText)
+
+  if (normCode) {
+    const type = _iaAlertTypeForCode(normCode)
+    if (type) {
+      _activeIaBannerType = type
+      _showIaAlert(type, rawText)
+      if (type === 'error') {
+        if (d.type === 'done' || d.type === 'error') _activeIaCmd = null
+        return
+      }
+    }
+  }
+
+  if (_activeIaBannerType === 'error' && (d.type === 'stdout' || d.type === 'stderr')) return
+
   termAppend(termId, d)
   // Al terminar con éxito: acceso directo a la carpeta de material
   if (d.type === 'done' && d.code === 0) _addMaterialBtn(termId)
-  if (d.type === 'done' || d.type === 'error') _activeIaCmd = null
+  if (d.type === 'done' || d.type === 'error') {
+    _activeIaCmd = null
+    _activeIaBannerType = null
+  }
 })
 
 /** Añade al terminal un botón para abrir la carpeta "Material IA". */
