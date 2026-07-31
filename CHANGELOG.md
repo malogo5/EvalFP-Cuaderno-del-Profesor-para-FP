@@ -1,6 +1,13 @@
 # Changelog
 
-## [3.3.1] - 2026-07-30
+## [3.3.1] - 2026-07-31
+
+### Changed
+- **La versión del proyecto pasa a 3.3.1** (estaba clavada en la 3.0.0 de julio, que es lo que
+  mostraba la app y lo que nombraba los instaladores).
+- **`DISTRIBUCIONES.md`**: cómo reconstruir el `.dmg` y el `.exe`, y por qué el instalador de
+  Windows sale mejor desde una máquina Windows que desde macOS con Wine.
+
 
 ### Fixed
 - **Los modales dejaban de responder al ratón de cierta altura para abajo.** El lateral de la app
