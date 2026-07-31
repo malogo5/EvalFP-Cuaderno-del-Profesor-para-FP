@@ -35,10 +35,19 @@ from typing import Any
 
 # ─── Constantes ──────────────────────────────────────────────────────────────
 
+# Dos niveles de modelo. Lo que va a leer una familia o sostiene una reclamación
+# —informes y planes de recuperación— se genera con el modelo capaz; lo repetitivo
+# —rúbricas, listados de actividades— con el económico, que va sobrado.
 MODELO_CLAUDE  = "claude-haiku-4-5-20251001"   # rápido y económico
 MODELO_OPENAI  = "gpt-4o-mini"
+MODELO_CLAUDE_CALIDAD = "claude-sonnet-5"
+MODELO_OPENAI_CALIDAD = "gpt-4o"
 MAX_TOKENS     = 1024
 TEMPERATURA    = 0.7
+
+# Un texto largo y cuidado no cabe en 15 s: se da margen y un reintento.
+TIMEOUT_NORMAL  = 30.0
+TIMEOUT_CALIDAD = 90.0
 
 NIVELES_RUBRICA = [
     ("No Alcanzado",  "0-4",  "El alumno/a NO demuestra el criterio o lo hace con errores graves."),
@@ -100,12 +109,15 @@ class IAAsistente:
 
     # ── Llamada genérica ──────────────────────────────────────────────────────
 
-    def _llamar(self, system: str, user: str, max_tokens: int | None = None) -> str:
+    def _llamar(self, system: str, user: str, max_tokens: int | None = None,
+                calidad: bool = False) -> str:
         if self._proveedor == "demo":
             return self._demo_response(user)
 
         _max = max_tokens or MAX_TOKENS
-        timeout_s = 15.0
+        timeout_s = TIMEOUT_CALIDAD if calidad else TIMEOUT_NORMAL
+        modelo_claude = MODELO_CLAUDE_CALIDAD if calidad else MODELO_CLAUDE
+        modelo_openai = MODELO_OPENAI_CALIDAD if calidad else MODELO_OPENAI
 
         def _emit_red_error(exc: Exception):
             _emit_ia_code(
@@ -113,18 +125,32 @@ class IAAsistente:
                 "No se ha podido conectar con el servidor de IA. Revisa tu conexión a internet o inténtalo más tarde.",
             )
 
+        def _con_reintento(fn):
+            """Un corte de red o un pico de latencia no deberían perder el trabajo."""
+            import time  # noqa: PLC0415
+            ultimo = None
+            for intento in range(2):
+                try:
+                    return fn()
+                except Exception as exc:            # noqa: BLE001 — se reemite abajo
+                    ultimo = exc
+                    if intento == 0:
+                        print("[EvalFP IA] reintentando tras un fallo de conexión…", file=sys.stderr)
+                        time.sleep(1.5)
+            raise ultimo
+
         if self._proveedor == "claude":
             try:
                 import anthropic  # noqa: PLC0415
                 try:
-                    msg = self._cliente.messages.create(
-                        model=MODELO_CLAUDE,
+                    msg = _con_reintento(lambda: self._cliente.messages.create(
+                        model=modelo_claude,
                         max_tokens=_max,
                         temperature=TEMPERATURA,
                         system=system,
                         messages=[{"role": "user", "content": user}],
                         timeout=timeout_s,
-                    )
+                    ))
                     return msg.content[0].text
                 except (
                     anthropic.APIConnectionError,
@@ -144,8 +170,8 @@ class IAAsistente:
             try:
                 import openai  # noqa: PLC0415
                 try:
-                    resp = self._cliente.chat.completions.create(
-                        model=MODELO_OPENAI,
+                    resp = _con_reintento(lambda: self._cliente.chat.completions.create(
+                        model=modelo_openai,
                         max_tokens=_max,
                         temperature=TEMPERATURA,
                         messages=[
@@ -153,7 +179,7 @@ class IAAsistente:
                             {"role": "user",   "content": user},
                         ],
                         timeout=timeout_s,
-                    )
+                    ))
                     return resp.choices[0].message.content
                 except (
                     openai.APIConnectionError,
@@ -281,6 +307,7 @@ class IAAsistente:
         nota_final: float,
         resultado: str,
         observaciones: str = "",
+        contexto: dict[str, Any] | None = None,
     ) -> str:
         """
         Genera un borrador de informe individual para un alumno/a.
@@ -295,46 +322,264 @@ class IAAsistente:
 
         Devuelve borrador de informe en texto para revisar y personalizar.
         """
+        ctx = contexto or {}
+        ra_texto   = ctx.get("ra_texto", {})      # {"RA1": "Instala sistemas operativos…"}
+        ces_por_ra = ctx.get("ces_por_ra", {})    # {"RA1": ["Se ha…", …]}
+        uts_por_ra = ctx.get("uts_por_ra", {})    # {"RA1": ["UT1 · Instalación…"]}
+        evidencias = ctx.get("evidencias", [])    # actividades con nota, la del alumno
+
         system = textwrap.dedent("""\
-            Eres un tutor/a de FP redactando informes individuales de progreso del alumnado.
-            Usas un tono profesional, constructivo y respetuoso.
-            Destacas logros y señalas áreas de mejora con propuestas concretas.
-            El informe está dirigido al alumno/a y a su familia.
-            Responde SOLO con el texto del informe, sin instrucciones ni metacomentarios.
+            Eres profesor o profesora de Formación Profesional redactando el informe individual
+            de evaluación de un alumno o alumna. El informe lo van a leer el alumnado y su familia,
+            y puede acompañar a una reclamación, así que cada afirmación debe poder sostenerse en
+            los criterios de evaluación del módulo.
+
+            Cómo escribes:
+            · Hablas de lo que el alumno o alumna sabe hacer y de lo que todavía no, en lenguaje
+              claro, nunca en clave («RA3», «CE b») salvo entre paréntesis como referencia.
+            · Cada área de mejora va acompañada de una propuesta concreta y realizable: qué tarea,
+              sobre qué contenido, con qué finalidad.
+            · No inventas datos, notas, fechas, actitudes ni comportamientos: solo usas lo que se
+              te da. Si no hay evidencia de algo, no lo mencionas.
+            · No juzgas a la persona («es vago», «no se esfuerza»): describes desempeño.
+            · Tono profesional y cercano, en español de España, sin florituras ni frases de relleno.
+
+            Responde SOLO con el texto del informe, sin encabezados de sistema ni metacomentarios.
         """)
 
-        # Calcular puntos fuertes y débiles
+        # Puntos fuertes y débiles, con el enunciado real de cada RA
         notas_ordenadas = sorted(notas_ra.items(), key=lambda x: x[1], reverse=True)
-        puntos_fuertes  = [f"{ra}: {nota:.1f}" for ra, nota in notas_ordenadas if nota >= 5]
-        puntos_mejora   = [f"{ra}: {nota:.1f}" for ra, nota in notas_ordenadas if nota < 5]
 
-        notas_str = "\n".join(f"  {ra}: {nota:.1f}/10" for ra, nota in notas_ordenadas)
-        obs_str   = f"\nObservaciones del profesor/a:\n{observaciones}" if observaciones else ""
+        def _bloque_ra(ra_id: str, nota: float) -> str:
+            enun = ra_texto.get(ra_id, "")
+            lineas = [f"  {ra_id} — {nota:.1f}/10" + (f": {enun}" if enun else "")]
+            uts = uts_por_ra.get(ra_id) or []
+            if uts:
+                lineas.append(f"      Se trabaja en: {'; '.join(uts)}")
+            ces = ces_por_ra.get(ra_id) or []
+            if ces and nota < 5:
+                lineas.append("      Criterios de evaluación que quedan por alcanzar:")
+                lineas += [f"        · {c}" for c in ces[:12]]
+            return "\n".join(lineas)
+
+        superados  = [(ra, n) for ra, n in notas_ordenadas if n >= 5]
+        pendientes = [(ra, n) for ra, n in notas_ordenadas if n < 5]
+
+        bloque_sup = "\n".join(_bloque_ra(ra, n) for ra, n in superados) or "  (ninguno)"
+        bloque_pen = "\n".join(_bloque_ra(ra, n) for ra, n in pendientes) or "  (ninguno)"
+
+        ev_str = ""
+        if evidencias:
+            filas = [f"  · {e.get('descripcion','(actividad)')}: {e.get('nota')}/10"
+                     + (f" — {e.get('ut')}" if e.get("ut") else "")
+                     for e in evidencias[:20]]
+            ev_str = "\n\nCalificaciones de las actividades del alumno/a:\n" + "\n".join(filas)
+
+        obs_str = f"\n\nObservaciones del profesor/a:\n{observaciones}" if observaciones else ""
 
         user = textwrap.dedent(f"""\
             Alumno/a: {alumno}
-            Módulo: {modulo['nombre']}
-            Ciclo: {modulo['ciclo']} — {modulo['curso']} — Curso {modulo.get('anno','2026-2027')}
+            Módulo: {modulo['nombre']} ({modulo.get('codigo','')})
+            Ciclo: {modulo['ciclo']} — {modulo.get('curso','')} — Curso {modulo.get('anno','2026-2027')}
+            Normativa del módulo: {modulo.get('decreto','')}
 
-            Notas por Resultado de Aprendizaje:
-{notas_str}
+            RESULTADOS DE APRENDIZAJE SUPERADOS
+{bloque_sup}
 
-            Nota final del módulo: {nota_final:.2f}/10
-            Resultado: {resultado}
+            RESULTADOS DE APRENDIZAJE NO SUPERADOS
+{bloque_pen}
 
-            Puntos fuertes (RAs aprobados): {', '.join(puntos_fuertes) or 'Ninguno'}
-            RAs con dificultades: {', '.join(puntos_mejora) or 'Ninguno'}{obs_str}
+            Nota final del módulo: {nota_final:.2f}/10 · Resultado: {resultado}{ev_str}{obs_str}
 
-            Redacta un informe individual de 3-4 párrafos con:
-            1. Saludo e introducción (módulo, curso, periodo evaluado)
-            2. Valoración del progreso: logros concretos en los RAs con mejor rendimiento
-            3. Áreas de mejora: indicaciones específicas y constructivas para los RAs con dificultades
-            4. Conclusión con nota final, resultado y ánimo/orientación para la próxima evaluación
+            Redacta el informe con esta estructura, sin numerarla ni poner títulos:
 
-            Tono: profesional, empático, constructivo. No uses jerga técnica excesiva.
+            1. Una frase de situación: módulo, ciclo y periodo evaluado.
+            2. Qué ha conseguido: describe en lenguaje llano las capacidades de los resultados de
+               aprendizaje superados, citando lo que sabe hacer, no la nota.
+            3. Qué le falta: para CADA resultado de aprendizaje no superado, explica qué se
+               esperaba —apoyándote en sus criterios de evaluación, dichos con tus palabras— y qué
+               no ha demostrado todavía.
+            4. Cómo recuperarlo: una propuesta concreta por cada resultado no superado (tarea,
+               contenido y unidad de trabajo donde repasarlo).
+            5. Cierre con la nota final, el resultado y una orientación realista.
+
+            Si el resultado es NO APTO con la media igual o superior a 5, explica con naturalidad
+            que en Formación Profesional hay que superar todos los resultados de aprendizaje y que
+            la media no compensa uno suspenso.
+
+            Extensión: entre 250 y 400 palabras. Nada de listas con viñetas: prosa.
         """)
 
-        return self._llamar(system, user)
+        return self._llamar(system, user, max_tokens=1800, calidad=True)
+
+    def plan_recuperacion(
+        self,
+        alumno: str,
+        modulo: dict[str, Any],
+        pendientes: list[dict[str, Any]],
+        contexto: dict[str, Any] | None = None,
+        semanas: int = 4,
+    ) -> str:
+        """Plan de recuperación centrado SOLO en los RA que le quedan."""
+        ctx = contexto or {}
+        ces_por_ra = ctx.get("ces_por_ra", {})
+        uts_por_ra = ctx.get("uts_por_ra", {})
+
+        system = textwrap.dedent("""\
+            Eres profesor o profesora de Formación Profesional preparando el plan de recuperación
+            que se entrega al alumnado con resultados de aprendizaje pendientes.
+
+            El plan tiene que ser algo que el alumno o alumna pueda seguir solo: qué estudiar, qué
+            hacer, en qué orden y cómo se le va a evaluar. Nada de buenas intenciones genéricas.
+
+            Reglas:
+            · Solo hablas de los resultados de aprendizaje que se te dan como pendientes.
+            · Cada tarea que propones se puede hacer con medios de aula y en el tiempo indicado.
+            · Dices con qué se va a evaluar cada resultado y qué hay que demostrar para superarlo.
+            · No inventas fechas concretas ni notas: usas «semana 1», «semana 2»…
+            · Español de España, tono directo y respetuoso, sin infantilizar.
+
+            Responde SOLO con el plan, en texto con encabezados simples.
+        """)
+
+        bloques = []
+        for p in pendientes:
+            ra_id = p.get("ra")
+            ces = ces_por_ra.get(ra_id) or []
+            uts = uts_por_ra.get(ra_id) or []
+            bloques.append(
+                f"\n{ra_id} — nota actual {p.get('nota')}/10\n"
+                f"  Enunciado: {p.get('enunciado','')}\n"
+                + (f"  Unidades donde se trabaja: {'; '.join(uts)}\n" if uts else "")
+                + ("  Criterios de evaluación pendientes:\n"
+                   + "\n".join(f"    · {c}" for c in ces[:12]) if ces else "")
+            )
+
+        user = textwrap.dedent(f"""\
+            Alumno/a: {alumno}
+            Módulo: {modulo['nombre']} ({modulo.get('codigo','')}) — {modulo.get('ciclo','')} {modulo.get('curso','')}
+            Tiempo disponible hasta la prueba de recuperación: {semanas} semanas
+
+            RESULTADOS DE APRENDIZAJE PENDIENTES
+            {''.join(bloques)}
+
+            Escribe el plan con esta forma:
+
+            · Un párrafo breve de situación: qué le queda y qué supone superarlo.
+            · Un apartado por cada resultado de aprendizaje pendiente, con: qué tiene que llegar a
+              hacer (en lenguaje llano), qué repasar y dónde, dos o tres tareas concretas de
+              práctica, y cómo se le evaluará.
+            · Un calendario por semanas repartiendo esas tareas en las {semanas} semanas.
+            · Una última línea recordando que hay que superar TODOS los resultados de aprendizaje.
+        """)
+        return self._llamar(system, user, max_tokens=2000, calidad=True)
+
+    def radiografia_grupo(
+        self,
+        modulo: dict[str, Any],
+        estadisticas: dict[str, Any],
+    ) -> str:
+        """Lee los números del grupo (ya calculados) y propone refuerzo."""
+        system = textwrap.dedent("""\
+            Eres jefe o jefa de departamento de Formación Profesional analizando cómo ha ido un
+            módulo con un grupo, para decidir qué reforzar y qué cambiar en la programación.
+
+            Trabajas SOLO con los datos que se te dan, que ya vienen calculados: no recalculas
+            medias ni porcentajes, no inventas cifras y no supones causas que no estén en los datos.
+            Cuando algo puede tener varias explicaciones, lo dices como hipótesis a comprobar.
+
+            Escribes para el propio profesorado: directo, sin adornos, accionable.
+        """)
+
+        filas = []
+        for ra in estadisticas.get("ras", []):
+            filas.append(
+                f"  {ra['id']} ({ra.get('pond','?')}%) — media {ra['media']} · "
+                f"aprueban {ra['aprobados']}/{ra['total']} ({ra['porcentaje']}%)\n"
+                f"      {ra.get('enunciado','')}"
+            )
+        acts = []
+        for a in estadisticas.get("actividades", [])[:15]:
+            acts.append(f"  · {a['descripcion']}: media {a['media']} · "
+                        f"aprueban {a['aprobados']}/{a['total']} ({a['porcentaje']}%)")
+
+        user = textwrap.dedent(f"""\
+            Módulo: {modulo['nombre']} ({modulo.get('codigo','')}) — {modulo.get('ciclo','')} {modulo.get('curso','')}
+            Alumnado con calificaciones: {estadisticas.get('n_alumnos', 0)}
+            Media del grupo: {estadisticas.get('media_grupo', '—')}/10 ·
+            Superan el módulo: {estadisticas.get('superan', 0)} de {estadisticas.get('n_alumnos', 0)}
+
+            RESULTADOS DE APRENDIZAJE
+{chr(10).join(filas) or '  (sin datos)'}
+
+            ACTIVIDADES DE PEOR A MEJOR RESULTADO
+{chr(10).join(acts) or '  (sin datos)'}
+
+            Redacta un análisis con:
+
+            · Cómo ha ido el grupo en dos o tres frases.
+            · Dónde está el problema: los resultados de aprendizaje y las actividades con peores
+              datos, diciendo qué contenido concreto hay detrás.
+            · Qué reforzar y cómo: propuestas de aula para los puntos débiles, ordenadas por
+              urgencia, indicando a cuántos alumnos afectaría.
+            · Qué revisar de la programación de cara al curso que viene: si alguna actividad puede
+              estar mal planteada, mal situada en el tiempo o mal ponderada, dilo como hipótesis.
+        """)
+        return self._llamar(system, user, max_tokens=2000, calidad=True)
+
+    def examen_con_solucionario(
+        self,
+        modulo: dict[str, Any],
+        ra: dict[str, Any],
+        ces: list[str],
+        n_preguntas: int = 8,
+        tipo: str = "mixto",
+        duracion: int = 50,
+    ) -> str:
+        """Prueba escrita a partir de los CE literales del decreto, con solucionario."""
+        system = textwrap.dedent("""\
+            Eres profesor o profesora de Formación Profesional que redacta pruebas escritas.
+
+            Reglas que no te saltas:
+            · Cada pregunta evalúa uno o varios criterios de evaluación concretos, y lo indicas.
+            · Preguntas inequívocas: un enunciado, una tarea, una respuesta esperable.
+            · El solucionario dice qué se considera correcto y qué errores son frecuentes.
+            · El baremo reparte los puntos entre las preguntas y suma exactamente 10.
+            · Nada de preguntas trampa, de cultura general ni ajenas a los criterios dados.
+            · Español de España, registro claro para el nivel del ciclo.
+        """)
+
+        ces_txt = "\n".join(f"  {i}. {c}" for i, c in enumerate(ces, 1)) or "  (sin criterios)"
+        formato = {
+            "test": "preguntas tipo test de 4 opciones con una sola correcta",
+            "desarrollo": "preguntas de desarrollo, de respuesta razonada",
+            "practico": "supuestos prácticos con tareas a resolver paso a paso",
+        }.get(tipo, "una mezcla equilibrada de test, respuesta corta y un supuesto práctico")
+
+        user = textwrap.dedent(f"""\
+            Módulo: {modulo['nombre']} ({modulo.get('codigo','')}) — {modulo.get('ciclo','')} {modulo.get('curso','')}
+            Resultado de aprendizaje evaluado:
+              {ra.get('id')} — {ra.get('nombre','')}
+
+            Criterios de evaluación del decreto que hay que cubrir:
+{ces_txt}
+
+            Prepara una prueba de {n_preguntas} preguntas, {formato}, para {duracion} minutos.
+
+            Devuelve, en este orden y con estos títulos:
+
+            ENUNCIADO DE LA PRUEBA
+            (cabecera con módulo, RA, duración y puntuación total, y las preguntas numeradas;
+            cada pregunta indica entre corchetes los criterios que evalúa y sus puntos)
+
+            SOLUCIONARIO
+            (respuesta esperada de cada pregunta, qué se admite como válido y los errores
+            frecuentes que conviene vigilar al corregir)
+
+            BAREMO POR CRITERIO
+            (tabla de texto: criterio de evaluación, preguntas que lo evalúan y puntos que suma)
+        """)
+        return self._llamar(system, user, max_tokens=3000, calidad=True)
 
     def generar_todo_modulo(
         self,
@@ -457,6 +702,72 @@ def _emit_ia_code(code: str, msg: str, exit_code: int = 1):
     print(f"{code}: {msg}")
     if exit_code is not None:
         sys.exit(exit_code)
+
+
+def _contexto_didactico(mod, notas: dict[str, float], detalle: list[dict] | None = None) -> dict:
+    """
+    Reúne lo que la IA necesita para hablar del módulo con propiedad: el enunciado
+    literal de cada RA, sus criterios de evaluación tal y como los redacta el
+    decreto, en qué unidades de trabajo se tocan y, si se ha pasado, las notas de
+    las actividades concretas del alumno o alumna.
+    """
+    ra_texto = {r["id"]: r.get("nombre", "") for r in getattr(mod, "RAS", [])}
+
+    ces_por_ra: dict[str, list[str]] = {}
+    for ra_id, lista in (getattr(mod, "CES", {}) or {}).items():
+        ces_por_ra[ra_id] = [c.get("texto", "") for c in lista if c.get("texto")]
+
+    uts = {u["id"]: u.get("nombre", "") for u in getattr(mod, "UTS", [])}
+    uts_por_ra: dict[str, list[str]] = {}
+    for ut_id, ra_id, _ces in getattr(mod, "ASIGNACIONES", []):
+        etiqueta = f"{ut_id} · {uts.get(ut_id, '')}".strip(" ·")
+        uts_por_ra.setdefault(ra_id, [])
+        if etiqueta not in uts_por_ra[ra_id]:
+            uts_por_ra[ra_id].append(etiqueta)
+
+    evidencias = []
+    for act in (detalle or []):
+        nota = act.get("nota")
+        if nota is None or nota == "":
+            continue
+        evidencias.append({
+            "descripcion": str(act.get("descripcion", ""))[:120],
+            "nota": nota,
+            "ut": f"{act.get('ut_id','')} · {uts.get(act.get('ut_id'), '')}".strip(" ·"),
+            "ra": act.get("ra_id"),
+        })
+    # primero lo suspenso: es de lo que hay que hablar
+    evidencias.sort(key=lambda e: float(e["nota"]) if str(e["nota"]).replace('.', '', 1).isdigit() else 10)
+
+    return {"ra_texto": ra_texto, "ces_por_ra": ces_por_ra,
+            "uts_por_ra": uts_por_ra, "evidencias": evidencias}
+
+
+# Códigos que impiden seguir (falta información o los datos son inválidos) frente a
+# los que solo advierten. Antes solo salían los primeros y algún aviso normativo se
+# quedaba dentro de Python sin llegar nunca al profesorado.
+CODIGOS_BLOQUEANTES = {"RA_NO_EVALUADO", "PONDERACION_CERO", "NOTA_INVALIDA"}
+
+
+def _emitir_alertas(estado: dict):
+    """Saca por pantalla todas las alertas del estado, no solo la primera.
+
+    Los avisos se imprimen y la ejecución continúa; un código bloqueante corta,
+    pero solo después de haber mostrado los avisos que ya se habían detectado.
+    """
+    alertas = estado.get("alertas")
+    if not alertas:
+        alerta = estado.get("alerta")
+        alertas = [alerta] if alerta else []
+
+    bloqueantes = [a for a in alertas if a[0] in CODIGOS_BLOQUEANTES]
+    avisos = [a for a in alertas if a[0] not in CODIGOS_BLOQUEANTES]
+
+    for code, msg in avisos:
+        print(f"{code}: {msg}")
+    if bloqueantes:
+        code, msg = bloqueantes[0]
+        _emit_ia_code(code, msg)
 
 
 def _agrupar_ces_por_ra(mod) -> dict[str, list[str]]:
@@ -652,11 +963,19 @@ def _calc_informe_estado(mod, notas: dict[str, float], min_exam: float | None, p
 
     if not sin_nota and pendientes:
         alerta = ("RA_SUSPENDIDO", f"El alumno tiene suspendido el RA: {', '.join(pendientes)}.")
+
+    # Varias condiciones pueden darse a la vez (RA suspenso + absentismo, por
+    # ejemplo). Antes cada una pisaba a la anterior y el diagnóstico salía
+    # incompleto: ahora se acumulan todas y el informe las cuenta enteras.
+    alertas: list[tuple[str, str]] = []
+    if alerta:
+        alertas.append(alerta)
     if alerta_absentismo:
-        alerta = alerta_absentismo
+        alertas.append(alerta_absentismo)
     if alerta_ra_llave:
-        alerta = alerta_ra_llave
+        alertas.append(alerta_ra_llave)
         resultado = "NO APTO"
+    alerta = alertas[0] if alertas else None
 
     nota_final_2 = None if nota_final is None else round(nota_final + 1e-12, 2)
     return {
@@ -664,7 +983,8 @@ def _calc_informe_estado(mod, notas: dict[str, float], min_exam: float | None, p
         "resultado": resultado,
         "pendientes": pendientes,
         "sin_nota": sin_nota,
-        "alerta": alerta,
+        "alerta": alerta,      # la primera, por compatibilidad
+        "alertas": alertas,    # todas las que se han dado a la vez
     }
 
 
@@ -715,7 +1035,9 @@ def _cmd_actividad(args: list[str]):
 
 
 def _cmd_informe(args: list[str]):
-    opts = _parse_opts(args, ["--modulo", "--alumno", "--notas", "--proveedor", "--min-exam", "--ponderaciones", "--anonimizar", "--faltas-porcentaje", "--ras-llave"])
+    opts = _parse_opts(args, ["--modulo", "--alumno", "--notas", "--proveedor", "--min-exam",
+                              "--ponderaciones", "--anonimizar", "--faltas-porcentaje",
+                              "--ras-llave", "--detalle-json"])
     mod    = _cargar_modulo(opts.get("--modulo", "iso_data"))
     alumno_raw = opts.get("--alumno", "Alumno Ejemplo")
     anonimizar = True
@@ -745,20 +1067,173 @@ def _cmd_informe(args: list[str]):
     setattr(mod, "_faltas_porcentaje", faltas_porcentaje)
     setattr(mod, "_ras_llave", ras_llave)
     st = _calc_informe_estado(mod, notas, min_exam, pond_dinamicas)
-    alerta = st.get("alerta")
-    if alerta:
-        code, msg = alerta
-        if code == "RA_NO_EVALUADO" or code == "PONDERACION_CERO" or code == "NOTA_INVALIDA":
-            _emit_ia_code(code, msg)
-        if code == "RA_SUSPENDIDO":
-            print(f"{code}: {msg}")
+    _emitir_alertas(st)
     nota_final = st["nota_final"]
     resultado = st["resultado"]
 
+    detalle = _parse_json_list(opts.get("--detalle-json"))
+    contexto = _contexto_didactico(mod, notas, detalle)
+
     ia  = IAAsistente(proveedor=opts.get("--proveedor", "auto"))
-    out = ia.borrador_informe_alumno(alumno, mod.MODULO, notas, nota_final, resultado)
+    out = ia.borrador_informe_alumno(alumno, mod.MODULO, notas, nota_final, resultado,
+                                     contexto=contexto)
     print(f"\n{'='*60}")
     print(f"INFORME INDIVIDUAL — {alumno}")
+    print(f"{'='*60}\n")
+    print(out)
+
+
+def _cmd_plan(args: list[str]):
+    """Plan de recuperación para el alumnado con RA pendientes."""
+    opts = _parse_opts(args, ["--modulo", "--alumno", "--notas", "--proveedor", "--anonimizar",
+                              "--detalle-json", "--semanas", "--min-exam", "--ponderaciones"])
+    mod = _cargar_modulo(opts.get("--modulo", "iso_data"))
+    anonimizar = str(opts.get("--anonimizar", "true")).lower() not in ("0", "false", "no", "off")
+    alumno = _anonimizar_alumno_nombre(opts.get("--alumno", "Alumno Ejemplo"), activo=anonimizar)
+    try:
+        notas = _parse_notas(opts.get("--notas", ""))
+    except ValueError as e:
+        _emit_ia_code("NOTA_INVALIDA", f"Formato o rango de nota incorrecto: {e}")
+    try:
+        semanas = max(1, min(12, int(str(opts.get("--semanas", "4")).strip())))
+    except Exception:
+        semanas = 4
+
+    ra_texto = {r["id"]: r.get("nombre", "") for r in mod.RAS}
+    pendientes = [{"ra": ra, "nota": f"{n:.1f}", "enunciado": ra_texto.get(ra, "")}
+                  for ra, n in sorted(notas.items()) if n < 5]
+    if not pendientes:
+        print("Este alumno o alumna no tiene resultados de aprendizaje pendientes: "
+              "no hace falta plan de recuperación.")
+        return
+
+    contexto = _contexto_didactico(mod, notas, _parse_json_list(opts.get("--detalle-json")))
+    ia = IAAsistente(proveedor=opts.get("--proveedor", "auto"))
+    out = ia.plan_recuperacion(alumno, mod.MODULO, pendientes, contexto, semanas)
+    print(f"\n{'='*60}")
+    print(f"PLAN DE RECUPERACIÓN — {alumno} · {len(pendientes)} RA pendientes")
+    print(f"{'='*60}\n")
+    print(out)
+
+
+def _cmd_grupo(args: list[str]):
+    """Radiografía del grupo: los números se calculan aquí, la IA solo interpreta."""
+    opts = _parse_opts(args, ["--modulo", "--proveedor", "--alumnos-json",
+                              "--notas-grid-json", "--actividades-json"])
+    mod = _cargar_modulo(opts.get("--modulo", "iso_data"))
+    alumnos = _parse_json_list(opts.get("--alumnos-json"))
+    grid    = _parse_json_list(opts.get("--notas-grid-json"))
+    acts    = _parse_json_list(opts.get("--actividades-json"))
+    if not alumnos or not grid or not acts:
+        _emit_ia_code("SIN_DATOS",
+                      "Faltan datos del grupo. Necesito alumnado, actividades y notas guardadas.")
+
+    act_por_id = {a.get("id"): a for a in acts}
+    ra_texto = {r["id"]: r.get("nombre", "") for r in mod.RAS}
+    ra_pond  = {r["id"]: r.get("pond") for r in mod.RAS}
+
+    def _nota(fila):
+        n = fila.get("nota_rec") if fila.get("nota_rec") is not None else fila.get("nota")
+        try:
+            return float(n)
+        except (TypeError, ValueError):
+            return None
+
+    # Notas por alumno y RA
+    por_alumno_ra: dict[Any, dict[str, list[float]]] = {}
+    por_actividad: dict[Any, list[float]] = {}
+    for fila in grid:
+        n = _nota(fila)
+        if n is None:
+            continue
+        act = act_por_id.get(fila.get("actividad_id")) or {}
+        ra = act.get("ra_id")
+        por_actividad.setdefault(fila.get("actividad_id"), []).append(n)
+        if ra:
+            por_alumno_ra.setdefault(fila.get("alumno_id"), {}).setdefault(ra, []).append(n)
+
+    def _media(xs):
+        return round(sum(xs) / len(xs), 2) if xs else None
+
+    ras_stats = []
+    for r in mod.RAS:
+        notas_ra = [_media(v.get(r["id"], [])) for v in por_alumno_ra.values()]
+        notas_ra = [x for x in notas_ra if x is not None]
+        if not notas_ra:
+            continue
+        aprob = sum(1 for x in notas_ra if x >= 5)
+        ras_stats.append({
+            "id": r["id"], "pond": ra_pond.get(r["id"]), "enunciado": ra_texto.get(r["id"], ""),
+            "media": _media(notas_ra), "aprobados": aprob, "total": len(notas_ra),
+            "porcentaje": round(100 * aprob / len(notas_ra)),
+        })
+
+    acts_stats = []
+    for aid, notas_act in por_actividad.items():
+        act = act_por_id.get(aid) or {}
+        aprob = sum(1 for x in notas_act if x >= 5)
+        acts_stats.append({
+            "descripcion": str(act.get("descripcion", "(actividad)"))[:90],
+            "media": _media(notas_act), "aprobados": aprob, "total": len(notas_act),
+            "porcentaje": round(100 * aprob / len(notas_act)),
+        })
+    acts_stats.sort(key=lambda a: (a["porcentaje"], a["media"] or 0))
+
+    medias_alumno = []
+    superan = 0
+    for _aid, ras_al in por_alumno_ra.items():
+        medias = {ra: _media(v) for ra, v in ras_al.items()}
+        vals = [v for v in medias.values() if v is not None]
+        if not vals:
+            continue
+        medias_alumno.append(_media(vals))
+        if len(medias) == len(ras_stats) and all(v >= 5 for v in vals):
+            superan += 1
+
+    stats = {
+        "n_alumnos": len(medias_alumno),
+        "media_grupo": _media(medias_alumno),
+        "superan": superan,
+        "ras": ras_stats,
+        "actividades": acts_stats,
+    }
+
+    ia = IAAsistente(proveedor=opts.get("--proveedor", "auto"))
+    out = ia.radiografia_grupo(mod.MODULO, stats)
+    print(f"\n{'='*60}")
+    print(f"RADIOGRAFÍA DEL GRUPO — {mod.MODULO['abrev']} · {stats['n_alumnos']} alumnos/as")
+    print(f"{'='*60}\n")
+    for r in ras_stats:
+        print(f"  {r['id']}: media {r['media']} · aprueban {r['aprobados']}/{r['total']} ({r['porcentaje']}%)")
+    print()
+    print(out)
+
+
+def _cmd_examen(args: list[str]):
+    """Prueba escrita + solucionario a partir de los CE del decreto."""
+    opts = _parse_opts(args, ["--modulo", "--ra", "--n", "--tipo", "--duracion", "--proveedor"])
+    mod = _cargar_modulo(opts.get("--modulo", "iso_data"))
+    ra_id = opts.get("--ra", mod.RAS[0]["id"])
+    ra = next((r for r in mod.RAS if r["id"] == ra_id), None)
+    if not ra:
+        _emit_ia_code("RA_NO_ENCONTRADO", f"El RA '{ra_id}' no existe en este módulo.")
+    try:
+        n = max(3, min(20, int(str(opts.get("--n", "8")).strip())))
+    except Exception:
+        n = 8
+    try:
+        duracion = max(15, min(180, int(str(opts.get("--duracion", "50")).strip())))
+    except Exception:
+        duracion = 50
+    tipo = str(opts.get("--tipo", "mixto")).strip().lower()
+    if tipo not in ("mixto", "test", "desarrollo", "practico"):
+        tipo = "mixto"
+
+    ces = _agrupar_ces_por_ra(mod).get(ra_id, [])
+    ia = IAAsistente(proveedor=opts.get("--proveedor", "auto"))
+    out = ia.examen_con_solucionario(mod.MODULO, ra, ces, n, tipo, duracion)
+    print(f"\n{'='*60}")
+    print(f"PRUEBA ESCRITA — {ra_id}: {ra['nombre'][:70]}")
     print(f"{'='*60}\n")
     print(out)
 
@@ -890,6 +1365,9 @@ AYUDA = textwrap.dedent("""\
       rubrica   --ra <RA_ID>
       actividad --ra <RA_ID>  --n <num_propuestas>
       informe   --alumno "<Nombre Apellidos>"  --notas "RA1:7,RA2:5.5"  [--min-exam 5]  [--ponderaciones "RA1:20,RA2:30,RA3:50"]
+      plan      --alumno "<Nombre Apellidos>"  --notas "RA1:7,RA3:3"  [--semanas 4]
+      grupo     --alumnos-json <json>  --notas-grid-json <json>  --actividades-json <json>
+      examen    --ra <RA_ID>  [--n 8]  [--tipo mixto|test|desarrollo|practico]  [--duracion 50]
       todo      --salida <directorio>
 
     Variables de entorno:
@@ -902,6 +1380,8 @@ AYUDA = textwrap.dedent("""\
       python ai_asistente.py rubrica --modulo iso_data --ra RA1
       python ai_asistente.py actividad --modulo par_data --ra RA3 --n 2
       python ai_asistente.py informe --alumno "García López, Marta" --notas "RA1:7,RA2:4,RA3:8"
+      python ai_asistente.py plan --modulo iso_data --alumno "García, Marta" --notas "RA1:7,RA3:3"
+      python ai_asistente.py examen --modulo iso_data --ra RA3 --n 8 --tipo mixto
       python ai_asistente.py todo --modulo iso_data --salida ia_output/iso
 """)
 
@@ -921,6 +1401,12 @@ if __name__ == "__main__":
         _cmd_actividad(resto)
     elif cmd == "informe":
         _cmd_informe(resto)
+    elif cmd == "plan":
+        _cmd_plan(resto)
+    elif cmd == "grupo":
+        _cmd_grupo(resto)
+    elif cmd == "examen":
+        _cmd_examen(resto)
     elif cmd == "todo":
         _cmd_generar_todo(resto)
     else:

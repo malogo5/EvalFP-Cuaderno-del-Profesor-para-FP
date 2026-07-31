@@ -1,0 +1,111 @@
+[
+ {"archivo":"af_gdje","dual_ra":null,
+  "modulo":{"codigo":"0647","abrev":"GDJE","ciclo":"Administración y Finanzas","ciclo_clave":"AF","ciclo_nivel":"CFGS","curso":"1º AF","horas_sem":2,"total_horas":67,"anno":"2026-2027","eval_count":3,
+   "decreto":"Decreto 43/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9487), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM"},
+  "ras":[
+   {"ut":"Las administraciones públicas y el Derecho","eval":1,"tags":"Constitución · Poderes del Estado · Unión Europea · Jerarquía normativa · Boletines oficiales","instrumentos":["examen","practica"]},
+   {"ut":"Búsqueda y actualización de información jurídica","eval":1,"tags":"Bases de datos jurídicas · Boletines oficiales · Legislación aplicable · Archivo de normativa","instrumentos":["practica","examen"]},
+   {"ut":"Documentación jurídica de la empresa","eval":2,"tags":"Escritura de constitución · Estatutos · Libros societarios · Registro Mercantil · Poderes","instrumentos":["practica","examen"]},
+   {"ut":"Contratos privados y documentos de fe pública","eval":2,"tags":"Compraventa · Arrendamiento · Notaría · Registro de la Propiedad · Contratos mercantiles","instrumentos":["practica","examen"]},
+   {"ut":"Trámites ante organismos públicos","eval":3,"tags":"Procedimiento administrativo · Plazos · Recursos · Sede electrónica · Certificado digital","instrumentos":["practica","examen"]}]},
+
+ {"archivo":"af_rhrsc","dual_ra":null,
+  "modulo":{"codigo":"0648","abrev":"RHRSC","ciclo":"Administración y Finanzas","ciclo_clave":"AF","ciclo_nivel":"CFGS","curso":"1º AF","horas_sem":2,"total_horas":68,"anno":"2026-2027","eval_count":3,
+   "decreto":"Decreto 43/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9487), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM"},
+  "ras":[
+   {"ut":"Ética empresarial y cultura de empresa","eval":1,"tags":"Valores · Códigos éticos · Clima laboral · Comportamiento responsable","instrumentos":["examen","practica"]},
+   {"ut":"Responsabilidad social corporativa","eval":1,"tags":"Grupos de interés · Memorias de sostenibilidad · ODS · Auditoría social","instrumentos":["examen","practica"]},
+   {"ut":"Comunicación en el departamento de recursos humanos","eval":2,"tags":"Habilidades sociales · Motivación · Liderazgo · Trabajo en equipo · Gestión de conflictos","instrumentos":["practica","examen"]},
+   {"ut":"Selección de personal","eval":2,"tags":"Perfil del puesto · Reclutamiento · Pruebas · Entrevista · Protección de datos","instrumentos":["practica","examen"]},
+   {"ut":"Formación y desarrollo profesional","eval":3,"tags":"Plan de formación · Detección de necesidades · Promoción · Evaluación del desempeño","instrumentos":["practica","examen"]}]},
+
+ {"archivo":"af_opi","dual_ra":null,
+  "modulo":{"codigo":"0649","abrev":"OPI","ciclo":"Administración y Finanzas","ciclo_clave":"AF","ciclo_nivel":"CFGS","curso":"1º AF","horas_sem":7,"total_horas":223,"anno":"2026-2027","eval_count":3,
+   "decreto":"Decreto 43/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9487), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM"},
+  "ras":[
+   {"ut":"Equipos, aplicaciones y red","eval":1,"tags":"Instalación y actualización · Configuración · Seguridad · Copias de seguridad · Incidencias","instrumentos":["practica","examen"]},
+   {"ut":"Mecanografía por ordenador","eval":1,"tags":"Teclado extendido · Escritura al tacto · Velocidad y precisión · Ergonomía","instrumentos":["practica"]},
+   {"ut":"Gestión de archivos y búsqueda de información","eval":1,"tags":"Estructura de carpetas · Nomenclatura · Búsqueda avanzada · Digitalización · Archivo electrónico","instrumentos":["practica"]},
+   {"ut":"Hoja de cálculo avanzada","eval":2,"tags":"Funciones · Referencias · Tablas dinámicas · Gráficos · Macros · Plantillas","instrumentos":["practica","examen"]},
+   {"ut":"Procesador de textos avanzado","eval":2,"tags":"Estilos · Secciones · Índices · Combinar correspondencia · Formularios · Control de cambios","instrumentos":["practica","examen"]},
+   {"ut":"Bases de datos","eval":2,"tags":"Tablas y relaciones · Consultas · Formularios · Informes · Importación y exportación","instrumentos":["practica","examen"]},
+   {"ut":"Integración de información y multimedia","eval":3,"tags":"Vinculación e incrustación · Imagen · Audio y vídeo · Formatos · PDF","instrumentos":["practica"]},
+   {"ut":"Correo y agenda electrónica","eval":3,"tags":"Cuentas y firmas · Filtros y reglas · Calendario · Tareas · Netiqueta","instrumentos":["practica"]},
+   {"ut":"Presentaciones multimedia","eval":3,"tags":"Diseño · Plantillas corporativas · Animaciones · Notas del orador · Exposición","instrumentos":["practica","proyecto"]}]},
+
+ {"archivo":"af_piac","dual_ra":null,
+  "modulo":{"codigo":"0650","abrev":"PIAC","ciclo":"Administración y Finanzas","ciclo_clave":"AF","ciclo_nivel":"CFGS","curso":"1º AF","horas_sem":6,"total_horas":205,"anno":"2026-2027","eval_count":3,
+   "decreto":"Decreto 43/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9487), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM"},
+  "ras":[
+   {"ut":"El patrimonio empresarial","eval":1,"tags":"Activo · Pasivo · Patrimonio neto · Masas patrimoniales · Equilibrio","instrumentos":["examen","practica"]},
+   {"ut":"Metodología contable y PGC de PYMES","eval":1,"tags":"Partida doble · Cuentas · Diario y mayor · Marco conceptual · Normas de valoración","instrumentos":["examen","practica"]},
+   {"ut":"Tributación de la actividad comercial","eval":2,"tags":"IVA · IRPF · Impuesto de Sociedades · Modelos y plazos · Presentación telemática","instrumentos":["examen","practica"]},
+   {"ut":"Documentación de compraventa","eval":2,"tags":"Pedido · Albarán · Factura · Facturación electrónica · Archivo","instrumentos":["practica","examen"]},
+   {"ut":"Gestión de cobros y pagos","eval":2,"tags":"Medios de pago · Efectos comerciales · Vencimientos · Impagados","instrumentos":["practica","examen"]},
+   {"ut":"Registro contable del ciclo comercial","eval":3,"tags":"Compras y ventas · Existencias · Gastos e ingresos · Regularización · Cierre","instrumentos":["examen","practica"]},
+   {"ut":"Control de tesorería con aplicaciones informáticas","eval":3,"tags":"Previsión de tesorería · Conciliación bancaria · Software contable · Informes","instrumentos":["practica"]}]},
+
+ {"archivo":"af_cac","dual_ra":null,
+  "modulo":{"codigo":"0651","abrev":"CAC","ciclo":"Administración y Finanzas","ciclo_clave":"AF","ciclo_nivel":"CFGS","curso":"1º AF","horas_sem":4,"total_horas":148,"anno":"2026-2027","eval_count":3,
+   "decreto":"Decreto 43/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9487), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM"},
+  "ras":[
+   {"ut":"Comunicación empresarial e imagen corporativa","eval":1,"tags":"Comunicación interna y externa · Imagen de marca · Publicidad y promoción · Redes sociales","instrumentos":["examen","practica"]},
+   {"ut":"Comunicación oral presencial y no presencial","eval":1,"tags":"Atención telefónica · Videoconferencia · Escucha activa · Protocolo · Comunicación no verbal","instrumentos":["practica"]},
+   {"ut":"Comunicación escrita profesional","eval":1,"tags":"Cartas e informes · Estilo y ortografía · Correo electrónico · Documentos de la Administración","instrumentos":["practica","examen"]},
+   {"ut":"Registro y gestión de la correspondencia","eval":2,"tags":"Registro de entrada y salida · Distribución interna · Digitalización · Archivo y custodia · Protección de datos","instrumentos":["practica","examen"]},
+   {"ut":"Atención a la clientela","eval":2,"tags":"Tipos de clientela · Necesidades · Asertividad · Fases de la atención","instrumentos":["practica","examen"]},
+   {"ut":"Quejas y reclamaciones","eval":3,"tags":"Normativa de consumo · Hoja de reclamaciones · Mediación y arbitraje · OMIC","instrumentos":["examen","practica"]},
+   {"ut":"Servicio postventa y fidelización","eval":3,"tags":"Postventa · Encuestas de satisfacción · Indicadores · CRM · Mejora continua","instrumentos":["practica","examen"]}]},
+
+ {"archivo":"af_grh","dual_ra":null,
+  "modulo":{"codigo":"0652","abrev":"GRH","ciclo":"Administración y Finanzas","ciclo_clave":"AF","ciclo_nivel":"CFGS","curso":"2º AF","horas_sem":4,"total_horas":158,"anno":"2026-2027","eval_count":2,
+   "decreto":"Decreto 43/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9487), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM"},
+  "ras":[
+   {"ut":"Contratación laboral","eval":1,"tags":"Modalidades de contrato · Alta y afiliación · Contrat@ · Bonificaciones","instrumentos":["practica","examen"]},
+   {"ut":"Modificación, suspensión y extinción del contrato","eval":1,"tags":"Movilidad · Excedencias · Despidos · Liquidación y saldo · Certificado de empresa","instrumentos":["practica","examen"]},
+   {"ut":"Obligaciones con la Seguridad Social","eval":2,"tags":"Regímenes · Bases y tipos · RLC y RNT · Sistema RED · Liquidación directa","instrumentos":["practica","examen"]},
+   {"ut":"Nómina y retribución","eval":2,"tags":"Estructura de la nómina · IRPF · Cotizaciones · Modelos 111 y 190 · Pagos","instrumentos":["practica","examen"]}]},
+
+ {"archivo":"af_gf","dual_ra":null,
+  "modulo":{"codigo":"0653","abrev":"GF","ciclo":"Administración y Finanzas","ciclo_clave":"AF","ciclo_nivel":"CFGS","curso":"2º AF","horas_sem":5,"total_horas":197,"anno":"2026-2027","eval_count":2,
+   "decreto":"Decreto 43/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9487), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM"},
+  "ras":[
+   {"ut":"Necesidades financieras y ayudas públicas","eval":1,"tags":"Fuentes de financiación · Subvenciones · Coste del capital","instrumentos":["examen","practica"]},
+   {"ut":"Productos y servicios financieros","eval":1,"tags":"Préstamos · Créditos · Leasing y renting · Descuento comercial · Contratación","instrumentos":["examen","practica"]},
+   {"ut":"Cálculo y evaluación financiera","eval":1,"tags":"Interés simple y compuesto · Cuotas y amortización · TAE · Hoja de cálculo · Informes","instrumentos":["examen","practica"]},
+   {"ut":"La actividad aseguradora","eval":2,"tags":"Tipos de seguros · Póliza · Prima · Siniestro · Indemnización","instrumentos":["examen","practica"]},
+   {"ut":"Selección de inversiones","eval":2,"tags":"VAN y TIR · Plazo de recuperación · Renta fija y variable · Riesgo y rentabilidad","instrumentos":["examen","practica"]},
+   {"ut":"Presupuestos y control presupuestario","eval":2,"tags":"Presupuestos por áreas · Presupuesto maestro · Desviaciones · Control","instrumentos":["practica","examen"]}]},
+
+ {"archivo":"af_cf","dual_ra":null,
+  "modulo":{"codigo":"0654","abrev":"CF","ciclo":"Administración y Finanzas","ciclo_clave":"AF","ciclo_nivel":"CFGS","curso":"2º AF","horas_sem":6,"total_horas":236,"anno":"2026-2027","eval_count":2,
+   "decreto":"Decreto 43/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9487), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM"},
+  "ras":[
+   {"ut":"Contabilización informatizada de operaciones","eval":1,"tags":"Software contable · Asientos · Inmovilizado · Existencias · Personal","instrumentos":["practica","examen"]},
+   {"ut":"Impuesto de Sociedades e IRPF","eval":1,"tags":"Base imponible · Ajustes · Deducciones · Modelos 200 y 100 · Pagos fraccionados","instrumentos":["examen","practica"]},
+   {"ut":"Operaciones de cierre del ejercicio","eval":1,"tags":"Periodificación · Amortizaciones · Deterioros · Regularización · Asiento de cierre","instrumentos":["examen","practica"]},
+   {"ut":"Cuentas anuales y depósito en el Registro","eval":2,"tags":"Balance · Pérdidas y ganancias · Memoria · ECPN · Estado de flujos de efectivo","instrumentos":["practica","examen"]},
+   {"ut":"Análisis de estados financieros","eval":2,"tags":"Ratios · Fondo de maniobra · Rentabilidad · Umbral de rentabilidad · Informes","instrumentos":["examen","practica"]},
+   {"ut":"La auditoría de cuentas","eval":2,"tags":"Tipos de auditoría · Normas técnicas · Evidencia · Informe de auditoría","instrumentos":["examen","practica"]}]},
+
+ {"archivo":"af_glc","dual_ra":null,
+  "modulo":{"codigo":"0655","abrev":"GLC","ciclo":"Administración y Finanzas","ciclo_clave":"AF","ciclo_nivel":"CFGS","curso":"2º AF","horas_sem":3,"total_horas":117,"anno":"2026-2027","eval_count":2,
+   "decreto":"Decreto 43/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9487), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM"},
+  "ras":[
+   {"ut":"Planificación del aprovisionamiento","eval":1,"tags":"Previsión de demanda · Necesidades · Stocks · Costes","instrumentos":["examen","practica"]},
+   {"ut":"Selección de proveedores","eval":1,"tags":"Solicitud de ofertas · Baremos · Cuadros comparativos · Homologación","instrumentos":["practica","examen"]},
+   {"ut":"Negociación y relaciones con proveedores","eval":1,"tags":"Técnicas de negociación · Condiciones · Comunicación · Acuerdos","instrumentos":["practica"]},
+   {"ut":"Seguimiento y control del aprovisionamiento","eval":2,"tags":"Pedido · Recepción · Incidencias · Indicadores · Reclamaciones","instrumentos":["practica","examen"]},
+   {"ut":"La cadena logística","eval":2,"tags":"Fases · Almacenaje · Transporte · Trazabilidad · Calidad y costes","instrumentos":["examen","practica"]}]},
+
+ {"archivo":"af_se","dual_ra":null,
+  "modulo":{"codigo":"0656","abrev":"SE","ciclo":"Administración y Finanzas","ciclo_clave":"AF","ciclo_nivel":"CFGS","curso":"2º AF","horas_sem":4,"total_horas":156,"anno":"2026-2027","eval_count":2,
+   "decreto":"Decreto 43/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9487), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM"},
+  "ras":[
+   {"ut":"Innovación y creación de empresas","eval":1,"tags":"Innovación · Emprendimiento · Detección de oportunidades · Casos reales","instrumentos":["examen","practica"]},
+   {"ut":"Idea de negocio y estudio de mercado","eval":1,"tags":"Segmentación · Competencia · DAFO · Encuestas","instrumentos":["proyecto","practica"]},
+   {"ut":"Organización, forma jurídica y recursos","eval":1,"tags":"Organigrama · Formas jurídicas · Recursos materiales y humanos","instrumentos":["proyecto","practica"]},
+   {"ut":"Análisis de viabilidad","eval":2,"tags":"Plan de inversión · Previsión de tesorería · Umbral de rentabilidad · Escenarios","instrumentos":["proyecto","practica"]},
+   {"ut":"Trámites de puesta en marcha","eval":2,"tags":"Registro Mercantil · Hacienda · Seguridad Social · Ayuntamiento · Licencias","instrumentos":["practica","proyecto"]},
+   {"ut":"Gestión de la empresa-proyecto","eval":2,"tags":"Departamentos · Rotación de puestos · Documentación real · Reuniones · Memoria final","instrumentos":["proyecto","practica"]}]}
+]

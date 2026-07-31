@@ -1,0 +1,119 @@
+{
+ "archivo": "ad_gai",
+ "dual_ra": null,
+ "modulo": {
+  "codigo": "0663",
+  "abrev": "GAI",
+  "ciclo": "Asistencia a la Dirección",
+  "ciclo_clave": "AD",
+  "ciclo_nivel": "CFGS",
+  "curso": "2º AD",
+  "horas_sem": 6,
+  "total_horas": 284,
+  "anno": "2026-2027",
+  "eval_count": 2,
+  "decreto": "Decreto 41/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9482), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM",
+  "nombre": "Gestión avanzada de la información"
+ },
+ "ras": [
+  {
+   "ut": "Gestión de proyectos con aplicaciones específicas",
+   "eval": 1,
+   "tags": "Tareas e hitos · Recursos · Diagrama de Gantt · Costes · Seguimiento",
+   "instrumentos": [
+    "practica",
+    "proyecto"
+   ],
+   "enunciado": "Gestiona las facetas administrativas de proyectos empresariales, administrando recursos mediante una aplicación específica de control.",
+   "ces": [
+    "Se ha elaborado una propuesta de gestión administrativa de un proyecto acorde con los objetivos que se pretenden con el mismo.",
+    "Se han definido las tareas que se deben llevar a cabo relacionadas con el soporte administrativo del proyecto.",
+    "Se han identificado las actividades, tareas y plazos de entrega o finalización de cada una de las fases de los proyectos.",
+    "Se han gestionado los recursos y requisitos (tiempos, costes, calidad, recursos humanos), así como los riesgos derivados del proyecto.",
+    "Se ha supervisado y revisado cada una de las fases del proyecto.",
+    "Se ha establecido la estructura organizativa, asignando los diferentes roles y responsabilidades.",
+    "Se han redactado y presentado informes a los diversos agentes interesados en el proyecto (stakeholders)."
+   ]
+  },
+  {
+   "ut": "Documentos integrados",
+   "eval": 1,
+   "tags": "Vinculación e incrustación · Plantillas corporativas · Gráficos · Maquetación · PDF",
+   "instrumentos": [
+    "practica",
+    "examen"
+   ],
+   "enunciado": "Elabora documentos, integrando textos, datos, imágenes y gráficos a través de las aplicaciones informáticas adecuadas.",
+   "ces": [
+    "Se ha determinado el tipo de aplicación ofimática necesaria para la elaboración y presentación de documentos.",
+    "Se han elaborado plantillas específicas adaptadas al tipo de documento que se va a elaborar.",
+    "Se han realizado las macros adecuadas para la automatización de trabajos repetitivos.",
+    "Se han seleccionado los datos adecuados para la integración del documento.",
+    "Se ha efectuado la combinación de la correspondencia a través de la selección de los datos necesarios.",
+    "Se han utilizado páginas web para la obtención de posibles gráficos, diagramas o dibujos.",
+    "Se han confeccionado documentos organizados con formato y presentación adecuados.",
+    "Se ha presentado y publicado el trabajo final según los requerimientos de tiempo y forma."
+   ]
+  },
+  {
+   "ut": "Presentaciones audiovisuales",
+   "eval": 1,
+   "tags": "Guion · Diseño · Audio y vídeo · Publicación · Exposición",
+   "instrumentos": [
+    "practica",
+    "proyecto"
+   ],
+   "enunciado": "Elabora presentaciones audiovisuales relacionadas con la gestión empresarial o de proyectos, utilizando una aplicación de tratamiento de vídeo digital.",
+   "ces": [
+    "Se ha determinado el equipamiento y material necesario.",
+    "Se ha efectuado un guion para la producción audiovisual.",
+    "Se han descrito los formatos de audio y vídeo más habituales",
+    "Se han seleccionado y ordenado los clips de audio y vídeo.",
+    "Se han introducido los archivos de audio digital en la aplicación informática.",
+    "Se han editado los archivos de audio y vídeo digital en la aplicación informática.",
+    "Se han insertado los títulos y rótulos necesarios en la aplicación informática.",
+    "Se ha efectuado la autoría y generación de la presentación en soporte óptico.",
+    "Se ha efectuado la conversión a otros formatos aptos para su difusión por Internet."
+   ]
+  },
+  {
+   "ut": "Herramientas colaborativas y Web 2.0",
+   "eval": 2,
+   "tags": "Trabajo en la nube · Documentos compartidos · Formularios · Redes profesionales · Firma digital",
+   "instrumentos": [
+    "practica"
+   ],
+   "enunciado": "Realiza tareas de gestión empresarial y de proyectos, empleando herramientas de la Web 2.0.",
+   "ces": [
+    "Se han utilizado aplicaciones web para la gestión de mensajería electrónica.",
+    "Se han realizado comunicaciones mediante aplicaciones web de telefonía y videoconferencia de bajo coste.",
+    "Se han manejado calendarios y agendas de compromisos mediante aplicaciones web.",
+    "Se han utilizado aplicaciones de ofimática colaborativa a través de aplicaciones web.",
+    "Se han creado páginas web corporativas a través de las posibilidades de las aplicaciones web.",
+    "Se han gestionado comunicaciones mediante mensajería instantánea a través de aplicaciones web.",
+    "Se han realizado diversas gestiones empresariales a través de una aplicación web de oficina virtual."
+   ]
+  },
+  {
+   "ut": "Sistemas de gestión documental",
+   "eval": 2,
+   "tags": "Metadatos · Flujos de trabajo · Versionado · Digitalización certificada · Conservación",
+   "instrumentos": [
+    "practica",
+    "examen"
+   ],
+   "enunciado": "Administra los documentos a través de un sistema de gestión documental.",
+   "ces": [
+    "Se han determinado los elementos que componen un sistema de gestión documental: bases de datos documentales, hardware, software, redes, usuarios y administradores.",
+    "Se han escaneado documentos mediante programas de gestión documental.",
+    "Se han almacenado, clasificado y recuperado documentos, siguiendo los parámetros establecidos.",
+    "Se han establecido mecanismos de custodia de los documentos.",
+    "Se han diseñado reglas para el flujo de documentos entre diversos puestos de la organización: workflow.",
+    "Se han caracterizado los condicionantes de tiempo y forma en la distribución de documentos.",
+    "Se han diseñado mecanismos de colaboración en la creación de documentos compartidos: workflow.",
+    "Se han cumplimentado los estándares de autenticación de los documentos ante las diferentes instancias (públicas y privadas).",
+    "Se ha valorado la contribución de los programas de gestión documental a la conservación del medio ambiente."
+   ]
+  }
+ ]
+}

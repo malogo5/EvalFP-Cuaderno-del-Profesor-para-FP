@@ -35,6 +35,42 @@ async function loadAjustes() {
   document.querySelectorAll('.sb-swatch').forEach(btn => {
     btn.classList.toggle('active', (btn.dataset.themeId || '') === activeTheme)
   })
+  pintarCopiasSeguridad()
+}
+
+/** Muestra cuántas copias de seguridad hay y de cuándo es la última. */
+async function pintarCopiasSeguridad() {
+  const caja = document.getElementById('backups-info')
+  if (!caja) return
+  try {
+    const { carpeta, copias } = await window.api.listBackups()
+    if (!copias.length) {
+      caja.innerHTML = `Todavía no hay ninguna copia. Se creará al cerrar la aplicación.<br>
+        <span style="color:var(--text3)">Carpeta: <code>${carpeta}</code></span>`
+      return
+    }
+    const ultima = new Date(copias[0].fecha)
+    const kb = Math.round(copias[0].bytes / 1024)
+    caja.innerHTML = `<b>${copias.length}</b> copia${copias.length > 1 ? 's' : ''} guardada${copias.length > 1 ? 's' : ''} ·
+      la última, del <b>${ultima.toLocaleString('es-ES')}</b> (${kb} KB)<br>
+      <span style="color:var(--text3)">Carpeta: <code>${carpeta}</code></span>`
+  } catch (e) {
+    caja.textContent = 'No he podido leer la carpeta de copias: ' + e.message
+  }
+}
+
+/** Copia de seguridad a demanda, para antes de tocar algo delicado. */
+async function crearCopiaSeguridad() {
+  const caja = document.getElementById('backups-info')
+  if (caja) caja.textContent = 'Creando copia…'
+  try {
+    await window.api.createBackup()
+    await pintarCopiasSeguridad()
+    const ok = document.getElementById('ajustes-ok')
+    if (ok) { ok.textContent = '✓ Copia creada'; setTimeout(() => { ok.textContent = '' }, 4000) }
+  } catch (e) {
+    if (caja) caja.textContent = 'No se ha podido crear la copia: ' + e.message
+  }
 }
 
 async function saveAjustes() {

@@ -1,0 +1,668 @@
+[
+ {
+  "archivo": "ga_ceac",
+  "modulo": {
+   "nombre": "Comunicación empresarial y atención al cliente",
+   "codigo": "0437",
+   "total_horas": 130,
+   "ciclo": "Gestión Administrativa",
+   "ciclo_clave": "GA",
+   "ciclo_nivel": "CFGM",
+   "anno": "2026-2027",
+   "eval_count": 3,
+   "decreto": "Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)",
+   "abrev": "CEAC",
+   "curso": "1º GA",
+   "horas_sem": 4
+  },
+  "ras": [
+   {
+    "ut": "La comunicación en la empresa",
+    "eval": 1,
+    "tags": "Elementos del proceso · Barreras · Estructura organizativa · Organigramas · Flujos de información · Imagen corporativa",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Comunicación oral y telefónica",
+    "eval": 1,
+    "tags": "Atención telefónica · Centralita · Protocolo · Comunicación no verbal · Presentaciones · Videoconferencia",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Comunicación escrita",
+    "eval": 1,
+    "tags": "Cartas comerciales · Informes · Correo electrónico · Documentos de la Administración · Registro de entrada y salida",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Archivo y gestión documental",
+    "eval": 2,
+    "tags": "Sistemas de clasificación · Archivo físico e informático · Bases de datos · Protección de datos · Conservación y destrucción",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "La clientela y sus necesidades",
+    "eval": 2,
+    "tags": "Tipos de clientela · Motivaciones de compra · Fases de la atención · Técnicas de venta",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Quejas, consultas y reclamaciones",
+    "eval": 2,
+    "tags": "Normativa de consumo · Hoja de reclamaciones · Mediación y arbitraje · OMIC · Juntas arbitrales",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Marketing e imagen de empresa",
+    "eval": 3,
+    "tags": "Marketing mix · Publicidad y promoción · Fidelización · Imagen de marca · Redes sociales",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Calidad en la atención a la clientela",
+    "eval": 3,
+    "tags": "Estándares e indicadores · Certificación · Tratamiento de anomalías · Mejora continua",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   }
+  ],
+  "dual_ra": null
+ },
+ {
+  "archivo": "ga_oacv",
+  "modulo": {
+   "nombre": "Operaciones administrativas de compra-venta",
+   "codigo": "0438",
+   "total_horas": 135,
+   "ciclo": "Gestión Administrativa",
+   "ciclo_clave": "GA",
+   "ciclo_nivel": "CFGM",
+   "anno": "2026-2027",
+   "eval_count": 3,
+   "decreto": "Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)",
+   "abrev": "OACV",
+   "curso": "1º GA",
+   "horas_sem": 4
+  },
+  "ras": [
+   {
+    "ut": "Cálculo comercial",
+    "eval": 1,
+    "tags": "Precios de compra y venta · Márgenes · Descuentos · IVA · Recargo de equivalencia",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Documentación de compraventa",
+    "eval": 1,
+    "tags": "Pedido · Albarán · Factura · Factura electrónica · Facturas rectificativas · Archivo",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "IVA y obligaciones fiscales",
+    "eval": 2,
+    "tags": "Regímenes de IVA · Libros registro · Modelos 303 y 390 · Presentación telemática",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Gestión de almacén y existencias",
+    "eval": 2,
+    "tags": "Fichas de almacén · PMP y FIFO · Inventario · Stock mínimo · Valoración de existencias",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Cobros y pagos",
+    "eval": 3,
+    "tags": "Efectivo · Transferencia · Cheque · Pagaré · Letra de cambio · Domiciliación",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   }
+  ],
+  "dual_ra": null
+ },
+ {
+  "archivo": "ga_ea",
+  "modulo": {
+   "nombre": "Empresa y Administración",
+   "codigo": "0439",
+   "total_horas": 105,
+   "ciclo": "Gestión Administrativa",
+   "ciclo_clave": "GA",
+   "ciclo_nivel": "CFGM",
+   "anno": "2026-2027",
+   "eval_count": 3,
+   "decreto": "Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)",
+   "abrev": "EA",
+   "curso": "1º GA",
+   "horas_sem": 3
+  },
+  "ras": [
+   {
+    "ut": "Innovación y creación de empresas",
+    "eval": 1,
+    "tags": "Innovación empresarial · Emprendimiento · Plan de empresa · Ayudas y subvenciones",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "La empresa y su forma jurídica",
+    "eval": 1,
+    "tags": "Empresario individual · Sociedades · Trámites de constitución · Registro Mercantil",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "El sistema tributario español",
+    "eval": 2,
+    "tags": "Tributos, tasas y contribuciones · LGT · Elementos del tributo · Hecho imponible",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Obligaciones fiscales de la empresa",
+    "eval": 2,
+    "tags": "Censo · IAE · IRPF · Impuesto de Sociedades · IVA · Calendario fiscal",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "La Administración Pública",
+    "eval": 3,
+    "tags": "Administración General, autonómica y local · Poderes del Estado · Personal al servicio",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "El procedimiento administrativo",
+    "eval": 3,
+    "tags": "Acto administrativo · Fases · Silencio administrativo · Recursos · Notificaciones",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Registros y Administración electrónica",
+    "eval": 3,
+    "tags": "Registro de entrada y salida · Certificado digital · Sede electrónica · Compulsas",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   }
+  ],
+  "dual_ra": null
+ },
+ {
+  "archivo": "ga_tii",
+  "modulo": {
+   "nombre": "Tratamiento Informático de la Información",
+   "codigo": "0440",
+   "total_horas": 315,
+   "ciclo": "Gestión Administrativa",
+   "ciclo_clave": "GA",
+   "ciclo_nivel": "CFGM",
+   "anno": "2026-2027",
+   "eval_count": 3,
+   "decreto": "Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)",
+   "abrev": "TII",
+   "curso": "1º GA",
+   "horas_sem": 10
+  },
+  "ras": [
+   {
+    "ut": "Mecanografía por ordenador",
+    "eval": 1,
+    "tags": "Teclado extendido · Postura y ergonomía · Velocidad y precisión · Tutores mecanográficos",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Instalación de aplicaciones ofimáticas",
+    "eval": 1,
+    "tags": "Sistema operativo · Instalación y actualización · Licencias · Copias de seguridad · Antivirus",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Hoja de cálculo",
+    "eval": 2,
+    "tags": "Fórmulas y funciones · Formatos · Gráficos · Plantillas · Filtros y tablas dinámicas",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Procesador de textos",
+    "eval": 2,
+    "tags": "Formatos y estilos · Tablas · Combinar correspondencia · Plantillas · Índices",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Bases de datos ofimáticas",
+    "eval": 2,
+    "tags": "Tablas · Consultas · Formularios · Informes · Relaciones",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Imagen y vídeo digital",
+    "eval": 3,
+    "tags": "Periféricos de captura · Formatos · Edición básica · Integración en documentos",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Presentaciones multimedia",
+    "eval": 3,
+    "tags": "Diseño de diapositivas · Plantillas · Animaciones · Exposición · Accesibilidad",
+    "instrumentos": [
+     "practica",
+     "proyecto"
+    ]
+   },
+   {
+    "ut": "Correo y agenda electrónica",
+    "eval": 3,
+    "tags": "Cuentas · Libreta de direcciones · Filtros · Calendario · Tareas · Netiqueta",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   }
+  ],
+  "dual_ra": null
+ },
+ {
+  "archivo": "ga_tc",
+  "modulo": {
+   "nombre": "Técnica Contable",
+   "codigo": "0441",
+   "total_horas": 165,
+   "ciclo": "Gestión Administrativa",
+   "ciclo_clave": "GA",
+   "ciclo_nivel": "CFGM",
+   "anno": "2026-2027",
+   "eval_count": 3,
+   "decreto": "Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)",
+   "abrev": "TC",
+   "curso": "1º GA",
+   "horas_sem": 5
+  },
+  "ras": [
+   {
+    "ut": "El patrimonio de la empresa",
+    "eval": 1,
+    "tags": "Activo · Pasivo · Patrimonio neto · Masas patrimoniales · Equilibrio patrimonial",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Metodología contable",
+    "eval": 1,
+    "tags": "La cuenta · Partida doble · Libro diario · Libro mayor · Balance de comprobación",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "El Plan General de Contabilidad de PYMES",
+    "eval": 2,
+    "tags": "Marco conceptual · Cuadro de cuentas · Normas de registro y valoración · Cuentas anuales",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Registro de operaciones básicas",
+    "eval": 3,
+    "tags": "Compras y ventas · IVA soportado y repercutido · Gastos e ingresos · Nóminas",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Contabilidad informatizada",
+    "eval": 3,
+    "tags": "Plan de cuentas · Asientos predefinidos · Punteo · Libros oficiales · Copias de seguridad",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   }
+  ],
+  "dual_ra": null
+ },
+ {
+  "archivo": "ga_oarh",
+  "modulo": {
+   "nombre": "Operaciones Administrativas de Recursos Humanos",
+   "codigo": "0442",
+   "total_horas": 130,
+   "ciclo": "Gestión Administrativa",
+   "ciclo_clave": "GA",
+   "ciclo_nivel": "CFGM",
+   "anno": "2026-2027",
+   "eval_count": 2,
+   "decreto": "Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)",
+   "abrev": "OARH",
+   "curso": "2º GA",
+   "horas_sem": 6
+  },
+  "ras": [
+   {
+    "ut": "Selección de personal",
+    "eval": 1,
+    "tags": "Reclutamiento · Curriculum · Pruebas de selección · Entrevista · Protección de datos",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Formación y desarrollo de RRHH",
+    "eval": 1,
+    "tags": "Plan de formación · Promoción · Retribución variable · Beneficios sociales",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "El contrato de trabajo",
+    "eval": 1,
+    "tags": "Modalidades · Alta y afiliación · Contrat@ · Modificaciones · Extinción y liquidación",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Nómina y seguros sociales",
+    "eval": 2,
+    "tags": "Bases de cotización · Deducciones · IRPF · RLC y RNT · Sistema de liquidación directa · Modelo 111",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Incidencias de la relación laboral",
+    "eval": 2,
+    "tags": "Incapacidad temporal · Nacimiento y cuidado de menor · Vacaciones · Permisos · Parte de accidente",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Calidad y prevención en la gestión de RRHH",
+    "eval": 2,
+    "tags": "Indicadores · Sistema integrado de gestión · Prevención de riesgos · Protección ambiental",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   }
+  ],
+  "dual_ra": null
+ },
+ {
+  "archivo": "ga_tdc",
+  "modulo": {
+   "nombre": "Tratamiento de la Documentación Contable",
+   "codigo": "0443",
+   "total_horas": 130,
+   "ciclo": "Gestión Administrativa",
+   "ciclo_clave": "GA",
+   "ciclo_nivel": "CFGM",
+   "anno": "2026-2027",
+   "eval_count": 2,
+   "decreto": "Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)",
+   "abrev": "TDC",
+   "curso": "2º GA",
+   "horas_sem": 6
+  },
+  "ras": [
+   {
+    "ut": "Documentos soporte de la contabilidad",
+    "eval": 1,
+    "tags": "Facturas · Extractos bancarios · Nóminas · Justificantes · Archivo y conservación",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Registro contable de operaciones",
+    "eval": 1,
+    "tags": "Compras y ventas · Gastos e ingresos · Inmovilizado · Personal · IVA",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "El ciclo contable completo",
+    "eval": 2,
+    "tags": "Apertura · Regularización · Amortizaciones · Cierre · Cuentas anuales",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Comprobación y control contable",
+    "eval": 2,
+    "tags": "Punteo · Conciliación bancaria · Balance de sumas y saldos · Detección y corrección de errores",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   }
+  ],
+  "dual_ra": null
+ },
+ {
+  "archivo": "ga_eau",
+  "modulo": {
+   "nombre": "Empresa en el aula",
+   "codigo": "0446",
+   "total_horas": 145,
+   "ciclo": "Gestión Administrativa",
+   "ciclo_clave": "GA",
+   "ciclo_nivel": "CFGM",
+   "anno": "2026-2027",
+   "eval_count": 2,
+   "decreto": "Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)",
+   "abrev": "EAU",
+   "curso": "2º GA",
+   "horas_sem": 7
+  },
+  "ras": [
+   {
+    "ut": "El proyecto de empresa en el aula",
+    "eval": 1,
+    "tags": "Actividad y sector · Organigrama · Puestos y rotación · Plan de empresa",
+    "instrumentos": [
+     "practica",
+     "proyecto"
+    ]
+   },
+   {
+    "ut": "Comunicación interna y externa",
+    "eval": 1,
+    "tags": "Atención telefónica · Correo · Circulares · Registro · Trato a la clientela",
+    "instrumentos": [
+     "practica",
+     "proyecto"
+    ]
+   },
+   {
+    "ut": "Organización de la información",
+    "eval": 1,
+    "tags": "Archivo manual e informático · Bases de datos · Copias de seguridad · Confidencialidad",
+    "instrumentos": [
+     "practica",
+     "proyecto"
+    ]
+   },
+   {
+    "ut": "Documentación por departamentos",
+    "eval": 2,
+    "tags": "Compras · Ventas · Almacén · Tesorería · RRHH · Contabilidad",
+    "instrumentos": [
+     "practica",
+     "proyecto"
+    ]
+   },
+   {
+    "ut": "Gestión comercial de compras y ventas",
+    "eval": 2,
+    "tags": "Proveedores · Pedidos · Facturación · Cobros · Atención a la clientela",
+    "instrumentos": [
+     "practica",
+     "proyecto"
+    ]
+   },
+   {
+    "ut": "Resolución de incidencias y reclamaciones",
+    "eval": 2,
+    "tags": "Criterios de resolución · Procedimiento · Registro · Seguimiento · Satisfacción",
+    "instrumentos": [
+     "practica",
+     "proyecto"
+    ]
+   },
+   {
+    "ut": "Trabajo en equipo y desempeño profesional",
+    "eval": 2,
+    "tags": "Roles · Responsabilidad · Iniciativa · Autoevaluación · Rúbricas de desempeño",
+    "instrumentos": [
+     "practica",
+     "proyecto"
+    ]
+   }
+  ],
+  "dual_ra": null
+ },
+ {
+  "archivo": "ga_oagt",
+  "modulo": {
+   "nombre": "Operaciones Auxiliares de Gestión de Tesorería",
+   "codigo": "0448",
+   "total_horas": 165,
+   "ciclo": "Gestión Administrativa",
+   "ciclo_clave": "GA",
+   "ciclo_nivel": "CFGM",
+   "anno": "2026-2027",
+   "eval_count": 2,
+   "decreto": "Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)",
+   "abrev": "OAGT",
+   "curso": "2º GA",
+   "horas_sem": 7
+  },
+  "ras": [
+   {
+    "ut": "Control de tesorería",
+    "eval": 1,
+    "tags": "Libro de caja y bancos · Previsión de tesorería · Arqueo · Conciliación bancaria",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Productos financieros de financiación e inversión",
+    "eval": 1,
+    "tags": "Préstamos · Créditos · Leasing · Descuento comercial · Depósitos · Renta fija y variable",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Cálculo financiero",
+    "eval": 2,
+    "tags": "Interés simple y compuesto · Descuento · Equivalencia de capitales · TAE · Hoja de cálculo",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Operaciones y documentación bancaria",
+    "eval": 2,
+    "tags": "Cuentas · Medios de pago · Banca electrónica · Extractos · Comisiones",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   }
+  ],
+  "dual_ra": null
+ }
+]

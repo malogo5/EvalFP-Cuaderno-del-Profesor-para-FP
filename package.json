@@ -15,6 +15,7 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "test:auditoria": "AUDITORIA=1 playwright test tests/e2e/curso-completo.spec.js --reporter=list",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },

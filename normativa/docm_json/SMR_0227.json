@@ -1,0 +1,197 @@
+{
+ "archivo": "smr_sle",
+ "modulo": {
+  "nombre": "Servicios en Red",
+  "codigo": "0227",
+  "abrev": "SR",
+  "ciclo": "Sistemas Microinformáticos y Redes (SMR)",
+  "ciclo_clave": "SMR",
+  "ciclo_nivel": "CFGM",
+  "curso": "2º SMR",
+  "horas_sem": 5,
+  "total_horas": 205,
+  "anno": "2026-2027",
+  "eval_count": 3,
+  "decreto": "Decreto 107/2009, de 04/08/2009, currículo del ciclo de Sistemas Microinformáticos y Redes en Castilla-La Mancha (DOCM, NID 2009/11413) · RA y CE literales del Anexo I"
+ },
+ "ras": [
+  {
+   "ut": "Instala servicios de configuración dinámica",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Instala servicios de configuración dinámica, describiendo sus características y aplicaciones.",
+   "ces": [
+    "Se ha reconocido el funcionamiento de los mecanismos automatizados de configuración de los parámetros de red.",
+    "Se han identificado las ventajas que proporcionan.",
+    "Se han ilustrado los procedimientos y pautas que intervienen en una solicitud de configuración de los parámetros de red.",
+    "Se ha instalado un servicio de configuración dinámica de los parámetros de red.",
+    "Se ha preparado el servicio para asignar la configuración básica a los sistemas de una red local.",
+    "Se han realizado asignaciones dinámicas y estáticas.",
+    "Se han integrado en el servicio opciones adicionales de configuración.",
+    "Se ha verificando la correcta asignación de los parámetros.",
+    "Se han utilizado sistemas operativos de libre distribución y propietarios para la instalación de los servicios.",
+    "Se han utilizado herramientas para el análisis y monitorización de la red."
+   ]
+  },
+  {
+   "ut": "Instala servicios de resolución de nombres",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Instala servicios de resolución de nombres, describiendo sus características y aplicaciones.",
+   "ces": [
+    "Se han identificado y descrito escenarios en los que surge la necesidad de un servicio de resolución de nombres.",
+    "Se han clasificado los principales mecanismos de resolución de nombres.",
+    "Se ha descrito la estructura, nomenclatura y funcionalidad de los sistemas de nombres jerárquicos.",
+    "Se ha instalado un servicio jerárquico de resolución de nombres.",
+    "Se ha preparado el servicio para almacenar las respuestas procedentes de servidores de redes públicas y servirlas a los equipos de la red local.",
+    "Se han añadido registros de nombres correspondientes a una zona nueva, con opciones relativas a servidores de correo y alias.",
+    "Se ha trabajado en grupo para realizar transferencias de zona entre dos o más servidores.",
+    "Se ha comprobado el funcionamiento correcto del servidor.",
+    "Se han utilizado sistemas operativos de libre distribución y propietarios en para la instalación de los servicios."
+   ]
+  },
+  {
+   "ut": "Instala servicios de transferencia de ficheros",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Instala servicios de transferencia de ficheros, describiendo sus características y aplicaciones.",
+   "ces": [
+    "Se ha establecido la utilidad y modo de operación del servicio de transferencia de ficheros.",
+    "Se ha instalado un servicio de transferencia de ficheros.",
+    "Se han creado usuarios y grupos para acceso remoto al servidor.",
+    "Se ha configurado el acceso anónimo.",
+    "Se han establecido límites en los distintos modos de acceso.",
+    "Se ha comprobado el acceso al servidor, tanto en modo activo como en modo pasivo.",
+    "Se han realizado pruebas con la clientela en línea de comandos y en modo gráfico.",
+    "Se han utilizado sistemas operativos de libre distribución y propietarios para la instalación de los servicios.",
+    "Se han utilizado versiones seguras de los servicios de transferencia de ficheros."
+   ]
+  },
+  {
+   "ut": "Instalación de servicios de intercambio de información punto a punto",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Instalación de servicios de intercambio de información punto a punto.",
+   "ces": [
+    "Se ha establecido la utilidad y modo de operación del servicio de intercambio de información punto a punto.",
+    "Se ha instalado un servicio de intercambio de información punto a punto.",
+    "Se ha configurado el servicio de intercambio de información punto a punto."
+   ]
+  },
+  {
+   "ut": "Gestiona servidores de correo electrónico",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Gestiona servidores de correo electrónico identificando requerimientos de utilización y aplicando criterios de configuración.",
+   "ces": [
+    "Se han descrito los diferentes protocolos que intervienen en el envío y recogida del correo electrónico.",
+    "Se ha instalado un servidor de correo electrónico.",
+    "Se han creado cuentas de usuario y verificado el acceso de las mismas.",
+    "Se han definido alias para las cuentas de correo.",
+    "Se han aplicado métodos para impedir usos indebidos del servidor de correo electrónico.",
+    "Se han instalado servicios para permitir la recogida remota del correo existente en los buzones de usuario.",
+    "Se han usado clientes de correo electrónico para enviar y recibir correo.",
+    "Se han utilizado la firma digital y el correo cifrado.",
+    "Se han utilizado sistemas operativos de libre distribución y propietarios para la instalación de los servicios."
+   ]
+  },
+  {
+   "ut": "Gestiona servidores web",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Gestiona servidores web identificando requerimientos de utilización y aplicando criterios de configuración.",
+   "ces": [
+    "Se han descrito los fundamentos y protocolos en los que se basa el funcionamiento de un servidor web.",
+    "Se ha instalado un servidor web.",
+    "Se han creado sitios virtuales.",
+    "Se han verificado las posibilidades existentes para discriminar el sitio destino del tráfico entrante al servidor.",
+    "Se ha configurado la seguridad del servidor.",
+    "Se ha comprobando el acceso de las personas usuarias al servidor.",
+    "Se ha diferenciado y probado la ejecución de código en el servidor y en el cliente.",
+    "Se han instalado módulos sobre el servidor.",
+    "Se han establecido mecanismos para asegurar las comunicaciones entre el cliente y el servidor.",
+    "Se han utilizado sistemas operativos de libre distribución y propietarios para la instalación de los servicios."
+   ]
+  },
+  {
+   "ut": "Gestiona métodos de acceso remoto",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Gestiona métodos de acceso remoto describiendo sus características e instalando los servicios correspondientes.",
+   "ces": [
+    "Se han descrito métodos de acceso y administración remota de sistemas.",
+    "Se ha instalado un servicio de acceso remoto en línea de comandos.",
+    "Se ha instalado un servicio de acceso remoto en modo gráfico.",
+    "Se ha comprobado el funcionamiento de ambos métodos.",
+    "Se han identificado las principales ventajas y deficiencias de cada uno.",
+    "Se han realizado pruebas de acceso remoto entre sistemas de distinta naturaleza.",
+    "Se han realizado pruebas de administración remota entre sistemas de distinta naturaleza.",
+    "Se han utilizado sistemas operativos de libre distribución y propietarios para la instalación de los servicios.",
+    "Se han utilizado versiones seguras de los servicios."
+   ]
+  },
+  {
+   "ut": "Despliega redes inalámbricas seguras",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Despliega redes inalámbricas seguras justificando la configuración elegida y describiendo los procedimientos de implantación.",
+   "ces": [
+    "Se ha instalado un punto de acceso inalámbrico dentro de una red local.",
+    "Se han reconocido los protocolos, modos de funcionamiento y principales parámetros de configuración del punto de acceso.",
+    "Se ha seleccionado la configuración más idónea sobre distintos escenarios de prueba.",
+    "Se ha establecido un mecanismo adecuado de seguridad para las comunicaciones inalámbricas.",
+    "Se han usado diversos tipos de dispositivos y adaptadores inalámbricos para comprobar la cobertura.",
+    "Se ha instalado un encaminador inalámbrico con conexión a red pública y servicios inalámbricos de red local.",
+    "Se ha configurado y probado el encaminador desde los ordenadores de la red local."
+   ]
+  },
+  {
+   "ut": "Establece el acceso desde redes locales a redes públicas",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Establece el acceso desde redes locales a redes públicas identificando posibles escenarios y aplicando software específico.",
+   "ces": [
+    "Se ha instalado y configurado el hardware de un sistema con acceso a una red privada local y a una red pública.",
+    "Se ha instalado una aplicación que actúe de pasarela entre la red privada local y la red pública.",
+    "Se han reconocido y diferenciado las principales características y posibilidades de la aplicación seleccionada.",
+    "Se han configurado los sistemas de la red privada local para acceder a la red pública a través de la pasarela.",
+    "Se han establecido los procedimientos de control de acceso para asegurar el tráfico que se transmite a través de la pasarela.",
+    "Se han implementado mecanismos para acelerar las comunicaciones entre la red privada local y la pública.",
+    "Se han identificado los posibles escenarios de aplicación de este tipo de mecanismos.",
+    "Se ha establecido un mecanismo que permita reenviar tráfico de red entre dos o más interfaces de un mismo sistema.",
+    "Se ha comprobado el acceso a una red determinada desde los sistemas conectados a otra red distinta.",
+    "Se ha implantado y verificado la configuración para acceder desde una red pública a un servicio localizado en una máquina de una red privada local.",
+    "Se han establecido y configurado medidas de seguridad en el acceso a la red pública por medio de una red privada.",
+    "Se han utilizado en la instalación de los servicios."
+   ]
+  }
+ ],
+ "dual_ra": null
+}

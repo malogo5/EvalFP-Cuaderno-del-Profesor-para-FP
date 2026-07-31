@@ -1,11 +1,154 @@
-"""EvalFP — Alias DAW de prg_data.py · Mismos RAs/CEs, ciclo DAW."""
-from .prg_data import UTS, RAS, ASIGNACIONES, EVAL_RAS, DUAL_RA, RA_INSTRUMENTOS, CES
-from .prg_data import MODULO as _BASE
-
+"""EvalFP — Programación · 0485 · DAW
+Decreto 230/2011, de 28/07/2011, currículo del ciclo de Desarrollo de Aplicaciones Web en Castilla-La Mancha (DOCM, NID 2011/11276) · RA y CE literales del Anexo I
+RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
+Duración: 186 h · 6 h/semana · 1º DAW.
+"""
 MODULO = {
-    **_BASE,
-    "ciclo":       "DAW",
-    "ciclo_clave": "DAW",
-    "ciclo_nivel": "CFGS",
-    "curso":       "1º DAW",
+    "nombre":"Programación","codigo":"0485","abrev":"PRG",
+    "ciclo":"DAW","ciclo_clave":"DAW","ciclo_nivel":"CFGS",
+    "curso":"1º DAW","horas_sem":6,"total_horas":186,"anno":"2026-2027","eval_count":3,
+    "decreto":"Decreto 230/2011, de 28/07/2011, currículo del ciclo de Desarrollo de Aplicaciones Web en Castilla-La Mancha (DOCM, NID 2011/11276) · RA y CE literales del Anexo I",
+}
+UTS = [
+    {"id":"UT1","nombre":"Introducción a la programación","horas":27,"eval":1,"tags":"Algoritmos · Pseudocódigo · Diagramas de flujo · Tipos de datos"},
+    {"id":"UT2","nombre":"Programación estructurada","horas":22,"eval":1,"tags":"Java · Python · Estructuras de control · Funciones"},
+    {"id":"UT3","nombre":"Programación estructurada","horas":17,"eval":1,"tags":"Java · Python · Estructuras de control · Funciones"},
+    {"id":"UT4","nombre":"Programación orientada a objetos","horas":24,"eval":2,"tags":"Clases · Objetos · Herencia · Polimorfismo · Encapsulación"},
+    {"id":"UT5","nombre":"Lectura y escritura de información","horas":19,"eval":2,"tags":"Ficheros · Streams · Serialización · JSON · XML"},
+    {"id":"UT6","nombre":"Desarrollo de clases y colecciones","horas":22,"eval":2,"tags":"ArrayList · HashMap · Generics · Iteradores · Lambdas"},
+    {"id":"UT7","nombre":"Utilización avanzada de clases e interfaces","horas":19,"eval":3,"tags":"Interfaces · Clases abstractas · Patrones de diseño · UML"},
+    {"id":"UT8","nombre":"Utiliza bases de datos orientadas a objetos","horas":19,"eval":3,"tags":""},
+    {"id":"UT9","nombre":"Gestiona información almacenada en bases de datos relacionales…","horas":17,"eval":3,"tags":""},
+]
+RAS = [
+    {"id":"RA1","pond":14,"nombre":"Reconoce la estructura de un programa informático, identificando y relacionando los elementos propios del lenguaje de programación utilizado."},
+    {"id":"RA2","pond":12,"nombre":"Escribe y prueba programas sencillos, reconociendo y aplicando los fundamentos de la programación orientada a objetos."},
+    {"id":"RA3","pond":9,"nombre":"Escribe y depura código, analizando y utilizando las estructuras de control del lenguaje."},
+    {"id":"RA4","pond":13,"nombre":"Desarrolla programas organizados en clases analizando y aplicando los principios de la programación orientada a objetos."},
+    {"id":"RA5","pond":11,"nombre":"Realiza operaciones de entrada y salida de información, utilizando procedimientos específicos del lenguaje y librerías de clases."},
+    {"id":"RA6","pond":12,"nombre":"Escribe programas que manipulen información seleccionando y utilizando tipos avanzados de datos."},
+    {"id":"RA7","pond":10,"nombre":"Desarrolla programas, aplicando características avanzadas de los lenguajes orientados a objetos y del entorno de programación."},
+    {"id":"RA8","pond":10,"nombre":"Utiliza bases de datos orientadas a objetos, analizando sus características y aplicando técnicas para mantener la persistencia de la información."},
+    {"id":"RA9","pond":9,"nombre":"Gestiona información almacenada en bases de datos relacionales manteniendo la integridad y consistencia de los datos."},
+]
+ASIGNACIONES = [
+    ("UT1","RA1",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9","CR10","CR11"]),
+    ("UT2","RA2",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9"]),
+    ("UT3","RA3",["CR1","CR2","CR3","CR4","CR5","CR6","CR7"]),
+    ("UT4","RA4",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9","CR10"]),
+    ("UT5","RA5",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8"]),
+    ("UT6","RA6",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9"]),
+    ("UT7","RA7",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8"]),
+    ("UT8","RA8",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8"]),
+    ("UT9","RA9",["CR1","CR2","CR3","CR4","CR5","CR6","CR7"]),
+]
+EVAL_RAS = {1:["RA1","RA2","RA3"], 2:["RA4","RA5","RA6"], 3:["RA7","RA8","RA9"]}
+DUAL_RA = None
+RA_INSTRUMENTOS = {
+    "RA1":["examen","practica"],
+    "RA2":["examen","practica"],
+    "RA3":["examen","practica"],
+    "RA4":["examen","practica"],
+    "RA5":["examen","practica"],
+    "RA6":["examen","practica"],
+    "RA7":["examen","practica"],
+    "RA8":["examen","practica"],
+    "RA9":["examen","practica"],
+}
+CES = {
+    "RA1":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han identificado los bloques que componen la estructura de un programa informático.",
+        "Se han creado proyectos de desarrollo de aplicaciones",
+        "Se han utilizado entornos integrados de desarrollo.",
+        "Se han identificado los distintos tipos de variables y la utilidad específica de cada uno.",
+        "Se ha modificado el código de un programa para crear y utilizar variables.",
+        "Se han creado y utilizado constantes y literales.",
+        "Se han clasificado, reconocido y utilizado en expresiones los operadores del lenguaje.",
+        "Se ha comprobado el funcionamiento de las conversiones de tipo explícitas e implícitas.",
+        "Se han introducido comentarios en el código.",
+        "Se han creado y utilizado procedimientos y funciones.",
+        "Se ha utilizado el paso de parámetros en procedimientos y funciones.",
+    ], start=1)],
+    "RA2":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han identificado los fundamentos de la programación orientada a objetos.",
+        "Se han escrito programas simples.",
+        "Se han instanciado objetos a partir de clases predefinidas.",
+        "Se han utilizado métodos y propiedades de los objetos.",
+        "Se han escrito llamadas a métodos estáticos.",
+        "Se han utilizado parámetros en la llamada a métodos.",
+        "Se han incorporado y utilizado librerías de objetos.",
+        "Se han utilizado constructores y destructores de objetos.",
+        "Se ha utilizado el entorno integrado de desarrollo en la creación y compilación de programas simples.",
+    ], start=1)],
+    "RA3":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se ha escrito y probado código que haga uso de estructuras de selección.",
+        "Se han utilizado estructuras de repetición.",
+        "Se han reconocido las posibilidades de las sentencias de salto.",
+        "Se ha escrito código utilizando control de excepciones.",
+        "Se han creado programas ejecutables utilizando diferentes estructuras de control.",
+        "Se han probado y depurado los programas.",
+        "Se ha comentado y documentado el código.",
+    ], start=1)],
+    "RA4":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se ha reconocido la sintaxis, estructura y componentes típicos de una clase.",
+        "Se han definido clases.",
+        "Se han definido propiedades y métodos.",
+        "Se han creado constructores.",
+        "Se han desarrollado programas que instancien y utilicen objetos de las clases creadas anteriormente.",
+        "Se han utilizado mecanismos para controlar la visibilidad de las clases y de sus miembros.",
+        "Se han definido y utilizado clases heredadas.",
+        "Se han creado y utilizado métodos estáticos.",
+        "Se han definido y utilizado interfaces.",
+        "Se han creado y utilizado conjuntos y librerías de clases.",
+    ], start=1)],
+    "RA5":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se ha utilizado la consola para realizar operaciones de entrada y salida de información.",
+        "Se han aplicado formatos en la visualización de la información.",
+        "Se han reconocido las posibilidades de entrada / salida del lenguaje y las librerías asociadas.",
+        "Se han utilizado ficheros para almacenar y recuperar información.",
+        "Se han creado programas que utilicen diversos métodos de acceso al contenido de los ficheros.",
+        "Se han utilizado las herramientas del entorno de desarrollo para crear interfaces gráficos de usuario simples.",
+        "Se han programado controladores de eventos.",
+        "Se han escrito programas que utilicen interfaces gráficos para la entrada y salida de información.",
+    ], start=1)],
+    "RA6":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han escrito programas que utilicen arrays.",
+        "Se han reconocido las librerías de clases relacionadas con tipos de datos avanzados.",
+        "Se han utilizado listas para almacenar y procesar información.",
+        "Se han utilizado iteradores para recorrer los elementos de las listas.",
+        "Se han reconocido las características y ventajas de cada una de la colecciones de datos disponibles.",
+        "Se han creado clases y métodos genéricos.",
+        "Se han utilizado expresiones regulares en la búsqueda de patrones en cadenas de texto.",
+        "Se han identificado las clases relacionadas con el tratamiento de documentos XML.",
+        "Se han realizado programas que realicen manipulaciones sobre documentos XML.",
+    ], start=1)],
+    "RA7":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han identificado los conceptos de herencia, superclase, subclase y polimorfismo.",
+        "Se han utilizado modificadores para bloquear y forzar la herencia de clases y métodos.",
+        "Se ha reconocido la incidencia de los constructores en la herencia.",
+        "Se han creado clases heredadas que sobrescriban la implementación de métodos de la superclase.",
+        "Se han diseñado y aplicado jerarquías de clases.",
+        "Se han probado y depurado las jerarquías de clases.",
+        "Se han realizado programas que implementen y utilicen jerarquías de clases.",
+        "Se ha comentado y documentado el código.",
+    ], start=1)],
+    "RA8":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han identificado las características de las bases de datos orientadas a objetos.",
+        "Se ha analizado su aplicación en el desarrollo de aplicaciones mediante lenguajes orientados a objetos.",
+        "Se han instalado sistemas gestores de bases de datos orientados a objetos.",
+        "Se han clasificado y analizado los distintos métodos soportados por los sistemas gestores para la gestión de la información almacenada.",
+        "Se han creado bases de datos y las estructuras necesarias para el almacenamiento de objetos.",
+        "Se han programado aplicaciones que almacenen objetos en las bases de datos creadas.",
+        "Se han realizado programas para recuperar, actualizar y eliminar objetos de las bases de datos.",
+        "Se han realizado programas para almacenar y gestionar tipos de datos estructurados, compuestos y relacionados.",
+    ], start=1)],
+    "RA9":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han identificado las características y métodos de acceso a sistemas gestores de bases de datos relacionales.",
+        "Se han programado conexiones con bases de datos.",
+        "Se ha escrito código para almacenar información en bases de datos.",
+        "Se han creado programas para recuperar y mostrar información almacenada en bases de datos.",
+        "Se han efectuado borrados y modificaciones sobre la información almacenada.",
+        "Se han creado aplicaciones que ejecuten consultas sobre bases de datos.",
+        "Se han creado aplicaciones para posibilitar la gestión de información presente en bases de datos relacionales.",
+    ], start=1)],
 }

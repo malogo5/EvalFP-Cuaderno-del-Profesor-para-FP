@@ -1,0 +1,106 @@
+{
+ "archivo": "ce_ciber",
+ "modulo": {
+  "nombre": "Hacking Ético",
+  "codigo": "5025",
+  "abrev": "HE",
+  "ciclo": "CE Ciberseguridad en Entornos de las TI",
+  "ciclo_clave": "CE_CIBER",
+  "ciclo_nivel": "CE",
+  "curso": "CE Ciberseguridad",
+  "horas_sem": 4,
+  "total_horas": 120,
+  "anno": "2026-2027",
+  "eval_count": 2,
+  "decreto": "Decreto 77/2022, de 12/07/2022, currículo del Curso de Especialización en Ciberseguridad en Entornos de las Tecnologías de la Información en Castilla-La Mancha (DOCM) · RA y CE literales del Anexo II"
+ },
+ "ras": [
+  {
+   "ut": "Determina herramientas de monitorización para detectar vulnerabilidades",
+   "tags": "",
+   "instrumentos": [
+    "practica",
+    "informe"
+   ],
+   "enunciado": "Determina herramientas de monitorización para detectar vulnerabilidades aplicando técnicas de hacking ético.",
+   "ces": [
+    "Se ha definido la terminología esencial del hacking ético.",
+    "Se han identificado los conceptos éticos y legales frente al ciberdelito.",
+    "Se ha definido el alcance y condiciones de un test de intrusión.",
+    "Se han identificado los elementos esenciales de seguridad: confidencialidad, autenticidad, integridad y disponibilidad.",
+    "Se han identificado las fases de un ataque seguidas por un atacante.",
+    "Se han analizado y definido los tipos vulnerabilidades.",
+    "Se han analizado y definido los tipos de ataque.",
+    "Se han determinado y caracterizado las diferentes vulnerabilidades existentes.",
+    "Se han determinado las herramientas de monitorización disponibles en el mercado adecuadas en función del tipo de organización."
+   ]
+  },
+  {
+   "ut": "Ataca y defiende en entornos de prueba",
+   "tags": "",
+   "instrumentos": [
+    "practica",
+    "informe"
+   ],
+   "enunciado": "Ataca y defiende en entornos de prueba, comunicaciones inalámbricas consiguiendo acceso a redes para demostrar sus vulnerabilidades.",
+   "ces": [
+    "Se han configurado los distintos modos de funcionamiento de las tarjetas de red inalámbricas.",
+    "Se han descrito las técnicas de encriptación de las redes inalámbricas y sus puntos vulnerables.",
+    "Se han detectado redes inalámbricas y se ha capturado tráfico de red como paso previo a su ataque.",
+    "Se ha accedido a redes inalámbricas vulnerables.",
+    "Se han caracterizado otros sistemas de comunicación inalámbricos y sus vulnerabilidades.",
+    "Se han utilizado técnicas de “Equipo Rojo y Azul”.",
+    "Se han realizado informes sobre las vulnerabilidades detectadas."
+   ]
+  },
+  {
+   "ut": "Ataca y defiende en entornos de prueba",
+   "tags": "",
+   "instrumentos": [
+    "practica",
+    "informe"
+   ],
+   "enunciado": "Ataca y defiende en entornos de prueba, redes y sistemas consiguiendo acceso a información y sistemas de terceros.",
+   "ces": [
+    "Se ha recopilado información sobre la red y sistemas objetivo mediante técnicas pasivas.",
+    "Se ha creado un inventario de equipos, cuentas de usuario y potenciales vulnerabilidades de la red y sistemas objetivo mediante técnicas activas.",
+    "Se ha interceptado tráfico de red de terceros para buscar información sensible.",
+    "Se ha realizado un ataque de intermediario, leyendo, insertando y modificando, a voluntad, el tráfico intercambiado por dos extremos remotos.",
+    "Se han comprometido sistemas remotos explotando sus vulnerabilidades."
+   ]
+  },
+  {
+   "ut": "Análisis forense digital",
+   "tags": "Adquisición de evidencias · Volatility · Autopsy · Cadena de custodia",
+   "instrumentos": [
+    "practica",
+    "informe"
+   ],
+   "enunciado": "Consolida y utiliza sistemas comprometidos garantizando accesos futuros.",
+   "ces": [
+    "Se han administrado sistemas remotos a través de herramientas de línea de comandos.",
+    "Se han comprometido contraseñas a través de ataques de diccionario, tablas rainbow y fuerza bruta contra sus versiones encriptadas.",
+    "Se ha accedido a sistemas adicionales a través de sistemas comprometidos.",
+    "Se han instalado puertas traseras para garantizar accesos futuros a los sistemas comprometidos."
+   ]
+  },
+  {
+   "ut": "Ataca y defiende en entornos de prueba",
+   "tags": "",
+   "instrumentos": [
+    "practica",
+    "informe"
+   ],
+   "enunciado": "Ataca y defiende en entornos de prueba, aplicaciones web consiguiendo acceso a datos o funcionalidades no autorizadas.",
+   "ces": [
+    "Se han identificado los distintos sistemas de autenticación web, destacando sus debilidades y fortalezas.",
+    "Se ha realizado un inventario de equipos, protocolos, servicios y sistemas operativos que proporcionan el servicio de una aplicación web.",
+    "Se ha analizado el flujo de las interacciones realizadas entre el navegador y la aplicación web durante su uso normal.",
+    "Se han examinado manualmente aplicaciones web en busca de las vulnerabilidades más habituales.",
+    "Se han usado herramientas de búsquedas y explotación de vulnerabilidades web.",
+    "Se ha realizado la búsqueda y explotación de vulnerabilidades web mediante herramientas software."
+   ]
+  }
+ ],
+ "dual_ra": null
+}

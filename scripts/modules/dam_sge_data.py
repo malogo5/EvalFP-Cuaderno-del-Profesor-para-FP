@@ -1,76 +1,93 @@
-"""EvalFP — Sistemas de Gestión Empresarial · 0492 · 2º DAM
-RD 450/2010, de 16 de abril (BOE) · Decreto CLM 252/2011, de 17 de noviembre (DOCM)
+"""EvalFP — Sistemas de Gestión Empresarial · 0491 · Desarrollo de Aplicaciones Multiplataforma
+Decreto 252/2011, de 12/08/2011, currículo del ciclo de Desarrollo de Aplicaciones Multiplataforma en Castilla-La Mancha (DOCM, NID 2011/11916) · RA y CE literales del Anexo I
+RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
+Duración: 158 h · 4 h/semana · 2º DAM.
 """
 MODULO = {
-    "nombre":"Sistemas de Gestión Empresarial","codigo":"0492","abrev":"SGE",
+    "nombre":"Sistemas de Gestión Empresarial","codigo":"0491","abrev":"SGE",
     "ciclo":"Desarrollo de Aplicaciones Multiplataforma","ciclo_clave":"DAM","ciclo_nivel":"CFGS",
-    "curso":"2º DAM","horas_sem":5,"total_horas":160,"anno":"2026-2027","eval_count":3,
-    "decreto":"RD 450/2010, de 16 de abril · Decreto CLM 252/2011, de 17 de noviembre (DOCM)",
+    "curso":"2º DAM","horas_sem":4,"total_horas":158,"anno":"2026-2027","eval_count":3,
+    "decreto":"Decreto 252/2011, de 12/08/2011, currículo del ciclo de Desarrollo de Aplicaciones Multiplataforma en Castilla-La Mancha (DOCM, NID 2011/11916) · RA y CE literales del Anexo I",
 }
 UTS = [
-    {"id":"UT1","nombre":"Identificación de sistemas ERP-CRM","horas":25,"eval":1,"tags":"ERP · CRM · Módulos · Licencias · Implantación · Mercado · SAP · Odoo"},
-    {"id":"UT2","nombre":"Instalación y configuración de ERP","horas":35,"eval":1,"tags":"Odoo · PostgreSQL · Instancias · Módulos · Empresa · Moneda · Idioma"},
-    {"id":"UT3","nombre":"Gestión de la información en el ERP","horas":35,"eval":2,"tags":"Ventas · Compras · Almacén · Contabilidad · RRHH · Importar · Exportar"},
-    {"id":"UT4","nombre":"Adaptación de ERP-CRM","horas":35,"eval":2,"tags":"Vistas · Informes · Workflows · Módulos propios · Python · XML · ORM"},
-    {"id":"UT5","nombre":"Desarrollo de componentes en ERP","horas":30,"eval":3,"tags":"Modelos · Vistas · Controladores · Herencia · Wizards · API REST"},
+    {"id":"UT1","nombre":"Identificación de sistemas ERP-CRM","horas":36,"eval":1,"tags":"ERP · CRM · Módulos · Licencias · Implantación · Mercado · SAP · Odoo"},
+    {"id":"UT2","nombre":"Implanta sistemas ERP-CRM","horas":35,"eval":2,"tags":""},
+    {"id":"UT3","nombre":"Realiza operaciones de gestión y consulta de la información","horas":28,"eval":2,"tags":""},
+    {"id":"UT4","nombre":"Adapta sistemas ERP-CRM","horas":35,"eval":3,"tags":""},
+    {"id":"UT5","nombre":"Desarrolla componentes para un sistema ERP-CRM","horas":24,"eval":3,"tags":""},
 ]
 RAS = [
-    {"id":"RA1","pond":15,"nombre":"Identifica sistemas de planificación de recursos empresariales y de gestión de relaciones con clientes reconociendo sus características y verificando su implantación."},
-    {"id":"RA2","pond":20,"nombre":"Instala sistemas de planificación de recursos empresariales y gestión de relaciones con clientes interpretando las especificaciones técnicas."},
-    {"id":"RA3","pond":20,"nombre":"Realiza operaciones de gestión y consulta de la información en sistemas ERP-CRM aplicando criterios de integridad de datos."},
-    {"id":"RA4","pond":25,"nombre":"Adapta sistemas de planificación de recursos empresariales y de gestión de relaciones con clientes modificando su configuración."},
-    {"id":"RA5","pond":20,"nombre":"Desarrolla componentes para sistemas de planificación de recursos empresariales y de gestión de relaciones con clientes verificando su funcionamiento."},
+    {"id":"RA1","pond":23,"nombre":"Identifica sistemas de planificación de recursos empresariales y de gestión de relaciones con clientes (ERP-CRM) reconociendo sus características y verificando la configuración del sistema informático."},
+    {"id":"RA2","pond":23,"nombre":"Implanta sistemas ERP-CRM interpretando la documentación técnica e identificando las diferentes opciones y módulos."},
+    {"id":"RA3","pond":17,"nombre":"Realiza operaciones de gestión y consulta de la información siguiendo las especificaciones de diseño y utilizando las herramientas proporcionadas por los sistemas ERP-CRM."},
+    {"id":"RA4","pond":22,"nombre":"Adapta sistemas ERP-CRM identificando los requerimientos de un supuesto empresarial y utilizando las herramientas proporcionadas por los mismos."},
+    {"id":"RA5","pond":15,"nombre":"Desarrolla componentes para un sistema ERP-CRM analizando y utilizando el lenguaje de programación incorporado."},
 ]
 ASIGNACIONES = [
-    ("UT1","RA1",["CR1","CR2","CR3","CR4","CR5","CR6"]),
-    ("UT2","RA2",["CR1","CR2","CR3","CR4","CR5","CR6"]),
+    ("UT1","RA1",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9"]),
+    ("UT2","RA2",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9"]),
     ("UT3","RA3",["CR1","CR2","CR3","CR4","CR5","CR6","CR7"]),
-    ("UT4","RA4",["CR1","CR2","CR3","CR4","CR5","CR6"]),
+    ("UT4","RA4",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9"]),
     ("UT5","RA5",["CR1","CR2","CR3","CR4","CR5","CR6"]),
 ]
-EVAL_RAS = {1:["RA1","RA2"], 2:["RA3","RA4"], 3:["RA5"]}
+EVAL_RAS = {1:["RA1"], 2:["RA2","RA3"], 3:["RA4","RA5"]}
 DUAL_RA = None
-RA_INSTRUMENTOS = {ra:["practica"] for ra in ["RA1","RA2","RA3","RA4","RA5"]}
+RA_INSTRUMENTOS = {
+    "RA1":["practica"],
+    "RA2":["practica"],
+    "RA3":["practica"],
+    "RA4":["practica"],
+    "RA5":["practica"],
+}
 CES = {
     "RA1":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
-        "Se han identificado las principales funciones de los sistemas ERP y CRM.",
-        "Se han valorado las ventajas de los sistemas ERP-CRM frente a aplicaciones aisladas.",
-        "Se han identificado los módulos principales de los sistemas ERP-CRM y su funcionalidad.",
-        "Se han clasificado los principales sistemas ERP-CRM del mercado (libres y propietarios).",
-        "Se ha analizado el proceso de implantación de un sistema ERP-CRM en una empresa.",
-        "Se han identificado los tipos de licencias y los costes asociados.",
+        "Se ha reconocido la organización de una empresa.",
+        "Se han reconocido los diferentes sistemas ERP-CRM que existen en el mercado.",
+        "Se han comparado sistemas ERP-CRM en función de sus características y requisitos.",
+        "Se ha identificado el sistema operativo adecuado a cada sistema ERP-CRM.",
+        "Se ha identificado el sistema gestor de datos adecuado a cada sistema ERP-CRM.",
+        "Se han verificado las configuraciones del sistema operativo y del gestor de datos para garantizar la funcionalidad del ERP-CRM.",
+        "Se ha identificado el sistema de gestión empresarial con acceso móvil.",
+        "Se han documentado las operaciones realizadas.",
+        "Se han documentado las incidencias producidas durante el proceso.",
     ], start=1)],
     "RA2":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
-        "Se ha instalado el servidor de bases de datos y el servidor de aplicaciones necesarios.",
-        "Se ha instalado el sistema ERP-CRM y se han realizado las configuraciones iniciales.",
-        "Se han creado la empresa y los datos maestros básicos.",
-        "Se han instalado y activado los módulos necesarios.",
-        "Se han creado usuarios y se han asignado los roles y perfiles correspondientes.",
-        "Se ha verificado el correcto funcionamiento del sistema tras la instalación.",
+        "Se han identificado los diferentes tipos de licencia.",
+        "Se han identificado los módulos que componen el ERP-CRM.",
+        "Se han realizado instalaciones monopuesto.",
+        "Se han realizado instalaciones cliente/servidor.",
+        "Se han configurado los módulos instalados.",
+        "Se han realizado instalaciones adaptadas a las necesidades planteadas en diferentes supuestos.",
+        "Se ha verificado el funcionamiento del ERP-CRM.",
+        "Se han documentado las operaciones realizadas y las incidencias.",
+        "Se ha instalado y configurado la asistencia técnica y remota en un sistema ERP-CRM.",
     ], start=1)],
     "RA3":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
-        "Se han introducido datos en el sistema siguiendo los procedimientos establecidos.",
-        "Se han realizado consultas y búsquedas de información en el sistema.",
-        "Se han realizado operaciones propias de los módulos de ventas, compras y almacén.",
-        "Se han generado informes y listados con la información del sistema.",
-        "Se han importado y exportado datos entre el sistema ERP y otras aplicaciones.",
-        "Se han realizado copias de seguridad y restauración de los datos del sistema.",
-        "Se ha verificado la integridad de los datos tras operaciones de importación y exportación.",
+        "Se han utilizado herramientas y lenguajes de consulta y manipulación de datos proporcionados por los sistemas ERP-CRM.",
+        "Se han generado formularios.",
+        "Se han generado informes.",
+        "Se han exportado datos e informes.",
+        "Se han automatizado las extracciones de datos mediante procesos.",
+        "Se han realizado auditorías de control de acceso a datos y trazas del sistema.",
+        "Se han documentado las operaciones realizadas y las incidencias observadas.",
     ], start=1)],
     "RA4":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
-        "Se ha modificado la apariencia del sistema adaptándola a los requisitos del cliente.",
-        "Se han modificado informes y listados existentes.",
-        "Se han creado nuevos informes adaptados a los requisitos del cliente.",
-        "Se han añadido campos personalizados a los formularios existentes.",
-        "Se han configurado flujos de trabajo (workflows) según los procesos de la empresa.",
-        "Se han creado y configurado vistas personalizadas del sistema.",
+        "Se han identificado las posibilidades de adaptación del ERP-CRM.",
+        "Se han adaptado definiciones de campos, tablas y vistas de la base de datos del ERP-CRM.",
+        "Se han adaptado consultas.",
+        "Se han adaptado interfaces de entrada de datos y de procesos.",
+        "Se han personalizado informes.",
+        "Se han creado gráficos personalizados.",
+        "Se han adaptado procedimientos almacenados de servidor.",
+        "Se han realizado pruebas.",
+        "Se han documentado las operaciones realizadas y las incidencias observadas.",
     ], start=1)],
     "RA5":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
-        "Se han identificado las tecnologías y lenguajes de programación utilizados en el desarrollo de componentes.",
-        "Se ha configurado el entorno de desarrollo del sistema ERP-CRM.",
-        "Se han creado nuevos modelos de datos en el sistema.",
-        "Se han desarrollado nuevas vistas y formularios para los modelos creados.",
-        "Se han implementado métodos y lógica de negocio en los modelos.",
-        "Se han desarrollado asistentes (wizards) para automatizar procesos del sistema.",
+        "Se han reconocido las sentencias del lenguaje propio del sistema ERP-CRM.",
+        "Se han utilizado los elementos de programación del lenguaje para crear componentes de manipulación de datos.",
+        "Se han modificado componentes software para añadir nuevas funcionalidades al sistema.",
+        "Se han integrado los nuevos componentes software en el sistema ERP-CRM.",
+        "Se ha verificado el correcto funcionamiento de los componentes creados.",
+        "Se han documentado todos los componentes creados o modificados.",
     ], start=1)],
 }

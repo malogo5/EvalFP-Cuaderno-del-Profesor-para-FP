@@ -1,0 +1,187 @@
+{
+ "archivo": "dwes",
+ "modulo": {
+  "nombre": "Desarrollo Web en Entorno Servidor",
+  "codigo": "0613",
+  "abrev": "DWES",
+  "ciclo": "Desarrollo de Aplicaciones Web (DAW)",
+  "ciclo_clave": "DAW",
+  "ciclo_nivel": "CFGS",
+  "curso": "2º DAW",
+  "horas_sem": 8,
+  "total_horas": 326,
+  "anno": "2026-2027",
+  "eval_count": 3,
+  "decreto": "Decreto 230/2011, de 28/07/2011, currículo del ciclo de Desarrollo de Aplicaciones Web en Castilla-La Mancha (DOCM, NID 2011/11276) · RA y CE literales del Anexo I"
+ },
+ "ras": [
+  {
+   "ut": "Selecciona las arquitecturas y tecnologías de programación Web en…",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Selecciona las arquitecturas y tecnologías de programación Web en entorno servidor, analizando sus capacidades y características propias.",
+   "ces": [
+    "Se han caracterizado y diferenciado los modelos de ejecución de código en el servidor y en el cliente Web.",
+    "Se han reconocido las ventajas que proporciona la generación dinámica de páginas Web y sus diferencias con la inclusión de sentencias de guiones en el interior de las páginas Web.",
+    "Se han identificado los mecanismos de ejecución de código en los servidores Web.",
+    "Se han reconocido las funcionalidades que aportan los servidores de aplicaciones y su integración con los servidores Web.",
+    "Se han identificado y caracterizado los principales lenguajes y tecnologías relacionados con la programación Web en entorno servidor.",
+    "Se han verificado los mecanismos de integración de los lenguajes de marcas con los lenguajes de programación en entorno servidor.",
+    "Se han reconocido y evaluado las herramientas de programación en entorno servidor."
+   ]
+  },
+  {
+   "ut": "Inserción de código en páginas web",
+   "tags": "PHP · Variables · Formularios · Sesiones · Cookies",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Escribe sentencias ejecutables por un servidor Web reconociendo y aplicando procedimientos de integración del código en lenguajes de marcas.",
+   "ces": [
+    "Se han reconocido los mecanismos de generación de páginas Web a partir de lenguajes de marcas con código embebido.",
+    "Se han identificado las principales tecnologías asociadas.",
+    "Se han utilizado etiquetas para la inclusión de código en el lenguaje de marcas.",
+    "Se ha reconocido la sintaxis del lenguaje de programación que se ha de utilizar.",
+    "Se han escrito sentencias simples y se han comprobado sus efectos en el documento resultante.",
+    "Se han utilizado directivas para modificar el comportamiento predeterminado.",
+    "Se han utilizado los distintos tipos de variables y operadores disponibles en el lenguaje.",
+    "Se han identificado los ámbitos de utilización de las variables.",
+    "Se han diseñado aplicaciones web sencillas."
+   ]
+  },
+  {
+   "ut": "Programación orientada a objetos con PHP",
+   "tags": "Clases · Herencia · Interfaces · Namespaces · Composer",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Escribe bloques de sentencias embebidos en lenguajes de marcas, seleccionando y utilizando las estructuras de programación.",
+   "ces": [
+    "Se han utilizado mecanismos de decisión en la creación de bloques de sentencias.",
+    "Se han utilizado bucles y se ha verificado su funcionamiento.",
+    "Se han utilizado “arrays” para almacenar y recuperar conjuntos de datos.",
+    "Se han creado y utilizado funciones.",
+    "Se han utilizado formularios web para interactuar con el usuario del navegador web.",
+    "Se han empleado métodos para recuperar la información introducida en el formulario.",
+    "Se han añadido comentarios al código.",
+    "Se han utilizado herramientas y entornos para facilitar la programación, prueba y depuración del código."
+   ]
+  },
+  {
+   "ut": "Desarrollo de aplicaciones web utilizando código embebido",
+   "tags": "MySQL · PDO · CRUD · Preparadas · Transacciones",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Desarrolla aplicaciones Web embebidas en lenguajes de marcas analizando e incorporando funcionalidades según especificaciones.",
+   "ces": [
+    "Se han identificado los mecanismos disponibles para el mantenimiento de la información que concierne a un cliente web concreto y se han señalado sus ventajas.",
+    "Se han utilizado sesiones para mantener el estado de las aplicaciones Web.",
+    "Se han utilizado “cookies” para almacenar información en el cliente Web y para recuperar su contenido.",
+    "Se han identificado y caracterizado los mecanismos disponibles para la autentificación de usuarios.",
+    "Se han escrito aplicaciones que integren mecanismos de autentificación de usuarios.",
+    "Se han realizado adaptaciones a aplicaciones Web existentes como gestores de contenidos u otras.",
+    "Se han utilizado herramientas y entornos para facilitar la programación, prueba y depuración del código."
+   ]
+  },
+  {
+   "ut": "Desarrollo de aplicaciones web utilizando frameworks",
+   "tags": "Laravel · Symfony · ORM · Eloquent · Migrations",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Desarrolla aplicaciones Web identificando y aplicando mecanismos para separar el código de presentación de la lógica de negocio.",
+   "ces": [
+    "Se han identificado las ventajas de separar la lógica de negocio de los aspectos de presentación de la aplicación.",
+    "Se han analizado tecnologías y mecanismos que permiten realizar esta separación y sus características principales.",
+    "Se han utilizado objetos y controles en el servidor para generar el aspecto visual de la aplicación web en el cliente.",
+    "Se han utilizado formularios generados de forma dinámica para responder a los eventos de la aplicación Web.",
+    "Se han identificado y aplicado los parámetros relativos a la configuración de la aplicación Web.",
+    "Se han escrito aplicaciones Web con mantenimiento de estado y separación de la lógica de negocio.",
+    "Se han aplicado los principios de la programación orientada a objetos.",
+    "Se ha probado y documentado el código."
+   ]
+  },
+  {
+   "ut": "Desarrolla aplicaciones de acceso a almacenes de datos",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Desarrolla aplicaciones de acceso a almacenes de datos, aplicando medidas para mantener la seguridad y la integridad de la información.",
+   "ces": [
+    "Se han analizado las tecnologías que permiten el acceso mediante programación a la información disponible en almacenes de datos.",
+    "Se han creado aplicaciones que establezcan conexiones con bases de datos.",
+    "Se ha recuperado información almacenada en bases de datos.",
+    "Se ha publicado en aplicaciones web la información recuperada.",
+    "Se han utilizado conjuntos de datos para almacenar la información.",
+    "Se han creado aplicaciones web que permitan la actualización y la eliminación de información disponible en una base de datos.",
+    "Se han utilizado transacciones para mantener la consistencia de la información.",
+    "Se han probado y documentado las aplicaciones."
+   ]
+  },
+  {
+   "ut": "Desarrolla servicios Web",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Desarrolla servicios Web analizando su funcionamiento e implantando la estructura de sus componentes.",
+   "ces": [
+    "Se han reconocido las características propias y el ámbito de aplicación de los servicios Web.",
+    "Se han reconocido las ventajas de utilizar servicios Web para proporcionar acceso a funcionalidades incorporadas a la lógica de negocio de una aplicación.",
+    "Se han identificado las tecnologías y los protocolos implicados en la publicación y utilización de servicios Web.",
+    "Se ha programado un servicio Web.",
+    "Se ha creado el documento de descripción del servicio Web.",
+    "Se ha verificado el funcionamiento del servicio Web.",
+    "Se ha consumido el servicio Web."
+   ]
+  },
+  {
+   "ut": "Genera páginas Web dinámicas",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Genera páginas Web dinámicas analizando y utilizando tecnologías del servidor Web que añadan código al lenguaje de marcas.",
+   "ces": [
+    "Se han identificado las diferencias entre la ejecución de código en el servidor y en el cliente Web.",
+    "Se han reconocido las ventajas de unir ambas tecnologías en el proceso de desarrollo de programas.",
+    "Se han identificado las librerías y las tecnologías relacionadas con la generación por parte del servidor de páginas Web con guiones embebidos.",
+    "Se han utilizado estas tecnologías para generar páginas Web que incluyan interacción con el usuario en forma de advertencias y peticiones de confirmación.",
+    "Se han utilizado estas tecnologías, para generar páginas Web que incluyan verificación de formularios.",
+    "Se han utilizado estas tecnologías para generar páginas web que incluyan modificación dinámica de su contenido y su estructura.",
+    "Se han aplicado estas tecnologías en la programación de aplicaciones Web."
+   ]
+  },
+  {
+   "ut": "Desarrolla aplicaciones Web híbridas",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Desarrolla aplicaciones Web híbridas seleccionando y utilizando librerías de código y repositorios heterogéneos de información.",
+   "ces": [
+    "Se han reconocido las ventajas que proporciona la reutilización de código y el aprovechamiento de información ya existente.",
+    "Se han identificado librerías de código y tecnologías aplicables en la creación de aplicaciones web híbridas.",
+    "Se ha creado una aplicación web que recupere y procese repositorios de información ya existentes.",
+    "Se han creado repositorios específicos a partir de información existente en Internet y en almacenes de información.",
+    "Se han utilizado librerías de código para incorporar funcionalidades específicas a una aplicación web.",
+    "Se han programado servicios y aplicaciones web utilizando como base información y código generados por terceros.",
+    "Se han probado, depurado y documentado las aplicaciones generadas."
+   ]
+  }
+ ],
+ "dual_ra": null
+}

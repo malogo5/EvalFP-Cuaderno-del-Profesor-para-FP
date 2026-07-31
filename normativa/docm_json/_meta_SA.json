@@ -1,0 +1,328 @@
+[
+ {
+  "archivo": "sa_tid",
+  "modulo": {
+   "codigo": "3001",
+   "abrev": "TID",
+   "ciclo": "Servicios Administrativos",
+   "ciclo_clave": "SA",
+   "ciclo_nivel": "CFGB",
+   "curso": "1º SA",
+   "horas_sem": 8,
+   "total_horas": 268,
+   "anno": "2026-2027",
+   "eval_count": 3,
+   "decreto": "Decreto 83/2014, de 01/08/2014 (DOCM, NID 2014/10286), Anexo II · distribución horaria LOFP vigente publicada por la Consejería de Educación de CLM",
+   "horas_aula": 240
+  },
+  "ras": [
+   {
+    "ut": "Equipos y materiales de oficina",
+    "eval": 1,
+    "tags": "Ordenador y periféricos · Consumibles · Ergonomía del puesto · Mantenimiento básico · Seguridad",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Grabación de datos y mecanografía",
+    "eval": 1,
+    "tags": "Teclado · Escritura al tacto · Velocidad y precisión · Corrección de errores · Postura",
+    "instrumentos": [
+     "practica"
+    ]
+   },
+   {
+    "ut": "Tratamiento de textos y datos",
+    "eval": 2,
+    "tags": "Procesador de textos · Hoja de cálculo · Formatos · Plantillas · Impresión",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Archivo, impresión y transmisión de documentos",
+    "eval": 3,
+    "tags": "Carpetas y nomenclatura · Copias de seguridad · Impresión · Correo electrónico · Confidencialidad",
+    "instrumentos": [
+     "practica"
+    ]
+   }
+  ],
+  "dual_ra": null
+ },
+ {
+  "archivo": "sa_tab",
+  "modulo": {
+   "codigo": "3003",
+   "abrev": "TAB",
+   "ciclo": "Servicios Administrativos",
+   "ciclo_clave": "SA",
+   "ciclo_nivel": "CFGB",
+   "curso": "1º SA",
+   "horas_sem": 6,
+   "total_horas": 197,
+   "anno": "2026-2027",
+   "eval_count": 3,
+   "decreto": "Decreto 83/2014, de 01/08/2014 (DOCM, NID 2014/10286), Anexo II · distribución horaria LOFP vigente publicada por la Consejería de Educación de CLM",
+   "horas_aula": 180
+  },
+  "ras": [
+   {
+    "ut": "La empresa y sus áreas funcionales",
+    "eval": 1,
+    "tags": "Tipos de empresa · Organigrama · Departamentos · Tareas administrativas",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Correspondencia y paquetería",
+    "eval": 1,
+    "tags": "Registro de entrada y salida · Servicios postales · Franqueo · Embalaje · Envíos",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Almacén de material de oficina",
+    "eval": 2,
+    "tags": "Fichas de almacén · Inventario · Punto de pedido · Recepción · Consumibles",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Operaciones básicas de tesorería",
+    "eval": 3,
+    "tags": "Libro de caja · Arqueo · Medios de pago · Cheque y transferencia · Justificantes",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   }
+  ],
+  "dual_ra": null
+ },
+ {
+  "archivo": "sa_ac",
+  "modulo": {
+   "codigo": "3004",
+   "abrev": "AC",
+   "ciclo": "Servicios Administrativos",
+   "ciclo_clave": "SA",
+   "ciclo_nivel": "CFGB",
+   "curso": "1º SA",
+   "horas_sem": 4,
+   "total_horas": 144,
+   "anno": "2026-2027",
+   "eval_count": 3,
+   "decreto": "Decreto 83/2014, de 01/08/2014 (DOCM, NID 2014/10286), Anexo II · distribución horaria LOFP vigente publicada por la Consejería de Educación de CLM",
+   "horas_aula": 120
+  },
+  "ras": [
+   {
+    "ut": "Reprografía de documentos",
+    "eval": 1,
+    "tags": "Fotocopiadora · Escáner · Encuadernación · Calidad · Mantenimiento y residuos",
+    "instrumentos": [
+     "practica"
+    ]
+   },
+   {
+    "ut": "Archivo convencional de documentos",
+    "eval": 1,
+    "tags": "Sistemas de clasificación · Ordenación · Expurgo · Custodia · Protección de datos",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Comunicación telefónica",
+    "eval": 2,
+    "tags": "Centralita · Recepción y emisión de llamadas · Notas de aviso · Cortesía · Vocabulario profesional",
+    "instrumentos": [
+     "practica"
+    ]
+   },
+   {
+    "ut": "Recepción de visitas y protocolo",
+    "eval": 3,
+    "tags": "Acogida · Identificación · Acompañamiento · Imagen personal · Normas de protocolo",
+    "instrumentos": [
+     "practica"
+    ]
+   }
+  ],
+  "dual_ra": null
+ },
+ {
+  "archivo": "sa_abo",
+  "modulo": {
+   "codigo": "3002",
+   "abrev": "ABO",
+   "ciclo": "Servicios Administrativos",
+   "ciclo_clave": "SA",
+   "ciclo_nivel": "CFGB",
+   "curso": "2º SA",
+   "horas_sem": 9,
+   "total_horas": 387,
+   "anno": "2026-2027",
+   "eval_count": 3,
+   "decreto": "Decreto 83/2014, de 01/08/2014 (DOCM, NID 2014/10286), Anexo II · distribución horaria LOFP vigente publicada por la Consejería de Educación de CLM",
+   "horas_aula": 225
+  },
+  "ras": [
+   {
+    "ut": "Internet e intranet en la oficina",
+    "eval": 1,
+    "tags": "Navegador · Búsquedas · Descargas · Certificado digital · Seguridad en la red",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Correo electrónico y agenda",
+    "eval": 1,
+    "tags": "Cuentas · Mensajes y adjuntos · Libreta de direcciones · Filtros · Agenda y tareas",
+    "instrumentos": [
+     "practica"
+    ]
+   },
+   {
+    "ut": "Hoja de cálculo",
+    "eval": 2,
+    "tags": "Celdas y rangos · Fórmulas y funciones básicas · Formatos · Gráficos · Impresión",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Presentaciones gráficas",
+    "eval": 3,
+    "tags": "Diapositivas · Plantillas · Imágenes y transiciones · Notas · Exposición",
+    "instrumentos": [
+     "practica",
+     "proyecto"
+    ]
+   }
+  ],
+  "dual_ra": null
+ },
+ {
+  "archivo": "sa_atc",
+  "modulo": {
+   "codigo": "3005",
+   "abrev": "ATC",
+   "ciclo": "Servicios Administrativos",
+   "ciclo_clave": "SA",
+   "ciclo_nivel": "CFGB",
+   "curso": "2º SA",
+   "horas_sem": 3,
+   "total_horas": 117,
+   "anno": "2026-2027",
+   "eval_count": 3,
+   "decreto": "Decreto 83/2014, de 01/08/2014 (DOCM, NID 2014/10286), Anexo II · distribución horaria LOFP vigente publicada por la Consejería de Educación de CLM",
+   "horas_aula": 75
+  },
+  "ras": [
+   {
+    "ut": "Comunicación con la clientela",
+    "eval": 1,
+    "tags": "Proceso de comunicación · Escucha activa · Comunicación no verbal · Barreras",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Información del servicio",
+    "eval": 2,
+    "tags": "Argumentario · Ventajas del servicio · Precio y condiciones · Asesoramiento",
+    "instrumentos": [
+     "practica"
+    ]
+   },
+   {
+    "ut": "Seguimiento y cierre del servicio",
+    "eval": 2,
+    "tags": "Justificación de las operaciones · Documentación de entrega · Encuestas de satisfacción",
+    "instrumentos": [
+     "practica"
+    ]
+   },
+   {
+    "ut": "Reclamaciones y quejas",
+    "eval": 3,
+    "tags": "Protocolo de actuación · Hoja de reclamaciones · Derivación · Registro y seguimiento",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   }
+  ],
+  "dual_ra": null
+ },
+ {
+  "archivo": "sa_ppvp",
+  "modulo": {
+   "codigo": "3006",
+   "abrev": "PPVP",
+   "ciclo": "Servicios Administrativos",
+   "ciclo_clave": "SA",
+   "ciclo_nivel": "CFGB",
+   "curso": "2º SA",
+   "horas_sem": 4,
+   "total_horas": 173,
+   "anno": "2026-2027",
+   "eval_count": 3,
+   "decreto": "Decreto 83/2014, de 01/08/2014 (DOCM, NID 2014/10286), Anexo II · distribución horaria LOFP vigente publicada por la Consejería de Educación de CLM",
+   "horas_aula": 100
+  },
+  "ras": [
+   {
+    "ut": "Asesoramiento y venta de productos",
+    "eval": 1,
+    "tags": "Características del producto · Argumentación · Cierre de la venta · Cobro",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Formación de pedidos",
+    "eval": 2,
+    "tags": "Documento de pedido · Medición y pesaje · Unidades · Comprobación",
+    "instrumentos": [
+     "practica"
+    ]
+   },
+   {
+    "ut": "Embalaje, etiquetado y expedición",
+    "eval": 2,
+    "tags": "Embalaje manual y automático · Etiquetado · Paletización · Documentación de transporte",
+    "instrumentos": [
+     "practica"
+    ]
+   },
+   {
+    "ut": "Atención de reclamaciones en la venta",
+    "eval": 3,
+    "tags": "Situaciones posibles · Protocolo de actuación · Devoluciones · Registro",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   }
+  ],
+  "dual_ra": null
+ }
+]

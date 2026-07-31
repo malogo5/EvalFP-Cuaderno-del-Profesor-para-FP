@@ -1,0 +1,183 @@
+{
+ "archivo": "sri",
+ "modulo": {
+  "nombre": "Servicios de Red e Internet",
+  "codigo": "0375",
+  "abrev": "SRI",
+  "ciclo": "Administración de Sistemas Informáticos en Red (ASIR)",
+  "ciclo_clave": "ASIR",
+  "ciclo_nivel": "CFGS",
+  "curso": "2º ASIR",
+  "horas_sem": 6,
+  "total_horas": 242,
+  "anno": "2026-2027",
+  "eval_count": 3,
+  "decreto": "Decreto 200/2010, de 03/08/2010, currículo del ciclo de Administración de Sistemas Informáticos en Red en Castilla-La Mancha (DOCM, NID 2010/13389) · RA y CE literales del Anexo I"
+ },
+ "ras": [
+  {
+   "ut": "Administra servicios de resolución de nombres",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Administra servicios de resolución de nombres, analizándolos y garantizando la seguridad del servicio.",
+   "ces": [
+    "Se han identificado y descrito escenarios en los que surge la necesidad de un servicio de resolución de nombres.",
+    "Se han clasificado los principales mecanismos de resolución de nombres.",
+    "Se ha descrito la estructura, nomenclatura y funcionalidad de los sistemas de nombres jerárquicos.",
+    "Se han instalado y configurado servicios jerárquicos de resolución de nombres.",
+    "Se ha preparado el servicio para reenviar consultas de recursos externos a otro servidor de nombres.",
+    "Se ha preparado el servicio para almacenar y distribuir las respuestas procedentes de otros servidores.",
+    "Se han añadido registros de nombres correspondientes a una zona nueva, con opciones relativas a servidores de correo y alias.",
+    "Se han implementado soluciones de servidores de nombres en direcciones «ip» dinámicas.",
+    "Se han realizado transferencias de zona entre dos o más servidores.",
+    "Se han documentado los procedimientos de instalación y configuración."
+   ]
+  },
+  {
+   "ut": "Administra servicios de configuración automática",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Administra servicios de configuración automática, identificándolos y verificando la correcta asignación de los parámetros.",
+   "ces": [
+    "Se han reconocido los mecanismos automatizados de configuración de los parámetros de red y las ventajas que proporcionan.",
+    "Se han ilustrado los procedimientos y pautas que intervienen en una solicitud de configuración de los parámetros de red.",
+    "Se han instalado servidores de configuración de los parámetros de red.",
+    "Se ha preparado el servicio para asignar la configuración básica a los equipos de una red local.",
+    "Se han configurado asignaciones estáticas y dinámicas.",
+    "Se han integrado en el servicio opciones adicionales de configuración.",
+    "Se han documentado los procedimientos realizados.",
+    "Se han instalado servidores o clientes de sincronización horaria (NTP)."
+   ]
+  },
+  {
+   "ut": "Administra servidores Web",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Administra servidores Web aplicando criterios de configuración y asegurando el funcionamiento del servicio.",
+   "ces": [
+    "Se han descrito los fundamentos y protocolos en los que se basa el funcionamiento de un servidor Web.",
+    "Se han instalado y configurado servidores Web.",
+    "Se ha ampliado la funcionalidad del servidor mediante la activación y configuración de módulos.",
+    "Se han creado y configurado sitios virtuales.",
+    "Se han configurado los mecanismos de autenticación y control de acceso del servidor.",
+    "Se han obtenido e instalado certificados digitales.",
+    "Se han establecido mecanismos para asegurar las comunicaciones entre el cliente y el servidor.",
+    "Se han realizado pruebas de monitorización del servicio.",
+    "Se han analizado los registros del servicio para la elaboración de estadísticas y la resolución de incidencias.",
+    "Se ha elaborado documentación relativa a la instalación, configuración y recomendaciones de uso del servicio."
+   ]
+  },
+  {
+   "ut": "Administra servicios de transferencia de archivos",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Administra servicios de transferencia de archivos asegurando y limitando el acceso a la información.",
+   "ces": [
+    "Se ha establecido la utilidad y modo de operación del servicio de transferencia de archivos.",
+    "Se han instalado y configurado servidores de transferencia de archivos.",
+    "Se han creado usuarios y grupos para acceso remoto al servidor.",
+    "Se ha configurado el acceso anónimo.",
+    "Se han establecido límites en los distintos modos de acceso.",
+    "Se ha comprobado el acceso al servidor, tanto en modo activo como en modo pasivo.",
+    "Se han realizado pruebas con clientes en línea de comandos y con clientes en modo gráfico.",
+    "Se ha utilizado el navegador como cliente del servicio de transferencia de archivos.",
+    "Se ha elaborado documentación relativa a la instalación, configuración y recomendaciones de uso del servicio.",
+    "Se han identificado las posibilidades de intercambio de archivos entre iguales en la red."
+   ]
+  },
+  {
+   "ut": "Administra servidores de correo electrónico",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Administra servidores de correo electrónico, aplicando criterios de configuración y garantizando la seguridad del servicio.",
+   "ces": [
+    "Se han descrito los diferentes protocolos que intervienen en el envío y recogida del correo electrónico.",
+    "Se ha instalado y configurado un servidor de correo electrónico.",
+    "Se han creado cuentas de usuario y verificado el acceso de las mismas.",
+    "Se han establecido y aplicado métodos para impedir usos indebidos del servidor de correo electrónico.",
+    "Se han instalado servicios para permitir la recogida remota del correo existente en los buzones de usuario.",
+    "Se han usado clientes de correo electrónico para enviar y recibir correo desde las cuentas creadas en el servidor.",
+    "Se han utilizado la firma digital y el correo cifrado.",
+    "Se ha configurado el servidor de correo como un servicio seguro.",
+    "Se ha elaborado documentación relativa a la instalación, configuración y recomendaciones de uso del servicio.",
+    "Se identifican los mensajes de correo que corresponden a correo basura, fraudes, engaños, cadenas y virus informáticos.",
+    "Se ha instalado y configurado un cliente de correo electrónico."
+   ]
+  },
+  {
+   "ut": "Administra servicios de mensajería instantánea",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Administra servicios de mensajería instantánea, noticias y listas de distribución, verificando y asegurando el acceso de los usuarios.",
+   "ces": [
+    "Se han descrito los servicios de mensajería instantánea, noticias y listas de distribución.",
+    "Se ha instalado y configurado el servicio de mensajería instantánea.",
+    "Se han utilizado clientes gráficos y de texto de mensajería instantánea.",
+    "Se ha instalado y configurado el servicio de noticias.",
+    "Se ha instalado y configurado el servicio de listas de distribución.",
+    "Se han determinado el tipo de lista y los modos de acceso permitidos.",
+    "Se han creado cuentas de usuario y verificado el acceso a los servicios de mensajería instantánea, noticias y listas de distribución.",
+    "Se ha elaborado documentación relativa a la instalación, configuración y recomendaciones de uso de los servicios de mensajería instantánea, noticias y listas de distribución.",
+    "Se han identificado servicios alternativos a los servicios de mensajería instantánea para la comunicación entre los usuarios."
+   ]
+  },
+  {
+   "ut": "Administra servicios de audio",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Administra servicios de audio identificando las necesidades de distribución y adaptando los formatos.",
+   "ces": [
+    "Se ha descrito la funcionalidad del servicio de audio.",
+    "Se ha instalado y configurado un servidor de distribución de audio.",
+    "Se ha instalado y configurado el cliente para el acceso al servidor de audio.",
+    "Se han reconocido y utilizado formatos de audio digital.",
+    "Se han utilizado herramientas de reproducción de audio en el cliente.",
+    "Se han utilizado servicios de audio a través del navegador.",
+    "Se han utilizado técnicas de sindicación y suscripción de audio.",
+    "Se ha elaborado documentación relativa a la instalación y administración del servidor de audio."
+   ]
+  },
+  {
+   "ut": "Administra servicios de vídeo",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Administra servicios de vídeo identificando las necesidades de distribución y adaptando los formatos.",
+   "ces": [
+    "Se ha descrito la funcionalidad del servicio de vídeo.",
+    "Se ha instalado y configurado un servidor de vídeo.",
+    "Se ha configurado el cliente para el acceso al servidor de vídeo.",
+    "Se han reconocido y utilizado formatos de compresión de vídeo digital.",
+    "Se han utilizado técnicas de sindicación y suscripción de vídeo.",
+    "Se han descrito las características y protocolos utilizados en el servicio de videoconferencia.",
+    "Se han instalado y configurado herramientas gráficas para realizar videoconferencia.",
+    "Se han utilizado herramientas gráficas y navegadores para realizar videoconferencias.",
+    "Se ha elaborado documentación relativa a la instalación y administración del servidor de vídeo y del servicio de videoconferencia."
+   ]
+  }
+ ],
+ "dual_ra": null
+}

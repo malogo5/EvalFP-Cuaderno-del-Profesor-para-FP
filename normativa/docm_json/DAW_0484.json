@@ -1,0 +1,153 @@
+{
+ "archivo": "daw_bd",
+ "modulo": {
+  "nombre": "Bases de Datos",
+  "codigo": "0484",
+  "abrev": "BD",
+  "ciclo": "DAW",
+  "ciclo_clave": "DAW",
+  "ciclo_nivel": "CFGS",
+  "curso": "1º DAW",
+  "horas_sem": 5,
+  "total_horas": 163,
+  "anno": "2026-2027",
+  "eval_count": 3,
+  "decreto": "Decreto 230/2011, de 28/07/2011, currículo del ciclo de Desarrollo de Aplicaciones Web en Castilla-La Mancha (DOCM, NID 2011/11276) · RA y CE literales del Anexo I"
+ },
+ "ras": [
+  {
+   "ut": "Reconocimiento de elementos de bases de datos relacionales",
+   "tags": "Modelo relacional · Entidad/Relación · Normalización",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Reconoce los elementos de las bases de datos analizando sus funciones y valorando la utilidad de los sistemas gestores.",
+   "ces": [
+    "Se han analizado los sistemas lógicos de almacenamiento y sus características.",
+    "Se han identificado los distintos tipos de bases de datos según el modelo de datos utilizado.",
+    "Se han identificado los distintos tipos de bases de datos en función de la ubicación de la información.",
+    "Se ha evaluado la utilidad de un sistema gestor de bases de datos.",
+    "Se ha reconocido la función de cada uno de los elementos de un sistema gestor de bases de datos.",
+    "Se han clasificado los sistemas gestores de bases de datos.",
+    "Se ha reconocido la utilidad de las bases de datos distribuidas.",
+    "Se han analizado las políticas de fragmentación de la información."
+   ]
+  },
+  {
+   "ut": "Gestión de la información almacenada (DDL/DCL)",
+   "tags": "CREATE · ALTER · DROP · GRANT · REVOKE · Transacciones",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Crea bases de datos definiendo su estructura y las características de sus elementos según el modelo relacional.",
+   "ces": [
+    "Se ha analizado el formato de almacenamiento de la información.",
+    "Se han creado las tablas y las relaciones entre ellas.",
+    "Se han seleccionado los tipos de datos adecuados.",
+    "Se han definido los campos clave en las tablas.",
+    "Se han implantado las restricciones reflejadas en el diseño lógico.",
+    "Se han creado vistas.",
+    "Se han creado los usuarios y se les han asignado privilegios.",
+    "Se han utilizando asistentes, herramientas gráficas y los lenguajes de definición y control de datos."
+   ]
+  },
+  {
+   "ut": "Consulta la información almacenada en una base de datos empleando…",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Consulta la información almacenada en una base de datos empleando asistentes, herramientas gráficas y el lenguaje de manipulación de datos.",
+   "ces": [
+    "Se han identificado las herramientas y sentencias para realizar consultas.",
+    "Se han realizado consultas simples sobre una tabla.",
+    "Se han realizado consultas sobre el contenido de varias tablas mediante composiciones internas.",
+    "Se han realizado consultas sobre el contenido de varias tablas mediante composiciones externas.",
+    "Se han realizado consultas resumen.",
+    "Se han realizado consultas con subconsultas."
+   ]
+  },
+  {
+   "ut": "Modifica la información almacenada en la base de datos",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Modifica la información almacenada en la base de datos utilizando asistentes, herramientas gráficas y el lenguaje de manipulación de datos.",
+   "ces": [
+    "Se han identificado las herramientas y sentencias para modificar el contenido de la base de datos.",
+    "Se han insertado, borrado y actualizado datos en las tablas.",
+    "Se ha incluido en una tabla la información resultante de la ejecución de una consulta.",
+    "Se han diseñado guiones de sentencias para llevar a cabo tareas complejas.",
+    "Se ha reconocido el funcionamiento de las transacciones.",
+    "Se han anulado parcial o totalmente los cambios producidos por una transacción.",
+    "Se han identificado los efectos de las distintas políticas de bloqueo de registros.",
+    "Se han adoptado medidas para mantener la integridad y consistencia de la información."
+   ]
+  },
+  {
+   "ut": "Programación de bases de datos",
+   "tags": "Procedimientos · Funciones · Triggers · Cursores · PL/SQL",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Desarrolla procedimientos almacenados evaluando y utilizando las sentencias del lenguaje incorporado en el sistema gestor de bases de datos.",
+   "ces": [
+    "Se han identificado las diversas formas de automatizar tareas.",
+    "Se han reconocido los métodos de ejecución de guiones.",
+    "Se han identificado las herramientas disponibles para editar guiones.",
+    "Se han definido y utilizado guiones para automatizar tareas.",
+    "Se ha hecho uso de las funciones proporcionadas por el sistema gestor.",
+    "Se han definido funciones de usuario.",
+    "Se han utilizado estructuras de control de flujo.",
+    "Se han definido disparadores.",
+    "Se han utilizado cursores."
+   ]
+  },
+  {
+   "ut": "Diseña modelos relacionales normalizados",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Diseña modelos relacionales normalizados interpretando diagramas entidad/relación.",
+   "ces": [
+    "Se han utilizado herramientas gráficas para representar el diseño lógico.",
+    "Se han identificado las tablas del diseño lógico.",
+    "Se han identificado las entidades e interrelaciones en un universo del discurso.",
+    "Se han identificado los atributos que forman parte del esquema.",
+    "Se han identificado los distintos tipos de atributos.",
+    "Se han identificado los campos que forman parte de las tablas del diseño lógico.",
+    "Se han analizado las relaciones entre las tablas del diseño lógico.",
+    "Se han identificado los campos clave.",
+    "Se han aplicado reglas de integridad.",
+    "Se han aplicado reglas de normalización.",
+    "Se han analizado y documentado las restricciones que no pueden plasmarse en el diseño lógico."
+   ]
+  },
+  {
+   "ut": "Gestiona la información almacenada en bases de datos objeto-relacionales",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Gestiona la información almacenada en bases de datos objeto-relacionales, evaluando y utilizando las posibilidades que proporciona el sistema gestor.",
+   "ces": [
+    "Se han identificado las características de las bases de datos objeto- relacionales.",
+    "Se han creado tipos de datos objeto, sus atributos y métodos.",
+    "Se han creado tablas de objetos y tablas de columnas tipo objeto.",
+    "Se han creado tipos de datos colección.",
+    "Se han realizado consultas.",
+    "Se ha modificado la información almacenada manteniendo la integridad y consistencia de los datos."
+   ]
+  }
+ ],
+ "dual_ra": null
+}

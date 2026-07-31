@@ -1,0 +1,1016 @@
+[
+ {
+  "codigo": "3031",
+  "nombre": "Ofimática y archivo de documentos",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Tramita información en línea aplicando herramientas de Internet, intranet y otras redes.",
+    "ces": [
+     "Se han identificado las distintas redes informáticas a las que podemos acceder.",
+     "Se han diferenciado distintos métodos de búsqueda de información en redes informáticas.",
+     "Se ha accedido a información a través de Internet, intranet, y otras redes de área local.",
+     "Se han localizado documentos utilizando herramientas de Internet.",
+     "Se han situado y recuperado archivos almacenados en servicios de alojamiento de archivos compartidos (“la nube”).",
+     "Se ha comprobado la veracidad de la información localizada.",
+     "Se ha valorado la utilidad de páginas institucionales y de Internet en general para la realización de trámites administrativos."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Realiza comunicaciones internas y externas mediante las utilidades de correo electrónico siguiendo las pautas marcadas.",
+    "ces": [
+     "Se han identificado los diferentes procedimientos de trasmisión y recepción de mensajes internos y externos.",
+     "Se ha utilizado el correo electrónico para enviar y recibir mensajes, tanto internos como externos.",
+     "Se han anexado documentos, vínculos, entre otros en mensajes de correo electrónico.",
+     "Se han empleado las utilidades del correo electrónico para clasificar contactos y listas de distribución de información entre otras.",
+     "Se han aplicado criterios de prioridad, importancia y seguimiento entre otros en el envío de mensajes siguiendo las instrucciones recibidas.",
+     "Se han comprobado las medidas de seguridad y confidencialidad en la custodia o envío de información siguiendo pautas prefijadas.",
+     "Se ha organizado la agenda incluyendo tareas, avisos y otras herramientas de planificación del trabajo."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Elabora documentos utilizando las funciones básicas del procesador de texto.",
+    "ces": [
+     "Se han identificado las funciones básicas, prestaciones y procedimientos simples de los procesadores de textos y autoedición.",
+     "Se han identificado las funciones y utilidades que garanticen las normas de seguridad, integridad y confidencialidad de la información.",
+     "Se ha localizado el documento, abierto y guardado posteriormente el documento en el formato y dirección facilitados, nombrándolos significativamente para su posterior acceso.",
+     "Se han configurado las distintas páginas del documento ciñéndose a los originales o indicaciones propuestas: márgenes, dimensiones y orientación, tablas, encabezados y pies de página, encolumnados, bordes, sombreados u otros.",
+     "Se ha trabajado con la opción de tablas han elaborado los documentos con exactitud y con la destreza adecuada, aplicando los formatos y estilos de texto, tablas indicadas, o sobre las plantillas predefinidas.",
+     "Se han corregido los posibles errores cometidos al reutilizar o introducir la información. Se han integrado objetos simples en el texto, en el lugar y forma adecuados.",
+     "Se han configurado las diferentes opciones de impresión en función de la información facilitada.",
+     "Se ha realizado la impresión de los documentos elaborados.",
+     "Se han utilizado las funciones y utilidades del procesador de textos que garanticen la seguridad, integridad y confidencialidad de la información de acuerdo con las indicaciones recibidas."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Elabora documentos utilizando las aplicaciones básicas de hojas de cálculo.",
+    "ces": [
+     "Se han utilizado los diversos tipos de datos y referencia para celdas, rangos, hojas y libros.",
+     "Se han aplicado fórmulas y funciones básicas.",
+     "Se han generado y modificado gráficos de diferentes tipos.",
+     "Se ha utilizado la hoja de cálculo como base de datos sencillos.",
+     "Se ha utilizado aplicaciones y periféricos para introducir textos, números, códigos e imágenes.",
+     "Se han aplicado las reglas de ergonomía y salud en el desarrollo de las actividades."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Elabora presentaciones gráficas utilizando aplicaciones informáticas.",
+    "ces": [
+     "Se han identificado las opciones básicas de las aplicaciones de presentaciones.",
+     "Se reconocen los distintos tipos de vista asociados a una presentación.",
+     "Se han aplicado y reconocido las distintas tipografías y normas básicas de composición, diseño y utilización del color.",
+     "Se han creado presentaciones sencillas incorporando texto, gráficos, objetos y archivos multimedia.",
+     "Se han diseñado plantillas de presentaciones.",
+     "Se han utilizado periféricos para ejecutar presentaciones asegurando el correcto funcionamiento."
+    ]
+   },
+   {
+    "ra": 6,
+    "enunciado": "Utilizar los equipos de reproducción, informáticos y de encuadernación funcional - fotocopiadoras, impresoras, escáneres, reproductoras, perforadoras, encuadernadoras u otros-, en función del trabajo a realizar.",
+    "ces": [
+     "Se han identificado los principales componentes y necesidades de mantenimiento, identificando las incidencias elementales, de acuerdo con los manuales de uso y sistemas de ayuda.",
+     "Se ha descrito el funcionamiento de las fotocopiadoras, impresoras, escáneres, reproductoras, perforadoras, encuadernadoras u otros",
+     "Se han identificado las posibles incidencias básicas de equipos de reproducción e informáticos, describiendo posibles actuaciones.",
+     "Se han realizado las tareas de limpieza y mantenimiento de útiles de encuadernación, y los ajustes pertinentes para un adecuado funcionamiento.",
+     "Se han identificado los distintos recursos consumibles - tintas y líquidos, papel, cintas y cartuchos de impresión, tóner u otros- relacionándoles con los equipos de reproducción e informáticos.",
+     "Se ha manejado los equipos, asumiendo el compromiso de mantener y cuidar éstos, y obteniendo el máximo provecho a los medios utilizados en el proceso, evitando costes y desgastes innecesarios.",
+     "Se ha realizado las siguientes consideraciones durante la actividad: - Poner a punto y limpiar las máquinas. - Detectar pequeñas averías mecánicas solucionando, si es posible, las contingencias observadas. - Aprovisionar con los materiales necesarios las máquinas. - Realizar las pruebas de funcionamiento básico de los equipos informáticos y de reproducción. - Realizar labores de mantenimiento básico de los equipos informáticos y de oficina. - Sustituir consumibles, de entre diversos tipos facilitados, en el equipo que corresponda. - Tomar las medidas de seguridad necesarias para comprobar el funcionamiento básico en modo seguro. - Utilizar los equipos de protección de acuerdo con los conectores y terminales implicados"
+    ]
+   },
+   {
+    "ra": 7,
+    "enunciado": "Obtener encuadernaciones funcionales utilizando los útiles y medios apropiados en función de las características de los documentos tipo.",
+    "ces": [
+     "Se ha identificado la documentación a encuadernar describiendo las características para su encuadernación, y los criterios de ordenación más apropiados.",
+     "Se han identificado los distintos útiles y herramientas empleados en las operaciones de encuadernación funcional —guillotina, máquinas de perforar de papel, cizallas, u otras—, describiendo sus mecanismos, funciones y utilización.",
+     "Se han identificado los distintos tipos de materiales —canutillos, grapas, espirales, anillas, cubiertas u otros— utilizados en la encuadernación funcional.",
+     "Se han descrito los sistemas de reciclaje en función de la naturaleza de los residuos producidos en la encuadernación funcional.",
+     "Se identificado y descrito los riesgos profesionales derivados de la utilización de las máquinas y herramientas de encuadernación funcional y sus equipos de protección.",
+     "Se ha identificado y comprobado el estado de funcionamiento de las herramientas de encuadernación funcional.",
+     "Se ha organizado la documentación a encuadernar, ordenándola de acuerdo con los criterios establecidos y la correcta utilización de los medios disponibles.",
+     "Se ha utilizado la cizalla u otros útiles análogos realizando distintos cortes de papel con precisión, observando las medidas de seguridad correspondientes.",
+     "Se ha utilizado la máquina de perforar papel de forma correcta.",
+     "Se han realizado encuadernaciones en sus diversas formas - encanutado, grapado, espiralado, anillado u otras - asignando el tipo de cubiertas en función de las características del documento y de acuerdo con la información facilitada.",
+     "Se han desechado los residuos en distintos envases de reciclado conforme a su naturaleza.",
+     "Se han aplicado las precauciones y equipos de protección necesarios para realizar con seguridad la encuadernación funcional.",
+     "Se ha comprobado que la encuadernación funcional realizada cumple con los criterios de calidad facilitados e inherentes al tipo de encuadernación."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "3029",
+  "nombre": "Montaje y mantenimiento de sistemas y componentes informáticos",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Selecciona los componentes y herramientas para la realización del montaje y mantenimiento de sistemas microinformáticos, describiéndolos y relacionándolos con su función y aplicación en la instalación.",
+    "ces": [
+     "Se han descrito las características de los elementos eléctricos y electrónicos utilizados en el montaje de sistemas.",
+     "Se han descrito las operaciones y comprobaciones previas a la manipulación segura de componentes eléctricos y/o electrónicos.",
+     "Se han identificado los dispositivos y herramientas necesarios en la manipulación segura de sistemas electrónicos.",
+     "Se han seleccionado las herramientas necesarias para el procedimiento de montaje, sustitución o conexión de componentes hardware de un sistema microinformático.",
+     "Se han identificado funcionalmente los componentes hardware para el ensamblado y/o mantenimiento de un equipo microinformático.",
+     "Se han descrito las características técnicas de cada uno de los componentes hardware (internos y externos) utilizados en el montaje y/o mantenimiento de un equipo microinformático.",
+     "Se han localizado los bloques funcionales en placas bases utilizadas en los sistemas microinformáticos.",
+     "Se han identificado los tipos de puertos, bahías internas y cables de conexión (de datos y eléctricos, entre otros) existentes de un equipo microinformático.",
+     "Se han seguido las instrucciones recibidas."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Ensambla los componentes hardware de un equipo microinformático, interpretando guías e instrucciones y aplicando técnicas de montaje.",
+    "ces": [
+     "Se ha comprobado cada componente antes de su utilización, siguiendo las normas de seguridad establecidas.",
+     "Se han interpretado las guías de instrucciones referentes a los procedimientos de integración o ensamblado, sustitución y conexión del componente hardware de un sistema microinformático.",
+     "Se han reconocido en distintas placas base cada uno de los zócalos de conexión de microprocesadores y los disipadores, entre otros.",
+     "Se han ensamblado los componentes hardware internos (memoria, procesador, tarjeta de video, pila, entre otros) en la placa base del sistema microinformático.",
+     "Se ha fijado cada dispositivo o tarjeta en la ranura o bahía correspondiente, según guías detalladas de instalación.",
+     "Se han conectado adecuadamente aquellos componentes hardware internos (disco duro, DVD, CD-ROM, entre otros) que necesiten cables de conexión para su integración en el sistema microinformático."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Instala sistemas operativos monopuesto identificando las fases del proceso y relacionándolas con la funcionalidad de la instalación.",
+    "ces": [
+     "Se han descrito los pasos a seguir para la instalación o actualización.",
+     "Se ha verificado la ausencia de errores durante el proceso de carga del sistema operativo.",
+     "Se han utilizado las herramientas de control para la estructura de directorios y la gestión de permisos.",
+     "Se han instalado actualizaciones y parches del sistema operativo según las instrucciones recibidas.",
+     "Se han realizado copias de seguridad de los datos",
+     "Se han anotado los posibles fallos producidos en la fase de arranque del equipo microinformático.",
+     "Se han descrito las funciones de replicación física (“clonación”) de discos y particiones en sistemas microinformáticos.",
+     "Se han utilizado herramientas software para la instalación de imágenes de discos o particiones señalando las restricciones de aplicación de las mismas.",
+     "Se ha verificado la funcionalidad de la imagen instalada, teniendo en cuenta el tipo de “clonación” realizada."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Comprueba la funcionalidad de los sistemas, soportes y periféricos instalados relacionando las intervenciones con los resultados a conseguir.",
+    "ces": [
+     "Se ha aplicado a cada componente hardware y periférico el procedimiento de testeo adecuado.",
+     "Se ha verificado que el equipo microinformático realiza el procedimiento de encendido y de POST (Power On Self Test), identificando el origen de los problemas, en su caso.",
+     "Se ha comprobado la funcionalidad de los soportes para almacenamiento de información.",
+     "Se ha verificado la funcionalidad en la conexión entre componentes del equipo microinformático y con los periféricos.",
+     "Se han utilizado herramientas de configuración, testeo y comprobación para verificar el funcionamiento del sistema.",
+     "Se han utilizado las herramientas y guías de uso para comprobar el estado de los soportes y de la información contenida en los mismos.",
+     "Se han registrado los resultados y las incidencias producidas en los procesos de comprobación."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Realiza el mantenimiento básico de sistemas informáticos, soportes y periféricos, relacionando las intervenciones con los resultados que hay que conseguir.",
+    "ces": [
+     "Se ha comprobado por medio de indicadores luminosos, que los periféricos conectados tienen alimentación eléctrica y las conexiones de datos.",
+     "Se han descrito los elementos consumibles necesarios para ser utilizados en los periféricos de sistemas microinformáticos.",
+     "Se han utilizado las guías técnicas detalladas para sustituir elementos consumibles.",
+     "Se han descrito las características de los componentes, de los soportes y de los periféricos para conocer los aspectos que afecten a su mantenimiento.",
+     "Se han utilizado las guías de los fabricantes para identificar los procedimientos de limpieza de componentes, soportes y periféricos.",
+     "Se ha realizado la limpieza de componentes, soportes y periféricos respetando las disposiciones técnicas establecidas por el fabricante manteniendo su funcionalidad.",
+     "Se han recogido los residuos y elementos desechables de manera adecuada para su eliminación o reciclaje."
+    ]
+   },
+   {
+    "ra": 6,
+    "enunciado": "Almacena equipos, periféricos y consumibles, describiendo las condiciones de conservación y etiquetado.",
+    "ces": [
+     "Se han descrito las condiciones para manipular, transportar y almacenar componentes y periféricos de un sistema microinformático.",
+     "Se han identificado los tipos de embalaje para el transporte y/o almacenaje de cada dispositivo, periférico y consumible.",
+     "Se han utilizado las herramientas necesarias para realizar las tareas de etiquetado previas al embalaje y/o almacenamiento de sistemas, periféricos y consumibles.",
+     "Se han utilizado los medios auxiliares adecuados a los elementos a transportar.",
+     "Se han aplicado las normas de seguridad en la manipulación y el transporte de elementos y equipos.",
+     "Se ha comprobado que los componentes recepcionados se corresponden con el albarán de entrega y que se encuentran en buen estado.",
+     "Se han registrado las operaciones realizadas siguiendo los formatos establecidos.",
+     "Se han recogido los elementos desechables para su eliminación o reciclaje."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "3009",
+  "nombre": "Ciencias aplicadas I",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Resuelve problemas matemáticos en situaciones cotidianas, utilizando los elementos básicos del lenguaje matemático y sus operaciones.",
+    "ces": [
+     "Se han identificado los distintos tipos de números y se han utilizado para interpretar adecuadamente la información cuantitativa.",
+     "Se han realizado cálculos con eficacia, bien mediante cálculo mental o mediante algoritmos de lápiz y calculadora (física o informática).",
+     "Se han utilizado las TIC como fuente de búsqueda de información.",
+     "Se ha operado con potencias de exponente natural y entero aplicando las propiedades.",
+     "Se ha utilizado la notación científica para representar y operar con números muy grandes o muy pequeños.",
+     "Se han representado los distintos números reales sobre la recta numérica.",
+     "Se ha caracterizado la proporción como expresión matemática.",
+     "Se han comparado magnitudes estableciendo su tipo de proporcionalidad.",
+     "Se ha utilizado la regla de tres para resolver problemas en los que intervienen magnitudes directa e inversamente proporcionales.",
+     "Se ha aplicado el interés simple y compuesto en actividades cotidianas."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Reconoce las instalaciones y el material de laboratorio valorándolos como recursos necesarios para la realización de las prácticas.",
+    "ces": [
+     "Se han identificado cada una de las técnicas experimentales que se van a realizar.",
+     "Se han manipulado adecuadamente los materiales instrumentales del laboratorio.",
+     "Se han tenido en cuenta las condiciones de higiene y seguridad para cada una de la técnicas experimentales que se van a realizar."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Identifica propiedades fundamentales de la materia en las diferentes formas en las que se presenta en la naturaleza, manejando sus magnitudes físicas y sus unidades fundamentales en unidades de sistema métrico decimal.",
+    "ces": [
+     "Se han descrito las propiedades de la materia.",
+     "Se han practicado cambios de unidades de longitud, masa y capacidad.",
+     "Se ha identificado la equivalencia entre unidades de volumen y capacidad.",
+     "Se han efectuado medidas en situaciones reales utilizando las unidades del sistema métrico decimal y utilizando la notación científica.",
+     "Se ha identificado la denominación de los cambios de estado de la materia.",
+     "Se han identificado con ejemplos sencillos diferentes sistemas materiales homogéneos y heterogéneos.",
+     "Se han identificado los diferentes estados de agregación en los que se presenta la materia utilizando modelos cinéticos para explicar los cambios de estado.",
+     "Se han identificado sistemas materiales relacionándolos con su estado en la naturaleza.",
+     "Se han reconocido los distintos estados de agregación de una sustancia dadas su temperatura de fusión y ebullición.",
+     "Se han establecido diferencias entre ebullición y evaporación utilizando ejemplos sencillos."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Utiliza el método más adecuado para la separación de componentes de mezclas sencillas relacionándolo con el proceso físico o químico en que se basa.",
+    "ces": [
+     "Se ha identificado y descrito lo que se considera sustancia pura y mezcla.",
+     "Se han establecido las diferencias fundamentales entre mezclas y compuestos.",
+     "Se han discriminado los procesos físicos y químicos.",
+     "Se han seleccionado de un listado de sustancias, las mezclas, los compuestos y los elementos químicos.",
+     "Se han aplicado de forma práctica diferentes separaciones de mezclas por métodos sencillos.",
+     "Se han descrito las características generales básicas de materiales relacionados con las profesiones, utilizando las TIC.",
+     "Se ha trabajado en equipo en la realización de tareas."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Reconoce cómo la energía está presente en los procesos naturales describiendo fenómenos simples de la vida real.",
+    "ces": [
+     "Se han identificado situaciones de la vida cotidiana en las que queda de manifiesto la intervención de la energía",
+     "Se han reconocido diferentes fuentes de energía.",
+     "Se han establecido grupos de fuentes de energía renovable y no renovable.",
+     "Se han mostrado las ventajas e inconvenientes (obtención, transporte y utilización) de las fuentes de energía renovables y no renovables, utilizando las TIC.",
+     "Se han aplicado cambios de unidades de la energía.",
+     "Se han mostrado en diferentes sistemas la conservación de la energía.",
+     "Se han descrito procesos relacionados con el mantenimiento del organismo y de la vida en los que se aprecia claramente el papel de la energía."
+    ]
+   },
+   {
+    "ra": 6,
+    "enunciado": "Localiza las estructuras anatómicas básicas discriminando los sistemas o aparatos a los que pertenecen y asociándolos a las funciones que producen en el organismo.",
+    "ces": [
+     "Se han identificado y descrito los órganos que configuran el cuerpo humano, y se les ha asociado al sistema o aparato correspondiente.",
+     "Se ha relacionado cada órgano, sistema y aparato a su función y se han reseñado sus asociaciones.",
+     "Se ha descrito la fisiología del proceso de nutrición.",
+     "Se ha detallado la fisiología del proceso de excreción.",
+     "Se ha descrito la fisiología del proceso de reproducción.",
+     "Se ha detallado cómo funciona el proceso de relación.",
+     "Se han utilizado herramientas informáticas para describir adecuadamente los aparatos y sistemas."
+    ]
+   },
+   {
+    "ra": 7,
+    "enunciado": "Diferencia la salud de la enfermedad, relacionando los hábitos de vida con las enfermedades más frecuentes reconociendo los principios básicos de defensa contra las mismas.",
+    "ces": [
+     "Se han identificado situaciones de salud y de enfermedad para las personas.",
+     "Se han descrito los mecanismos encargados de la defensa del organismo.",
+     "Se han identificado y clasificado las enfermedades infecciosas y no infecciosas más comunes en la población, y reconocido sus causas, la prevención y los tratamientos.",
+     "Se han relacionado los agentes que causan las enfermedades infecciosas habituales con el contagio producido.",
+     "Se ha entendido la acción de las vacunas, antibióticos y otras aportaciones de la ciencia médica para el tratamiento y prevención de enfermedades infecciosas.",
+     "Se ha reconocido el papel que tienen las campañas de vacunación en la prevención de enfermedades infecciosas.",
+     "Se ha descrito el tipo de donaciones que existen y los problemas que se producen en los trasplantes.",
+     "Se han reconocido situaciones de riesgo para la salud relacionadas con su entorno profesional más cercano.",
+     "Se han diseñado pautas de hábitos saludables relacionados con situaciones cotidianas."
+    ]
+   },
+   {
+    "ra": 8,
+    "enunciado": "Elabora menús y dietas equilibradas sencillas diferenciando los nutrientes que contienen y adaptándolos a los distintos parámetros corporales y a situaciones diversas.",
+    "ces": [
+     "Se ha discriminado entre el proceso de nutrición y el de alimentación.",
+     "Se han diferenciado los nutrientes necesarios para el mantenimiento de la salud.",
+     "Se ha reconocido la importancia de una buena alimentación y del ejercicio físico en el cuidado del cuerpo humano.",
+     "Se han relacionado las dietas con la salud, diferenciando entre las necesarias para el mantenimiento de la salud y las que pueden conducir a un menoscabo de la misma.",
+     "Se ha realizado el cálculo sobre balances calóricos en situaciones habituales de su entorno.",
+     "Se ha calculado el metabolismo basal y sus resultados se ha representado en un diagrama, estableciendo comparaciones y conclusiones.",
+     "Se han elaborado menús para situaciones concretas, investigando en la red las propiedades de los alimentos."
+    ]
+   },
+   {
+    "ra": 9,
+    "enunciado": "Resuelve situaciones cotidianas, utilizando expresiones algebraicas sencillas y aplicando los métodos de resolución más adecuados.",
+    "ces": [
+     "Se han concretado propiedades o relaciones de situaciones sencillas mediante expresiones algebraicas.",
+     "Se han simplificado expresiones algebraicas sencillas utilizando métodos de desarrollo y factorización.",
+     "Se ha conseguido resolver problemas de la vida cotidiana en los que se precise el planteamiento y resolución de ecuaciones de primer grado.",
+     "Se han resuelto problemas sencillos utilizando el método gráficos y las TIC."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "3011",
+  "nombre": "Comunicación y Sociedad I",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Valora la evolución histórica de las sociedades prehistóricas y de la Edad Antigua y sus relaciones con los paisajes naturales, analizando los factores y elementos implicados, y desarrollando actitudes y valores de aprecio del patrimonio natural y artístico.",
+    "ces": [
+     "Se han descrito mediante el análisis de fuentes gráficas las principales características de un paisaje natural, reconociendo dichos elementos en el entorno más cercano.",
+     "Se han explicado la ubicación, el desplazamiento y la adaptación al medio de los grupos humanos del periodo de la hominización hasta el dominio técnico de los metales de las principales culturas que lo ejemplifican.",
+     "Se han relacionado las características de los hitos artísticos más significativos del periodo prehistórico con la organización social y el cuerpo de creencias, valorando sus diferencias con las sociedades actuales.",
+     "Se ha valorado la pervivencia de estas sociedades en las sociedades actuales, comparado sus principales características.",
+     "Se han discriminado las principales características que requiere el análisis de las obras arquitectónicas y escultóricas mediante ejemplos arquetípicos, diferenciando estilos canónicos.",
+     "Se ha juzgado el impacto de las primeras sociedades humanas en el paisaje natural, analizando las características de las ciudades antiguas y su evolución en la actualidad.",
+     "Se ha analizado la pervivencia en la Península Ibérica y los territorios extrapeninsulares españoles de las sociedades prehistóricas y de la Edad Antigua.",
+     "Se han elaborado instrumentos sencillos de recogida de información mediante estrategias de composición protocolizadas, utilizando tecnologías de la información y la comunicación.",
+     "Se han desarrollado comportamientos acordes con el desarrollo del propio esfuerzo y el trabajo colaborativo."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Valora la construcción del espacio europeo hasta las primeras transformaciones industriales y sociedades agrarias, analizando sus características principales y valorando su pervivencia en la sociedad actual y en el entorno inmediato.",
+    "ces": [
+     "Se ha analizado la transformación del mundo antiguo al medieval, analizando la evolución del espacio europeo, sus relaciones con el espacio extraeuropeo y las características más significativas de las sociedades medievales.",
+     "Se han valorado las características de los paisajes agrarios medievales y su pervivencia en las sociedades actuales, identificando sus elementos principales.",
+     "Se han valorado las consecuencias de la construcción de los imperios coloniales en América en las culturas autóctonas y en la europea.",
+     "Se ha analizado el modelo político y social de la monarquía absoluta durante la Edad Moderna en las principales potencias europeas.",
+     "Se han valorado los indicadores demográficos básicos de las transformaciones en la población europea durante el periodo analizado.",
+     "Se han descrito las principales características del análisis de las obras pictóricas a través del estudio de ejemplos arquetípicos de las escuelas y estilos que se suceden en Europa desde el Renacimiento hasta la irrupción de las vanguardias históricas.",
+     "Se ha analizado la evolución del sector o de los sectores productivos propios del perfil del título, analizando sus transformaciones y principales hitos de evolución en sus sistemas organizativos y tecnológicos.",
+     "Se han elaborado instrumentos sencillos de recogida de información mediante estrategias de composición protocolizadas, utilizando las tecnologías de la información y la comunicación.",
+     "Se han desarrollado comportamientos acordes con el desarrollo del propio esfuerzo y el trabajo en equipo."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Utiliza estrategias comunicativas para interpretar y comunicar información oral en lengua castellana, aplicando los principios de la escucha activa, estrategias sencillas de composición y las normas lingüísticas básicas.",
+    "ces": [
+     "Se ha analizado la estructura de textos orales procedentes de los medios de comunicación de actualidad, identificando sus características principales.",
+     "Se han aplicado las habilidades básicas para realizar una escucha activa, identificando el sentido global y contenidos específicos de un mensaje oral.",
+     "Se ha realizado un buen uso de los elementos de comunicación no verbal en las argumentaciones y exposiciones.",
+     "Se han analizado los usos y niveles de la lengua y las normas lingüísticas en la comprensión y composición de mensajes orales, valorando y revisando los usos discriminatorios, específicamente en las relaciones de género.",
+     "Se ha utilizado la terminología gramatical apropiada en la comprensión de las actividades gramaticales propuestas y en la resolución de las mismas."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Utiliza estrategias comunicativas para interpretar y comunicar información escrita en lengua castellana, aplicando estrategias de lectura comprensiva y aplicando estrategias de análisis, síntesis y clasificación de forma estructurada y progresiva a la composición autónoma de textos breves seleccionados.",
+    "ces": [
+     "Se han valorado y analizado las características principales de los tipos en relación con su idoneidad para el trabajo que desea realizar.",
+     "Se han utilizado herramientas de búsqueda diversas en la comprensión de un texto escrito, aplicando estrategias de reinterpretación de contenidos.",
+     "Se han aplicado, de forma sistemática, estrategias de lectura comprensiva en la comprensión de los textos, extrayendo conclusiones para su aplicación en las actividades de aprendizaje y reconociendo posibles usos discriminatorios desde la perspectiva de género.",
+     "Se ha resumido el contenido de un texto escrito, extrayendo la idea principal, las secundarias y el propósito comunicativo, revisando y reformulando las conclusiones obtenidas.",
+     "Se ha analizado la estructura de distintos textos escritos de utilización diaria, reconociendo usos y niveles de la lengua y pautas de elaboración.",
+     "Se han aplicado las principales normas gramaticales y ortográficas en la redacción de textos de modo que el texto final resulte claro y preciso.",
+     "Se han desarrollado pautas sistemáticas en la elaboración de textos escritos que permitan la valoración de los aprendizajes desarrollados y la reformulación de las necesidades de aprendizaje para mejorar la comunicación escrita.",
+     "Se han observado pautas de presentación de trabajos escritos teniendo en cuenta el contenido, el formato y el público destinatario, utilizando un vocabulario adecuado al contexto.",
+     "Se han resuelto actividades de comprensión y análisis de las estructuras gramaticales, comprobando la validez de las inferencias realizadas."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Realiza la lectura de textos literarios representativos de la Literatura en lengua castellana anteriores al siglo XIX, generando criterios estéticos para la construcción del gusto personal.",
+    "ces": [
+     "Se han contrastado las etapas de evolución de la literatura en lengua castellana en el periodo considerado y reconociendo las obras mayores más representativas.",
+     "Se ha valorado la estructura y el uso del lenguaje de una lectura personal de una obra literaria adecuada al nivel, situándola en su contexto y utilizando instrumentos protocolizados de recogida de información.",
+     "Se han expresado opiniones personales razonadas sobre los aspectos más apreciados y menos apreciados de una obra y sobre la implicación entre su contenido y las propias experiencias vitales.",
+     "Se han aplicado estrategias para la comprensión de textos literarios, teniendo en cuenta de los temas y motivos básicos.",
+     "Se ha presentado información sobre periodos, autores y obras de la literatura en lengua castellana a partir de textos literarios."
+    ]
+   },
+   {
+    "ra": 6,
+    "enunciado": "Utiliza estrategias para comunicar información oral en lengua inglesa, elaborando presentaciones orales de poca extensión, bien estructuradas, relativas a situaciones habituales de comunicación cotidiana y frecuente de ámbito personal o profesional.",
+    "ces": [
+     "Se han aplicado las estrategias de escucha activa para la comprensión precisa de los mensajes recibidos.",
+     "Se ha identificado la intención comunicativa básica de mensajes directos o recibidos mediante formatos electrónicos, valorando las situaciones de comunicación y sus implicaciones en el uso del vocabulario empleado.",
+     "Se ha identificado el sentido global del texto oral que presenta la información de forma secuenciada y progresiva en situaciones habituales frecuentes y de contenido predecible.",
+     "Se han identificado rasgos fonéticos y de entonación, comunes y evidentes que ayudan a entender el sentido general del mensaje.",
+     "Se han realizado presentaciones orales breves de textos descriptivos, narrativos e instructivos, de ámbito personal o profesional, de acuerdo con un guión sencillo, aplicando la estructura de cada tipo de texto y utilizando, en su caso, medios informáticos.",
+     "Se han utilizado estructuras gramaticales básicas y un repertorio esencial y restringido de expresiones, frases y palabras de situaciones habituales frecuentes y de contenido altamente predecible según el propósito comunicativo del texto.",
+     "Se ha expresado con cierta claridad, usando una entonación y pronunciación comprensible, aceptándose las pausas y dudas frecuentes.",
+     "Se ha mostrado una actitud reflexiva y acerca de la información que suponga cualquier tipo de discriminación.",
+     "Se han identificado las normas de relación social, básicas y estandarizadas de los países donde se habla la lengua extranjera.",
+     "Se han identificado las costumbres o actividades cotidianas de la comunidad donde se habla la lengua extranjera."
+    ]
+   },
+   {
+    "ra": 7,
+    "enunciado": "Participa en conversaciones en lengua inglesa utilizando un lenguaje sencillo y claro en situaciones habituales frecuentes del ámbito personal o profesional, activando estrategias de comunicación básicas.",
+    "ces": [
+     "Se ha dialogado, de forma dirigida y siguiendo un guión bien estructurado utilizando un repertorio memorizado de modelos de oraciones y conversaciones breves y básicas, sobre situaciones habituales frecuentes y de contenido altamente predecible.",
+     "Se ha mantenido la interacción utilizando estrategias de comunicación sencillas para mostrar el interés y la comprensión.",
+     "Se han utilizado estrategias básicas de compensación para suplir carencias en la lengua extranjera.",
+     "Se han utilizado estructuras gramaticales básicas y un repertorio esencial y restringido de expresiones, frases, palabras y marcadores de discurso lineales, según el propósito comunicativo del texto.",
+     "Se ha expresado con cierta claridad, utilizando una entonación y pronunciación comprensible, aceptándose las pausas y dudas frecuentes."
+    ]
+   },
+   {
+    "ra": 8,
+    "enunciado": "Elabora textos escritos en lengua inglesa, breves y sencillos, de situaciones de comunicación habituales y frecuentes del ámbito personal o profesional, aplicando estrategias de lectura comprensiva y desarrollando estrategias estructuradas de composición.",
+    "ces": [
+     "Se ha leído de forma comprensiva el texto, reconociendo sus rasgos básicos y su contenido global.",
+     "Se han identificado las ideas fundamentales y la intención comunicativa básica del texto.",
+     "Se han identificado estructuras gramaticales básicas y un repertorio limitado de expresiones, frases y palabras y marcadores de discurso lineales, en situaciones habituales frecuentes, de contenido muy predecible.",
+     "Se han completado y reorganizado frases y oraciones, atendiendo al propósito comunicativo, a normas gramaticales básicas.",
+     "Se han elaborado textos breves, adecuados a un propósito comunicativo, siguiendo modelos estructurados.",
+     "Se ha utilizado el léxico esencial apropiado a situaciones frecuentes y al contexto del ámbito personal o profesional",
+     "Se ha mostrado interés por la buena presentación de los textos escritos, respetado las normas gramaticales, ortográficas y tipográficas y siguiendo sencillas pautas de revisión.",
+     "Se han utilizado diccionarios impresos y online y correctores ortográficos de los procesadores de textos en la composición de los mismos.",
+     "Se ha mostrado una actitud reflexiva y acerca de la información que suponga cualquier tipo de discriminación."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "3016",
+  "nombre": "Instalación y mantenimiento de redes para transmisión de datos",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Selecciona los elementos que configuran las redes para la transmisión de voz y datos, describiendo sus principales características y funcionalidad.",
+    "ces": [
+     "Se han identificado los tipos de instalaciones relacionados con las redes de transmisión de voz y datos.",
+     "Se han identificado los elementos (canalizaciones, cableados, antenas, armarios, «racks» y cajas, entre otros) de una red de transmisión de datos.",
+     "Se han clasificado los tipos de conductores (par de cobre, cable coaxial, fibra óptica, entre otros).",
+     "Se ha determinado la tipología de las diferentes cajas (registros, armarios, «racks», cajas de superficie, de empotrar, entre otros).",
+     "Se han descrito los tipos de fijaciones (tacos, bridas, tornillos, tuercas, grapas, entre otros) de canalizaciones y sistemas.",
+     "Se han relacionado las fijaciones con el elemento a sujetar."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Monta canalizaciones, soportes y armarios en redes de transmisión de voz y datos, identificando los elementos en el plano de la instalación y aplicando técnicas de montaje.",
+    "ces": [
+     "Se han seleccionado las técnicas y herramientas empleadas para la instalación de canalizaciones y su adaptación.",
+     "Se han tenido en cuenta las fases típicas para el montaje de un «rack».",
+     "Se han identificado en un croquis del edificio o parte del edificio los lugares de ubicación de los elementos de la instalación.",
+     "Se ha preparado la ubicación de cajas y canalizaciones.",
+     "Se han preparado y/o mecanizado las canalizaciones y cajas.",
+     "Se han montado los armarios («racks») interpretando el plano.",
+     "Se han montado canalizaciones, cajas y tubos, entre otros, asegurando su fijación mecánica.",
+     "Se han aplicado normas de seguridad en el uso de herramientas y sistemas."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Despliega el cableado de una red de voz y datos analizando su trazado.",
+    "ces": [
+     "Se han diferenciado los medios de transmisión empleados para voz y datos.",
+     "Se han reconocido los detalles del cableado de la instalación y su despliegue (categoría del cableado, espacios por los que discurre, soporte para las canalizaciones, entre otros).",
+     "Se han utilizado los tipos de guías pasacables, indicando la forma óptima de sujetar cables y guía.",
+     "Se ha cortado y etiquetado el cable.",
+     "Se han montado los armarios de comunicaciones y sus accesorios.",
+     "Se han montado y conexionado las tomas de usuario y paneles de parcheo.",
+     "Se ha trabajado con la calidad y seguridad requeridas."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Instala elementos y sistemas de transmisión de voz y datos, reconociendo y aplicando las diferentes técnicas de montaje.",
+    "ces": [
+     "Se han ensamblado los elementos que consten de varias piezas.",
+     "Se han identificado el cableado en función de su etiquetado o colores.",
+     "Se han colocado los sistemas o elementos (antenas, amplificadores, entre otros) en su lugar de ubicación.",
+     "Se han seleccionado herramientas.",
+     "Se han fijado los sistemas o elementos.",
+     "Se ha conectado el cableado con los sistemas y elementos, asegurando un buen contacto.",
+     "Se han colocado los embellecedores, tapas y elementos decorativos.",
+     "Se han aplicado normas de seguridad, en el uso de herramientas y sistemas."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Realiza operaciones básicas de configuración en redes locales cableadas relacionándolas con sus aplicaciones.",
+    "ces": [
+     "Se han descrito los principios de funcionamiento de las redes locales.",
+     "Se han identificado los distintos tipos de redes y sus estructuras alternativas.",
+     "Se han reconocido los elementos de la red local identificándolos con su función.",
+     "Se han descrito los medios de transmisión.",
+     "Se ha interpretado el mapa físico de la red local.",
+     "Se ha representado el mapa físico de la red local.",
+     "Se han utilizado aplicaciones informáticas para representar el mapa físico de la red local."
+    ]
+   },
+   {
+    "ra": 6,
+    "enunciado": "Cumple las normas de prevención de riesgos laborales y de protección ambiental, identificando los riesgos asociados, las medidas y sistemas para prevenirlos.",
+    "ces": [
+     "Se han identificado los riesgos y el nivel de peligrosidad que suponen la manipulación de los materiales, herramientas, útiles, máquinas y medios de transporte.",
+     "Se han operado las máquinas respetando las normas de seguridad.",
+     "Se han identificado las causas más frecuentes de accidentes en la manipulación de materiales, herramientas, máquinas de corte y conformado, entre otras.",
+     "Se han descrito los elementos de seguridad (protecciones, alarmas, pasos de emergencia, entre otros) de las máquinas y los sistemas de protección individual (calzado, protección ocular, indumentaria, entre otros) que se deben emplear en las operaciones de montaje y mantenimiento.",
+     "Se ha relacionado la manipulación de materiales, herramientas y máquinas con las medidas de seguridad y protección personal requeridos.",
+     "Se han identificado las posibles fuentes de contaminación del entorno ambiental.",
+     "Se han clasificado los residuos generados para su retirada selectiva.",
+     "Se ha valorado el orden y la limpieza de instalaciones y sistemas como primer factor de prevención de riesgos."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "3030",
+  "nombre": "Operaciones auxiliares para la configuración y la explotación",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Configura equipos informáticos para su funcionamiento en un entorno monousuario, identificando la funcionalidad de la instalación.",
+    "ces": [
+     "Se han configurado los parámetros básicos de la instalación.",
+     "Se han aplicado las preferencias en la configuración del entorno personal.",
+     "Se han utilizado los elementos de la interfaz de usuario para preparar el entorno de trabajo.",
+     "Se han reconocido los atributos y los permisos en el sistema de archivos y directorios.",
+     "Se han identificado las funcionalidades para el manejo del sistema de archivos y periféricos",
+     "Se han utilizado las herramientas del sistema operativo para explorar los soportes de almacenamiento de datos.",
+     "Se han realizado operaciones básicas de protección (instalación de antivirus, realización de copias de seguridad, entre otras)."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Configura equipos informáticos para su funcionamiento en un entorno de red, identificando los permisos del usuario.",
+    "ces": [
+     "Se han aplicado preferencias en la configuración del entorno personal.",
+     "Se han configurado y gestionado cuentas de usuario.",
+     "Se ha comprobado la conectividad del servidor con los equipos del cliente.",
+     "Se han utilizado los servicios para compartir recurso.",
+     "Se han asignado permisos a los recursos del sistema que se van a compartir.",
+     "Se ha accedido a los recursos compartidos.",
+     "Se han aplicado normas básicas de seguridad sobre recursos compartidos."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Utiliza aplicaciones de un paquete ofimático, relacionándolas con sus aplicaciones.",
+    "ces": [
+     "Se han descrito las funciones y características de un procesador de textos relacionándolas con los tipos de documentos a elaborar.",
+     "Se han utilizado los procedimientos de creación, modificación y manipulación de documentos utilizando las herramientas del procesador de textos.",
+     "Se ha formateado un texto mejorando su presentación utilizando distintos tipos de letras y alineaciones.",
+     "Se han utilizado las funciones para guardar e imprimir documentos elaborados.",
+     "Se han realizado operaciones básicas para el uso de aplicaciones ofimáticas de hoja de cálculo y base de datos, sobre documentos previamente elaborados.",
+     "Se han identificado las funciones básicas una aplicación para presentaciones.",
+     "Se han elaborado presentaciones multimedia aplicando normas básicas de composición y diseño."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Emplea utilidades proporcionadas por Internet, configurándolas e identificando su funcionalidad y prestaciones.",
+    "ces": [
+     "Se han utilizado las herramientas para la navegación por páginas Web reconociendo la estructura de Internet.",
+     "Se ha personalizado el navegador adecuándolo a las necesidades establecidas.",
+     "Se ha transferido información utilizando los recursos de Internet para descargar, enviar y almacenar ficheros.",
+     "Se han identificado los medios y procedimientos de seguridad durante el acceso a páginas web describiendo los riesgos y fraudes posibles.",
+     "Se han descrito las funcionalidades que ofrecen las herramientas de correo electrónico.",
+     "Se ha creado una cuenta de correo a través de un servidor web que proporcione el servicio.",
+     "Se han utilizado otros servicios disponibles en Internet (foro, mensajería instantánea, redes p2p, videoconferencia; entre otros).",
+     "Se han configurado las opciones básicas de las aplicaciones."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "3019",
+  "nombre": "Ciencias aplicadas II",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Resuelve situaciones cotidianas aplicando los métodos de resolución de ecuaciones y sistemas y valorando la precisión, simplicidad y utilidad del lenguaje algebraico.",
+    "ces": [
+     "Se han utilizando identidades notables en las operaciones con polinomios",
+     "Se han obtenido valores numéricos a partir de una expresión algebraica.",
+     "Se han resuelto ecuaciones de primer y segundo grado sencillas de modo algebraico y gráfico.",
+     "Se han resuelto problemas cotidianos y de otras áreas de conocimiento mediante ecuaciones y sistemas.",
+     "Se ha valorado la precisión, simplicidad y utilidad del lenguaje algebraico para representar situaciones planteadas en la vida real."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Resuelve problemas sencillos de diversa índole, a través de su análisis contrastado y aplicando las fases del método científico.",
+    "ces": [
+     "Se han planteado hipótesis sencillas, a partir de observaciones directas o indirectas recopiladas por distintos medios.",
+     "Se han analizado las diversas hipótesis y se ha emitido una primera aproximación a su explicación.",
+     "Se han planificado métodos y procedimientos experimentales sencillos de diversa índole para refutar o no su hipótesis.",
+     "Se ha trabajado en equipo en el planteamiento de la solución.",
+     "Se han recopilado los resultados de los ensayos de verificación y plasmado en un documento de forma coherente.",
+     "Se ha defendido el resultado con argumentaciones y pruebas las verificaciones o refutaciones de las hipótesis emitidas."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Realiza medidas directas e indirectas de figuras geométricas presentes en contextos reales, utilizando los instrumentos, las fórmulas y las técnicas necesarias.",
+    "ces": [
+     "Se han utilizado instrumentos apropiados para medir ángulos, longitudes, áreas y volúmenes de cuerpos y figuras geométricas interpretando las escalas de medida.",
+     "Se han utilizado distintas estrategias (semejanzas, descomposición en figuras más sencillas, entre otros) para estimar o calcular medidas indirectas en el mundo físico.",
+     "Se han utilizado las fórmulas para calcular perímetros, áreas y volúmenes y se han asignado las unidades correctas.",
+     "Se ha trabajado en equipo en la obtención de medidas.",
+     "Se han utilizado las TIC para representar distintas figuras."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Interpreta graficas de dos magnitudes calculando los parámetros significativos de las mismas y relacionándolo con funciones matemáticas elementales y los principales valores estadísticos.",
+    "ces": [
+     "Se ha expresado la ecuación de la recta de diversas formas.",
+     "Se ha representado gráficamente la función cuadrática aplicando métodos sencillos para su representación.",
+     "Se ha representado gráficamente la función inversa.",
+     "Se ha representado gráficamente la función exponencial.",
+     "Se ha extraído información de gráficas que representen los distintos tipos de funciones asociadas a situaciones reales.",
+     "Se ha utilizado el vocabulario adecuado para la descripción de situaciones relacionadas con el azar y la estadística.",
+     "Se han elaborado e interpretado tablas y gráficos estadísticos.",
+     "Se han analizado características de la distribución estadística obteniendo medidas de centralización y dispersión.",
+     "Se han aplicado las propiedades de los sucesos y la probabilidad.",
+     "Se han resueltos problemas cotidianos mediante cálculos de probabilidad sencillos."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Aplica técnicas físicas o químicas, utilizando el material necesario, para la realización de prácticas de laboratorio sencillas, midiendo las magnitudes implicadas.",
+    "ces": [
+     "Se ha verificado la disponibilidad del material básico utilizado en un laboratorio.",
+     "Se han identificado y medido magnitudes básicas, entre otras, masa, peso, volumen, densidad, temperatura.",
+     "Se han identificado distintos tipos de biomoléculas presentes en materiales orgánicos.",
+     "Se ha descrito la célula y tejidos animales y vegetales mediante su observación a través de instrumentos ópticos.",
+     "Se han elaborado informes de ensayos en los que se incluye el procedimiento seguido, los resultados obtenidos y las conclusiones finales."
+    ]
+   },
+   {
+    "ra": 6,
+    "enunciado": "Reconoce las reacciones químicas que se producen en los procesos biológicos y en la industria argumentando su importancia en la vida cotidiana y describiendo los cambios que se producen.",
+    "ces": [
+     "Se han identificado reacciones químicas principales de la vida cotidiana, la naturaleza y la industria.",
+     "Se han descrito las manifestaciones de reacciones químicas.",
+     "Se han descrito los componentes principales de una reacción química y la intervención de la energía en la misma.",
+     "Se han reconocido algunas reacciones químicas tipo, como combustión, oxidación, descomposición, neutralización, síntesis, aeróbica, anaeróbica.",
+     "Se han identificado los componente y el proceso de reacciones químicas sencillas mediante ensayos de laboratorio.",
+     "Se han elaborado informes utilizando las TIC sobre las industrias más relevantes: alimentarias, cosmética, reciclaje, describiendo de forma sencilla los procesos que tienen lugar en las mismas."
+    ]
+   },
+   {
+    "ra": 7,
+    "enunciado": "Identifica aspectos positivos y negativos del uso de la energía nuclear describiendo los efectos de la contaminación generada en su aplicación.",
+    "ces": [
+     "Se han analizado efectos positivos y negativos del uso de la energía nuclear.",
+     "Se ha diferenciado el proceso de fusión y fisión nuclear.",
+     "Se han identificado algunos problemas sobre vertidos nucleares producto de catástrofes naturales o de mala gestión y mantenimiento de las centrales nucleares.",
+     "Se ha argumentado sobre la problemática de los residuos nucleares.",
+     "Se ha trabajado en equipo y utilizado las TIC."
+    ]
+   },
+   {
+    "ra": 8,
+    "enunciado": "Identifica los cambios que se producen en el planeta tierra argumentando sus causas y teniendo en cuenta las diferencias que existen entre relieve y paisaje.",
+    "ces": [
+     "Se han identificado los agentes geológicos externos y cuál es su acción sobre el relieve.",
+     "Se han diferenciado los tipos de meteorización e identificado sus consecuencias en el relieve.",
+     "Se ha analizado el proceso de erosión, reconociendo los agentes geológicos externos que intervienen y las consecuencias en el relieve.",
+     "Se ha descrito el proceso de transporte discriminando los agentes geológicos externos que intervienen y las consecuencias en el relieve.",
+     "Se ha analizado el proceso de sedimentación discriminado los agentes geológicos externos que intervienen, las situaciones y las consecuencias en el relieve."
+    ]
+   },
+   {
+    "ra": 9,
+    "enunciado": "Categoriza los contaminantes atmosféricos principales identificando sus orígenes y relacionándolos con los efectos que producen.",
+    "ces": [
+     "Se han reconocido los fenómenos de la contaminación atmosférica y los principales agentes causantes de la misma.",
+     "Se ha investigado sobre el fenómeno de la lluvia acida, sus consecuencias inmediatas y futuras y como sería posible evitarla.",
+     "Se ha descrito el efecto invernadero argumentando las causas que lo originan o contribuyen y las medidas para su minoración.",
+     "Se ha descrito la problemática que ocasiona la pérdida paulatina de la capa de ozono, las consecuencias para la salud de las personas, el equilibrio de la hidrosfera y las poblaciones."
+    ]
+   },
+   {
+    "ra": 10,
+    "enunciado": "Identifica los contaminantes del agua relacionando su efecto en el medio ambiente con su tratamiento de depuración.",
+    "ces": [
+     "Se ha reconocido y valorado el papel del agua en la existencia y supervivencia de la vida en el planeta.",
+     "Se ha identificado el efecto nocivo que tiene para las poblaciones de seres vivos la contaminación de los acuíferos.",
+     "Se han identificado posibles contaminantes en muestras de agua de distinto origen planificado y realizando ensayos de laboratorio.",
+     "Se ha analizado los efectos producidos por la contaminación del agua y el uso responsable de la misma."
+    ]
+   },
+   {
+    "ra": 11,
+    "enunciado": "Contribuye al equilibrio medioambientaI analizando y argumentando las líneas básicas sobre el desarrollo sostenible y proponiendo acciones para su mejora y conservación.",
+    "ces": [
+     "Se ha analizado las implicaciones positivas de un desarrollo sostenible.",
+     "Se han propuesto medidas elementales encaminadas a favorecer el desarrollo sostenible.",
+     "Se han diseñando estrategias básicas para posibilitar el mantenimiento del medioambiente.",
+     "Se ha trabajado en equipo en la identificación de los objetivos para la mejora del medioambiente."
+    ]
+   },
+   {
+    "ra": 12,
+    "enunciado": "Relaciona las fuerzas que aparecen en situaciones habituales con los efectos producidos teniendo en cuenta su contribución al movimiento o reposo de los objetos y las magnitudes puestas en juego.",
+    "ces": [
+     "Se han discriminado movimientos cotidianos en función de su trayectoria y de su celeridad.",
+     "Se ha relacionado entre sí la distancia recorrida, la velocidad, el tiempo y la aceleración, expresándolas en unidades de uso habitual.",
+     "Se han representado vectorialmente determinadas magnitudes como la velocidad y la aceleración.",
+     "Se han relacionado los parámetros que definen el movimiento rectilíneo uniforme utilizando las expresiones graficas y matemática.",
+     "Se han realizado cálculos sencillos de velocidades en movimientos con aceleración constante.",
+     "Se ha descrito la relación causa-efecto en distintas situaciones, para encontrar la relación entre fuerzas y movimientos.",
+     "Se han aplicado las leyes de Newton en situaciones de la vida cotidiana."
+    ]
+   },
+   {
+    "ra": 13,
+    "enunciado": "Identifica los aspectos básicos de la producción, transporte y utilización de la energía eléctrica y los factores que intervienen en su consumo, describiendo los cambios producidos y las magnitudes y valores característicos.",
+    "ces": [
+     "Se han identificado y manejado las magnitudes físicas básicas a tener en cuenta en el consumo de electricidad en la vida cotidiana.",
+     "Se han analizado los hábitos de consumo y ahorro eléctrico y establecido líneas de mejora en los mismos.",
+     "Se han clasificado las centrales eléctricas y descrito la trasformación energética en las mismas.",
+     "Se han analizado las ventajas y desventajas de las distintas centrales eléctricas.",
+     "Se han descrito básicamente las etapas de la distribución de la energía eléctrica desde su génesis al usuario.",
+     "Se trabajado en equipo en la recopilación de información sobre centrales eléctricas en España."
+    ]
+   },
+   {
+    "ra": 14,
+    "enunciado": "Identifica los componentes básicos de circuitos eléctricos sencillos, realizando medidas y determinando los valores de las magnitudes que los caracterizan.",
+    "ces": [
+     "Se han identificado los elementos básicos de un circuito sencillo, relacionándolos con los existentes en su vida cotidiana.",
+     "Se han puesto de manifiesto los factores de los que depende la resistencia de un conductor.",
+     "Se han experimentado sobre circuitos elementales las variaciones de una magnitud básica en función de los cambios producidos en las otras.",
+     "Se han realizado esquemas de circuitos eléctricos sencillos interpretando las distintas situaciones sobre los mismos.",
+     "Se han descrito y ejemplarizado las variaciones producidas en las asociaciones: serie, paralelo y mixtas.",
+     "Se han calculado magnitudes eléctricas elementales en su entorno habitual de consumo."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "3012",
+  "nombre": "Comunicación y Sociedad II",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Infiere las características esenciales de las sociedades contemporáneas a partir del estudio de su evolución histórica, analizando los rasgos básicos de su organización social, política y económica en distintos momentos y la sucesión de transformaciones y conflictos acaecidos.",
+    "ces": [
+     "Se han discriminado las consecuencias para la organización de las sociedades actuales de las corrientes ideológicas que la han cimentado, situándolas en el tiempo y el espacio.",
+     "Se ha valorado el modelo de relaciones económicas globalizado actual mediante el estudio de las transformaciones económicas producidas como consecuencia de las innovaciones tecnológicas y los sistemas organizativos de la actividad productiva.",
+     "Se han categorizado las características de la organización social contemporánea, analizando la estructura y las relaciones sociales de la población actual y su evolución durante el periodo y utilizando gráficas y fuentes directas seleccionadas.",
+     "Se ha examinado la evolución de las relaciones internacionales contemporáneas, elaborando explicaciones causales y consecutivas que permitan desarrollar opiniones propias sobre los conflictos actuales.",
+     "Se ha valorado el proceso de unificación del espacio europeo, analizando su evolución, argumentando su influencia en las políticas nacionales de los países miembros de la Unión Europea.",
+     "Se ha asociado la evolución de los acontecimientos históricos globales con la evolución histórica del Estado español, identificando sus fases de evolución, los principales conflictos y su situación actual.",
+     "Se han identificado los rasgos esenciales del arte contemporáneo y su evolución hasta nuestros días, construyendo opiniones y criterios propios de orden estético.",
+     "Se ha analizado la evolución del sector o de los sectores productivos propios del título, describiendo sus transformaciones y principales hitos de evolución en sus sistemas organizativos y tecnológicos.",
+     "Se han elaborado instrumentos pautados de recogida y difusión de información que permitan la evaluación de los aprendizajes realizados, utilizando el vocabulario preciso",
+     "Se han desarrollado comportamientos acordes con el desarrollo del propio esfuerzo y el trabajo colaborativo."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Valora los principios básicos del sistema democrático analizando sus instituciones y las diferentes organizaciones políticas y económicas en que se manifiesta e infiriendo pautas de actuación para acomodar su comportamiento al cumplimiento de dichos principios.",
+    "ces": [
+     "Se han reconocido los principios básicos de la Declaración Universal de Derechos Humanos y su situación en el mundo de hoy, valorando su implicación para la vida cotidiana.",
+     "Se han analizado los principios rectores, las instituciones y normas de funcionamiento de las principales instituciones internacionales, juzgando su papel en los conflictos mundiales.",
+     "Se ha valorado la importancia en la mediación y resolución de conflictos en la extensión del modelo democrático, desarrollando criterios propios y razonados para la resolución de los mismos.",
+     "Se han juzgado los rasgos esenciales del modelo democrático español, valorando el contexto histórico de su desarrollo.",
+     "Se ha valorado la implicación del principio de no discriminación en las relaciones personales y sociales del entorno próximo, juzgando comportamientos propios y ajenos e infiriendo pautas y acciones apropiadas para acomodar la actitud a los derechos y a las obligaciones que de él se derivan.",
+     "se han aplicado pautas de resolución de conflictos adecuadas al as situaciones encontradas en las relaciones con el entorno próximo a partir de los aprendizajes adquiridos, valorando las consecuencias y proponiendo mecanismos de mejora.",
+     "Se ha elaborado información pautada y organizada para su utilización en situaciones de trabajo colaborativo y contraste de opiniones, aplicando criterios de claridad y precisión y de respeto a la pluralidad de opiniones."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Utiliza estrategias comunicativas para interpretar y comunicar información oral en lengua castellana, aplicando los principios de la escucha activa, estrategias razonadas de composición y las normas lingüísticas correctas en cada caso.",
+    "ces": [
+     "Se han aplicado las técnicas de la escucha activa en el análisis de mensajes orales procedentes de distintas fuentes, identificando sus características principales.",
+     "Se ha reconocido la intención comunicativa y la estructura temática de la comunicación oral, valorando posibles respuestas.",
+     "Se ha realizado un uso correcto de los elementos de comunicación no verbal en las argumentaciones y exposiciones.",
+     "Se han aplicado los usos y niveles de la lengua y las normas lingüísticas en la comprensión y composición de mensajes orales, valorando los usos discriminatorios.",
+     "Se ha utilizado la terminología gramatical correcta en la comprensión de las actividades gramaticales propuestas y en la resolución de las mismas."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Utiliza estrategias comunicativas para interpretar y comunicar información escrita en lengua castellana, aplicando estrategias sistemáticas de lectura comprensiva y aplicando estrategias de análisis, síntesis y clasificación de forma estructurada a la composición autónoma de textos de progresiva complejidad.",
+    "ces": [
+     "Se han valorado y analizado las características principales de los tipos en relación con su adecuación para el trabajo que desea realizar.",
+     "Se han utilizado técnicas de búsqueda diversas en la comprensión de un texto escrito, aplicando estrategias de reinterpretación de contenidos.",
+     "Se han aplicado, de forma sistemática, estrategias de lectura comprensiva en la comprensión de los textos, aplicando las conclusiones obtenidas en las actividades de aprendizaje y reconociendo posibles usos discriminatorios desde la perspectiva de género.",
+     "Se ha resumido el contenido de un texto escrito, extrayendo la idea principal, las secundarias y el propósito comunicativo, revisando y reformulando las conclusiones obtenidas.",
+     "Se ha analizado la estructura de distintos textos escritos de uso académico o profesional, reconociendo usos y niveles de la lengua y pautas de elaboración.",
+     "Se han aplicado las principales normas gramaticales y ortográficas en la redacción de textos de modo que el texto final resulte claro, preciso y adecuado al formato y al contexto comunicativo.",
+     "Se han desarrollado pautas sistematizadas en la preparación de textos escritos que permitan mejorar la comunicación escrita.",
+     "Se han observado pautas de presentación de trabajos escritos teniendo en cuenta el contenido, el formato y el público destinatario, utilizando un vocabulario correcto según las normas lingüísticas y los usos a que se destina.",
+     "Se han resuelto actividades de comprensión y análisis de las estructuras gramaticales, comprobando la precisión y validez de las inferencias realizadas."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Interpreta textos literarios representativos de la Literatura en lengua castellana desde el siglo XIX hasta la actualidad, reconociendo la intención del autor y relacionándolo con su contexto histórico, sociocultural y literario y generando criterios estéticos para la valoración del gusto personal.",
+    "ces": [
+     "Se han descrito los movimientos literarios en lengua castellana en el periodo considerado y reconociendo las obras más representativas.",
+     "Se ha valorado la estructura y el uso del lenguaje de una lectura personal de obras adecuadas al nivel y situándola en su contexto y utilizando instrumentos pautados.",
+     "Se han expresado opiniones personales fundamentadas sobre los aspectos apreciados en obras literarias.",
+     "Se han aplicado estrategias de análisis de textos literarios, reconociendo los temas y motivos y elementos simbólicos y la funcionalidad de los recursos estilísticos más significativos.",
+     "Se ha informado sobre un autor, una obra o un período de la literatura en lengua castellana, recogiendo en forma analítica la información correspondiente."
+    ]
+   },
+   {
+    "ra": 6,
+    "enunciado": "Utiliza estrategias para interpretar y comunicar información oral en lengua inglesa, aplicando los principios de la escucha activa y elaborando presentaciones orales de poca extensión, claras y estructuradas, relativas a temas y aspectos concretos, frecuentes y cotidianos, del ámbito personal y profesional.",
+    "ces": [
+     "Se han aplicado de forma sistemática las estrategias de escucha activa para la comprensión global y específica de los mensajes recibidos, sin necesidad de entender todos los elementos del mismo.",
+     "Se ha identificado la intención comunicativa de mensajes directos o empleando un repertorio limitado de expresiones, frases, palabras y marcadores de discurso estructuradores (de apertura, continuidad y cierre).",
+     "Se ha identificado el sentido global y las ideas principales del texto oral y estructuras gramaticales básicas en oraciones sencillas de situaciones habituales frecuentes y de contenido predecible y concreto.",
+     "Se han identificado rasgos fonéticos y de entonación esenciales que ayudan a entender el sentido global y las ideas principales y secundarias del mensaje.",
+     "Se han realizado composiciones y presentaciones orales breves de acuerdo con un guión estructurado, aplicando el formato y los rasgos propios de cada tipo de texto, de ámbito personal o profesional.",
+     "Se han utilizado estructuras gramaticales básicas y marcadores de discurso para iniciar, enlazar, ordenar y finalizar el discurso, en situaciones habituales, frecuentes y aspectos concretos.",
+     "Se ha expresado la información, usando una entonación y pronunciación razonables, aceptándose las pausas y pequeñas vacilaciones.",
+     "Se ha mostrado una actitud reflexiva y crítica acerca de la información que suponga cualquier tipo de discriminación.",
+     "Se han identificado las normas de relación social más frecuentes de los países donde se habla la lengua extranjera.",
+     "Se han identificado las costumbres o actividades cotidianas de la comunidad y del lugar de trabajo donde se habla la lengua extranjera.",
+     "Se han identificado las principales actitudes y comportamientos profesionales en situaciones de comunicación habituales del ámbito profesional."
+    ]
+   },
+   {
+    "ra": 7,
+    "enunciado": "Mantiene conversaciones sencillas en lengua inglesa en situaciones habituales y concretas del ámbito personal y profesional, utilizando estrategias de comunicación básicas.",
+    "ces": [
+     "Se ha dialogado siguiendo un guión sobre temas y aspectos concretos y frecuentes del ámbito personal y profesional.",
+     "Se ha escuchado y dialogado en interacciones sencillas, cotidianas de la vida profesional y personal, solicitando y proporcionando información con cierto detalle.",
+     "Se ha mantenido la interacción utilizando diversas estrategias de comunicación esenciales para mostrar el interés y la comprensión.",
+     "Se han utilizado estrategias de compensación para suplir carencias en la lengua extranjera (parafrasear, lenguaje corporal, ayudas audio-visuales).",
+     "Se han utilizado estructuras gramaticales y oraciones sencillas y un repertorio esencial, limitado, de expresiones, frases, palabras frecuentes, y marcadores de discurso lineales.",
+     "Se ha expresado con cierta claridad, usando una entonación y pronunciación razonable y comprensible, aceptándose algunas pausas y vacilaciones."
+    ]
+   },
+   {
+    "ra": 8,
+    "enunciado": "Elabora textos breves y sencillos con cierto detalle en lengua inglesa, relativos a situaciones de comunicación habituales del ámbito personal y profesional, aplicando estrategias de lectura comprensiva y desarrollando estrategias sistemáticas de composición.",
+    "ces": [
+     "Se ha leído el texto reconociendo los rasgos esenciales del género y su estructura, e interpretando su contenido global y específico, sin necesidad de entender todos los elementos del mismo.",
+     "Se ha identificado la intención comunicativa básica del texto organizado de distinta manera.",
+     "Se han identificado estructuras gramaticales y oraciones sencillas y un repertorio limitado de expresiones, frases, palabras y marcadores de discurso, básicos y lineales, en situaciones habituales frecuentes y concretas de contenido predecible.",
+     "Se han completado frases, oraciones y textos sencillos, atendiendo al propósito comunicativo, con estructuras gramaticales de escasa complejidad en situaciones habituales y concretas de contenido predecible.",
+     "Se han elaborado textos breves y sencillos, adecuados a un propósito comunicativo, utilizando los conectores más frecuentes para enlazar las oraciones.",
+     "Se ha respetado las normas gramaticales, ortográficas y tipográficas siguiendo pautas sistemáticas y concretas de revisión y corrección.",
+     "Se ha mostrado una actitud reflexiva y crítica acerca de la información que suponga cualquier tipo de discriminación."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "3033",
+  "nombre": "Formación en centros de trabajo",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Realiza operaciones auxiliares en el montaje de sistemas microinformáticos, aplicando los procesos del sistema de calidad establecido en la empresa y los correspondientes protocolos de seguridad.",
+    "ces": [
+     "Se han identificado los componentes para el montaje, su función y su disposición.",
+     "Se han seleccionado y utilizado las herramientas e instrumentos para la operación de montaje.",
+     "Se ha realizado fijación e interconexión de los componentes y accesorios utilizando las técnicas correctas.",
+     "Se han realizado las configuraciones básicas del sistema operativo.",
+     "Se ha comprobado la funcionalidad del equipo microinformático.",
+     "Se ha operado respetando los criterios de seguridad personal y material, con la calidad requerida.",
+     "Se ha participado dentro del grupo de trabajo, mostrando iniciativa e interés."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Realiza operaciones de mantenimiento en sistemas microinformáticos y periféricos, siguiendo indicaciones, según los planes de mantenimiento correspondientes.",
+    "ces": [
+     "Se han realizado intervenciones de mantenimiento preventivo sobre el equipo microinformático.",
+     "Se han realizado revisiones del estado de los soportes y periféricos.",
+     "Se han seleccionado y utilizado las herramientas e instrumentos para las operaciones de mantenimiento.",
+     "Se ha realizado la limpieza de componentes, soportes y periféricos respetando las disposiciones técnicas establecidas por el fabricante manteniendo su funcionalidad.",
+     "Se han recogido los residuos y elementos desechables de manera adecuada para su eliminación o reciclaje.",
+     "Se han determinado las posibles medidas de corrección en función de los resultados obtenidos.",
+     "Se han realizado las operaciones con criterios de respeto al medio ambiente.",
+     "Se han realizado todas las operaciones teniendo en cuenta la normativa de seguridad laboral y de protección ambiental."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Realiza operaciones de montaje y mantenimiento en instalaciones de redes, siguiendo indicaciones, según los planes de mantenimiento correspondientes.",
+    "ces": [
+     "Se han identificado los equipos de la red.",
+     "Se han realizado operaciones de montaje de racks.",
+     "Se han seleccionado herramientas para el montaje y el mantenimiento.",
+     "Se han montado/desmontado soportes y elementos de redes inalámbricas.",
+     "Se han realizado operaciones de montaje de canalizaciones.",
+     "Se han realizado operaciones de montaje de cables.",
+     "Se han realizado operaciones de montaje de rosetas y equipos distribuidores.",
+     "Se han utilizado las herramientas e instrumentos para las operaciones de montaje mantenimiento.",
+     "Se ha realizado la limpieza de componentes, soportes y periféricos respetando las disposiciones técnicas establecidas por el fabricante manteniendo su funcionalidad.",
+     "Se han recogido los residuos y elementos desechables de manera adecuada para su eliminación o reciclaje.",
+     "Se han realizado todas las operaciones teniendo en cuenta la normativa de seguridad laboral y de protección ambiental."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Realiza labores básicas de administración y gestión de oficina identificando en cada caso los documentos a utilizar y las técnicas a aplicar.",
+    "ces": [
+     "Se han identificado los equipos de reproducción y encuadernación existentes en el entorno laboral.",
+     "Se han realizado labores de reprografía, copia y encuadernación de documentos.",
+     "Se han realizado labores de encuadernado básico.",
+     "Se ha comprobado el nivel de existencias del almacén de material de oficina.",
+     "Se han realizado labores básicas de archivo.",
+     "Se han reconocido los documentos comerciales y administrativos utilizados.",
+     "Se ha demostrado responsabilidad en la realización del trabajo.",
+     "Se han mantenido unas relaciones laborales cordiales con el resto de compañeros, integrándose en el grupo de trabajo."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Actúa conforme a las normas de prevención y riesgos laborales de la empresa.",
+    "ces": [
+     "Se ha cumplido en todo momento la normativa general sobre prevención y seguridad, así como las establecidas por la empresa.",
+     "Se han identificado los factores y situaciones de riesgo que se presentan en su ámbito de actuación en el centro de trabajo.",
+     "Se han adoptado actitudes relacionadas con la actividad para minimizar los riesgos laborales y medioambientales.",
+     "Se ha empleado el equipo de protección individual (EPIs) establecido para las distintas operaciones.",
+     "Se han utilizado los dispositivos de protección de las máquinas, equipos e instalaciones en las distintas actividades.",
+     "Se ha actuado según el plan de prevención.",
+     "Se ha mantenido la zona de trabajo libre de riesgos, con orden y limpieza.",
+     "Se ha trabajado minimizando el consumo de energía y la generación de residuos."
+    ]
+   },
+   {
+    "ra": 6,
+    "enunciado": "Actúa de forma responsable y se integra en el sistema de relaciones técnico-sociales de la empresa.",
+    "ces": [
+     "Se han ejecutado con diligencia las instrucciones que recibe.",
+     "Se ha responsabilizado del trabajo que desarrolla, comunicándose eficazmente con la persona adecuada en cada momento.",
+     "Se ha cumplido con los requerimientos y normas técnicas, demostrando un buen hacer profesional y finalizando su trabajo en un tiempo límite razonable.",
+     "Se ha mostrado en todo momento una actitud de respeto hacia los procedimientos y normas establecidos.",
+     "Se ha organizado el trabajo que realiza de acuerdo con las instrucciones y procedimientos establecidos, cumpliendo las tareas en orden de prioridad y actuando bajo criterios de seguridad y calidad en las intervenciones.",
+     "Se ha coordinado la actividad que desempeña con el resto del personal, informando de cualquier cambio, necesidad relevante o contingencia no prevista.",
+     "Se ha incorporado puntualmente al puesto de trabajo, disfrutando de los descansos instituidos y no abandonando el centro de trabajo antes de lo establecido sin motivos debidamente justificados.",
+     "Se ha preguntado de manera apropiada la información necesaria o las dudas que pueda tener para el desempeño de sus labores a su responsable inmediato.",
+     "Se ha realizado el trabajo conforme a las indicaciones realizadas por sus superiores, planteando las posibles modificaciones o sugerencias en el lugar y modos adecuados."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "CLM0041",
+  "nombre": "Iniciación a la actividad emprendedora y empresarial",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Desarrolla habilidades personales relacionadas con el espíritu emprendedor y empresarial: actitud proactiva, apertura al aprendizaje continuo, asunción de riesgos, autonomía, creatividad, curiosidad, esfuerzo, espíritu de trabajo en equipo, iniciativa, pensamiento crítico, responsabilidad y voluntad.",
+    "ces": [
+     "Se han descrito rasgos propios de empresarios y emprendedores.",
+     "Se han identificado competencias y rasgos personales que favorecen y otros que no favorecen el espíritu emprendedor y empresarial.",
+     "Se ha entendido la relevancia de las competencias y rasgos personales para la puesta en funcionamiento y desarrollo de las empresas.",
+     "Se han asociado los rasgos personales y competencias del espíritu emprendedor y empresarial con situaciones que se pueden plantear durante el proceso de análisis de una idea de negocio, su puesta en funcionamiento, el proceso de consolidación de una empresa y situaciones de crisis.",
+     "Se han identificado rasgos propios del alumno y de sus compañeros relacionados con el espíritu emprendedor y empresarial.",
+     "Se han potenciado características que favorecen el espíritu emprendedor y empresarial del alumno.",
+     "Se ha mostrado un adecuado conocimiento de los propios límites y virtudes.",
+     "Se han analizado las consecuencias de las acciones personales y se han asumido las obligaciones y responsabilidades.",
+     "Se han argumentado y defendido opiniones propias y se han escuchado críticamente y respetado las opiniones de los demás."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Aplica los conceptos de ahorro y consumo responsable y su influencia en la vida personal y empresarial.",
+    "ces": [
+     "Se han comprendido los conceptos de consumo y ahorro responsable.",
+     "Se ha analizado la utilidad de distintos bienes y servicios.",
+     "Se ha comprendido la importancia del ahorro.",
+     "Se han analizado situaciones de la vida real para calificarlas como ahorro o consumo y, si procede, consumo responsable.",
+     "Se han reconocido dichos conceptos como necesarios para el bienestar de los individuos y la necesidad del uso responsable de los recursos escasos frente a necesidades y deseos.",
+     "Se ha identificado situaciones y empresas en las cuales el ahorro o el consumo responsable han contribuido a su éxito."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Identifica y desarrolla el concepto de ética empresarial, así como el respeto y cumplimiento de la normativa de prevención de riesgos laborales:",
+    "ces": [
+     "Se ha identificado el significado de la ética empresarial, su importancia y repercusión en la sociedad.",
+     "Se han analizado situaciones respetuosas y no respetuosas con la ética empresarial y sus consecuencias para la sociedad y para la empresa.",
+     "Se ha identificado la relación entre empresa responsable y desarrollo personal y social.",
+     "Se ha comprendido la importancia de la normativa de prevención de riesgos laborales y su cumplimiento.",
+     "Se ha llevado a cabo un análisis de situaciones de la familia profesional relacionadas con la prevención de riesgos laborales."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Identifica los principales sistemas económicos y valora el papel del empresario dentro de un sistema de economía de mercado, así como la función decisiva del empresario en la creación de riqueza y generación de puestos de trabajo y, por tanto, en el desarrollo económico y social.",
+    "ces": [
+     "Se han descrito las características de los distintos sistemas económicos.",
+     "Se ha analizado y valorado el papel de la empresa como uno de los agentes creadores de investigación, innovación y desarrollo.",
+     "Se ha comprendido la importancia de emprendedores y empresarios como generadores de empleo, riqueza y bienestar.",
+     "Se han identificado bienes y servicios resultado de la investigación, la innovación y el desarrollo empresarial."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Reconoce los efectos de la internacionalización y comprende las oportunidades que brinda.",
+    "ces": [
+     "Se han descrito relaciones económicas, culturales y sociales consecuencia de la internacionalización.",
+     "Se han identificado aspectos de la vida diaria en las que influye la globalización.",
+     "Se han analizado las posibilidades que brinda el comercio exterior para la creación y desarrollo de las empresas.",
+     "Se han identificado rasgos y habilidades personales relacionadas con la internacionalización."
+    ]
+   }
+  ]
+ }
+]

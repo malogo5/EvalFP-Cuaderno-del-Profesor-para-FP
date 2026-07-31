@@ -1,0 +1,118 @@
+{
+ "archivo": "ce_iabd_mia",
+ "modulo": {
+  "nombre": "Modelos de Inteligencia Artificial",
+  "codigo": "5071",
+  "abrev": "MIA",
+  "ciclo": "CE Inteligencia Artificial y Big Data",
+  "ciclo_clave": "CE_IABD",
+  "ciclo_nivel": "CE",
+  "curso": "CE IA y Big Data",
+  "horas_sem": 2,
+  "total_horas": 60,
+  "anno": "2026-2027",
+  "eval_count": 2,
+  "decreto": "Decreto 69/2022, de 12/07/2022, currículo del Curso de Especialización en Inteligencia Artificial y Big Data en Castilla-La Mancha (DOCM, NID 2022/6683) · RA y CE literales del Anexo II"
+ },
+ "ras": [
+  {
+   "ut": "Caracteriza sistemas de Inteligencia Artificial",
+   "tags": "",
+   "instrumentos": [
+    "practica",
+    "proyecto"
+   ],
+   "enunciado": "Caracteriza sistemas de Inteligencia Artificial relacionándolos con la mejora de la eficiencia operativa de las organizaciones y empresas.",
+   "ces": [
+    "Se han identificado los principios fundamentales de los sistemas inteligentes.",
+    "Se ha recopilado información sobre campos donde se aplica Inteligencia Artificial.",
+    "Se han identificado las técnicas básicas a utilizar en el entorno de la IA.",
+    "Se han identificado nuevas formas de interacciones en los negocios que mejore la eficiencia operativa."
+   ]
+  },
+  {
+   "ut": "Utiliza modelos de sistemas de Inteligencia Artificial implementando…",
+   "tags": "",
+   "instrumentos": [
+    "practica",
+    "proyecto"
+   ],
+   "enunciado": "Utiliza modelos de sistemas de Inteligencia Artificial implementando sistemas de resolución de problemas.",
+   "ces": [
+    "Se han determinado los requisitos básicos a implementar en un sistema de resolución de problemas.",
+    "Se han clasificado modelos de Inteligencia Artificial.",
+    "Se han caracterizado los modelos de automatización de tareas.",
+    "Se han caracterizado los modelos de razonamiento impreciso.",
+    "Se han caracterizado los modelos de sistemas basados en reglas.",
+    "Se ha valorado la adecuación de los modelos a la implementación del sistema de resolución de problemas."
+   ]
+  },
+  {
+   "ut": "Relaciona el procesamiento de lenguaje natural con sus aplicaciones…",
+   "tags": "",
+   "instrumentos": [
+    "practica",
+    "proyecto"
+   ],
+   "enunciado": "Relaciona el procesamiento de lenguaje natural con sus aplicaciones determinando su potencial e identificando sus limitaciones.",
+   "ces": [
+    "Se ha caracterizado el procesamiento de lenguaje natural.",
+    "Se ha justificado el papel del lingüista en un proyecto de Inteligencia Artificial.",
+    "Se ha determinado el potencial de las técnicas existentes de procesamiento de lenguaje, así como sus limitaciones.",
+    "Se ha considerado en qué casos es factible aplicar estas técnicas en la resolución de un problema.",
+    "Se ha evaluado el trabajo cooperativo entre lingüistas e informáticos en el campo del procesamiento del lenguaje natural.",
+    "Se ha descrito la formación teórica que precisa el investigador en procesamiento del lenguaje natural.",
+    "Se ha elaborado un sistema de procesamiento de lenguaje orientado a una tarea específica."
+   ]
+  },
+  {
+   "ut": "Analiza sistemas robotizados",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Analiza sistemas robotizados, evaluando opciones de diseño e implementación.",
+   "ces": [
+    "Se han recopilado los problemas del modelado y control cinemático en robots manipuladores.",
+    "Se han buscado soluciones a los problemas de los robots.",
+    "Se han valorado las características diferenciadoras de las técnicas de programación de robots y de sistemas robotizados.",
+    "Se han evaluado diferentes opciones en el diseño e implementación de sistemas robotizados."
+   ]
+  },
+  {
+   "ut": "Aplica sistemas expertos",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Aplica sistemas expertos evaluando la influencia de los controladores inteligentes en el comportamiento del sistema.",
+   "ces": [
+    "Se ha descrito la dinámica y las estructuras elementales de los sistemas expertos.",
+    "Se han determinado las destrezas necesarias para representar y simular comportamientos básicos de sistemas de muy diversos ámbitos.",
+    "Se ha razonado cómo influye la variación de las características de los sistemas en su dinámica de actuación.",
+    "Se han desarrollado estrategias de control definiendo los objetivos y las especificaciones de la respuesta del sistema.",
+    "Se han relacionado los controladores inteligentes con el comportamiento del sistema."
+   ]
+  },
+  {
+   "ut": "Aplica principios legales y éticos al desarrollo de la Inteligencia…",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Aplica principios legales y éticos al desarrollo de la Inteligencia Artificial integrándolos como parte del proceso.",
+   "ces": [
+    "Se han argumentado los posibles riesgos legales y éticos de la aplicación de Inteligencia Artificial.",
+    "Se ha reconocido la necesidad de respetar la privacidad de los datos.",
+    "Se ha decidido el cumplimiento estricto de la legalidad en su aplicación.",
+    "Se ha integrado como parte del proceso la protección frente a previsibles errores y ataques (security by design).",
+    "Se ha comprobado que se cumplen todas las normas legales y éticas en todas las áreas de la Inteligencia Artificial (privacy by design).",
+    "Se han identificado y corregido los posibles sesgos de género en el desarrollo y aplicaciones de Inteligencia Artificial y Big Data."
+   ]
+  }
+ ],
+ "dual_ra": null
+}

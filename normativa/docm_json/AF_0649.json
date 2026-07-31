@@ -1,0 +1,200 @@
+{
+ "archivo": "af_opi",
+ "dual_ra": null,
+ "modulo": {
+  "codigo": "0649",
+  "abrev": "OPI",
+  "ciclo": "Administración y Finanzas",
+  "ciclo_clave": "AF",
+  "ciclo_nivel": "CFGS",
+  "curso": "1º AF",
+  "horas_sem": 7,
+  "total_horas": 223,
+  "anno": "2026-2027",
+  "eval_count": 3,
+  "decreto": "Decreto 43/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9487), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM",
+  "nombre": "Ofimática y proceso de la información"
+ },
+ "ras": [
+  {
+   "ut": "Equipos, aplicaciones y red",
+   "eval": 1,
+   "tags": "Instalación y actualización · Configuración · Seguridad · Copias de seguridad · Incidencias",
+   "instrumentos": [
+    "practica",
+    "examen"
+   ],
+   "enunciado": "Mantiene en condiciones óptimas de funcionamiento los equipos, aplicaciones y red, instalando y actualizando los componentes hardware y software necesarios.",
+   "ces": [
+    "Se han realizado pruebas de funcionamiento de los equipos informáticos.",
+    "Se han comprobado las conexiones de los puertos de comunicación.",
+    "Se han identificado los elementos básicos (hardware y software) de un sistema en red.",
+    "Se han caracterizado los procedimientos generales de operaciones en un sistema de red.",
+    "Se han utilizado las funciones básicas del sistema operativo.",
+    "Se han aplicado medidas de seguridad y confidencialidad, identificando el programa cortafuegos y el antivirus.",
+    "Se ha compartido información con otros usuarios de la red.",
+    "Se han ejecutado funciones básicas de usuario (conexión, desconexión, optimización del espacio de almacenamiento, utilización de periféricos, comunicación con otros usuarios y conexión con otros sistemas o redes, entre otras)."
+   ]
+  },
+  {
+   "ut": "Mecanografía por ordenador",
+   "eval": 1,
+   "tags": "Teclado extendido · Escritura al tacto · Velocidad y precisión · Ergonomía",
+   "instrumentos": [
+    "practica"
+   ],
+   "enunciado": "Escribe textos alfanuméricos en un teclado extendido, aplicando las técnicas mecanográficas.",
+   "ces": [
+    "Se han organizado los elementos y espacios de trabajo.",
+    "Se ha mantenido la postura corporal correcta.",
+    "Se ha identificado la posición correcta de los dedos en las filas del teclado alfanumérico.",
+    "Se han precisado las funciones de puesta en marcha del terminal informático.",
+    "Se han empleado coordinadamente las líneas del teclado alfanumérico y las teclas de signos y puntuación.",
+    "Se ha utilizado el método de escritura al tacto en párrafos de dificultad progresiva y en tablas sencillas.",
+    "Se ha utilizado el método de escritura al tacto para realizar textos en inglés.",
+    "Se ha mecanografiado con velocidad (mínimo 200 p.p.m.) y precisión (máximo una falta por minuto) con la ayuda de un programa informático.",
+    "Se han aplicado las normas de presentación de los distintos documentos de texto.",
+    "Se han localizado y corregido los errores mecanográficos, ortográficos y sintácticos."
+   ]
+  },
+  {
+   "ut": "Gestión de archivos y búsqueda de información",
+   "eval": 1,
+   "tags": "Estructura de carpetas · Nomenclatura · Búsqueda avanzada · Digitalización · Archivo electrónico",
+   "instrumentos": [
+    "practica"
+   ],
+   "enunciado": "Gestiona los sistemas de archivos, buscando y seleccionando con medios convencionales e informáticos la información necesaria.",
+   "ces": [
+    "Se han detectado necesidades de información.",
+    "Se han identificado y priorizado las fuentes de obtención de información.",
+    "Se han elegido buscadores en Intranet y en Internet según criterios de rapidez y de opciones de búsqueda.",
+    "Se han empleado herramientas Web 2.0 para obtener y producir información.",
+    "Se han utilizado los criterios de búsqueda para restringir el número de resultados obtenidos.",
+    "Se han aplicado sistemas de seguridad, protección, confidencialidad y restricción de la información.",
+    "Se ha canalizado la información obtenida, archivándola y/o registrándola, en su caso.",
+    "Se han organizado los archivos para facilitar la búsqueda posterior.",
+    "Se ha actualizado la información necesaria.",
+    "Se han cumplido los plazos previstos.",
+    "Se han realizado copias de los archivos."
+   ]
+  },
+  {
+   "ut": "Hoja de cálculo avanzada",
+   "eval": 2,
+   "tags": "Funciones · Referencias · Tablas dinámicas · Gráficos · Macros · Plantillas",
+   "instrumentos": [
+    "practica",
+    "examen"
+   ],
+   "enunciado": "Elabora hojas de cálculo adaptadas a las necesidades que se planteen en el tratamiento de la información, aplicando las opciones avanzadas.",
+   "ces": [
+    "Se han utilizado las prestaciones de la hoja de cálculo para realizar gestiones de tesorería, cálculos comerciales y otras operaciones administrativas.",
+    "Se han diseñado y elaborado documentos con la hoja de cálculo.",
+    "Se han relacionado y actualizado hojas de cálculo.",
+    "Se han creado y anidado fórmulas y funciones.",
+    "Se han establecido contraseñas para proteger celdas, hojas y libros.",
+    "Se han obtenido gráficos para el análisis de la información.",
+    "Se han empleado macros para la realización de documentos y plantillas.",
+    "Se han importado y exportado hojas de cálculo creadas con otras aplicaciones y otros formatos.",
+    "Se ha utilizado la hoja de cálculo como base de datos: formularios, creación de listas, filtrado, protección y ordenación de datos.",
+    "Se han utilizado aplicaciones y periféricos para introducir textos, números, códigos e imágenes."
+   ]
+  },
+  {
+   "ut": "Procesador de textos avanzado",
+   "eval": 2,
+   "tags": "Estilos · Secciones · Índices · Combinar correspondencia · Formularios · Control de cambios",
+   "instrumentos": [
+    "practica",
+    "examen"
+   ],
+   "enunciado": "Elabora documentos de textos, utilizando las opciones avanzadas de un procesador de textos.",
+   "ces": [
+    "Se han utilizado las funciones, prestaciones y procedimientos de los procesadores de textos y autoedición.",
+    "Se han identificado las características de cada tipo de documento.",
+    "Se han redactado documentos de texto con la destreza adecuada y aplicando las normas de estructura.",
+    "Se han confeccionado plantillas adaptadas a los documentos administrativos tipo, incluyendo utilidades de combinación.",
+    "Se han integrado objetos, gráficos, tablas, hojas de cálculo e hipervínculos, entre otros.",
+    "Se han detectado y corregido los errores cometidos.",
+    "Se ha recuperado y utilizado la información almacenada.",
+    "Se han utilizado las funciones y utilidades que garanticen las normas de seguridad, integridad y confidencialidad de los datos."
+   ]
+  },
+  {
+   "ut": "Bases de datos",
+   "eval": 2,
+   "tags": "Tablas y relaciones · Consultas · Formularios · Informes · Importación y exportación",
+   "instrumentos": [
+    "practica",
+    "examen"
+   ],
+   "enunciado": "Utiliza sistemas de gestión de bases de datos adaptadas a las necesidades que se planteen en el tratamiento de la información administrativa, aplicando las opciones avanzadas.",
+   "ces": [
+    "Se han ordenado y clasificado los datos de las bases de datos para presentar la información.",
+    "Se han realizado consultas de bases de datos con criterios precisos.",
+    "Se han realizado informes de bases de datos con criterios precisos.",
+    "Se han realizado formularios con criterios precisos.",
+    "Se han actualizado, fusionado y eliminado registros de las bases de datos.",
+    "Se han relacionado las bases de datos con otras aplicaciones informáticas para desarrollar las actividades que así lo requieran.",
+    "Se han protegido las bases de datos estableciendo niveles de seguridad.",
+    "Se ha elaborado una base de datos adaptada a los requerimientos de la organización."
+   ]
+  },
+  {
+   "ut": "Integración de información y multimedia",
+   "eval": 3,
+   "tags": "Vinculación e incrustación · Imagen · Audio y vídeo · Formatos · PDF",
+   "instrumentos": [
+    "practica"
+   ],
+   "enunciado": "Gestiona integradamente la información proveniente de diferentes aplicaciones así como archivos audiovisuales, utilizando programas y periféricos específicos.",
+   "ces": [
+    "Se han gestionado de forma integrada bases de datos, textos e imágenes, entre otros, importando y exportando datos provenientes de hojas de cálculo y obteniendo documentos compuestos de todas estas posibilidades.",
+    "Se han seleccionado archivos audiovisuales de fuentes externas y se ha elegido el formato óptimo de éstos.",
+    "Se ha creado y mantenido un banco propio de recursos audiovisuales.",
+    "Se han personalizado los archivos audiovisuales en función del objetivo del documento que se quiere obtener.",
+    "Se ha respetado la legislación específica en materia de protección de archivos audiovisuales."
+   ]
+  },
+  {
+   "ut": "Correo y agenda electrónica",
+   "eval": 3,
+   "tags": "Cuentas y firmas · Filtros y reglas · Calendario · Tareas · Netiqueta",
+   "instrumentos": [
+    "practica"
+   ],
+   "enunciado": "Gestiona el correo y la agenda electrónica, utilizando aplicaciones específicas.",
+   "ces": [
+    "Se ha utilizado la aplicación de correo electrónico.",
+    "Se ha identificado el emisor, destinatario y contenido en un mensaje de correo.",
+    "Se han aplicado filtros de protección de correo no deseado.",
+    "Se ha canalizado la información a todos los implicados.",
+    "Se ha comprobado la recepción del mensaje.",
+    "Se han organizado las bandejas de entrada y salida.",
+    "Se ha registrado la entrada o salida de correos.",
+    "Se han impreso, archivado o eliminado los mensajes de correo.",
+    "Se han aplicado las funciones y utilidades que ofrece la agenda electrónica como método de organización del departamento.",
+    "Se han conectado y sincronizado agendas del equipo informático con dispositivos móviles."
+   ]
+  },
+  {
+   "ut": "Presentaciones multimedia",
+   "eval": 3,
+   "tags": "Diseño · Plantillas corporativas · Animaciones · Notas del orador · Exposición",
+   "instrumentos": [
+    "practica",
+    "proyecto"
+   ],
+   "enunciado": "Elabora presentaciones multimedia de documentos e informes, utilizando aplicaciones específicas.",
+   "ces": [
+    "Se ha realizado un análisis y selección de la información que se quiere incluir.",
+    "Se han insertado distintos objetos (tablas, gráficos, hojas de cálculo, fotos, dibujos, organigramas, archivos de sonido y vídeo, entre otros).",
+    "Se ha distribuido la información de forma clara y estructurada.",
+    "Se han animado los objetos según el objetivo de la presentación.",
+    "Se han creado presentaciones para acompañar exposiciones orales.",
+    "Se han realizado presentaciones relacionadas con informes o documentación empresarial."
+   ]
+  }
+ ]
+}

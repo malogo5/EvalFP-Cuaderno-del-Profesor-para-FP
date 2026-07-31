@@ -1,0 +1,131 @@
+{
+ "archivo": "asir_asgbd",
+ "modulo": {
+  "nombre": "Administración de Sistemas Gestores de Bases de Datos",
+  "codigo": "0377",
+  "abrev": "ASGBD",
+  "ciclo": "Administración de Sistemas Informáticos en Red",
+  "ciclo_clave": "ASIR",
+  "ciclo_nivel": "CFGS",
+  "curso": "2º ASIR",
+  "horas_sem": 2,
+  "total_horas": 65,
+  "anno": "2026-2027",
+  "eval_count": 3,
+  "decreto": "Decreto 200/2010, de 03/08/2010, currículo del ciclo de Administración de Sistemas Informáticos en Red en Castilla-La Mancha (DOCM, NID 2010/13389) · RA y CE literales del Anexo I"
+ },
+ "ras": [
+  {
+   "ut": "Implanta sistemas gestores de bases de datos",
+   "tags": "",
+   "instrumentos": [
+    "practica"
+   ],
+   "enunciado": "Implanta sistemas gestores de bases de datos analizando sus características y ajustándose a los requerimientos del sistema.",
+   "ces": [
+    "Se ha reconocido la utilidad y función de cada uno de los elementos de un sistema gestor de bases de datos.",
+    "Se han analizado las características de los principales sistemas gestores de bases de datos.",
+    "Se ha seleccionado el sistema gestor de bases de datos.",
+    "Se ha identificado el software necesario para llevar a cabo la instalación.",
+    "Se ha verificado el cumplimiento de los requisitos hardware.",
+    "Se han instalado sistemas gestores de bases de datos.",
+    "Se ha documentado el proceso de instalación.",
+    "Se ha interpretado la información suministrada por los mensajes de error y ficheros de registro.",
+    "Se han resuelto las incidencias de la instalación.",
+    "Se ha verificado el funcionamiento del sistema gestor de bases de datos.",
+    "Se han reconocido las diferencias existentes entre sistemas gestores de bases de datos transaccionales (OLTP) y sistemas gestores de bases de datos orientadas al procesamiento analítico (OLAP)."
+   ]
+  },
+  {
+   "ut": "Administración del almacenamiento",
+   "tags": "Tablespaces · Datafiles · Redo logs · Segmentos · Extensiones · ASM",
+   "instrumentos": [
+    "practica"
+   ],
+   "enunciado": "Configura el sistema gestor de bases de datos interpretando las especificaciones técnicas y los requisitos de explotación.",
+   "ces": [
+    "Se han descrito las condiciones de inicio y parada del sistema gestor.",
+    "Se ha seleccionado el motor de base de datos.",
+    "Se han asegurado las cuentas de administración.",
+    "Se han configurado las herramientas y software cliente del sistema gestor.",
+    "Se ha configurado la conectividad en red del sistema gestor.",
+    "Se han definido las características por defecto de las bases de datos.",
+    "Se han definido los parámetros relativos a las conexiones (tiempos de espera, número máximo de conexiones, entre otros).",
+    "Se ha documentado el proceso de configuración."
+   ]
+  },
+  {
+   "ut": "Implanta métodos de control de acceso",
+   "tags": "",
+   "instrumentos": [
+    "practica"
+   ],
+   "enunciado": "Implanta métodos de control de acceso utilizando asistentes, herramientas gráficas y comandos del lenguaje del sistema gestor.",
+   "ces": [
+    "Se han creado vistas personalizadas para cada tipo de usuario.",
+    "Se han creado sinónimos de tablas y vistas.",
+    "Se han definido y eliminado cuentas de usuario.",
+    "Se han identificado los privilegios sobre las bases de datos y sus elementos.",
+    "Se han agrupado y desagrupado privilegios.",
+    "Se han asignado y eliminado privilegios a usuarios.",
+    "Se han asignado y eliminado grupos de privilegios a usuarios.",
+    "Se ha garantizando el cumplimiento de los requisitos de seguridad."
+   ]
+  },
+  {
+   "ut": "Automatiza tareas de administración del gestor describiéndolas y",
+   "tags": "",
+   "instrumentos": [
+    "practica"
+   ],
+   "enunciado": "Automatiza tareas de administración del gestor describiéndolas y utilizando guiones de sentencias.",
+   "ces": [
+    "Se ha reconocido la importancia de automatizar tareas administrativas.",
+    "Se han descrito los distintos métodos de ejecución de guiones.",
+    "Se han identificado las herramientas disponibles para redactar guiones.",
+    "Se han definido y utilizado guiones para automatizar tareas.",
+    "Se han identificado los eventos susceptibles de activar disparadores.",
+    "Se han definido disparadores.",
+    "Se han utilizado estructuras de control de flujo.",
+    "Se han adoptado medidas para mantener la integridad y consistencia de la información."
+   ]
+  },
+  {
+   "ut": "Optimiza el rendimiento del sistema",
+   "tags": "",
+   "instrumentos": [
+    "practica"
+   ],
+   "enunciado": "Optimiza el rendimiento del sistema aplicando técnicas de monitorización y realizando adaptaciones.",
+   "ces": [
+    "Se han identificado las herramientas de monitorización disponibles para el sistema gestor.",
+    "Se han descrito las ventajas e inconvenientes de la creación de índices.",
+    "Se han creado índices en tablas y vistas.",
+    "Se ha optimizado la estructura de la base de datos.",
+    "Se han optimizado los recursos del sistema gestor.",
+    "Se ha obtenido información sobre el rendimiento de las consultas para su optimización.",
+    "Se han programado alertas de rendimiento.",
+    "Se han realizado modificaciones en la configuración del sistema operativo para mejorar el rendimiento del gestor."
+   ]
+  },
+  {
+   "ut": "Aplica criterios de disponibilidad analizándolos y ajustando la…",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Aplica criterios de disponibilidad analizándolos y ajustando la configuración del sistema gestor.",
+   "ces": [
+    "Se ha reconocido la utilidad de las bases de datos distribuidas.",
+    "Se han descrito las distintas políticas de fragmentación de la información.",
+    "Se ha implantado una base de datos distribuida homogénea.",
+    "Se ha creado una base de datos distribuida mediante la integración de un conjunto de bases de datos preexistentes.",
+    "Se ha configurado un «nodo» maestro y varios «esclavos» para llevar a cabo la replicación del primero.",
+    "Se ha configurado un sistema de replicación en cadena.",
+    "Se ha comprobado el efecto de la parada de determinados nodos sobre los sistemas distribuidos y replicados."
+   ]
+  }
+ ],
+ "dual_ra": null
+}

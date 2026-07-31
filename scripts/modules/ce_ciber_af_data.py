@@ -1,74 +1,85 @@
-"""EvalFP — Análisis Forense Informático · 5024 · CE Ciberseguridad
-RD 479/2020, de 7 de abril (BOE) · Decreto CLM 77/2022, de 12 de julio (DOCM)
+"""EvalFP — Análisis Forense Informático · 5024 · CE Ciberseguridad en Entornos de las TI
+Decreto 77/2022, de 12/07/2022, currículo del Curso de Especialización en Ciberseguridad en Entornos de las Tecnologías de la Información en Castilla-La Mancha (DOCM) · RA y CE literales del Anexo II
+RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
+Duración: 120 h · 4 h/semana · CE Ciberseguridad.
 """
 MODULO = {
     "nombre":"Análisis Forense Informático","codigo":"5024","abrev":"AFI",
     "ciclo":"CE Ciberseguridad en Entornos de las TI","ciclo_clave":"CE_CIBER","ciclo_nivel":"CE",
     "curso":"CE Ciberseguridad","horas_sem":4,"total_horas":120,"anno":"2026-2027","eval_count":2,
-    "decreto":"RD 479/2020, de 7 de abril · Decreto CLM 77/2022, de 12 de julio (DOCM)",
+    "decreto":"Decreto 77/2022, de 12/07/2022, currículo del Curso de Especialización en Ciberseguridad en Entornos de las Tecnologías de la Información en Castilla-La Mancha (DOCM) · RA y CE literales del Anexo II",
 }
 UTS = [
-    {"id":"UT1","nombre":"Aplicación de metodologías forenses","horas":25,"eval":1,"tags":"Cadena de custodia · RFC 3227 · Metodología · Fases · Perito · Informe pericial"},
-    {"id":"UT2","nombre":"Análisis forense en sistemas operativos","horas":35,"eval":1,"tags":"Autopsy · Volatility · Registro Windows · Linux · Artefactos · Línea de tiempo"},
-    {"id":"UT3","nombre":"Análisis forense en redes","horas":30,"eval":2,"tags":"Wireshark · NetworkMiner · PCAP · DNS · HTTP · Flujos de red"},
-    {"id":"UT4","nombre":"Análisis forense en dispositivos móviles","horas":15,"eval":2,"tags":"Android · iOS · Cellebrite · Extracción · Apps · GPS · Borrado seguro"},
-    {"id":"UT5","nombre":"Análisis forense en Cloud y entornos virtuales","horas":15,"eval":2,"tags":"AWS · Azure · Logs cloud · Contenedores · VMs · API logs"},
+    {"id":"UT1","nombre":"Aplica metodologías de análisis forense caracterizando las fases de…","horas":26,"eval":1,"tags":""},
+    {"id":"UT2","nombre":"Realiza análisis forenses en dispositivos móviles","horas":15,"eval":1,"tags":""},
+    {"id":"UT3","nombre":"Realiza análisis forenses en Cloud","horas":23,"eval":1,"tags":""},
+    {"id":"UT4","nombre":"Realiza análisis forense en dispositivos del IoT","horas":34,"eval":2,"tags":""},
+    {"id":"UT5","nombre":"Documenta análisis forenses elaborando informes que incluyan la…","horas":22,"eval":2,"tags":""},
 ]
 RAS = [
-    {"id":"RA1","pond":20,"nombre":"Aplica metodologías de análisis forense adecuando los procedimientos a las características del incidente."},
-    {"id":"RA2","pond":30,"nombre":"Realiza análisis forenses en sistemas operativos recopilando y analizando evidencias digitales."},
-    {"id":"RA3","pond":25,"nombre":"Realiza análisis forenses en redes identificando y analizando evidencias en el tráfico de red."},
-    {"id":"RA4","pond":15,"nombre":"Realiza análisis forenses en dispositivos móviles, obteniendo evidencias de manera forense."},
-    {"id":"RA5","pond":10,"nombre":"Realiza análisis forenses en Cloud, identificando evidencias en entornos virtualizados y servicios en la nube."},
+    {"id":"RA1","pond":22,"nombre":"Aplica metodologías de análisis forense caracterizando las fases de preservación, adquisición, análisis y documentación."},
+    {"id":"RA2","pond":12,"nombre":"Realiza análisis forenses en dispositivos móviles, aplicando metodologías establecidas, actualizadas y reconocidas."},
+    {"id":"RA3","pond":19,"nombre":"Realiza análisis forenses en Cloud, aplicando metodologías establecidas, actualizadas y reconocidas."},
+    {"id":"RA4","pond":28,"nombre":"Realiza análisis forense en dispositivos del IoT, aplicando metodologías establecidas, actualizadas y reconocidas."},
+    {"id":"RA5","pond":19,"nombre":"Documenta análisis forenses elaborando informes que incluyan la normativa aplicable."},
 ]
 ASIGNACIONES = [
-    ("UT1","RA1",["CR1","CR2","CR3","CR4","CR5","CR6"]),
-    ("UT2","RA2",["CR1","CR2","CR3","CR4","CR5","CR6","CR7"]),
+    ("UT1","RA1",["CR1","CR2","CR3","CR4","CR5","CR6","CR7"]),
+    ("UT2","RA2",["CR1","CR2","CR3","CR4"]),
     ("UT3","RA3",["CR1","CR2","CR3","CR4","CR5","CR6"]),
-    ("UT4","RA4",["CR1","CR2","CR3","CR4","CR5"]),
-    ("UT5","RA5",["CR1","CR2","CR3","CR4","CR5"]),
+    ("UT4","RA4",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9"]),
+    ("UT5","RA5",["CR1","CR2","CR3","CR4","CR5","CR6"]),
 ]
-EVAL_RAS = {1:["RA1","RA2"], 2:["RA3","RA4","RA5"]}
+EVAL_RAS = {1:["RA1","RA2","RA3"], 2:["RA4","RA5"]}
 DUAL_RA = None
-RA_INSTRUMENTOS = {ra:["practica"] for ra in ["RA1","RA2","RA3","RA4","RA5"]}
+RA_INSTRUMENTOS = {
+    "RA1":["practica"],
+    "RA2":["practica"],
+    "RA3":["practica"],
+    "RA4":["practica"],
+    "RA5":["practica"],
+}
 CES = {
     "RA1":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
-        "Se han identificado los distintos tipos de análisis forense y sus características.",
-        "Se han descrito las fases del análisis forense: identificación, preservación, análisis y presentación.",
-        "Se han aplicado los principios de la cadena de custodia en la gestión de evidencias.",
-        "Se han identificado los requisitos legales del análisis forense en España.",
-        "Se han documentado los procedimientos de recogida y preservación de evidencias.",
-        "Se han elaborado informes periciales con los hallazgos del análisis.",
+        "Se han identificado los dispositivos a analizar para garantizar la preservación de evidencias.",
+        "Se han utilizado los mecanismos y las herramientas adecuadas para la adquisición y extracción de las evidencias.",
+        "Se ha asegurado la escena y conservado la cadena de custodia.",
+        "Se ha documentado el proceso realizado de manera metódica.",
+        "Se ha considerado la línea temporal de las evidencias.",
+        "Se ha elaborado un informe de conclusiones a nivel técnico y ejecutivo.",
+        "Se han presentado y expuesto las conclusiones del análisis forense realizado.",
     ], start=1)],
     "RA2":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
-        "Se han adquirido imágenes forenses de discos y memorias manteniendo la integridad mediante hash.",
-        "Se han recuperado archivos borrados y datos de espacios no asignados.",
-        "Se han analizado los artefactos del sistema de archivos y los metadatos.",
-        "Se han examinado los registros del sistema operativo Windows (Registro, Event Logs, Prefetch).",
-        "Se han analizado los artefactos de actividad del usuario (historial, accesos recientes, papelera).",
-        "Se ha realizado análisis de memoria volátil para identificar procesos y conexiones activas.",
-        "Se ha construido una línea de tiempo de la actividad del sistema.",
+        "Se ha realizado el proceso de toma de evidencias en un dispositivo móvil.",
+        "Se han extraído, decodificado y analizado las pruebas conservando la cadena de custodia.",
+        "Se han generado informes de datos móviles, cumpliendo con los requisitos de la industria forense de telefonía móvil.",
+        "Se han presentado y expuesto las conclusiones del análisis forense realizado a quienes proceda.",
     ], start=1)],
     "RA3":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
-        "Se han capturado y analizado trazas de tráfico de red.",
-        "Se han identificado protocolos de red relevantes para la investigación.",
-        "Se han reconstruido sesiones de comunicación a partir del tráfico capturado.",
-        "Se han identificado exfiltraciones de datos en el tráfico de red.",
-        "Se han analizado logs de dispositivos de red (firewalls, routers, proxies).",
-        "Se han identificado indicadores de compromiso en el tráfico de red.",
+        "Se ha desarrollado una estrategia de análisis forense en Cloud, asegurando la disponibilidad de los recursos y capacidades necesarios una vez ocurrido el incidente.",
+        "Se ha conseguido identificar las causas, el alcance y el impacto real causado por el incidente.",
+        "Se han realizado las fases del análisis forense en Cloud.",
+        "Se han identificado las características intrínsecas de la nube (elasticidad, ubicuidad, abstracción, volatilidad y compartición de recursos).",
+        "Se han cumplido los requerimientos legales en vigor, RGPD (Reglamento general de protección de datos) y directiva NIS (Directiva de la UE sobre seguridad de redes y sistemas de información) o las que eventualmente pudieran sustituirlas.",
+        "Se han presentado y expuesto las conclusiones del análisis forense realizado.",
     ], start=1)],
     "RA4":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
-        "Se han identificado los tipos de extracción forense en dispositivos móviles.",
-        "Se han adquirido datos de dispositivos Android e iOS mediante herramientas forenses.",
-        "Se han analizado aplicaciones, mensajes, contactos y registros de llamadas.",
-        "Se ha analizado la información de geolocalización almacenada en el dispositivo.",
-        "Se han identificado artefactos de aplicaciones de mensajería instantánea.",
+        "Se han identificado los dispositivos a analizar garantizando la preservación de las evidencias.",
+        "Se han utilizado mecanismos y herramientas adecuadas para la adquisición y extracción de evidencias",
+        "Se ha garantizado la autenticidad, completitud, fiabilidad y legalidad de las evidencias extraídas.",
+        "Se han realizado análisis de evidencias de manera manual y mediante herramientas.",
+        "Se ha documentado el proceso de manera metódica y detallada.",
+        "Se ha considerado la línea temporal de las evidencias.",
+        "Se ha mantenido la cadena de custodia",
+        "Se ha elaborado un informe de conclusiones a nivel técnico y ejecutivo.",
+        "Se han presentado y expuesto las conclusiones del análisis forense realizado.",
     ], start=1)],
     "RA5":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
-        "Se han identificado los tipos de evidencias disponibles en entornos cloud.",
-        "Se han obtenido y analizado los logs de servicios cloud (AWS CloudTrail, Azure Monitor).",
-        "Se han analizado evidencias en entornos de contenedores y máquinas virtuales.",
-        "Se han identificado las limitaciones legales y técnicas del análisis forense en la nube.",
-        "Se ha documentado el proceso y los hallazgos del análisis forense en cloud.",
+        "Se ha definido el objetivo del informe pericial y su justificación.",
+        "Se ha definido el ámbito de aplicación del informe pericial.",
+        "Se han documentado los antecedentes.",
+        "Se han recopilado las normas legales y reglamentos cumplidos en el análisis forense realizado.",
+        "Se han recogido los requisitos establecidos por el cliente.",
+        "Se han incluido las conclusiones y su justificación.",
     ], start=1)],
 }

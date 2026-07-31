@@ -193,6 +193,10 @@
         <div class="tab active" onclick="iaTab(this,'rubrica')">📋 Rúbrica</div>
         <div class="tab" onclick="iaTab(this,'actividad')">🔧 Actividades</div>
         <div class="tab" onclick="iaTab(this,'informe')">📝 Informe</div>
+        <div class="tab" onclick="iaTab(this,'plan')">🎯 Plan de recuperación</div>
+        <div class="tab" onclick="iaTab(this,'grupo')">📊 Radiografía del grupo</div>
+        <div class="tab" onclick="iaTab(this,'examen')">🧪 Prueba escrita</div>
+        <div class="tab" onclick="iaTab(this,'corregir')">🖊️ Corregir desde foto</div>
         <div class="tab" onclick="iaTab(this,'apuntes')">📄 Apuntes HTML</div>
         <div class="tab" onclick="iaTab(this,'todo')">🚀 Todo el módulo</div>
       </div>
@@ -244,6 +248,143 @@
         </div>
         <div id="ia-informe-term" class="terminal"><span class="placeholder">El resultado aparecerá aquí…</span></div>
       </div>
+
+      <div id="ia-plan" class="card" style="display:none">
+        <div class="card-title">Plan de recuperación</div>
+        <div class="card-sub">Solo con los resultados de aprendizaje que le quedan: qué repasar, qué tareas hacer, en cuántas semanas y cómo se le evaluará.</div>
+        <div class="form-row">
+          <div class="field"><label>Módulo</label><select id="ia-p-mod" onchange="iaPlanLoadAlumnos()"><option value="">Sin módulos</option></select></div>
+          <div class="field" style="flex:2"><label>Alumno/a</label><select id="ia-p-alumno-sel" onchange="iaPlanAutoNotas()"><option value="">— selecciona —</option></select></div>
+          <div class="field" style="max-width:90px"><label>Semanas</label><input type="number" id="ia-p-semanas" value="4" min="1" max="12"/></div>
+          <div class="field"><label>Proveedor</label><select id="ia-p-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="field" style="flex:3">
+            <label>Notas por RA <span style="font-size:11px;color:var(--text3)">(se rellenan solas al elegir alumno/a)</span></label>
+            <input type="text" id="ia-p-notas" placeholder="RA1:7,RA3:3.5"/>
+          </div>
+          <button class="btn btn-primary" onclick="runIA('plan')">⚡ Generar</button>
+        </div>
+        <div id="ia-p-hint" style="margin-top:-6px;margin-bottom:10px;font-size:10.5px;color:var(--text3)"></div>
+        <div style="margin-top:10px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:11px;color:var(--text2);line-height:1.45">
+          <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer">
+            <input type="checkbox" id="ia-p-consent" style="margin-top:2px"/>
+            <span>Entiendo que se enviarán las notas y, salvo anonimización, el nombre del alumno/a al proveedor IA seleccionado.</span>
+          </label>
+          <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer;margin-top:7px">
+            <input type="checkbox" id="ia-p-anonimizar" checked style="margin-top:2px"/>
+            <span>Anonimizar el nombre antes de enviarlo.</span>
+          </label>
+        </div>
+        <div id="ia-plan-term" class="terminal"><span class="placeholder">El resultado aparecerá aquí…</span></div>
+      </div>
+
+      <div id="ia-grupo" class="card" style="display:none">
+        <div class="card-title">Radiografía del grupo</div>
+        <div class="card-sub">Qué resultados de aprendizaje y qué actividades han ido peor en toda la clase, y qué reforzar. Los números se calculan en tu ordenador; la IA solo los interpreta.</div>
+        <div class="form-row">
+          <div class="field"><label>Módulo</label><select id="ia-g-mod"><option value="">Sin módulos</option></select></div>
+          <div class="field"><label>Proveedor</label><select id="ia-g-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
+          <button class="btn btn-primary" onclick="runIA('grupo')">⚡ Generar</button>
+        </div>
+        <div style="margin-top:4px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:11px;color:var(--text2)">
+          <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer">
+            <input type="checkbox" id="ia-g-consent" style="margin-top:2px"/>
+            <span>Entiendo que se enviarán las calificaciones del grupo (sin nombres) al proveedor IA seleccionado.</span>
+          </label>
+        </div>
+        <div id="ia-grupo-term" class="terminal"><span class="placeholder">El resultado aparecerá aquí…</span></div>
+      </div>
+
+      <div id="ia-examen" class="card" style="display:none">
+        <div class="card-title">Prueba escrita con solucionario</div>
+        <div class="card-sub">A partir de los criterios de evaluación literales del decreto: enunciado, solucionario y baremo por criterio.</div>
+        <div class="form-row">
+          <div class="field"><label>Módulo</label><select id="ia-e-mod"><option value="">Sin módulos</option></select></div>
+          <div class="field"><label>RA</label><select id="ia-e-ra"><option value="">—</option></select></div>
+          <div class="field" style="max-width:80px"><label>Preguntas</label><input type="number" id="ia-e-n" value="8" min="3" max="20"/></div>
+          <div class="field" style="max-width:130px"><label>Tipo</label>
+            <select id="ia-e-tipo">
+              <option value="mixto">Mixta</option>
+              <option value="test">Test</option>
+              <option value="desarrollo">Desarrollo</option>
+              <option value="practico">Supuesto práctico</option>
+            </select>
+          </div>
+          <div class="field" style="max-width:90px"><label>Minutos</label><input type="number" id="ia-e-duracion" value="50" min="15" max="180"/></div>
+          <div class="field"><label>Proveedor</label><select id="ia-e-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
+          <button class="btn btn-primary" onclick="runIA('examen')">⚡ Generar</button>
+        </div>
+        <div id="ia-examen-term" class="terminal"><span class="placeholder">El resultado aparecerá aquí…</span></div>
+      </div>
+
+      <div id="ia-corregir" class="card" style="display:none">
+        <div class="card-title">Corregir un examen desde las fotos</div>
+        <div class="card-sub">Lee la letra manuscrita, corrige contra los criterios del decreto y te devuelve feedback y las fotos marcadas. La nota es una <b>propuesta</b>: la revisas y decides tú si se guarda.</div>
+        <div class="form-row">
+          <div class="field"><label>Módulo</label><select id="ia-c-mod" onchange="iaCorregirLoad()"><option value="">Sin módulos</option></select></div>
+          <div class="field"><label>RA evaluado</label><select id="ia-c-ra"><option value="">—</option></select></div>
+          <div class="field" style="flex:2"><label>Alumno/a</label><select id="ia-c-alumno"><option value="">— selecciona —</option></select></div>
+          <div class="field" style="max-width:90px"><label>Nº lista</label><input type="number" id="ia-c-numero" min="1" max="40" placeholder="03"/></div>
+          <div class="field"><label>Proveedor</label><select id="ia-c-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="field" style="flex:3">
+            <label>Enunciado o solucionario <span style="font-size:11px;color:var(--text3)">(opcional, mejora mucho la corrección)</span></label>
+            <input type="text" id="ia-c-enunciado" placeholder="Pega aquí el enunciado, las respuestas esperadas o el baremo"/>
+          </div>
+          <button class="btn btn-ghost" onclick="iaElegirFotos()">📷 Elegir fotos…</button>
+          <button class="btn btn-primary" onclick="runCorreccion()">⚡ Corregir</button>
+        </div>
+        <div id="ia-c-fotos" style="margin:-4px 0 10px;font-size:11px;color:var(--text3)">Ninguna foto seleccionada. Elige las páginas de un solo alumno, en orden.</div>
+        <div style="padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:11px;color:var(--text2);line-height:1.45">
+          <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer">
+            <input type="checkbox" id="ia-c-consent" style="margin-top:2px"/>
+            <span>Entiendo que las fotos del examen se enviarán al proveedor IA seleccionado para poder corregirlas.</span>
+          </label>
+          <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer;margin-top:7px">
+            <input type="checkbox" id="ia-c-anonimizar" checked style="margin-top:2px"/>
+            <span>Referirse al alumno/a por su número de lista, no por su nombre.</span>
+          </label>
+        </div>
+        <div style="margin-top:12px;padding:12px 14px;border:1px dashed var(--border2);border-radius:10px">
+          <div style="font-size:12px;font-weight:700;margin-bottom:8px">Toda la clase de una vez</div>
+          <div class="form-row" style="align-items:flex-end">
+            <div class="field" style="max-width:190px"><label>Cómo agrupo las fotos</label>
+              <select id="ia-c-modo">
+                <option value="auto">Automático</option>
+                <option value="prefijo">Por el número del nombre del archivo</option>
+                <option value="paginas">Por número fijo de páginas</option>
+              </select>
+            </div>
+            <div class="field" style="max-width:110px"><label>Págs./examen</label><input type="number" id="ia-c-paginas" min="1" max="12" value="2"/></div>
+            <button class="btn btn-ghost btn-sm" onclick="iaAgruparFotos()">🧩 Verificar reparto</button>
+            <button class="btn btn-ghost btn-sm" onclick="iaAsignarPorOrden()">↕️ Asignar por orden de lista</button>
+          </div>
+          <div id="ia-c-lote" style="margin-top:10px;font-size:12px;color:var(--text2)">Elige las fotos de toda la tanda y pulsa «Verificar reparto». No se envía nada todavía.</div>
+          <div id="ia-c-lote-acciones" style="display:none;margin-top:10px">
+            <button class="btn btn-primary btn-sm" onclick="iaCorregirPrimero()">1️⃣ Corregir el primero (calibrar)</button>
+            <span id="ia-c-progreso" style="font-size:12px;color:var(--text2);margin-left:10px"></span>
+            <button id="ia-c-pausar" class="btn btn-ghost btn-sm" style="display:none" onclick="iaPausarLote()">⏸ Pausar tras este</button>
+            <button id="ia-c-reanudar" class="btn btn-primary btn-sm" style="display:none" onclick="iaReanudarLote()">▶️ Reanudar</button>
+            <button id="ia-c-descartar" class="btn btn-ghost btn-sm" style="display:none" onclick="iaDescartarCola()">✕ Dejarlo aquí</button>
+            <div id="ia-c-calibrado" style="display:none;margin-top:10px">
+              <label style="font-size:11px;color:var(--text2)">Ajustes de criterio para el resto de la tanda (opcional)</label>
+              <input type="text" id="ia-c-ajustes" placeholder="Ej.: más estricto con las unidades; el feedforward más corto"/>
+              <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="iaCorregirResto()">▶️ Aplicar y corregir el resto</button>
+            </div>
+          </div>
+          <div id="ia-c-resultados" style="display:none;margin-top:12px"></div>
+        </div>
+        <div id="ia-c-propuesta" style="display:none;margin-top:12px;padding:12px 14px;border:1px solid var(--accent);border-radius:10px">
+          <span style="font-size:13px">Nota propuesta: <b id="ia-c-nota">—</b>/10</span>
+          <select id="ia-c-actividad" style="margin:0 8px"><option value="">— actividad donde guardarla —</option></select>
+          <button class="btn btn-success btn-sm" onclick="iaGuardarNotaPropuesta()">Guardar esta nota</button>
+          <span id="ia-c-guardado" style="font-size:12px;color:var(--green);margin-left:8px"></span>
+        </div>
+        <div id="ia-corregir-term" class="terminal"><span class="placeholder">El resultado aparecerá aquí…</span></div>
+      </div>
+
       <div id="ia-apuntes" class="card" style="display:none">
         <div class="card-title">Generar Apuntes HTML</div>
         <div class="card-sub">Crea un index.html por UT con contenido pedagógico completo. Guardado en Documentos/EvalFP/apuntes/</div>
@@ -309,6 +450,19 @@
             <span class="sw-body" style="background:#f4eee0;outline:2px solid rgba(0,0,0,.1);outline-offset:0"><span class="sw-dot" style="background:#0D9488"></span></span>
             <span class="sw-label">Claro</span>
           </button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">🛟 Copias de seguridad</div>
+        <p style="font-size:12px;color:var(--text2);margin:0 0 12px">
+          EvalFP guarda una copia de tus notas cada día y cada vez que cierras la aplicación,
+          y conserva las de los últimos 30 días. Si algo va mal, cierra EvalFP, abre la carpeta
+          y sustituye <code>evalfp.db</code> por la copia que quieras recuperar.
+        </p>
+        <div id="backups-info" style="font-size:12px;color:var(--text2);margin-bottom:12px">Cargando…</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" onclick="crearCopiaSeguridad()">🛟 Crear copia ahora</button>
+          <button class="btn btn-ghost btn-sm" onclick="window.api.openBackups()">📂 Abrir carpeta de copias</button>
         </div>
       </div>
       <div style="display:flex;gap:10px;align-items:center">

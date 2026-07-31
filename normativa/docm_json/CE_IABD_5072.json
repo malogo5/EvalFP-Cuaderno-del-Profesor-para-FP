@@ -1,0 +1,118 @@
+{
+ "archivo": "ce_iabd",
+ "modulo": {
+  "nombre": "Sistemas de Aprendizaje Automático",
+  "codigo": "5072",
+  "abrev": "SAA",
+  "ciclo": "CE Inteligencia Artificial y Big Data",
+  "ciclo_clave": "CE_IABD",
+  "ciclo_nivel": "CE",
+  "curso": "CE IA y Big Data",
+  "horas_sem": 3,
+  "total_horas": 100,
+  "anno": "2026-2027",
+  "eval_count": 2,
+  "decreto": "Decreto 69/2022, de 12/07/2022, currículo del Curso de Especialización en Inteligencia Artificial y Big Data en Castilla-La Mancha (DOCM, NID 2022/6683) · RA y CE literales del Anexo II"
+ },
+ "ras": [
+  {
+   "ut": "Caracteriza la Inteligencia Artificial fuerte y débil determinando…",
+   "tags": "",
+   "instrumentos": [
+    "practica",
+    "proyecto"
+   ],
+   "enunciado": "Caracteriza la Inteligencia Artificial fuerte y débil determinando usos y posibilidades.",
+   "ces": [
+    "Se han determinado las especificidades de Inteligencia Artificial fuerte y débil.",
+    "Se han establecido las barreras entre la Inteligencia Artificial y el aprendizaje automático (Machine Learning).",
+    "Se han diferenciado ámbitos de aplicación de la Inteligencia Artificial fuerte y débil.",
+    "Se han identificado los problemas a los que puede hacer frente la Inteligencia Artificial débil.",
+    "Se han identificado los problemas a los que puede hacer frente la Inteligencia Artificial fuerte.",
+    "Se han reconocido las ventajas que proporciona cada tipo en la resolución de los problemas."
+   ]
+  },
+  {
+   "ut": "Determina técnicas y herramientas de sistemas de aprendizaje…",
+   "tags": "",
+   "instrumentos": [
+    "practica",
+    "proyecto"
+   ],
+   "enunciado": "Determina técnicas y herramientas de sistemas de aprendizaje automático (Machine Learning), testeando su aplicabilidad para la resolución de problemas.",
+   "ces": [
+    "Se han identificado los principios de sistemas de aprendizaje automático.",
+    "Se han determinado tipos y usos de sistemas de aprendizaje automático.",
+    "Se han determinado técnicas y herramientas de sistemas de aprendizaje automático.",
+    "Se han encontrado diferencias entre los tipos de sistemas de aprendizaje automático.",
+    "Se han asociado técnicas y herramientas a cada tipo de sistemas de aprendizaje automático."
+   ]
+  },
+  {
+   "ut": "Aplica algoritmos de aprendizaje supervisado",
+   "tags": "",
+   "instrumentos": [
+    "practica",
+    "proyecto"
+   ],
+   "enunciado": "Aplica algoritmos de aprendizaje supervisado, optimizando el resultado del modelo y minimizando los riesgos asociados.",
+   "ces": [
+    "Se han proporcionado los datos etiquetados al modelo.",
+    "Se han seleccionado los datos de entrada, ya sean para la fase de entrenamiento, fase de validación o fase de testeo de datos entre otras.",
+    "Se han utilizado los datos en la fase de entrenamiento para la construcción del modelo aplicando características relevantes obtenidas.",
+    "Se ha evaluado el modelo con los datos obtenidos en la fase de validación.",
+    "Se han ajustado los datos de aprendizaje supervisado en la fase de ajuste para mejorar el rendimiento de las diferentes características o parámetros.",
+    "Se ha implementado el modelo para realizar predicciones sobre nuevos datos.",
+    "Se han detectado y minimizado los riesgos asociados al modelo.",
+    "Se ha optimizado el modelo de aprendizaje supervisado validando datos de prueba."
+   ]
+  },
+  {
+   "ut": "Aplica técnicas de aprendizaje no supervisado",
+   "tags": "",
+   "instrumentos": [
+    "practica",
+    "proyecto"
+   ],
+   "enunciado": "Aplica técnicas de aprendizaje no supervisado relacionándolas con los tipos de problemas que tratan de resolver.",
+   "ces": [
+    "Se han caracterizado los tipos de problemas que el aprendizaje no supervisado trata de resolver.",
+    "Se han caracterizado las técnicas de aprendizaje no supervisado utilizadas para la resolución de dichos tipos de problemas.",
+    "Se han aplicado algoritmos utilizados en el aprendizaje no supervisado.",
+    "Se ha optimizado el modelo de aprendizaje no supervisado validando datos de prueba."
+   ]
+  },
+  {
+   "ut": "Aplica modelos computacionales de redes neuronales comparándolos con…",
+   "tags": "",
+   "instrumentos": [
+    "practica",
+    "proyecto"
+   ],
+   "enunciado": "Aplica modelos computacionales de redes neuronales comparándolos con otros métodos de inteligencia artificial.",
+   "ces": [
+    "Se han evaluado los modelos neuronales para elegir el más adecuado para cada clase de problema.",
+    "Se han aplicado técnicas de aprendizaje profundo (deep learning) para entrenar redes de neuronas.",
+    "Se han comparado las redes de neuronas artificiales con otros métodos de inteligencia artificial.",
+    "Se ha reconocido una red de neuronas entrenada a partir de un conjunto de datos."
+   ]
+  },
+  {
+   "ut": "Valora la calidad de los resultados obtenidos en la práctica con…",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Valora la calidad de los resultados obtenidos en la práctica con sistemas de aprendizaje automático integrando principios fundamentales de la computación.",
+   "ces": [
+    "Se ha valorado la conveniencia de los algoritmos propuestos para dar solución a los problemas planteados.",
+    "Se ha evaluado la aplicación práctica de los principios y técnicas básicas de los sistemas inteligentes.",
+    "Se han integrado los principios fundamentales de la computación en la práctica para seleccionar, valorar y crear nuevos desarrollos tecnológicos.",
+    "Se han desarrollado sistemas y aplicaciones informáticas que utilizan técnicas de los sistemas inteligentes.",
+    "Se han desarrollado técnicas de aprendizaje computacional dedicadas a la extracción automática de información a partir de grandes volúmenes de datos."
+   ]
+  }
+ ],
+ "dual_ra": null
+}

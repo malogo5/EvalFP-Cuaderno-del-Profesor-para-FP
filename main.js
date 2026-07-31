@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 'use strict'
-const { app, BrowserWindow, ipcMain, shell } = require('electron')
+const { app, BrowserWindow, ipcMain, shell, dialog } = require('electron')
 const path   = require('path')
 const { spawn, spawnSync } = require('child_process')
 const fs     = require('fs')
@@ -275,6 +275,29 @@ app.on('before-quit', event => {
 })
 
 // ── Helper Python ─────────────────────────────────────────────────────────────
+/**
+ * Envuelve un handler de ipcMain.on que responde por un canal de réplica.
+ *
+ * Sin esto, un payload inesperado lanzaba dentro del proceso principal: la
+ * excepción no llegaba al renderer, no había mensaje de error y el indicador de
+ * «generando…» se quedaba girando para siempre. Ahora cualquier fallo viaja de
+ * vuelta como {type:'error'} + {type:'done'}, que es lo que la interfaz espera.
+ */
+function conRespuestaDeError(replyChannel, handler) {
+  return (event, ...args) => {
+    try {
+      handler(event, ...args)
+    } catch (e) {
+      const texto = e && e.message ? e.message : String(e)
+      logger.logError(`IPC ${replyChannel}`, e)
+      try {
+        event.reply(replyChannel, { type: 'error', text: texto })
+        event.reply(replyChannel, { type: 'done', code: 1 })
+      } catch { /* la ventana ya no está: nada que informar */ }
+    }
+  }
+}
+
 function runPython(event, scriptName, args, replyChannel) {
   const sd  = scriptsDir()
   const env = { ...process.env, PYTHONPATH: sd }
@@ -402,13 +425,15 @@ ipcMain.handle('system:pythonStatus', event => {
 })
 
 // ── IPC: IA + Apuntes ─────────────────────────────────────────────────────────
-ipcMain.on('gen-ia', (event, { comando, modulo, ra, n, alumno, notas, proveedor, consent, anonimizar, minExam, ponderaciones, faltasPorcentaje, rasLlave, alumnosJson, notasGridJson, actividadesJson }) => {
+ipcMain.on('gen-ia', conRespuestaDeError('gen-ia-reply', (event, { comando, modulo, ra, n, alumno, notas, proveedor, consent, anonimizar, minExam, ponderaciones, faltasPorcentaje, rasLlave, alumnosJson, notasGridJson, actividadesJson, detalleJson, semanas, tipo, duracion }) => {
   assertTrustedSender(event)
-  if (!['rubrica', 'actividad', 'informe', 'todo'].includes(comando)) throw new Error('Comando IA no permitido')
+  if (!['rubrica', 'actividad', 'informe', 'plan', 'grupo', 'examen', 'todo'].includes(comando)) throw new Error('Comando IA no permitido')
   if (typeof modulo !== 'string' || !getModulesData().modules[modulo]) throw new Error('Módulo IA no válido')
   if (!PROVIDERS.has(proveedor || 'auto')) throw new Error('Proveedor IA no válido')
-  if (comando === 'informe' && consent !== true) throw new Error('Debes confirmar el envío de datos académicos')
-  if (n != null && (!Number.isInteger(Number(n)) || Number(n) < 1 || Number(n) > 10)) throw new Error('Número de actividades no válido')
+  // El plan de recuperación también viaja con notas del alumnado: mismo consentimiento
+  if ((comando === 'informe' || comando === 'plan') && consent !== true) throw new Error('Debes confirmar el envío de datos académicos')
+  const nMax = comando === 'examen' ? 20 : 10   // una prueba puede tener más preguntas
+  if (n != null && (!Number.isInteger(Number(n)) || Number(n) < 1 || Number(n) > nMax)) throw new Error('Número no válido')
   const od = outputDir()
   const salida = path.join(od, 'ia_output', modulo || 'modulo')
   fs.mkdirSync(salida, { recursive: true })
@@ -423,15 +448,31 @@ ipcMain.on('gen-ia', (event, { comando, modulo, ra, n, alumno, notas, proveedor,
   if (comando === 'informe' && ponderaciones != null && String(ponderaciones).trim() !== '') args.push('--ponderaciones', String(ponderaciones).trim())
   if (comando === 'informe' && faltasPorcentaje != null && String(faltasPorcentaje).trim() !== '') args.push('--faltas-porcentaje', String(faltasPorcentaje).trim())
   if (comando === 'informe' && rasLlave != null && String(rasLlave).trim() !== '') args.push('--ras-llave', String(rasLlave).trim())
-  if (comando === 'todo' && alumnosJson != null && String(alumnosJson).trim() !== '') args.push('--alumnos-json', String(alumnosJson).trim())
-  if (comando === 'todo' && notasGridJson != null && String(notasGridJson).trim() !== '') args.push('--notas-grid-json', String(notasGridJson).trim())
-  if (comando === 'todo' && actividadesJson != null && String(actividadesJson).trim() !== '') args.push('--actividades-json', String(actividadesJson).trim())
+  if ((comando === 'informe' || comando === 'plan') && detalleJson != null && String(detalleJson).trim() !== '') args.push('--detalle-json', String(detalleJson).trim())
+  if (comando === 'plan' && semanas != null && String(semanas).trim() !== '') {
+    const s = Number(semanas)
+    if (!Number.isInteger(s) || s < 1 || s > 12) throw new Error('Semanas de recuperación no válidas')
+    args.push('--semanas', String(s))
+  }
+  if (comando === 'examen') {
+    if (tipo != null && !['mixto', 'test', 'desarrollo', 'practico'].includes(String(tipo))) throw new Error('Tipo de prueba no válido')
+    if (tipo) args.push('--tipo', String(tipo))
+    if (duracion != null && String(duracion).trim() !== '') {
+      const d = Number(duracion)
+      if (!Number.isInteger(d) || d < 15 || d > 180) throw new Error('Duración de la prueba no válida')
+      args.push('--duracion', String(d))
+    }
+  }
+  const conDatosGrupo = comando === 'todo' || comando === 'grupo'
+  if (conDatosGrupo && alumnosJson != null && String(alumnosJson).trim() !== '') args.push('--alumnos-json', String(alumnosJson).trim())
+  if (conDatosGrupo && notasGridJson != null && String(notasGridJson).trim() !== '') args.push('--notas-grid-json', String(notasGridJson).trim())
+  if (conDatosGrupo && actividadesJson != null && String(actividadesJson).trim() !== '') args.push('--actividades-json', String(actividadesJson).trim())
   if (proveedor) args.push('--proveedor', proveedor)
   if (comando === 'todo') args.push('--salida', salida)
   runPython(event, 'ai_asistente.py', args, 'gen-ia-reply')
-})
+}))
 
-ipcMain.on('gen-apuntes', (event, { modulo, ut, proveedor }) => {
+ipcMain.on('gen-apuntes', conRespuestaDeError('gen-apuntes-reply', (event, { modulo, ut, proveedor }) => {
   assertTrustedSender(event)
   if (typeof modulo !== 'string' || !getModulesData().modules[modulo]) throw new Error('Módulo de apuntes no válido')
   if (!PROVIDERS.has(proveedor || 'auto')) throw new Error('Proveedor IA no válido')
@@ -443,6 +484,89 @@ ipcMain.on('gen-apuntes', (event, { modulo, ut, proveedor }) => {
   if (ut)        args.push('--ut', ut)
   if (proveedor) args.push('--proveedor', proveedor)
   runPython(event, 'build_apuntes.py', args, 'gen-apuntes-reply')
+}))
+
+// ── IPC: corrección de exámenes desde foto ───────────────────────────────────
+ipcMain.handle('examen:elegirFotos', async (event) => {
+  assertTrustedSender(event)
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    title: 'Fotos del examen (en orden de página)',
+    properties: ['openFile', 'multiSelections'],
+    filters: [{ name: 'Imágenes', extensions: ['jpg', 'jpeg', 'png', 'heic', 'webp'] }],
+  })
+  return canceled ? [] : filePaths.slice(0, 12)
+})
+
+// Agrupar las fotos por alumno NO llama a ninguna IA: es cálculo local, para que
+// el profesorado pueda revisar el reparto antes de gastar nada.
+ipcMain.handle('examen:agrupar', (event, { imagenes, modo, paginas }) => {
+  assertTrustedSender(event)
+  if (!Array.isArray(imagenes) || !imagenes.length) throw new Error('No hay fotos que agrupar')
+  if (imagenes.length > 200) throw new Error('Demasiadas fotos en una tanda (máximo 200)')
+  const args = ['--imagenes', imagenes.join(',')]
+  if (modo)    args.push('--modo', String(modo))
+  if (paginas) args.push('--paginas', String(Number(paginas) || 0))
+  const salida = runPythonSync(path.join('corregir', 'agrupar.py'), args)
+  try {
+    return JSON.parse(salida)
+  } catch {
+    throw new Error('No he podido agrupar las fotos: ' + String(salida).slice(0, 200))
+  }
+})
+
+ipcMain.on('gen-correccion', conRespuestaDeError('gen-correccion-reply', (event, { modulo, ra, alumno, numero, imagenes, proveedor,
+                                       anonimizar, baremo, enunciado, ajustes }) => {
+  assertTrustedSender(event)
+  if (typeof modulo !== 'string' || !getModulesData().modules[modulo]) throw new Error('Módulo no válido')
+  if (!PROVIDERS.has(proveedor || 'auto')) throw new Error('Proveedor IA no válido')
+  if (!Array.isArray(imagenes) || !imagenes.length) throw new Error('No hay fotos del examen')
+  if (imagenes.length > 12) throw new Error('Máximo 12 páginas por examen')
+  // Solo se aceptan rutas de imagen existentes: nada de comodines ni rutas inventadas
+  const rutas = imagenes.filter(p => typeof p === 'string' && fs.existsSync(p) &&
+    /\.(jpe?g|png|heic|webp)$/i.test(p))
+  if (rutas.length !== imagenes.length) throw new Error('Alguna foto no existe o no es una imagen')
+
+  const salida = path.join(outputDir(), 'correcciones')
+  fs.mkdirSync(salida, { recursive: true })
+  const args = ['--modulo', modulo, '--imagenes', rutas.join(','), '--salida', salida]
+  if (ra)     args.push('--ra', String(ra))
+  if (alumno) args.push('--alumno', anonimizar ? 'Alumno/a' : String(alumno))
+  if (numero != null && String(numero).trim() !== '') args.push('--numero', String(numero).trim())
+  args.push('--anonimizar', anonimizar ? 'true' : 'false')
+  if (baremo)    args.push('--baremo', String(baremo).slice(0, 1000))
+  if (enunciado) args.push('--enunciado', String(enunciado).slice(0, 4000))
+  if (ajustes)   args.push('--ajustes', String(ajustes).slice(0, 1200))
+  if (proveedor) args.push('--proveedor', proveedor)
+  runPython(event, 'corregir_examen.py', args, 'gen-correccion-reply')
+}))
+
+// ── IPC: copias de seguridad ─────────────────────────────────────────────────
+// La app ya hacía copias diarias y al cerrar, pero no había forma de verlas ni
+// de recuperarlas desde la interfaz: si la base de datos se estropeaba, el
+// profesorado no llegaba a saber que existían.
+ipcMain.handle('backup:list', () => {
+  const dir = backupsDir()
+  fs.mkdirSync(dir, { recursive: true })
+  const copias = fs.readdirSync(dir)
+    .filter(f => f.startsWith('evalfp_') && f.endsWith('.db'))
+    .map(f => {
+      const st = fs.statSync(path.join(dir, f))
+      return { nombre: f, fecha: st.mtime.toISOString(), bytes: st.size }
+    })
+    .sort((a, b) => b.fecha.localeCompare(a.fecha))
+  return { carpeta: dir, copias }
+})
+
+ipcMain.handle('backup:create', async () => {
+  const ruta = await performBackup()
+  logger.logEvent('MANUAL_BACKUP', { filename: path.basename(ruta) })
+  const st = fs.statSync(ruta)
+  return { nombre: path.basename(ruta), fecha: st.mtime.toISOString(), bytes: st.size }
+})
+
+ipcMain.on('backup:open', () => {
+  fs.mkdirSync(backupsDir(), { recursive: true })
+  shell.openPath(backupsDir())
 })
 
 ipcMain.on('open-output', () => shell.openPath(outputDir()))

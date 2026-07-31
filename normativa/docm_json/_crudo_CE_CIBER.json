@@ -1,0 +1,408 @@
+[
+ {
+  "codigo": "5021",
+  "nombre": "Incidentes de ciberseguridad",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Desarrolla planes de prevención y concienciación en ciberseguridad, estableciendo normas y medidas de protección.",
+    "ces": [
+     "Se han definido los principios generales de la organización en materia de ciberseguridad, que deben ser conocidos y apoyados por la dirección de la misma.",
+     "Se ha establecido una normativa de protección del puesto de trabajo.",
+     "Se ha definido un plan de concienciación de ciberseguridad dirigido a los empleados.",
+     "Se ha desarrollado el material necesario para llevar a cabo las acciones de concienciación dirigidas a los empleados.",
+     "Se ha realizado una auditoría para verificar el cumplimiento del plan de prevención y concienciación de la organización."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Analiza incidentes de ciberseguridad utilizando herramientas, mecanismos de detección y alertas de seguridad.",
+    "ces": [
+     "Se ha clasificado y definido la taxonomía de incidentes de ciberseguridad que pueden afectar a la organización.",
+     "Se han establecido controles, herramientas y mecanismos de monitorización, identificación, detección y alerta de incidentes",
+     "Se han establecido controles y mecanismos de detección e identificación de incidentes de seguridad física.",
+     "Se han establecido controles, herramientas y mecanismos de monitorización, identificación, detección y alerta de incidentes a través de la investigación en fuentes abiertas (OSINT: Open Source Intelligence).",
+     "Se ha realizado una clasificación, valoración, documentación y seguimiento de los incidentes detectados dentro de la organización."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Investiga incidentes de ciberseguridad analizando los riesgos implicados y definiendo las posibles medidas a adoptar.",
+    "ces": [
+     "Se han recopilado y almacenado de forma segura evidencias de incidentes de ciberseguridad que afectan a la organización.",
+     "Se ha realizado un análisis de evidencias.",
+     "Se ha realizado la investigación de incidentes de ciberseguridad.",
+     "Se ha intercambiado información de incidentes, con proveedores y/o organismos competentes que podrían hacer aportaciones al respecto.",
+     "Se han iniciado las primeras medidas de contención de los incidentes para limitar los posibles daños causados."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Implementa medidas de ciberseguridad en redes y sistemas respondiendo a los incidentes detectados y aplicando las técnicas de protección adecuadas.",
+    "ces": [
+     "Se han desarrollado procedimientos de actuación detallados para dar respuesta, mitigar, eliminar o contener los tipos de incidentes de ciberseguridad más habituales.",
+     "Se han preparado respuestas ciberresilientes ante incidentes que permitan seguir prestando los servicios de la organización y fortaleciendo las capacidades de identificación, detección, prevención, contención, recuperación y cooperación con terceros.",
+     "Se ha establecido un flujo de toma de decisiones y escalado de incidentes interno y/o externo adecuados.",
+     "Se han llevado a cabo las tareas de restablecimiento de los servicios afectados por un incidente hasta confirmar la vuelta a la normalidad.",
+     "Se han documentado las acciones realizadas y las conclusiones que permitan mantener un registro de “lecciones aprendidas”.",
+     "Se ha realizado un seguimiento adecuado del incidente para evitar que una situación similar se vuelva a repetir."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Detecta y documenta incidentes de ciberseguridad siguiendo procedimientos de actuación establecidos.",
+    "ces": [
+     "Se ha desarrollado un procedimiento de actuación detallado para la notificación de incidentes de ciberseguridad en los tiempos adecuados.",
+     "Se ha notificado el incidente de manera adecuada al personal interno de la organización responsable de la toma de decisiones.",
+     "Se ha notificado el incidente de manera adecuada a las autoridades competentes en el ámbito de la gestión de incidentes de ciberseguridad en caso de ser necesario.",
+     "Se ha notificado formalmente el incidente a los afectados, personal interno, clientes, proveedores, etc., en caso de ser necesario.",
+     "Se ha notificado el incidente a los medios de comunicación en caso de ser necesario."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "5022",
+  "nombre": "Bastionado de redes y sistemas",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Diseña planes de securización incorporando buenas prácticas para el bastionado de sistemas y redes.",
+    "ces": [
+     "Se han identificado los activos, las amenazas y vulnerabilidades de la organización.",
+     "Se ha evaluado las medidas de seguridad actuales.",
+     "Se ha elaborado un análisis de riesgo de la situación actual en ciberseguridad de la organización",
+     "Se ha priorizado las medidas técnicas de seguridad a implantar en la organización teniendo también en cuenta los principios de la economía circular.",
+     "Se ha diseñado y elaborado un plan de medidas técnicas de seguridad a implantar en la organización, apropiadas para garantizar un nivel de seguridad adecuado en función de los riesgos de la organización.",
+     "Se han identificado las mejores prácticas en base a estándares, guías y políticas de securización adecuadas para el bastionado de los sistemas y redes de la organización."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Configura sistemas de control de acceso y autenticación de personas preservando la confidencialidad y privacidad de los datos.",
+    "ces": [
+     "Se han definido los mecanismos de autenticación en base a distintos / múltiples factores (físicos, inherentes y basados en el conocimiento), existentes.",
+     "Se han definido protocolos y políticas de autenticación basados en contraseñas y frases de paso, en base a las principales vulnerabilidades y tipos de ataques.",
+     "Se han definido protocolos y políticas de autenticación basados en certificados digitales y tarjetas inteligentes, en base a las principales vulnerabilidades y tipos de ataques.",
+     "Se han definido protocolos y políticas de autenticación basados en tokens, OTPs, etc., en base a las principales vulnerabilidades y tipos de ataques.",
+     "Se han definido protocolos y políticas de autenticación basados en características biométricas, según las principales vulnerabilidades y tipos de ataques."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Administra credenciales de acceso a sistemas informáticos aplicando los requisitos de funcionamiento y seguridad establecidos.",
+    "ces": [
+     "Se han identificado los tipos de credenciales más utilizados.",
+     "Se han generado y utilizado diferentes certificados digitales como medio de acceso a un servidor remoto.",
+     "Se ha comprobado la validez y la autenticidad de un certificado digital de un servicio web.",
+     "Se han comparado certificados digitales válidos e inválidos por diferentes motivos.",
+     "Se ha instalado y configurado un servidor seguro para la administración de credenciales (tipo RADIUS - Remote Access Dial In User Service)."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Diseña redes de computadores contemplando los requisitos de seguridad.",
+    "ces": [
+     "Se ha incrementado el nivel de seguridad de una red local plana segmentándola físicamente y utilizando técnicas y dispositivos de enrutamiento.",
+     "Se ha optimizado una red local plana utilizando técnicas de segmentación lógica (VLANs).",
+     "Se ha adaptado un segmento de una red local ya operativa utilizando técnicas de subnetting para incrementar su segmentación respetando los direccionamientos existentes.",
+     "Se han configurado las medidas de seguridad adecuadas en los dispositivos que dan acceso a una red inalámbrica (routers, puntos de acceso, etc.).",
+     "Se ha establecido un túnel seguro de comunicaciones entre dos sedes geográficamente separadas."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Configura dispositivos y sistemas informáticos cumpliendo los requisitos de seguridad.",
+    "ces": [
+     "Se han configurado dispositivos de seguridad perimetral acorde a una serie de requisitos de seguridad.",
+     "Se han detectado errores de configuración de dispositivos de red mediante el análisis de tráfico.",
+     "Se han identificado comportamientos no deseados en una red a través del análisis de los registros (Logs), de un cortafuego.",
+     "Se han implementado contramedidas frente a comportamientos no deseados en una red.",
+     "Se han caracterizado, instalado y configurado diferentes herramientas de monitorización."
+    ]
+   },
+   {
+    "ra": 6,
+    "enunciado": "Configura dispositivos para la instalación de sistemas informáticos minimizando las probabilidades de exposición a ataques.",
+    "ces": [
+     "Se ha configurado la BIOS para incrementar la seguridad del dispositivo y su contenido minimizando las probabilidades de exposición a ataques.",
+     "Se ha preparado un sistema informático para su primera instalación teniendo en cuenta las medidas de seguridad necesarias.",
+     "Se ha configurado un sistema informático para que un actor malicioso no pueda alterar la secuencia de arranque con fines de acceso ilegítimo.",
+     "Se ha instalado un sistema informático utilizando sus capacidades de cifrado del sistema de ficheros para evitar la extracción física de datos.",
+     "Se ha particionado el sistema de ficheros del sistema informático para minimizar riesgos de seguridad."
+    ]
+   },
+   {
+    "ra": 7,
+    "enunciado": "Configura sistemas informáticos minimizando las probabilidades de exposición a ataques.",
+    "ces": [
+     "Se han enumerado y eliminado los programas, servicios y protocolos innecesarios que hayan sido instalados por defecto en el sistema.",
+     "Se han configurado las características propias del sistema informático para imposibilitar el acceso ilegítimo mediante técnicas de explotación de procesos.",
+     "Se ha incrementado la seguridad del sistema de administración remoto SSH y otros.",
+     "Se ha instalado y configurado un Sistema de detección de intrusos en un Host (HIDS) en el sistema informático.",
+     "Se han instalado y configurado sistemas de copias de seguridad."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "5023",
+  "nombre": "Puesta en producción segura",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Prueba aplicaciones web y aplicaciones para dispositivos móviles analizando la estructura del código y su modelo de ejecución.",
+    "ces": [
+     "Se han comparado diferentes lenguajes de programación de acuerdo a sus características principales.",
+     "Se han descrito los diferentes modelos de ejecución de software.",
+     "Se han reconocido los elementos básicos del código fuente, dándoles significado.",
+     "Se han ejecutado diferentes tipos de prueba de software.",
+     "Se han evaluado los lenguajes de programación de acuerdo a la infraestructura de seguridad que proporcionan."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Determina el nivel de seguridad requerido por aplicaciones identificando los vectores de ataque habituales y sus riesgos asociados.",
+    "ces": [
+     "Se han caracterizado los niveles de verificación de seguridad en aplicaciones establecidos por los estándares internacionales (ASVS, “Application Security Verification Standard”).",
+     "Se ha identificado el nivel de verificación de seguridad requerido por las aplicaciones en función de sus riesgos de acuerdo a estándares reconocidos.",
+     "Se han enumerado los requisitos de verificación necesarios asociados al nivel de seguridad establecido.",
+     "Se han reconocido los principales riesgos de las aplicaciones desarrolladas, en función de sus características."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Detecta y corrige vulnerabilidades de aplicaciones web analizando su código fuente y configurando servidores web.",
+    "ces": [
+     "Se han validado las entradas de los usuarios.",
+     "Se han detectado riesgos de inyección tanto en el servidor como en el cliente.",
+     "Se ha gestionado correctamente la sesión del usuario durante el uso de la aplicación.",
+     "Se ha hecho uso de roles para el control de acceso.",
+     "Se han utilizado algoritmos criptográficos seguros para almacenar las contraseñas de usuario.",
+     "Se han configurado servidores web para reducir el riesgo de sufrir ataques conocidos.",
+     "Se han incorporado medidas para evitar los ataques a contraseñas, envío masivo de mensajes o registros de usuarios a través de programas automáticos (bots)."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Detecta problemas de seguridad en las aplicaciones para dispositivos móviles, monitorizando su ejecución y analizando ficheros y datos.",
+    "ces": [
+     "Se han comparado los diferentes modelos de permisos de las plataformas móviles.",
+     "Se han descrito técnicas de almacenamiento seguro de datos en los dispositivos, para evitar la fuga de información.",
+     "Se ha implantado un sistema de validación de compras integradas en la aplicación haciendo uso de validación en el servidor.",
+     "Se han utilizado herramientas de monitorización de tráfico de red para detectar el uso de protocolos inseguros de comunicación de las aplicaciones móviles.",
+     "Se han inspeccionado binarios de aplicaciones móviles para buscar fugas de información sensible."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Implanta sistemas seguros de desplegado de software, utilizando herramientas para la automatización de la construcción de sus elementos.",
+    "ces": [
+     "Se han identificado las características, principios y objetivos de la integración del desarrollo y operación del software.",
+     "Se han implantado sistemas de control de versiones, administrando los roles y permisos solicitados.",
+     "Se han instalado, configurado y verificado sistemas de integración continua, conectándolos con sistemas de control de versiones.",
+     "Se han planificado, implementado y automatizado planes de desplegado de software.",
+     "Se ha evaluado la capacidad del sistema desplegado para reaccionar de forma automática a fallos.",
+     "Se han documentado las tareas realizadas y los procedimientos a seguir para la recuperación ante desastres.",
+     "Se han creado bucles de retroalimentación ágiles entre los miembros del equipo."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "5024",
+  "nombre": "Análisis forense informático",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Aplica metodologías de análisis forense caracterizando las fases de preservación, adquisición, análisis y documentación.",
+    "ces": [
+     "Se han identificado los dispositivos a analizar para garantizar la preservación de evidencias.",
+     "Se han utilizado los mecanismos y las herramientas adecuadas para la adquisición y extracción de las evidencias.",
+     "Se ha asegurado la escena y conservado la cadena de custodia.",
+     "Se ha documentado el proceso realizado de manera metódica.",
+     "Se ha considerado la línea temporal de las evidencias.",
+     "Se ha elaborado un informe de conclusiones a nivel técnico y ejecutivo.",
+     "Se han presentado y expuesto las conclusiones del análisis forense realizado."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Realiza análisis forenses en dispositivos móviles, aplicando metodologías establecidas, actualizadas y reconocidas.",
+    "ces": [
+     "Se ha realizado el proceso de toma de evidencias en un dispositivo móvil.",
+     "Se han extraído, decodificado y analizado las pruebas conservando la cadena de custodia.",
+     "Se han generado informes de datos móviles, cumpliendo con los requisitos de la industria forense de telefonía móvil.",
+     "Se han presentado y expuesto las conclusiones del análisis forense realizado a quienes proceda."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Realiza análisis forenses en Cloud, aplicando metodologías establecidas, actualizadas y reconocidas.",
+    "ces": [
+     "Se ha desarrollado una estrategia de análisis forense en Cloud, asegurando la disponibilidad de los recursos y capacidades necesarios una vez ocurrido el incidente.",
+     "Se ha conseguido identificar las causas, el alcance y el impacto real causado por el incidente.",
+     "Se han realizado las fases del análisis forense en Cloud.",
+     "Se han identificado las características intrínsecas de la nube (elasticidad, ubicuidad, abstracción, volatilidad y compartición de recursos).",
+     "Se han cumplido los requerimientos legales en vigor, RGPD (Reglamento general de protección de datos) y directiva NIS (Directiva de la UE sobre seguridad de redes y sistemas de información) o las que eventualmente pudieran sustituirlas.",
+     "Se han presentado y expuesto las conclusiones del análisis forense realizado."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Realiza análisis forense en dispositivos del IoT, aplicando metodologías establecidas, actualizadas y reconocidas.",
+    "ces": [
+     "Se han identificado los dispositivos a analizar garantizando la preservación de las evidencias.",
+     "Se han utilizado mecanismos y herramientas adecuadas para la adquisición y extracción de evidencias",
+     "Se ha garantizado la autenticidad, completitud, fiabilidad y legalidad de las evidencias extraídas.",
+     "Se han realizado análisis de evidencias de manera manual y mediante herramientas.",
+     "Se ha documentado el proceso de manera metódica y detallada.",
+     "Se ha considerado la línea temporal de las evidencias.",
+     "Se ha mantenido la cadena de custodia",
+     "Se ha elaborado un informe de conclusiones a nivel técnico y ejecutivo.",
+     "Se han presentado y expuesto las conclusiones del análisis forense realizado."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Documenta análisis forenses elaborando informes que incluyan la normativa aplicable.",
+    "ces": [
+     "Se ha definido el objetivo del informe pericial y su justificación.",
+     "Se ha definido el ámbito de aplicación del informe pericial.",
+     "Se han documentado los antecedentes.",
+     "Se han recopilado las normas legales y reglamentos cumplidos en el análisis forense realizado.",
+     "Se han recogido los requisitos establecidos por el cliente.",
+     "Se han incluido las conclusiones y su justificación."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "5025",
+  "nombre": "Hacking ético",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Determina herramientas de monitorización para detectar vulnerabilidades aplicando técnicas de hacking ético.",
+    "ces": [
+     "Se ha definido la terminología esencial del hacking ético.",
+     "Se han identificado los conceptos éticos y legales frente al ciberdelito.",
+     "Se ha definido el alcance y condiciones de un test de intrusión.",
+     "Se han identificado los elementos esenciales de seguridad: confidencialidad, autenticidad, integridad y disponibilidad.",
+     "Se han identificado las fases de un ataque seguidas por un atacante.",
+     "Se han analizado y definido los tipos vulnerabilidades.",
+     "Se han analizado y definido los tipos de ataque.",
+     "Se han determinado y caracterizado las diferentes vulnerabilidades existentes.",
+     "Se han determinado las herramientas de monitorización disponibles en el mercado adecuadas en función del tipo de organización."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Ataca y defiende en entornos de prueba, comunicaciones inalámbricas consiguiendo acceso a redes para demostrar sus vulnerabilidades.",
+    "ces": [
+     "Se han configurado los distintos modos de funcionamiento de las tarjetas de red inalámbricas.",
+     "Se han descrito las técnicas de encriptación de las redes inalámbricas y sus puntos vulnerables.",
+     "Se han detectado redes inalámbricas y se ha capturado tráfico de red como paso previo a su ataque.",
+     "Se ha accedido a redes inalámbricas vulnerables.",
+     "Se han caracterizado otros sistemas de comunicación inalámbricos y sus vulnerabilidades.",
+     "Se han utilizado técnicas de “Equipo Rojo y Azul”.",
+     "Se han realizado informes sobre las vulnerabilidades detectadas."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Ataca y defiende en entornos de prueba, redes y sistemas consiguiendo acceso a información y sistemas de terceros.",
+    "ces": [
+     "Se ha recopilado información sobre la red y sistemas objetivo mediante técnicas pasivas.",
+     "Se ha creado un inventario de equipos, cuentas de usuario y potenciales vulnerabilidades de la red y sistemas objetivo mediante técnicas activas.",
+     "Se ha interceptado tráfico de red de terceros para buscar información sensible.",
+     "Se ha realizado un ataque de intermediario, leyendo, insertando y modificando, a voluntad, el tráfico intercambiado por dos extremos remotos.",
+     "Se han comprometido sistemas remotos explotando sus vulnerabilidades."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Consolida y utiliza sistemas comprometidos garantizando accesos futuros.",
+    "ces": [
+     "Se han administrado sistemas remotos a través de herramientas de línea de comandos.",
+     "Se han comprometido contraseñas a través de ataques de diccionario, tablas rainbow y fuerza bruta contra sus versiones encriptadas.",
+     "Se ha accedido a sistemas adicionales a través de sistemas comprometidos.",
+     "Se han instalado puertas traseras para garantizar accesos futuros a los sistemas comprometidos."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Ataca y defiende en entornos de prueba, aplicaciones web consiguiendo acceso a datos o funcionalidades no autorizadas.",
+    "ces": [
+     "Se han identificado los distintos sistemas de autenticación web, destacando sus debilidades y fortalezas.",
+     "Se ha realizado un inventario de equipos, protocolos, servicios y sistemas operativos que proporcionan el servicio de una aplicación web.",
+     "Se ha analizado el flujo de las interacciones realizadas entre el navegador y la aplicación web durante su uso normal.",
+     "Se han examinado manualmente aplicaciones web en busca de las vulnerabilidades más habituales.",
+     "Se han usado herramientas de búsquedas y explotación de vulnerabilidades web.",
+     "Se ha realizado la búsqueda y explotación de vulnerabilidades web mediante herramientas software."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "5026",
+  "nombre": "Normativa de ciberseguridad",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Identifica los puntos principales de aplicación para asegurar el cumplimiento normativo reconociendo funciones y responsabilidades.",
+    "ces": [
+     "Se han identificado las bases del cumplimiento normativo a tener en cuenta en las organizaciones.",
+     "Se han descrito y aplicado los principios de un buen gobierno y su relación con la ética profesional.",
+     "Se han definido las políticas y procedimientos, así como la estructura organizativa que establezca la cultura del cumplimiento normativo dentro de las organizaciones.",
+     "Se han descrito las funciones o competencias del responsable del cumplimiento normativo dentro de las organizaciones.",
+     "Se han establecido las relaciones con terceros para un correcto cumplimiento normativo."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Diseña sistemas de cumplimiento normativo seleccionando la legislación y jurisprudencia de aplicación.",
+    "ces": [
+     "Se han recogido las principales normativas que afectan a los diferentes tipos de organizaciones.",
+     "Se han establecido las recomendaciones válidas para diferentes tipos de organizaciones de acuerdo con la normativa vigente (ISO 19.600 entre otras).",
+     "Se han realizado análisis y evaluaciones de los riesgos de diferentes tipos de organizaciones de acuerdo con la normativa vigente (ISO 31.000 entre otras).",
+     "Se ha documentado el sistema de cumplimiento normativo diseñado."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Relaciona la normativa relevante para el cumplimiento de la responsabilidad penal de las organizaciones y personas jurídicas con los procedimientos establecidos, recopilando y aplicando las normas vigentes.",
+    "ces": [
+     "Se han identificado los riesgos penales aplicables a diferentes organizaciones.",
+     "Se han implantado las medidas necesarias para eliminar o minimizar los riesgos identificados.",
+     "Se ha establecido un sistema de gestión de cumplimiento normativo penal de acuerdo con la legislación y normativa vigente (Código Penal y UNE 19.601, entre otros).",
+     "Se han determinado los principios básicos dentro de las organizaciones para combatir el soborno y promover una cultura empresarial ética de acuerdo con la legislación y normativa vigente (ISO 37.001 entre otros)."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Aplica la legislación nacional de protección de datos de carácter personal, relacionando los procedimientos establecidos con las leyes vigentes y con la jurisprudencia existente sobre la materia.",
+    "ces": [
+     "Se han reconocido las fuentes del derecho de acuerdo con el ordenamiento jurídico en materia de protección de datos de carácter personal.",
+     "Se han aplicado los principios relacionados con la protección de datos de carácter personal tanto a nivel nacional como internacional.",
+     "Se han establecido los requisitos necesarios para afrontar la privacidad desde las bases del diseño.",
+     "Se han configurado las herramientas corporativas contemplando el cumplimiento normativo por defecto.",
+     "Se ha realizado un análisis de riesgos para el tratamiento de los derechos a la protección de datos.",
+     "Se han implantado las medidas necesarias para eliminar o minimizar los riesgos identificados en la protección de datos.",
+     "Se han descrito las funciones o competencias del delegado de protección de datos dentro de las organizaciones."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Recopila y aplica la normativa vigente de ciberseguridad de ámbito nacional e internacional, actualizando los procedimientos establecidos de acuerdo con las leyes y con la jurisprudencia existente sobre la materia.",
+    "ces": [
+     "Se ha establecido el plan de revisiones de la normativa, jurisprudencia, notificaciones, etc. jurídicas que puedan afectar a la organización.",
+     "Se ha detectado nueva normativa consultando las bases de datos jurídicas siguiendo el plan de revisiones establecido.",
+     "Se ha analizado la nueva normativa para determinar si aplica a la actividad de la organización.",
+     "Se ha incluido en el plan de revisiones las modificaciones necesarias, sobre la nueva normativa aplicable a la organización, para un correcto cumplimiento normativo.",
+     "Se han determinado e implementado los controles necesarios para garantizar el correcto cumplimiento normativo de las nuevas normativas. incluidas en el plan de revisiones."
+    ]
+   }
+  ]
+ }
+]

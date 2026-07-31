@@ -1,0 +1,154 @@
+{
+ "archivo": "ga_ea",
+ "modulo": {
+  "nombre": "Empresa y Administración",
+  "codigo": "0439",
+  "total_horas": 105,
+  "ciclo": "Gestión Administrativa",
+  "ciclo_clave": "GA",
+  "ciclo_nivel": "CFGM",
+  "anno": "2026-2027",
+  "eval_count": 3,
+  "decreto": "Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)",
+  "abrev": "EA",
+  "curso": "1º GA",
+  "horas_sem": 3
+ },
+ "ras": [
+  {
+   "ut": "Innovación y creación de empresas",
+   "eval": 1,
+   "tags": "Innovación empresarial · Emprendimiento · Plan de empresa · Ayudas y subvenciones",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Describe las características inherentes a la innovación empresarial relacionándolas con la actividad de creación de empresas.",
+   "ces": [
+    "Se han analizado las diversas posibilidades de innovación empresarial (técnicas, materiales, de organización interna y externa, entre otras), relacionándolas como fuentes de desarrollo económico y creación de empleo.",
+    "Se han descrito las implicaciones que tiene para la competitividad empresarial la innovación y la iniciativa em - prendedora.",
+    "Se han comparado y documentado diferentes experiencias de innovación empresarial, describiendo y valorando los factores de riesgo asumidos en cada una de ellas.",
+    "Se han definido las características de empresas de base tecnológica, relacionándolas con los distintos sectores económicos.",
+    "Se han enumerado algunas iniciativas innovadoras que puedan aplicarse a empresas u organizaciones ya exis - tentes para su mejora.",
+    "Se han analizado posibilidades de internacionalización de algunas empresas como factor de innovación de las mismas.",
+    "Se han buscado ayudas y herramientas, públicas y privadas, para la innovación, creación e internacionalización de empresas, relacionándolas estructuradamente en un informe."
+   ]
+  },
+  {
+   "ut": "La empresa y su forma jurídica",
+   "eval": 1,
+   "tags": "Empresario individual · Sociedades · Trámites de constitución · Registro Mercantil",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Identifica el concepto de empresa y empresario o empresaria analizando su forma jurídica y la normativa a la que está sujeto.",
+   "ces": [
+    "Se ha definido el concepto de empresa.",
+    "Se ha distinguido entre personalidad física y jurídica.",
+    "Se ha diferenciado la empresa según su constitución legal.",
+    "Se han reconocido las características de la empresaria o empresario autónomo.",
+    "Se han precisado las características de los diferentes tipos de sociedades.",
+    "Se ha identificado la forma jurídica más adecuada para cada tipo de empresa."
+   ]
+  },
+  {
+   "ut": "El sistema tributario español",
+   "eval": 2,
+   "tags": "Tributos, tasas y contribuciones · LGT · Elementos del tributo · Hecho imponible",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Analiza el sistema tributario español reconociendo sus finalidades básicas así como las de los principales tribu - tos.",
+   "ces": [
+    "Se ha relacionado la obligación tributaria con su finalidad socioeconómica.",
+    "Se ha reconocido la jerarquía normativa tributaria.",
+    "Se han identificado los diferentes tipos de tributos.",
+    "Se han discriminado sus principales características.",
+    "Se ha diferenciado entre impuestos directos e indirectos.",
+    "Se han identificado los elementos de la declaración-liquidación.",
+    "Se han reconocido las formas de extinción de las deudas tributarias."
+   ]
+  },
+  {
+   "ut": "Obligaciones fiscales de la empresa",
+   "eval": 2,
+   "tags": "Censo · IAE · IRPF · Impuesto de Sociedades · IVA · Calendario fiscal",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Identifica las obligaciones fiscales de la empresa diferenciando los tributos a los que está sujeta.",
+   "ces": [
+    "Se han definido las obligaciones fiscales de la empresa.",
+    "Se ha precisado la necesidad de alta en el censo.",
+    "Se han reconocido las empresas sujetas al pago del Impuesto de Actividades Económicas.",
+    "Se han reconocido las características generales del Impuesto sobre el Valor Añadido y sus diferentes regímenes.",
+    "Se han interpretado los modelos de liquidación del IVA, reconociendo los plazos de declaración-liquidación.",
+    "Se ha reconocido la naturaleza y ámbito de aplicación del Impuesto sobre la Renta de las Personas Físicas.",
+    "Se han cumplimentado los modelos de liquidación de IRPF, reconociendo los plazos de declaración-liquidación.",
+    "Se ha identificado la naturaleza y los elementos del impuesto de sociedades."
+   ]
+  },
+  {
+   "ut": "La Administración Pública",
+   "eval": 3,
+   "tags": "Administración General, autonómica y local · Poderes del Estado · Personal al servicio",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Identifica la estructura funcional y jurídica de la Administración Pública, reconociendo los diferentes organismos y personas que la integran.",
+   "ces": [
+    "Se ha identificado el marco jurídico en el que se integran las Administraciones Públicas.",
+    "Se han reconocido las organizaciones que componen las diferentes Administraciones Públicas.",
+    "Se han interpretado las relaciones entre las diferentes Administraciones Públicas.",
+    "Se han obtenido diversas informaciones de las Administraciones Públicas por las diversas vías de acceso a las mismas y relacionado éstas en un informe.",
+    "Se han precisado las distintas formas de relación laboral en la Administración Pública.",
+    "Se han utilizado las fuentes de información relacionadas con la oferta de empleo público para reunir datos signi - ficativos sobre ésta."
+   ]
+  },
+  {
+   "ut": "El procedimiento administrativo",
+   "eval": 3,
+   "tags": "Acto administrativo · Fases · Silencio administrativo · Recursos · Notificaciones",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Describe los diferentes tipos de relaciones entre los administrados y la Administración y sus características com - pletando documentación que de éstas surge.",
+   "ces": [
+    "Se ha definido el concepto de acto administrativo.",
+    "Se han clasificado los diferentes actos administrativos.",
+    "Se ha definido el proceso administrativo, sus tipos, fases y tipos de silencio.",
+    "Se han precisado los diferentes tipos de contratos administrativos.",
+    "Se ha definido el concepto de recurso administrativo y diferenciado sus tipos.",
+    "Se han identificado los actos recurribles y no recurribles.",
+    "Se han diferenciado los diferentes tipos de recursos administrativos.",
+    "Se han verificado las condiciones para la interposición de un recurso administrativo.",
+    "Se ha precisado los diferentes órganos de la jurisdicción contencioso-administrativa y su ámbito de aplicación.",
+    "Se han relacionado las fases el procedimiento contencioso-administrativo."
+   ]
+  },
+  {
+   "ut": "Registros y Administración electrónica",
+   "eval": 3,
+   "tags": "Registro de entrada y salida · Certificado digital · Sede electrónica · Compulsas",
+   "instrumentos": [
+    "practica",
+    "examen"
+   ],
+   "enunciado": "Realiza gestiones de obtención de información y presentación de documentos ante las Administraciones Públicas identificando los distintos tipos de registros públicos.",
+   "ces": [
+    "Se han observado las normas de presentación de documentos ante la Administración.",
+    "Se han reconocido las funciones de los Archivos Públicos.",
+    "Se ha solicitado determinada información en un Registro Público.",
+    "Se ha reconocido el derecho a la información, atención y participación de la ciudadanía.",
+    "Se ha accedido a las oficinas de información y atención a la ciudadanía por vías como las páginas Web, ventani - llas únicas y atención telefónica para obtener información relevante y relacionarla en un informe tipo.",
+    "Se han identificado y descrito los límites al derecho a la información relacionados con los datos en poder de las Administraciones Públicas sobre las personas administradas."
+   ]
+  }
+ ],
+ "dual_ra": null
+}

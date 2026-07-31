@@ -1,0 +1,1156 @@
+[
+ {
+  "codigo": "0647",
+  "nombre": "Gestión de la documentación jurídica y empresarial",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Caracteriza la estructura y organización de las administraciones públicas establecidas en la Constitución española y la UE, reconociendo los organismos, instituciones y personas que las integran.",
+    "ces": [
+     "Se han identificado los poderes públicos establecidos en la Constitución española y sus respectivas funciones.",
+     "Se han determinado los órganos de gobierno de cada uno de los poderes públicos así como sus funciones, conforme a su legislación específica.",
+     "Se han identificado los principales órganos de gobierno del poder ejecutivo de las administraciones autonómicas y locales así como sus funciones.",
+     "Se han definido la estructura y funciones básicas de las principales instituciones de la Unión Europea.",
+     "Se han descrito las funciones o competencias de los órganos y la normativa aplicable a los mismos.",
+     "Se han descrito las relaciones entre los diferentes órganos de la Unión Europea y el resto de las Administraciones nacionales, así como la incidencia de la normativa europea en la nacional."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Actualiza periódicamente la información jurídica requerida por la actividad empresarial, seleccionando la legislación y jurisprudencia relacionada con la organización.",
+    "ces": [
+     "Se han reconocido las fuentes del Derecho de acuerdo con el ordenamiento jurídico.",
+     "Se han precisado las características de las normas jurídicas y de los órganos que las elaboran, dictan, aprueban y publican.",
+     "Se han relacionado las leyes con el resto de normas que las desarrollan, identificando los órganos responsables de su aprobación y tramitación.",
+     "Se ha identificado la estructura de los boletines oficiales, incluido el diario oficial de la Unión Europea, como medio de publicidad de las normas.",
+     "Se han seleccionado distintas fuentes o bases de datos de documentación jurídica tradicionales y/o en Internet, estableciendo accesos directos a las mismas para agilizar los procesos de búsqueda y localización de información.",
+     "Se ha detectado la aparición de nueva normativa, jurisprudencia, notificaciones, etc., consultando habitualmente las bases de datos jurídicas que puedan afectar a la entidad.",
+     "Se ha archivado la información encontrada en los soportes o formatos establecidos, para posteriormente trasmitirla a los departamentos correspondientes de la organización."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Organiza los documentos jurídicos relativos a la constitución y funcionamiento de las entidades, cumpliendo la normativa civil y mercantil vigente según las directrices definidas.",
+    "ces": [
+     "Se han identificado las diferencias y similitudes entre las distintas formas jurídicas de empresa.",
+     "Se ha determinado el proceso de constitución de una sociedad mercantil y se ha indicado la normativa mercantil aplicable y los documentos jurídicos que se generan.",
+     "Se han precisado las funciones de los fedatarios y los registros públicos, y la estructura y características de los documentos públicos habituales en el ámbito de los negocios.",
+     "Se han descrito y analizado las características y los aspectos más significativos de los modelos de documentos más habituales en la vida societaria: estatutos, escrituras y actas, entre otros.",
+     "Se han elaborado documentos societarios a partir de los datos aportados, modificando y adaptando los modelos disponibles.",
+     "Se ha reconocido la importancia de la actuación de los fedatarios en la elevación a público de los documentos, estimando las consecuencias de no realizar los trámites oportunos.",
+     "Se han determinado las peculiaridades de la documentación mercantil acorde al objeto social de la empresa.",
+     "Se ha verificado el cumplimiento de las características y requisitos formales de los libros de la sociedad exigidos por la normativa mercantil."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Cumplimenta los modelos de contratación privados más habituales en el ámbito empresarial o documentos de fe pública, aplicando la normativa vigente y los medios informáticos disponibles para su presentación y firma.",
+    "ces": [
+     "Se ha descrito el concepto de contrato y la capacidad para contratar según la normativa española.",
+     "Se han identificado las distintas modalidades de contratación y sus características.",
+     "Se han identificado las normas relacionadas con los distintos tipos de contratos del ámbito empresarial.",
+     "Se ha recopilado y cotejado la información y documentación necesaria para la cumplimentación de cada contrato, de acuerdo con las instrucciones recibidas.",
+     "Se han cumplimentado los modelos normalizados, utilizando aplicaciones informáticas, de acuerdo con la información recopilada y las instrucciones recibidas.",
+     "Se han verificado los datos de cada documento, comprobando el cumplimiento y exactitud de los requisitos contractuales y legales.",
+     "Se ha valorado la utilización de la firma digital y certificados de autenticidad en la elaboración de los documentos que lo permitan.",
+     "Se han aplicado las normas de seguridad y confidencialidad de la información en el uso y la custodia de los documentos."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Elabora la documentación requerida por los organismos públicos relativos a los distintos procedimientos administrativos, cumpliendo con la legislación vigente y las directrices definidas.",
+    "ces": [
+     "Se han definido el concepto y fases del procedimiento administrativo común de acuerdo con la normativa aplicable.",
+     "Se han determinado las características, requisitos legales y de formato de los documentos oficiales más habituales, generados en cada una de las fases del procedimiento administrativo y recursos ante lo contencioso-administrativo.",
+     "Se ha recopilado la información necesaria para la elaboración de la documentación administrativa o judicial, de acuerdo con los objetivos del documento.",
+     "Se han cumplimentado los impresos, modelos o documentación tipo, de acuerdo con los datos e información disponible y los requisitos legales establecidos.",
+     "Se ha valorado la importancia de los plazos de formulación de la documentación.",
+     "Se han preparado las renovaciones o acciones periódicas derivadas de las obligaciones con las administraciones públicas, para su presentación al organismo correspondiente.",
+     "Se han descrito las características de la firma electrónica, sus efectos jurídicos, el proceso para su obtención y la normativa estatal y europea que la regula.",
+     "Se ha establecido el procedimiento para la solicitud de la certificación electrónica para la presentación de los modelos oficiales por vía telemática.",
+     "Se han descrito los derechos de las corporaciones y los ciudadanos en relación con la presentación de documentos ante la Administración.",
+     "Se han determinado los trámites y presentación de documentos tipo en los procesos y procedimientos de contratación pública y concesión de subvenciones, según las bases de las convocatorias y la normativa de aplicación.",
+     "Se han determinado las condiciones de custodia de los documentos y expedientes relacionados con las administraciones públicas, garantizando su conservación e integridad."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0648",
+  "nombre": "Recursos humanos y responsabilidad social corporativa",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Caracteriza la empresa como una comunidad de personas, distinguiendo las implicaciones éticas de su comportamiento con respecto a los implicados en la misma.",
+    "ces": [
+     "Se han determinado las diferentes actividades realizadas en la empresa, las personas implicadas y su responsabilidad en las mismas.",
+     "Se han identificado claramente las variables éticas y culturales de las organizaciones.",
+     "Se han evaluado las implicaciones entre competitividad empresarial y comportamiento ético.",
+     "Se han definido estilos éticos de adaptación a los cambios empresariales, a la globalización y a la cultura social presente.",
+     "Se han seleccionado indicadores para el diagnóstico de las relaciones de las empresas y los interesados (“stakeholders”).",
+     "Se han determinado elementos de mejora de las comunicaciones de las organizaciones externas e internas que promuevan la transparencia, la cooperación y la confianza."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Contrasta la aplicación de los principios de responsabilidad social corporativa en las políticas de desarrollo de los recursos humanos de las empresas, valorando su adecuación a las buenas prácticas validadas internacionalmente.",
+    "ces": [
+     "Se ha definido el concepto de responsabilidad social corporativa (RSC).",
+     "Se han analizado las políticas de recursos humanos en cuanto a motivación, mejora continua, promoción y recompensa, entre otros factores.",
+     "Se han analizado las recomendaciones y la normativa europea, de organizaciones intergubernamentales, así como la nacional con respecto a RSC y desarrollo de los recursos humanos.",
+     "Se han descrito las buenas prácticas e iniciativas en cuanto a códigos de conducta relacionados con los derechos de los trabajadores.",
+     "Se han programado puntos de control para el contraste del cumplimiento de las políticas de RSC y códigos de conducta en la gestión de los recursos humanos."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Coordina los flujos de información del departamento de recursos humanos a través de la organización, aplicando habilidades personales y sociales en procesos de gestión de recursos humanos.",
+    "ces": [
+     "Se han descrito las funciones que se deben desarrollar en el área de la empresa que se encarga de la gestión de recursos humanos.",
+     "Se han caracterizado habilidades de comunicación efectiva en los diferentes roles laborales.",
+     "Se han establecido los canales de comunicación interna entre los distintos departamentos de la empresa, así como entre el personal y los departamentos.",
+     "Se ha analizado la información que proporcionan los sistemas de control de personal para la mejora de la gestión de la empresa.",
+     "Se ha mantenido actualizada la información precisa para el desarrollo de las funciones del departamento de recursos humanos.",
+     "Se ha establecido la manera de organizar y conservar la documentación del departamento de recursos humanos en soporte convencional e informático.",
+     "Se ha utilizado un sistema informático para el almacenamiento y tratamiento de la información en la gestión de los recursos humanos.",
+     "Se ha valorado la importancia de la aplicación de criterios de seguridad, confidencialidad, integridad y accesibilidad en la tramitación de la información derivada de la administración de recursos humanos."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Aplica los procedimientos administrativos relativos a la selección de recursos humanos, eligiendo los métodos e instrumentos más adecuados a la política de cada organización.",
+    "ces": [
+     "Se han identificado los organismos y empresas relevantes en el mercado laboral, dedicados a la selección y formación de recursos humanos.",
+     "Se han secuenciado las fases de un proceso de selección de personal y sus características fundamentales.",
+     "Se ha identificado la información que se genera en cada una de las fases de un proceso de selección de personal.",
+     "Se ha valorado la importancia del reconocimiento del concepto de perfil del puesto de trabajo para seleccionar los currículos.",
+     "Se han establecidos las características de los métodos e instrumentos de selección de personal más utilizados en función del perfil del puesto de trabajo.",
+     "Se ha elaborado la documentación necesaria para llevar a cabo el proceso de selección.",
+     "Se han establecido las vías de comunicación orales y escritas con las personas que intervienen en el proceso de selección.",
+     "Se ha registrado y archivado la información y documentación relevante del proceso de selección."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Gestiona los procedimientos administrativos relativos a la formación, promoción y desarrollo de recursos humanos, designando los métodos e instrumentos más adecuados.",
+    "ces": [
+     "Se han planificado las fases de los procesos de formación y promoción de personal.",
+     "Se han establecido las características de los métodos e instrumentos de los procesos de formación.",
+     "Se ha identificado la información que se genera en cada una de las fases de los procesos de formación y promoción de personal.",
+     "Se ha elaborado la documentación necesaria para efectuar los procesos de formación y promoción de personal.",
+     "Se han establecido los métodos de valoración del trabajo y de incentivos.",
+     "Se ha recabado información sobre las necesidades formativas de la empresa.",
+     "Se han detectado las necesidades de recursos materiales y humanos en el proceso de formación.",
+     "Se han establecido las vías de comunicación orales y escritas con las personas que intervienen en los procesos de formación y promoción.",
+     "Se ha registrado y archivado la información y documentación relevante de los procesos de formación y promoción de personal.",
+     "Se han aplicado los procedimientos administrativos de seguimiento y evaluación de la formación."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0649",
+  "nombre": "Ofimática y proceso de la información",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Mantiene en condiciones óptimas de funcionamiento los equipos, aplicaciones y red, instalando y actualizando los componentes hardware y software necesarios.",
+    "ces": [
+     "Se han realizado pruebas de funcionamiento de los equipos informáticos.",
+     "Se han comprobado las conexiones de los puertos de comunicación.",
+     "Se han identificado los elementos básicos (hardware y software) de un sistema en red.",
+     "Se han caracterizado los procedimientos generales de operaciones en un sistema de red.",
+     "Se han utilizado las funciones básicas del sistema operativo.",
+     "Se han aplicado medidas de seguridad y confidencialidad, identificando el programa cortafuegos y el antivirus.",
+     "Se ha compartido información con otros usuarios de la red.",
+     "Se han ejecutado funciones básicas de usuario (conexión, desconexión, optimización del espacio de almacenamiento, utilización de periféricos, comunicación con otros usuarios y conexión con otros sistemas o redes, entre otras)."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Escribe textos alfanuméricos en un teclado extendido, aplicando las técnicas mecanográficas.",
+    "ces": [
+     "Se han organizado los elementos y espacios de trabajo.",
+     "Se ha mantenido la postura corporal correcta.",
+     "Se ha identificado la posición correcta de los dedos en las filas del teclado alfanumérico.",
+     "Se han precisado las funciones de puesta en marcha del terminal informático.",
+     "Se han empleado coordinadamente las líneas del teclado alfanumérico y las teclas de signos y puntuación.",
+     "Se ha utilizado el método de escritura al tacto en párrafos de dificultad progresiva y en tablas sencillas.",
+     "Se ha utilizado el método de escritura al tacto para realizar textos en inglés.",
+     "Se ha mecanografiado con velocidad (mínimo 200 p.p.m.) y precisión (máximo una falta por minuto) con la ayuda de un programa informático.",
+     "Se han aplicado las normas de presentación de los distintos documentos de texto.",
+     "Se han localizado y corregido los errores mecanográficos, ortográficos y sintácticos."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Gestiona los sistemas de archivos, buscando y seleccionando con medios convencionales e informáticos la información necesaria.",
+    "ces": [
+     "Se han detectado necesidades de información.",
+     "Se han identificado y priorizado las fuentes de obtención de información.",
+     "Se han elegido buscadores en Intranet y en Internet según criterios de rapidez y de opciones de búsqueda.",
+     "Se han empleado herramientas Web 2.0 para obtener y producir información.",
+     "Se han utilizado los criterios de búsqueda para restringir el número de resultados obtenidos.",
+     "Se han aplicado sistemas de seguridad, protección, confidencialidad y restricción de la información.",
+     "Se ha canalizado la información obtenida, archivándola y/o registrándola, en su caso.",
+     "Se han organizado los archivos para facilitar la búsqueda posterior.",
+     "Se ha actualizado la información necesaria.",
+     "Se han cumplido los plazos previstos.",
+     "Se han realizado copias de los archivos."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Elabora hojas de cálculo adaptadas a las necesidades que se planteen en el tratamiento de la información, aplicando las opciones avanzadas.",
+    "ces": [
+     "Se han utilizado las prestaciones de la hoja de cálculo para realizar gestiones de tesorería, cálculos comerciales y otras operaciones administrativas.",
+     "Se han diseñado y elaborado documentos con la hoja de cálculo.",
+     "Se han relacionado y actualizado hojas de cálculo.",
+     "Se han creado y anidado fórmulas y funciones.",
+     "Se han establecido contraseñas para proteger celdas, hojas y libros.",
+     "Se han obtenido gráficos para el análisis de la información.",
+     "Se han empleado macros para la realización de documentos y plantillas.",
+     "Se han importado y exportado hojas de cálculo creadas con otras aplicaciones y otros formatos.",
+     "Se ha utilizado la hoja de cálculo como base de datos: formularios, creación de listas, filtrado, protección y ordenación de datos.",
+     "Se han utilizado aplicaciones y periféricos para introducir textos, números, códigos e imágenes."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Elabora documentos de textos, utilizando las opciones avanzadas de un procesador de textos.",
+    "ces": [
+     "Se han utilizado las funciones, prestaciones y procedimientos de los procesadores de textos y autoedición.",
+     "Se han identificado las características de cada tipo de documento.",
+     "Se han redactado documentos de texto con la destreza adecuada y aplicando las normas de estructura.",
+     "Se han confeccionado plantillas adaptadas a los documentos administrativos tipo, incluyendo utilidades de combinación.",
+     "Se han integrado objetos, gráficos, tablas, hojas de cálculo e hipervínculos, entre otros.",
+     "Se han detectado y corregido los errores cometidos.",
+     "Se ha recuperado y utilizado la información almacenada.",
+     "Se han utilizado las funciones y utilidades que garanticen las normas de seguridad, integridad y confidencialidad de los datos."
+    ]
+   },
+   {
+    "ra": 6,
+    "enunciado": "Utiliza sistemas de gestión de bases de datos adaptadas a las necesidades que se planteen en el tratamiento de la información administrativa, aplicando las opciones avanzadas.",
+    "ces": [
+     "Se han ordenado y clasificado los datos de las bases de datos para presentar la información.",
+     "Se han realizado consultas de bases de datos con criterios precisos.",
+     "Se han realizado informes de bases de datos con criterios precisos.",
+     "Se han realizado formularios con criterios precisos.",
+     "Se han actualizado, fusionado y eliminado registros de las bases de datos.",
+     "Se han relacionado las bases de datos con otras aplicaciones informáticas para desarrollar las actividades que así lo requieran.",
+     "Se han protegido las bases de datos estableciendo niveles de seguridad.",
+     "Se ha elaborado una base de datos adaptada a los requerimientos de la organización."
+    ]
+   },
+   {
+    "ra": 7,
+    "enunciado": "Gestiona integradamente la información proveniente de diferentes aplicaciones así como archivos audiovisuales, utilizando programas y periféricos específicos.",
+    "ces": [
+     "Se han gestionado de forma integrada bases de datos, textos e imágenes, entre otros, importando y exportando datos provenientes de hojas de cálculo y obteniendo documentos compuestos de todas estas posibilidades.",
+     "Se han seleccionado archivos audiovisuales de fuentes externas y se ha elegido el formato óptimo de éstos.",
+     "Se ha creado y mantenido un banco propio de recursos audiovisuales.",
+     "Se han personalizado los archivos audiovisuales en función del objetivo del documento que se quiere obtener.",
+     "Se ha respetado la legislación específica en materia de protección de archivos audiovisuales."
+    ]
+   },
+   {
+    "ra": 8,
+    "enunciado": "Gestiona el correo y la agenda electrónica, utilizando aplicaciones específicas.",
+    "ces": [
+     "Se ha utilizado la aplicación de correo electrónico.",
+     "Se ha identificado el emisor, destinatario y contenido en un mensaje de correo.",
+     "Se han aplicado filtros de protección de correo no deseado.",
+     "Se ha canalizado la información a todos los implicados.",
+     "Se ha comprobado la recepción del mensaje.",
+     "Se han organizado las bandejas de entrada y salida.",
+     "Se ha registrado la entrada o salida de correos.",
+     "Se han impreso, archivado o eliminado los mensajes de correo.",
+     "Se han aplicado las funciones y utilidades que ofrece la agenda electrónica como método de organización del departamento.",
+     "Se han conectado y sincronizado agendas del equipo informático con dispositivos móviles."
+    ]
+   },
+   {
+    "ra": 9,
+    "enunciado": "Elabora presentaciones multimedia de documentos e informes, utilizando aplicaciones específicas.",
+    "ces": [
+     "Se ha realizado un análisis y selección de la información que se quiere incluir.",
+     "Se han insertado distintos objetos (tablas, gráficos, hojas de cálculo, fotos, dibujos, organigramas, archivos de sonido y vídeo, entre otros).",
+     "Se ha distribuido la información de forma clara y estructurada.",
+     "Se han animado los objetos según el objetivo de la presentación.",
+     "Se han creado presentaciones para acompañar exposiciones orales.",
+     "Se han realizado presentaciones relacionadas con informes o documentación empresarial."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0650",
+  "nombre": "Proceso integral de la actividad comercial",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Determina los elementos patrimoniales de la empresa, analizando la actividad empresarial.",
+    "ces": [
+     "Se han identificado las fases del ciclo económico de la actividad empresarial.",
+     "Se ha diferenciado entre inversión/financiación, inversión/gasto, gasto/pago e ingreso/cobro.",
+     "Se han distinguido los distintos sectores económicos, basándose en la diversa tipología de actividades que se desarrollan en ellos.",
+     "Se han definido los conceptos de patrimonio, elemento patrimonial y masa patrimonial.",
+     "Se han identificado las masas patrimoniales que integran el activo, el pasivo exigible y el patrimonio neto.",
+     "Se ha relacionado el patrimonio económico de la empresa con el patrimonio financiero y ambos con las fases del ciclo económico de la actividad empresarial.",
+     "Se han clasificado un conjunto de elementos en masas patrimoniales."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Integra la normativa contable y el método de la partida doble, analizando el PGC PYME y la metodología contable.",
+    "ces": [
+     "Se han distinguido las fases del ciclo contable completo, adaptándolas a la legislación española.",
+     "Se ha definido el concepto de cuenta como instrumento para representar los distintos elementos patrimoniales y hechos económicos de la empresa.",
+     "Se han determinado las características más importantes del método de contabilización por partida doble.",
+     "Se han reconocido los criterios de cargo y abono como método de registro de las modificaciones del valor de los elementos patrimoniales.",
+     "Se ha definido el concepto de resultado contable, diferenciando las cuentas de ingresos y gastos.",
+     "Se ha reconocido el PGC como instrumento de armonización contable.",
+     "Se han relacionado las distintas partes del PGC, diferenciando las obligatorias de las no obligatorias.",
+     "Se ha codificado un conjunto de elementos patrimoniales de acuerdo con los criterios del PGC, identificando su función en la asociación y desglose de la información contable.",
+     "Se han identificado las cuentas anuales que establece el PGC, determinando la función que cumplen."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Gestiona la información sobre tributos que afectan o gravan la actividad comercial de la empresa, seleccionando y aplicando la normativa mercantil y fiscal vigente.",
+    "ces": [
+     "Se ha identificado la normativa fiscal básica.",
+     "Se han clasificado los tributos, identificando las características básicas de los más significativos.",
+     "Se han identificado los elementos tributarios.",
+     "Se han identificado las características básicas de las normas mercantiles y fiscales aplicables a las operaciones de compraventa.",
+     "Se han distinguido y reconocido las operaciones sujetas, exentas y no sujetas a IVA.",
+     "Se han diferenciado los regímenes especiales del IVA.",
+     "Se han determinado las obligaciones de registro en relación con el Impuesto del Valor Añadido, así como los libros registros (voluntarios y obligatorios) para las empresas.",
+     "Se han calculado las cuotas liquidables del impuesto y elaborado la documentación correspondiente a su declaración-liquidación.",
+     "Se ha reconocido la normativa sobre la conservación de documentos e información."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Elabora y organiza la documentación administrativa de las operaciones de compraventa, relacionándola con las transacciones comerciales de la empresa.",
+    "ces": [
+     "Se han determinado los elementos del contrato mercantil de compraventa.",
+     "Se han establecido los flujos de documentación administrativa relacionados con la compraventa.",
+     "Se han identificado y cumplimentado los documentos relativos a la compraventa en la empresa, precisando los requisitos formales que deben reunir.",
+     "Se han reconocido los procesos de expedición y entrega de mercancías, así como la documentación administrativa asociada.",
+     "Se ha verificado que la documentación comercial, recibida y emitida, cumple la legislación vigente y los procedimientos internos de una empresa.",
+     "Se han identificado los parámetros y la información que deben ser registrados en las operaciones de compraventa.",
+     "Se ha valorado la necesidad de aplicar los sistemas de protección y salvaguarda de la información, así como criterios de calidad en el proceso administrativo.",
+     "Se ha gestionado la documentación, manifestando rigor y precisión.",
+     "Se han utilizado aplicaciones informáticas específicas."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Determina los trámites de la gestión de cobros y pagos, analizando la documentación asociada y su flujo dentro de la empresa:",
+    "ces": [
+     "Se han diferenciado los flujos de entrada y salida de tesorería, valorando los procedimientos de autorización de los pagos y gestión de los cobros.",
+     "Se han identificado los medios de pago y cobro habituales en la empresa, así como sus documentos justificativos, diferenciando pago al contado y pago aplazado.",
+     "Se han comparado las formas de financiación comercial más habituales.",
+     "Se han aplicado las leyes financieras de capitalización simple o compuesta en función del tipo de operaciones.",
+     "Se ha calculado la liquidación de efectos comerciales en operaciones de descuento.",
+     "Se han calculado las comisiones y gastos en determinados productos y servicios bancarios relacionados con el aplazamiento del pago o el descuento comercial."
+    ]
+   },
+   {
+    "ra": 6,
+    "enunciado": "Registra los hechos contables básicos derivados de la actividad comercial y dentro de un ciclo económico, aplicando la metodología contable y los principios y normas del PGC.",
+    "ces": [
+     "Se han identificado y codificado las cuentas que intervienen en las operaciones relacionadas con la actividad comercial conforme al PGC.",
+     "Se han aplicado criterios de cargo y abono según el PGC.",
+     "Se han efectuado los asientos correspondientes a los hechos contables más habituales del proceso comercial.",
+     "Se han contabilizado las operaciones relativas a la liquidación de IVA.",
+     "Se han registrado los hechos contables previos al cierre del ejercicio económico.",
+     "Se ha calculado el resultado contable y el balance de situación final.",
+     "Se ha preparado la información económica relevante para elaborar la memoria para un ejercicio económico concreto.",
+     "Se han utilizado aplicaciones informáticas específicas.",
+     "Se han realizado las copias de seguridad según el protocolo establecido para salvaguardar los datos registrados.",
+     "Se ha gestionado la documentación, manifestando rigor y precisión."
+    ]
+   },
+   {
+    "ra": 7,
+    "enunciado": "Efectúa la gestión y el control de la tesorería, utilizando aplicaciones informáticas.",
+    "ces": [
+     "Se han establecido la función y los métodos de control de la tesorería en la empresa.",
+     "Se han cumplimentado los distintos libros y registros de tesorería.",
+     "Se han ejecutado las operaciones del proceso de arqueo y cuadre de la caja y se han detectado las desviaciones.",
+     "Se ha cotejado la información de los extractos bancarios con el libro de registro del banco.",
+     "Se han descrito las utilidades de un calendario de vencimientos en términos de previsión financiera.",
+     "Se ha relacionado el servicio de tesorería y el resto de departamentos con empresas y entidades externas.",
+     "Se ha valorado la utilización de medios on-line, administración electrónica y otros sustitutivos de la presentación física de los documentos.",
+     "Se han efectuado los procedimientos de acuerdo con los principios de responsabilidad, seguridad y confidencialidad de la información.",
+     "Se ha utilizado la hoja de cálculo y otras herramientas informáticas para la gestión de tesorería.",
+     "Se ha identificado el procedimiento para gestionar la presentación de documentos de cobro y pago ante las administraciones públicas."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0651",
+  "nombre": "Comunicación y atención al cliente",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Caracteriza técnicas de comunicación institucional y promocional, distinguiendo entre internas y externas.",
+    "ces": [
+     "Se han identificado los tipos de instituciones empresariales, describiendo sus características jurídicas, funcionales y organizativas.",
+     "Se han relacionado las funciones tipo de la organización: dirección, planificación, organización, ejecución y control.",
+     "Se ha identificado la estructura organizativa para una asistencia o la prestación de un servicio de calidad.",
+     "Se han relacionado los distintos estilos de mando de una organización con el clima laboral que generan.",
+     "Se han definido los canales formales de comunicación en la organización a partir de su organigrama.",
+     "Se han diferenciado los procesos de comunicación internos formales e informales.",
+     "Se ha valorado la influencia de la comunicación informal y las cadenas de rumores en las organizaciones, y su repercusión en las actuaciones del servicio de información prestado.",
+     "Se ha relacionado el proceso de demanda de información de acuerdo con el tipo de cliente, interno y externo, que puede intervenir en la misma.",
+     "Se ha valorado la importancia de la transmisión de la imagen corporativa de la organización en las comunicaciones formales.",
+     "Se han identificado los aspectos más significativos que transmiten la imagen corporativa en las comunicaciones institucionales y promocionales de la organización."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Realiza comunicaciones orales presenciales y no presenciales, aplicando técnicas de comunicación y adaptándolas a la situación y al interlocutor.",
+    "ces": [
+     "Se han identificado los elementos y las etapas de un proceso de comunicación.",
+     "Se han aplicado las distintas técnicas de comunicación oral presencial y telefónica.",
+     "Se ha aplicado el protocolo de comunicación verbal y no verbal en las comunicaciones presenciales y no presenciales.",
+     "Se han identificado los elementos necesarios para realizar y recibir una llamada telefónica efectiva en sus distintas fases: preparación, presentación-identificación y realización de la misma.",
+     "Se han tenido en cuenta las costumbres socioculturales y los usos empresariales y se ha valorado la importancia de la transmisión de la imagen corporativa.",
+     "Se han detectado las interferencias que producen las barreras de la comunicación en la comprensión de un mensaje y se han propuesto las acciones correctivas necesarias.",
+     "Se ha utilizado el léxico y las expresiones adecuadas al tipo de comunicación y a los interlocutores.",
+     "Se han aplicado convenientemente elementos de comunicación no verbal en los mensajes emitidos.",
+     "Se ha valorado si la información es transmitida con claridad, de forma estructurada, con precisión, con cortesía, con respeto y con sensibilidad.",
+     "Se han comprobado los errores cometidos y se han propuesto las acciones correctoras necesarias."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Elabora documentos escritos de carácter profesional, aplicando criterios lingüísticos, ortográficos y de estilo.",
+    "ces": [
+     "Se han identificado los soportes y los canales para elaborar y transmitir los documentos.",
+     "Se han diferenciado los soportes más apropiados en función de los criterios de rapidez, seguridad y confidencialidad.",
+     "Se ha identificado al destinatario, observando las debidas normas de protocolo.",
+     "Se han diferenciado las estructuras y estilos de redacción propias de la documentación profesional.",
+     "Se ha redactado el documento apropiado, utilizando una estructura, terminología y forma adecuadas, en función de su finalidad y de la situación de partida.",
+     "Se han utilizado las aplicaciones informáticas de procesamiento de textos y autoedición, así como sus herramientas de corrección.",
+     "Se han publicado documentos con herramientas de la web 2.0.",
+     "Se ha adecuado la documentación escrita al manual de estilo de organizaciones tipo.",
+     "Se ha utilizado la normativa sobre protección de datos y conservación de documentos, establecida para las empresas e instituciones públicas y privadas.",
+     "Se han aplicado, en la elaboración de la documentación, las técnicas 3R (reducir, reutilizar y reciclar).",
+     "Se han aplicado técnicas de transmisión de la imagen corporativa en las comunicaciones escritas, valorando su importancia para las organizaciones."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Determina los procesos de recepción, registro, distribución y recuperación de comunicaciones escritas, aplicando criterios específicos de cada una de estas tareas.",
+    "ces": [
+     "Se han identificado los medios, procedimientos y criterios más adecuados en la recepción, registro, distribución y transmisión de comunicación escrita a través de los medios telemáticos.",
+     "Se han determinado las ventajas e inconvenientes de la utilización de los distintos medios de transmisión de la comunicación escrita.",
+     "Se ha seleccionado el medio de transmisión más adecuado en función de los criterios de urgencia, coste y seguridad.",
+     "Se han identificado los soportes de archivo y registro más utilizados en función de las características de la información que se va a almacenar.",
+     "Se han analizado las técnicas de mantenimiento del archivo de gestión de correspondencia convencional.",
+     "Se ha determinado el sistema de clasificación, registro y archivo apropiado al tipo de documentos.",
+     "Se han reconocido los procedimientos de consulta y conservación de la información y documentación.",
+     "Se han respetado los niveles de protección, seguridad y acceso a la información según la normativa vigente y se han aplicado, en la elaboración y archivo de la documentación, las técnicas 3R (reducir, reutilizar, reciclar).",
+     "Se han registrado los correos electrónicos recibidos o emitidos de forma organizada y rigurosa, según técnicas de gestión eficaz.",
+     "Se ha realizado la gestión y mantenimiento de libretas de direcciones.",
+     "Se ha valorado la importancia de la firma digital en la correspondencia electrónica."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Aplica técnicas de comunicación, identificando las más adecuadas en la relación y atención a los clientes/usuarios.",
+    "ces": [
+     "Se han aplicado técnicas de comunicación y habilidades sociales que facilitan la empatía con el cliente/usuario en situaciones de atención/asesoramiento al mismo.",
+     "Se han identificado las fases que componen el proceso de atención al cliente/consumidor/usuario a través de diferentes canales de comunicación.",
+     "Se ha adoptado la actitud más adecuada según el comportamiento del cliente ante diversos tipos de situaciones.",
+     "Se han analizado las motivaciones de compra o demanda de un producto o servicio por parte del cliente/usuario.",
+     "Se ha obtenido, en su caso, la información histórica del cliente.",
+     "Se ha aplicado la forma y actitud adecuadas en la atención y asesoramiento a un cliente en función del canal de comunicación utilizado.",
+     "Se han analizado y solucionado los errores más habituales que se cometen en la comunicación con el cliente/ usuario."
+    ]
+   },
+   {
+    "ra": 6,
+    "enunciado": "Gestiona consultas, quejas y reclamaciones de posibles clientes, aplicando la normativa vigente.",
+    "ces": [
+     "Se han descrito las funciones del departamento de atención al cliente en empresas.",
+     "Se ha valorado la importancia de una actitud proactiva para anticiparse a incidencias en los procesos.",
+     "Se ha interpretado la comunicación recibida por parte del cliente.",
+     "Se han relacionado los elementos de la queja/reclamación con las fases que componen el plan interno de resolución de quejas/reclamaciones.",
+     "Se han diferenciado los tipos de demanda o reclamación.",
+     "Se ha gestionado la información que hay que suministrar al cliente.",
+     "Se han determinado los documentos propios de la gestión de consultas, quejas y reclamaciones.",
+     "Se han redactado escritos de respuesta, utilizando medios electrónicos u otros canales de comunicación.",
+     "Se ha valorado la importancia de la protección del consumidor.",
+     "Se ha aplicado la normativa en materia de consumo."
+    ]
+   },
+   {
+    "ra": 7,
+    "enunciado": "Organiza el servicio postventa, relacionándolo con la fidelización del cliente.",
+    "ces": [
+     "Se ha valorado la importancia del servicio posventa en los procesos comerciales.",
+     "Se han identificado los elementos que intervienen en la atención posventa.",
+     "Se han identificado las situaciones comerciales que precisan seguimiento y servicio posventa.",
+     "Se han aplicado los métodos más utilizados habitualmente en el control de calidad del servicio posventa y los elementos que intervienen en la fidelización del cliente.",
+     "Se han distinguido los momentos o fases que estructuran el proceso de posventa.",
+     "Se han utilizado las herramientas de gestión de un servicio posventa.",
+     "Se han descrito las fases del procedimiento de relación con los clientes.",
+     "Se han descrito los estándares de calidad definidos en la prestación del servicio.",
+     "Se han detectado y solventado los errores producidos en la prestación del servicio.",
+     "Se ha aplicado el tratamiento adecuado en la gestión de las anomalías producidas."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0179",
+  "nombre": "Inglés",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Reconoce información profesional y cotidiana contenida en todo tipo de discursos orales emitidos por cualquier medio de comunicación en lengua estándar, interpretando con precisión el contenido del mensaje.",
+    "ces": [
+     "Se ha identificado la idea principal del mensaje.",
+     "Se ha reconocido la finalidad de mensajes radiofónicos y de otro material grabado o retransmitido pronunciado en lengua estándar, identificando el estado de ánimo y el tono del hablante.",
+     "Se ha extraído información de grabaciones en lengua estándar relacionadas con la vida social, profesional o académica.",
+     "Se han identificado los puntos de vista y las actitudes del hablante.",
+     "Se han identificado las ideas principales de declaraciones y mensajes sobre temas concretos y abstractos, en lengua estándar y con un ritmo normal.",
+     "Se ha comprendido lo que se le dice en lengua estándar, incluso en un ambiente con ruido de fondo.",
+     "Se han extraído las ideas principales de conferencias, charlas e informes, y otras formas de presentación académica y profesional lingüísticamente complejas.",
+     "Se ha tomado conciencia de la importancia de comprender globalmente un mensaje, sin entender todos y cada uno de los elementos del mismo."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Interpreta información profesional contenida en textos escritos complejos, analizando de forma comprensiva sus contenidos.",
+    "ces": [
+     "Se ha leído con un alto grado de independencia, adaptando el estilo y la velocidad de la lectura a distintos textos y finalidades, y utilizando fuentes de referencia apropiadas de forma selectiva.",
+     "Se ha interpretado la correspondencia relativa a su especialidad, captando fácilmente el significado esencial.",
+     "Se han interpretado textos extensos y de relativa complejidad, relacionados o no con su especialidad, siempre que pueda volver a leer las secciones difíciles.",
+     "Se ha relacionado el texto con el ámbito del sector a que se refiere.",
+     "Se ha identificado con rapidez el contenido y la importancia de noticias, artículos e informes sobre una amplia serie de temas profesionales y decide si es oportuno un análisis más profundo.",
+     "Se han realizado traducciones de textos complejos utilizando material de apoyo en caso necesario.",
+     "Se han interpretado mensajes técnicos recibidos a través de soportes telemáticos: e-mail, fax.",
+     "Se han interpretado instrucciones extensas y complejas, que estén dentro de su especialidad."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Emite mensajes orales claros y bien estructurados, analizando el contenido de la situación y adaptándose al registro lingüístico del interlocutor.",
+    "ces": [
+     "Se han identificado los registros utilizados para la emisión del mensaje.",
+     "Se ha expresado con fluidez, precisión y eficacia sobre una amplia serie de temas generales, profesionales o de ocio, marcando con claridad la relación entre las ideas.",
+     "Se ha comunicado espontáneamente, adoptando un nivel de formalidad adecuado a las circunstancias y utilizando para ello estrategias apropiadas al contexto de inicio y mantenimiento de conversaciones.",
+     "Se han utilizado normas de protocolo en presentaciones formales e informales.",
+     "Se ha utilizado correctamente la terminología de la profesión.",
+     "Se han expresado y defendido puntos de vista con claridad, proporcionando explicaciones y argumentos adecuados.",
+     "Se ha descrito y secuenciado un proceso de trabajo de su competencia.",
+     "Se ha argumentado con todo detalle la elección de una determinada opción o procedimiento de trabajo elegido.",
+     "Se ha solicitado la reformulación del discurso o parte del mismo cuando se ha considerado necesario."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Elabora documentos e informes propios del sector o de la vida académica y cotidiana, relacionando los recursos lingüísticos con el propósito del mismo.",
+    "ces": [
+     "Se han redactado textos claros y detallados sobre una variedad de temas relacionados con su especialidad, sintetizando y evaluando información y argumentos procedentes de varias fuentes.",
+     "Se ha organizado la información con corrección, precisión, coherencia y cohesión, solicitando y/o facilitando información de tipo general o detallada.",
+     "Se han redactado informes, destacando los aspectos significativos y ofreciendo detalles relevantes que sirvan de apoyo.",
+     "Se ha cumplimentado documentación específica de su campo profesional.",
+     "Se han aplicado las fórmulas establecidas y el vocabulario específico en la cumplimentación de documentos.",
+     "Se han resumido artículos, manuales de instrucciones y otros documentos escritos, utilizando un vocabulario amplio para evitar la repetición frecuente.",
+     "Se han utilizado las fórmulas de cortesía propias del documento a elaborar."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Aplica aptitudes y comportamientos profesionales en situaciones de comunicación, describiendo las relaciones típicas y características del país de la lengua extranjera.",
+    "ces": [
+     "Se han definido los rasgos más significativos de las costumbres y usos del sector profesional donde se utiliza la lengua extranjera.",
+     "Se han descrito y aplicado los protocolos y normas de relación social propios del sector y de la cultura anglosajona.",
+     "Se han determinado las situaciones más frecuentes en las que el idioma será necesario para su desempeño profesional y académico.",
+     "Se han identificado las destrezas comunicativas que se deben mejorar de cara a responder a las necesidades planteadas.",
+     "Se han identificado los valores y creencias propios de la comunidad donde se habla la lengua extranjera.",
+     "Se ha identificado los aspectos socio-profesionales propios de la actividad profesional, en cualquier tipo de texto.",
+     "Se ha reconocido los marcadores lingüísticos de la procedencia regional."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0180",
+  "nombre": "Segunda lengua extranjera",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Reconoce información cotidiana y profesional específica contenida en discursos orales claros y sencillos emitidos en lengua estándar, identificando el contenido global del mensaje.",
+    "ces": [
+     "Se ha situado el mensaje en su contexto profesional.",
+     "Se ha captado la idea principal del mensaje.",
+     "Se ha identificado la información específica contenida en el mismo.",
+     "Se ha identificado la actitud e intención del interlocutor.",
+     "Se han extraído las ideas principales de un mensaje emitido por un medio de comunicación.",
+     "Se ha identificado el hilo argumental de una situación comunicativa visionada.",
+     "Se han determinado los roles que aparecen en una secuencia visionada."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Interpreta información profesional escrita contenida en textos sencillos, analizando sus contenidos de forma comprensiva.",
+    "ces": [
+     "Se han leído de forma comprensiva textos específicos de su ámbito profesional.",
+     "Se ha identificado con precisión la terminología utilizada.",
+     "Se ha extraído la información más relevante de un texto relativo a su profesión.",
+     "Se han realizado traducciones directas e inversas de textos específicos sencillos, utilizando materiales de consulta y diccionarios técnicos.",
+     "Se ha interpretado el mensaje recibido a través de soportes telemáticos: e-mail, fax.",
+     "Se ha relacionado el texto con el ámbito profesional al que se refiere.",
+     "Se han leído con cierto grado de independencia distintos tipos de textos, adaptando el estilo y la velocidad de lectura, aunque pueda presentar alguna dificultad con modismos poco frecuentes."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Emite mensajes orales sencillos, claros y bien estructurados, relacionando el propósito del mensaje con las estructuras lingüísticas adquiridas.",
+    "ces": [
+     "Se ha establecido la comunicación, utilizando fórmulas sencillas, nexos de unión y estrategias de interacción.",
+     "Se ha utilizado correctamente la terminología de la profesión.",
+     "Se han manifestado preferencias laborales en su área profesional.",
+     "Se ha descrito con relativa fluidez el entorno profesional más próximo.",
+     "Se han secuenciado las actividades propias de un proceso productivo de su área profesional.",
+     "Se han realizado, de manera clara, presentaciones breves y preparadas sobre un tema dentro de su especialidad.",
+     "Se han utilizado normas de protocolo en presentaciones adaptadas a su nivel.",
+     "Se ha respondido a preguntas breves y complementarias relativas a su profesión.",
+     "Se ha intercambiado, con cierta fluidez, información específica, utilizando frases de estructura sencilla."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Elabora textos sencillos, relacionando reglas gramaticales con el propósito de los mismos.",
+    "ces": [
+     "Se ha cumplimentado la información básica requerida en distintos tipos de documentos.",
+     "Se ha elaborado una solicitud de empleo a partir de una oferta de trabajo dada.",
+     "Se ha redactado un breve currículum vitae.",
+     "Se ha cumplimentado un texto con apoyos visuales y claves lingüísticas aportadas.",
+     "Se ha elaborado un pequeño informe con un propósito comunicativo específico.",
+     "Se ha redactado una carta comercial a partir de instrucciones detalladas y modelos dados.",
+     "Se han realizado resúmenes breves de textos sencillos, relacionados con su entorno profesional."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Aplica actitudes y comportamientos profesionales en situaciones de comunicación, describiendo las relaciones típicas características del país de la lengua extranjera.",
+    "ces": [
+     "Se han definido los rasgos más significativos de las costumbres y usos de la comunidad donde se habla la lengua extranjera.",
+     "Se han descrito los protocolos y normas de relación social propios del país.",
+     "Se han identificado los valores y creencias propios de la comunidad donde se habla la lengua extranjera.",
+     "Se han identificado los aspectos socio-profesionales específicos del área profesional, en cualquier tipo de texto.",
+     "Se han aplicado los protocolos y normas de relación social propios del país de la lengua extranjera.",
+     "Se han reconocido los marcadores lingüísticos de la procedencia regional."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0661",
+  "nombre": "Protocolo empresarial",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Caracteriza los fundamentos y elementos de relaciones públicas, relacionándolos con las distintas situaciones empresariales.",
+    "ces": [
+     "Se han definido los fundamentos y principios de las relaciones públicas.",
+     "Se ha identificado y clasificado el concepto de identidad corporativa, imagen corporativa y sus componentes.",
+     "Se han reconocido distintos tipos de imagen proyectadas por empresas y organizaciones.",
+     "Se han reconocido y valorado los diferentes recursos de las relaciones públicas.",
+     "Se han seleccionado diferentes medios de comunicación, dependiendo del producto que hay que presentar y el público al que se dirige.",
+     "Se ha valorado la importancia de la imagen, la identidad corporativa, la comunicación y las relaciones públicas en las empresas y organizaciones.",
+     "Se ha analizado la conveniencia de contar con un servicio de protocolo y/o un gabinete de prensa o comunicación, según la dimensión de la empresa u organización."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Selecciona las técnicas de protocolo empresarial aplicable, describiendo los diferentes elementos de diseño y organización, según la naturaleza y el tipo de acto, así como al público al que va dirigido.",
+    "ces": [
+     "Se ha identificado la naturaleza y el tipo de actos que se deben organizar y se han aplicado las soluciones organizativas adecuadas.",
+     "Se han descrito las fases de creación y diseño de un manual de protocolo y relaciones públicas según el público al que va dirigido.",
+     "Se han diferenciado los requisitos y necesidades de los actos protocolarios nacionales de los internacionales.",
+     "Se han identificado las técnicas de funcionamiento, planificación y organización de actos protocolarios empresariales.",
+     "Se ha elaborado el programa y cronograma del acto que se va a organizar.",
+     "Se ha definido y/o cumplimentado la documentación necesaria según el acto, para su correcto desarrollo.",
+     "Se ha calculado el presupuesto económico del acto que hay que organizar.",
+     "Se han definido los indicadores de calidad y puntos clave para el correcto desarrollo del acto.",
+     "Se han comprobado las desviaciones producidas en los indicadores de calidad y puntos clave, y se han previsto las medidas de corrección correspondientes para ediciones posteriores.",
+     "Se han valorado los actos protocolarios como medio coadyuvante a la estrategia en los negocios y en la mejora de las relaciones internas de la empresa.",
+     "Se han analizado los aspectos de seguridad adecuados en función del tipo de acto y/o invitados y cómo pueden afectar a la organización."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Caracteriza el protocolo institucional, analizando los diferentes sistemas de organización y utilizando las normas establecidas.",
+    "ces": [
+     "Se han definido los elementos que conforman el protocolo institucional y las clases de público al que puede dirigirse.",
+     "Se ha valorado la importancia del conocimiento y seguimiento de los manuales de protocolo y relaciones públicas definidos en las instituciones.",
+     "Se ha caracterizado el diseño, planificación y programación del acto protocolario en función del evento que se va a organizar.",
+     "Se han descrito los principales elementos simbólicos y/o de representación en los actos institucionales (banderas, himnos y otros).",
+     "Se han identificado las técnicas de funcionamiento, planificación y organización de actos protocolarios institucionales.",
+     "Se ha definido y/o cumplimentado la documentación necesaria según el acto, para su correcto desarrollo.",
+     "Se ha calculado el presupuesto económico del acto que se va a organizar.",
+     "Se han comprobado las partidas presupuestarias reservadas para el acto, así como el cumplimento de procedimientos y plazos de los trámites necesarios.",
+     "Se han definido los indicadores de calidad y puntos clave para el correcto desarrollo del acto.",
+     "Se han valorado los actos protocolarios institucionales como el medio de comunicación y relación entre instituciones.",
+     "Se han analizado los aspectos de seguridad adecuados y la correcta coordinación con los servicios de seguridad de las instituciones implicadas en un acto protocolario."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Coordina actividades de apoyo a la comunicación y a las relaciones profesionales, internas y externas, asociando las técnicas empleadas con el tipo de usuario.",
+    "ces": [
+     "Se ha valorado la importancia de las relaciones públicas como elemento estratégico en el trato con clientes, internos y externos, usuarios, proveedores y terceros relacionados con la empresa (“stakeholders”).",
+     "Se han descrito los componentes de las relaciones públicas (saber estar, educación social, indumentaria, etiqueta, saludo, invitación formal, despedida y tiempos, entre otros).",
+     "Se han analizado los objetivos y fases del protocolo interno atendiendo al organigrama funcional de la empresa/ departamento y las relaciones funcionales establecidas.",
+     "Se han analizado y descrito los objetivos y fases del protocolo externo según el cliente/usuario.",
+     "Se han especificado las modalidades de atención al cliente/usuario y los diferentes proveedores externos necesarios para su desarrollo.",
+     "Se han analizado las técnicas de relaciones públicas y de protocolo relacionadas con los medios de comunicación.",
+     "Se han aplicado las acciones del contacto directo y no directo, respetando las normas de deontología profesional.",
+     "Se han demostrado las actitudes y aptitudes de profesionales en los procesos de atención al cliente.",
+     "Se han definido las técnicas de dinamización e interacción grupal.",
+     "Se ha mantenido la confidencialidad y privacidad, ajustando sus actuaciones al código deontológico de la profesión."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Elabora las cartas de servicios o los compromisos de calidad y garantía, ajustándose a los protocolos establecidos en la empresa/organización.",
+    "ces": [
+     "Se han reconocido los compromisos de calidad y garantía que ofrece la empresa a su usuario/cliente, y las normativas de consumo a las que está sujeto.",
+     "Se han descrito las implicaciones de las políticas empresariales relativas a la responsabilidad social corporativa.",
+     "Se han definido las características principales de los centros de atención al cliente y de las cartas de servicio.",
+     "Se han definido y analizado los conceptos formales y no formales de quejas, reclamaciones y sugerencias.",
+     "Se ha valorado la importancia de las quejas, reclamaciones y sugerencias como elemento de mejora continua.",
+     "Se ha analizado la normativa legal vigente en materia de reclamaciones de clientes en establecimientos de empresas.",
+     "Se han diseñado los puntos clave que debe contener un manual corporativo de atención al cliente/usuario y gestión de quejas y reclamaciones.",
+     "Se ha valorado la importancia de tener una actitud empática hacia el cliente/usuario."
+    ]
+   },
+   {
+    "ra": 6,
+    "enunciado": "Promueve actitudes correctas de atención al cliente/usuario, analizando la importancia de superar las expectativas del mismo.",
+    "ces": [
+     "Se han analizado las expectativas de los diferentes tipos de clientes/usuarios.",
+     "Se han definido las fases para la implantación de un servicio o procedimiento de atención al cliente/usuario, incluyendo la faceta de control de calidad del mismo.",
+     "Se han descrito las claves para lograr una actitud de empatía con el cliente/usuario.",
+     "Se ha valorado la importancia de una actitud de simpatía.",
+     "Se ha valorado en todo momento una actitud de respeto hacia los clientes, superiores y compañeros.",
+     "Se han definido variables de diseño para todos a la hora de la planificación y desarrollo de la atención al cliente/ usuario.",
+     "Se ha supervisado la atención al cliente en las instancias que dependan del asistente de dirección.",
+     "Se han seguido procedimientos y actitudes conforme a la imagen corporativa.",
+     "Se ha valorado la importancia de integrar la cultura de empresa en la atención al cliente/usuario para el logro de los objetivos establecidos en la organización.",
+     "Se ha mantenido la confidencialidad y privacidad, ajustando sus actuaciones al código deontológico de la profesión."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0662",
+  "nombre": "Organización de eventos empresariales",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Optimiza el ambiente de trabajo y el compromiso del equipo con los objetivos de la organización, aplicando técnicas de motivación en la gestión de trabajos y la transmisión de órdenes y objetivos, de forma sintética, comprensible y por el medio más adecuado.",
+    "ces": [
+     "Se ha valorado la importancia de crear un ambiente de trabajo positivo y de cooperación.",
+     "Se han identificado las cuestiones clave para el desarrollo de relaciones humanas cordiales que fomenten la asunción de objetivos comunes de la organización.",
+     "Se han reconocido las formas, sistemáticas y puntuales, de motivación de equipos humanos.",
+     "Se han relacionado las situaciones profesionales habituales en una organización con las buenas prácticas y los principios de ética empresarial.",
+     "Se han aplicado las técnicas de liderazgo y dirección de grupos más indicadas en las diferentes situaciones empresariales.",
+     "Se ha descrito la identificación correcta de necesidades y la anticipación como objetivo para la mejora del servicio.",
+     "Se han seleccionado las técnicas de comunicación formal e informal, el diálogo y la argumentación como bases para optimizar la organización del trabajo en la empresa/entidad.",
+     "Se ha analizado la participación de todos los miembros de un grupo como imprescindible para la obtención de resultados con proyección a largo plazo.",
+     "Se ha valorado la importancia de las acciones destinadas a la prevención y reducción del estrés y la tensión.",
+     "Se han analizado las ventajas de fomentar la resolución de conflictos dentro del grupo de trabajo y en las relaciones externas, así como su anticipación",
+     "Se ha mantenido la confidencialidad y privacidad, ajustando sus actuaciones al código deontológico de la profesión."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Coordina las actuaciones, propias y de la dirección o del grupo de trabajo a quien presta soporte, aplicando métodos y técnicas de gestión del tiempo, convencionales y/o electrónicos.",
+    "ces": [
+     "Se han relacionado los métodos y técnicas de gestión del tiempo, analizando las fases de los distintos métodos de su optimización.",
+     "Se han identificado las causas habituales de pérdidas de tiempo (ladrones de tiempo) y los métodos para evitarlas.",
+     "Se han valorado los distintos tipos de prioridades según la situación y los objetivos establecidos para la gestión de la agenda.",
+     "Se han empleado las herramientas, convencionales y/o electrónicas, aplicando los procedimientos para una correcta gestión del tiempo.",
+     "Se ha valorado la importancia de estandarizar tareas y procedimientos, y automatizarlos siempre que sea posible para lograr una mayor eficiencia y eficacia.",
+     "Se han descrito los distintos tipos de agenda disponibles y su utilidad y usabilidad en cada situación.",
+     "Se ha analizado la complejidad de coordinar las agendas de las personas implicadas, atendiendo en todo momento las jerarquías establecidas y las funciones asignadas a cada uno.",
+     "Se ha valorado la importancia de mantener la imagen corporativa y los estándares de calidad establecidos."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Planifica las tareas de su puesto de dirección, adaptándolas a la situación, al interlocutor y a los objetivos del trabajo.",
+    "ces": [
+     "Se ha identificado la estructura organizativa, la cultura corporativa y las prioridades establecidas.",
+     "Se han identificado las características propias de las tareas del asistente de dirección, los medios disponibles y los objetivos propuestos.",
+     "Se han diferenciado los niveles de autonomía y responsabilidad que deben aplicarse en las actividades de apoyo y/o en las actividades delegadas.",
+     "Se han descrito los criterios de gestión y organización de recursos materiales e instalaciones, teniendo en cuenta el “diseño para todos”.",
+     "Se han analizado los recursos humanos disponibles y el nivel de autonomía de gestión para cumplir los objetivos establecidos y canalizar adecuadamente tareas y comunicaciones.",
+     "Se han gestionado y mantenido actualizadas redes de contactos, formales e informales, para facilitar la tarea de la dirección o los equipos de trabajo a los que se da soporte.",
+     "Se han seleccionado los modelos de documentación, libro de estilo, manual de imagen corporativa y procedimientos aplicables en cada caso.",
+     "Se han valorado las condiciones medioambientales y de trabajo.",
+     "Se han establecidos los tiempos para la realización de las tareas propias del asistente de dirección, cumpliendo los plazos y niveles de calidad."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Organiza reuniones y eventos corporativos, aplicando técnicas de negociación, normas de protocolo y cumpliendo los objetivos propuestos.",
+    "ces": [
+     "Se han descrito los criterios de eficiencia y optimización de recursos o instalaciones, atendiendo al tipo de evento que hay que planificar y a sus objetivos.",
+     "Se han identificado los elementos estratégicos para preparar las negociaciones en situaciones profesionales estándares.",
+     "Se han planificado y programado los recursos, personales y materiales, necesarios y se han elaborado los presupuestos, totales y parciales, indicado con condiciones de pago y sus plazos.",
+     "Se han evaluado las ofertas de empresas organizadoras de eventos.",
+     "Se ha valorado la importancia de aplicar técnicas de negociación en la contratación de los servicios necesarios para reuniones y eventos.",
+     "Se han observado las jerarquías y protocolos con respecto a los participantes en reuniones y eventos.",
+     "Se ha previsto la logística necesaria a la reunión o evento, minimizando las posibles contingencias, con eficacia y rapidez, y siguiendo las normas de seguridad.",
+     "Se han recibido con cortesía y aplicación de las normas de protocolo a visitas y clientes, transmitiendo la imagen corporativa.",
+     "Se han distinguido las técnicas propias de la organización de reuniones y eventos, nacionales o internacionales, y se han establecido los indicadores de supervisión y control del desarrollo del evento y el análisis de las causas de incumplimiento, de producirse éste.",
+     "Se han analizado los aspectos de seguridad apropiados, en función del tipo de reunión, viaje o evento corporativo organizado y/o de sus asistentes, y la forma en que puede afectar la organización del mismo."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Organiza viajes y desplazamientos nacionales e internacionales, cumpliendo los objetivos y procedimientos establecidos.",
+    "ces": [
+     "Se han previsto las necesidades logísticas de viajes para las reuniones y eventos corporativos.",
+     "Se han descrito los elementos en la organización de viajes nacionales e internacionales.",
+     "Se ha valorado la idoneidad del modo de transporte en cada caso.",
+     "Se han negociado las condiciones con las agencias de viajes u otros proveedores del servicio.",
+     "Se han tenido en cuenta las posibles contingencias, minimizándolas y preparando alternativas viables",
+     "Se ha preparado la agenda de trabajo que se desarrollará durante el viaje.",
+     "Se ha obtenido información sobre los requisitos de documentación, permisos, divisas, huso horario, vacunaciones, control de aduanas y protocolo y usos del país de destino.",
+     "Se han analizado los aspectos de seguridad apropiados, en función del tipo de reunión, viaje o evento corporativo organizado y/o sus asistentes, y la forma en que puede afectar la organización del mismo."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0663",
+  "nombre": "Gestión avanzada de la información",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Gestiona las facetas administrativas de proyectos empresariales, administrando recursos mediante una aplicación específica de control.",
+    "ces": [
+     "Se ha elaborado una propuesta de gestión administrativa de un proyecto acorde con los objetivos que se pretenden con el mismo.",
+     "Se han definido las tareas que se deben llevar a cabo relacionadas con el soporte administrativo del proyecto.",
+     "Se han identificado las actividades, tareas y plazos de entrega o finalización de cada una de las fases de los proyectos.",
+     "Se han gestionado los recursos y requisitos (tiempos, costes, calidad, recursos humanos), así como los riesgos derivados del proyecto.",
+     "Se ha supervisado y revisado cada una de las fases del proyecto.",
+     "Se ha establecido la estructura organizativa, asignando los diferentes roles y responsabilidades.",
+     "Se han redactado y presentado informes a los diversos agentes interesados en el proyecto (stakeholders)."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Elabora documentos, integrando textos, datos, imágenes y gráficos a través de las aplicaciones informáticas adecuadas.",
+    "ces": [
+     "Se ha determinado el tipo de aplicación ofimática necesaria para la elaboración y presentación de documentos.",
+     "Se han elaborado plantillas específicas adaptadas al tipo de documento que se va a elaborar.",
+     "Se han realizado las macros adecuadas para la automatización de trabajos repetitivos.",
+     "Se han seleccionado los datos adecuados para la integración del documento.",
+     "Se ha efectuado la combinación de la correspondencia a través de la selección de los datos necesarios.",
+     "Se han utilizado páginas web para la obtención de posibles gráficos, diagramas o dibujos.",
+     "Se han confeccionado documentos organizados con formato y presentación adecuados.",
+     "Se ha presentado y publicado el trabajo final según los requerimientos de tiempo y forma."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Elabora presentaciones audiovisuales relacionadas con la gestión empresarial o de proyectos, utilizando una aplicación de tratamiento de vídeo digital.",
+    "ces": [
+     "Se ha determinado el equipamiento y material necesario.",
+     "Se ha efectuado un guion para la producción audiovisual.",
+     "Se han descrito los formatos de audio y vídeo más habituales",
+     "Se han seleccionado y ordenado los clips de audio y vídeo.",
+     "Se han introducido los archivos de audio digital en la aplicación informática.",
+     "Se han editado los archivos de audio y vídeo digital en la aplicación informática.",
+     "Se han insertado los títulos y rótulos necesarios en la aplicación informática.",
+     "Se ha efectuado la autoría y generación de la presentación en soporte óptico.",
+     "Se ha efectuado la conversión a otros formatos aptos para su difusión por Internet."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Realiza tareas de gestión empresarial y de proyectos, empleando herramientas de la Web 2.0.",
+    "ces": [
+     "Se han utilizado aplicaciones web para la gestión de mensajería electrónica.",
+     "Se han realizado comunicaciones mediante aplicaciones web de telefonía y videoconferencia de bajo coste.",
+     "Se han manejado calendarios y agendas de compromisos mediante aplicaciones web.",
+     "Se han utilizado aplicaciones de ofimática colaborativa a través de aplicaciones web.",
+     "Se han creado páginas web corporativas a través de las posibilidades de las aplicaciones web.",
+     "Se han gestionado comunicaciones mediante mensajería instantánea a través de aplicaciones web.",
+     "Se han realizado diversas gestiones empresariales a través de una aplicación web de oficina virtual."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Administra los documentos a través de un sistema de gestión documental.",
+    "ces": [
+     "Se han determinado los elementos que componen un sistema de gestión documental: bases de datos documentales, hardware, software, redes, usuarios y administradores.",
+     "Se han escaneado documentos mediante programas de gestión documental.",
+     "Se han almacenado, clasificado y recuperado documentos, siguiendo los parámetros establecidos.",
+     "Se han establecido mecanismos de custodia de los documentos.",
+     "Se han diseñado reglas para el flujo de documentos entre diversos puestos de la organización: workflow.",
+     "Se han caracterizado los condicionantes de tiempo y forma en la distribución de documentos.",
+     "Se han diseñado mecanismos de colaboración en la creación de documentos compartidos: workflow.",
+     "Se han cumplimentado los estándares de autenticación de los documentos ante las diferentes instancias (públicas y privadas).",
+     "Se ha valorado la contribución de los programas de gestión documental a la conservación del medio ambiente."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0664",
+  "nombre": "Proyecto de asistencia a la dirección",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Identifica necesidades del sector productivo, relacionándolas con proyectos tipo que las puedan satisfacer.",
+    "ces": [
+     "Se han clasificado las empresas del sector por sus características organizativas y el tipo de producto o servicio que ofrecen.",
+     "Se han caracterizado las empresas tipo, indicando la estructura organizativa y las funciones de cada departamento.",
+     "Se han identificado las necesidades más demandadas a las empresas.",
+     "Se han valorado las oportunidades de negocio previsibles en el sector.",
+     "Se ha identificado el tipo de proyecto requerido para dar respuesta a las demandas previstas.",
+     "Se han determinado las características específicas requeridas por el proyecto.",
+     "Se han determinado las obligaciones fiscales, laborales y de prevención de riesgos y sus condiciones de aplicación.",
+     "Se han identificado posibles ayudas o subvenciones para la incorporación de las nuevas tecnologías de producción o de servicio que se proponen.",
+     "Se ha elaborado el guión de trabajo que se va a seguir para la elaboración del proyecto."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Diseña proyectos relacionados con las competencias expresadas en el título, incluyendo y desarrollando las fases que lo componen.",
+    "ces": [
+     "Se ha recopilado información relativa a los aspectos que van a ser tratados en el proyecto.",
+     "Se ha realizado el estudio de viabilidad técnica del mismo.",
+     "Se han identificado las fases o partes que componen el proyecto y su contenido.",
+     "Se han establecido los objetivos que se pretenden conseguir, identificando su alcance.",
+     "Se han previsto los recursos materiales y personales necesarios para realizarlo.",
+     "Se ha realizado el presupuesto económico correspondiente.",
+     "Se han identificado las necesidades de financiación para la puesta en marcha del mismo.",
+     "Se ha definido y elaborado la documentación necesaria para su diseño.",
+     "Se han identificado los aspectos que se deben controlar para garantizar la calidad del proyecto."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Planifica la ejecución del proyecto, determinando el plan de intervención y la documentación asociada.",
+    "ces": [
+     "Se han secuenciado las actividades, ordenándolas en función de las necesidades de implementación.",
+     "Se han determinado los recursos y la logística necesarios para cada actividad.",
+     "Se han identificado las necesidades de permisos y autorizaciones para llevar a cabo las actividades.",
+     "Se han determinado los procedimientos de actuación o ejecución de las actividades.",
+     "Se han identificado los riesgos inherentes a la ejecución, definiendo el plan de prevención de riesgos y los medios y equipos necesarios.",
+     "Se ha planificado la asignación de recursos materiales y humanos y los tiempos de ejecución.",
+     "Se ha hecho la valoración económica que da respuesta a las condiciones de la puesta en práctica.",
+     "Se ha definido y elaborado la documentación necesaria para la ejecución."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Define los procedimientos para el seguimiento y control en la ejecución del proyecto, justificando la selección de variables e instrumentos empleados.",
+    "ces": [
+     "Se ha definido el procedimiento de evaluación de las actividades o intervenciones.",
+     "Se han definido los indicadores de calidad para realizar la evaluación.",
+     "Se ha definido el procedimiento para la evaluación de las incidencias que puedan presentarse durante la realización de las actividades, su posible solución y registro.",
+     "Se ha definido el procedimiento para gestionar los posibles cambios en los recursos y en las actividades, incluyendo el sistema de registro de los mismos.",
+     "Se ha definido y elaborado la documentación necesaria para la evaluación de las actividades y del proyecto.",
+     "Se ha establecido el procedimiento para la participación en la evaluación de los usuarios o clientes y se han elaborado los documentos específicos.",
+     "Se ha establecido un sistema para garantizar el cumplimiento del pliego de condiciones del proyecto, cuando este existe."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0665",
+  "nombre": "Formación y orientación laboral",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Selecciona oportunidades de empleo, identificando las diferentes posibilidades de inserción y las alternativas de aprendizaje a lo largo de la vida.",
+    "ces": [
+     "Se ha valorado la importancia de la formación permanente como factor clave para la empleabilidad y la adaptación a las exigencias del proceso productivo.",
+     "Se han identificado los itinerarios formativos-profesionales relacionados con el perfil profesional del Técnico Superior en Asistencia a la Dirección.",
+     "Se han determinado las aptitudes y actitudes requeridas para la actividad profesional relacionada con el perfil del título.",
+     "Se han identificado los principales yacimientos de empleo, autoempleo, así como de inserción laboral para el Técnico Superior en Asistencia a la Dirección.",
+     "Se han determinado las técnicas utilizadas en el proceso de búsqueda de empleo.",
+     "Se ha valorado la importancia de las nuevas tecnologías de la información y la comunicación para la búsqueda activa de empleo.",
+     "Se han previsto las alternativas de autoempleo en los sectores profesionales relacionados con el título.",
+     "Se ha realizado la valoración de la personalidad, aspiraciones, intereses, actitudes y formación propia para la toma de decisiones, evitando, en su caso, los condicionamientos por razón de sexo o de otra índole.",
+     "Se han identificado las posibilidades del Técnico Superior en Asistencia a la Dirección en las ofertas de empleo público de las diferentes Administraciones.",
+     "Se han valorado las oportunidades del Técnico Superior en Asistencia a la Dirección en un contexto global así como las posibilidades de transferencia de las cualificaciones que lo integran, a través del principio de libertad de circulación de servicios en la Unión Europea.",
+     "Se han identificado las habilitaciones especiales requeridas para el desempeño de determinadas actividades profesionales en el sector de la administración."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Aplica las estrategias del trabajo en equipo, valorando su eficacia y eficiencia para la consecución de los objetivos de la organización.",
+    "ces": [
+     "Se han valorado las ventajas de trabajo en equipo en situaciones de trabajo relacionadas con el perfil del Técnico Superior en Asistencia a la Dirección, frente al trabajo individual.",
+     "Se han identificado los equipos de trabajo que pueden constituirse en una situación real de trabajo.",
+     "Se han identificado las fases que atraviesa el desarrollo de la actividad de un equipo de trabajo.",
+     "Se han aplicado técnicas de dinamización de grupos de trabajo.",
+     "Se han determinado las características del equipo de trabajo eficaz frente a los equipos ineficaces mediante la adecuada gestión del conocimiento en los mismos.",
+     "Se ha valorado positivamente la necesaria existencia de diversidad de roles y opiniones asumidos por los miembros de un equipo.",
+     "Se ha descrito el proceso de toma de decisiones en equipo, valorando convenientemente la participación y el consenso de sus miembros.",
+     "Se ha valorado la necesidad de adaptación e integración en aras al funcionamiento eficiente de un equipo de trabajo.",
+     "Se han analizado los procesos de dirección y liderazgo presentes en el funcionamiento de los equipos de trabajo.",
+     "Se ha reconocido la posible existencia de conflicto entre los miembros de un grupo como un aspecto característico de las organizaciones.",
+     "Se han identificado los tipos de conflictos, etapas que atraviesan y sus fuentes.",
+     "Se han determinado procedimientos para la resolución del conflicto.",
+     "Se han analizado las distintas tácticas y técnicas de negociación tanto para la resolución de conflictos como para el progreso profesional."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Ejerce los derechos y cumple las obligaciones que se derivan de las relaciones laborales, reconociéndolas en los diferentes contratos de trabajo.",
+    "ces": [
+     "Se han identificado los conceptos básicos del derecho del trabajo y sus normas fundamentales.",
+     "Se han distinguido los principales organismos que intervienen en las relaciones entre empresarios y trabajadores y las fuentes legales que las regulan.",
+     "Se han diferenciado las relaciones laborales sometidas a la regulación del estatuto de los trabajadores de las relaciones laborales especiales y excluidas.",
+     "Se han determinado los derechos y obligaciones derivados de la relación laboral.",
+     "Se han clasificado las principales modalidades de contratación, identificando las medidas de fomento de la contratación para determinados colectivos.",
+     "Se han valorado las medidas establecidas por la legislación vigente para la conciliación de la vida personal, laboral y familiar.",
+     "Se han identificado las causas y efectos de la modificación, suspensión y extinción de la relación laboral.",
+     "Se ha analizado el recibo de salarios, identificando los principales elementos que lo integran.",
+     "Se han analizado los elementos que caracterizan al tiempo de la prestación laboral.",
+     "Se han determinado las distintas formas de representación de los trabajadores para la defensa de sus intereses laborales.",
+     "Se han analizado las diferentes medidas de conflicto colectivo y los procedimientos de solución de conflictos",
+     "Se han determinado las condiciones de trabajo pactadas en un convenio colectivo aplicable a un sector profesional relacionado con el título de Técnico Superior en Asistencia a la Dirección.",
+     "Se han identificado las características definitorias de los nuevos entornos de organización del trabajo.",
+     "Se han identificado los principales beneficios que las nuevas organizaciones han generado a favor de los trabajadores."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Determina la acción protectora del sistema de la Seguridad Social ante las distintas contingencias cubiertas, identificando las distintas clases de prestaciones.",
+    "ces": [
+     "Se ha valorado el papel de la Seguridad Social como pilar esencial para la mejora de la calidad de vida de la ciudadanía.",
+     "Se han enumerado las diversas contingencias que cubre el sistema de Seguridad Social.",
+     "Se han identificado los regímenes existentes en el sistema de la Seguridad Social especialmente el régimen general y en el régimen especial de trabajadores autónomos.",
+     "Se han identificado las obligaciones de empresario o empresaria y trabajador o trabajadora dentro del sistema de Seguridad Social.",
+     "Se han identificado en un supuesto sencillo las bases de cotización de un trabajador o trabajadora y las cuotas correspondientes a trabajador o trabajadora y empresario o empresaria.",
+     "Se han clasificado las prestaciones del sistema de Seguridad Social, identificando los requisitos.",
+     "Se han determinado las posibles situaciones legales de desempleo en supuestos prácticos sencillos.",
+     "Se ha realizado el cálculo de la duración y cuantía de una prestación por desempleo de nivel contributivo básico."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Evalúa los riesgos derivados de su actividad, analizando las condiciones de trabajo y los factores de riesgo presentes en su entorno laboral.",
+    "ces": [
+     "Se ha valorado la importancia de la cultura preventiva en todos los ámbitos y actividades de la empresa.",
+     "Se han relacionado las condiciones laborales con la salud del trabajador y de la trabajadora",
+     "Se han clasificado los factores de riesgo ligados a condiciones de seguridad, ambientales, ergonómicas y psicosociales en la actividad, así como los daños derivados de los mismos.",
+     "Se han identificado las situaciones de riesgo más habituales en los entornos de trabajo del Técnico Superior en Asistencia a la Dirección.",
+     "Se han definido las distintas técnicas de motivación y su determinación como factor clave de satisfacción e insatisfacción laboral.",
+     "Se ha determinado la evaluación de riesgos en la empresa.",
+     "Se han determinado las condiciones de trabajo con significación para la prevención en los entornos de trabajo relacionados con el perfil profesional del Técnico Superior en Asistencia a la Dirección.",
+     "Se han clasificado y descrito los tipos de daños profesionales, con especial referencia a accidentes de trabajo y enfermedades profesionales, relacionados con el perfil profesional del Técnico Superior en Asistencia a la Dirección."
+    ]
+   },
+   {
+    "ra": 6,
+    "enunciado": "Participa en la elaboración de un plan de prevención de riesgos en una pequeña empresa, identificando las responsabilidades de todos los agentes implicados.",
+    "ces": [
+     "Se ha identificado la normativa básica en materia de prevención de riesgos laborales.",
+     "Se han descrito las funciones específicas de nivel básico en prevención de riesgos laborales.",
+     "Se han determinado los principales derechos y deberes en materia de prevención de riesgos laborales, así como las responsabilidades derivadas del incumplimiento de las obligaciones preventivas.",
+     "Se han clasificado las distintas formas de gestión de la prevención en la empresa, en función de los distintos criterios establecidos en la normativa sobre prevención de riesgos laborales.",
+     "Se han determinado las formas de representación de los trabajadores en la empresa en materia de prevención de riesgos.",
+     "Se han identificado los organismos públicos relacionados con la prevención de riesgos laborales.",
+     "Se ha valorado la importancia de la existencia de un plan preventivo en la empresa, que incluya la secuenciación de actuaciones a realizar en caso de emergencia.",
+     "Se ha definido el contenido del plan de prevención en un centro de trabajo relacionado con el sector profesional del Técnico Superior en Asistencia a la Dirección.",
+     "Se ha proyectado un plan de emergencia y evacuación en una pequeña y mediana empresa."
+    ]
+   },
+   {
+    "ra": 7,
+    "enunciado": "Aplica las medidas de prevención y protección, analizando las situaciones de riesgo en el entorno laboral del Técnico Superior en Asistencia a la Dirección.",
+    "ces": [
+     "Se han definido las técnicas de prevención y de protección, individuales y colectivas, que deben aplicarse para evitar los daños en su origen y minimizar sus consecuencias en caso de que sean inevitables.",
+     "Se ha analizado el significado y alcance de los distintos tipos de señalización de seguridad.",
+     "Se han analizado los protocolos de actuación en caso de emergencia.",
+     "Se han identificado las técnicas de clasificación y transporte de personas heridas en caso de emergencia donde existan víctimas de diversa gravedad.",
+     "Se han identificado las técnicas básicas de primeros auxilios que han de ser aplicadas en el lugar del accidente ante distintos tipos de daños y la composición y uso del botiquín.",
+     "Se han determinado los requisitos y condiciones para la vigilancia de la salud del trabajador y su importancia como medida de prevención."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0667",
+  "nombre": "Formación en centros de trabajo",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Identifica la estructura y organización de la empresa, relacionándolas con el tipo de servicio que presta.",
+    "ces": [
+     "Se ha identificado la estructura organizativa de la empresa y las funciones de cada área de la misma.",
+     "Se ha comparado la estructura de la empresa con las organizaciones empresariales tipo existentes en el sector.",
+     "Se han relacionado las características del servicio y el tipo de clientes, con el desarrollo de la actividad empresarial.",
+     "Se han identificado los procedimientos de trabajo en el desarrollo de la prestación de servicio.",
+     "Se han valorado las competencias necesarias de los recursos humanos para el desarrollo óptimo de la actividad.",
+     "Se ha valorado la idoneidad de los canales de difusión más frecuentes en esta actividad."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Aplica hábitos éticos y laborales en el desarrollo de su actividad profesional, de acuerdo con las características del puesto de trabajo y con los procedimientos establecidos en la empresa.",
+    "ces": [
+     "Se han reconocido y justificado: La disponibilidad personal y temporal necesaria en el puesto de trabajo. Las actitudes personales (puntualidad y empatía, entre otras) y profesionales (orden, limpieza y responsabilidad, entre otras) necesarias para el puesto de trabajo. Los requerimientos actitudinales ante la prevención de riesgos en la actividad profesional. Los requerimientos actitudinales referidos a la calidad en la actividad profesional. Las actitudes relacionadas con el propio equipo de trabajo y con las jerarquías establecidas en la empresa. Las actitudes relacionadas con la documentación de las actividades realizadas en el ámbito laboral. Las necesidades formativas para la inserción y reinserción laboral en el ámbito científico y técnico del buen hacer del profesional.",
+     "Se han identificado las normas de prevención de riesgos laborales y los aspectos fundamentales de la Ley de Prevención de Riesgos Laborales de aplicación en la actividad profesional.",
+     "Se han puesto en marcha los equipos de protección individual según los riesgos de la actividad profesional y las normas de la empresa.",
+     "Se ha mantenido una actitud de respeto al medio ambiente en las actividades desarrolladas.",
+     "Se ha mantenido organizado, limpio y libre de obstáculos el puesto de trabajo o el área correspondiente al desarrollo de la actividad.",
+     "Se ha responsabilizado del trabajo asignado, interpretando y cumpliendo las instrucciones recibidas.",
+     "Se ha establecido una comunicación eficaz con la persona responsable en cada situación y con los miembros del equipo.",
+     "Se ha coordinado con el resto del equipo, comunicando las incidencias relevantes que se presenten.",
+     "Se ha valorado la importancia de su actividad y la necesidad de adaptación a los cambios de tareas.",
+     "Se ha responsabilizado de la aplicación de las normas y procedimientos en el desarrollo de su trabajo."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Elabora y tramita todo tipo de documentos y gestiona las comunicaciones relacionados con las áreas administrativas de la empresa, empleando medios, equipos e instrumentos de control, según los procedimientos de la empresa y el sector.",
+    "ces": [
+     "Se han detectado las necesidades de comunicación de los diferentes procesos de trabajo.",
+     "Se han identificado los equipos e instrumentos para la elaboración y el seguimiento de la documentación.",
+     "Se ha interpretado el contenido de los documentos y las gestiones de inicio de la tarea para documentarlos según procedimientos.",
+     "Se ha verificado el cumplimiento de la normativa aplicable.",
+     "Se ha verificado el cumplimiento de la petición de compra y los requisitos establecidos para las materias primas solicitadas.",
+     "Se ha acomodado el estilo, el medio de comunicación y la documentación al cliente o instancia demandante del producto o servicio.",
+     "Se han tenido en cuenta los aspectos relacionados con la atención al cliente y la gestión de la calidad."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Planifica y desarrolla tareas de apoyo a la gerencia, grupo de trabajo o proyecto, relacionados con la gestión de procesos de todos los ámbitos de la empresa, proponiendo líneas de actuación y supervisando las tareas del equipo a su cargo.",
+    "ces": [
+     "Se han deducido las necesidades de actuación con respecto de los procesos periódicos y no periódicos relacionados con la gestión de procesos de todos los ámbitos de la empresa u organismo.",
+     "Se han tenido en cuenta las posibles necesidades de coordinación con el resto del equipo de administración y con otros departamentos.",
+     "Se han determinado los procedimientos intermedios de documentación y tramitación, teniendo en cuenta las necesidades de los procesos administrativos y de apoyo a la gerencia.",
+     "Se han determinado los procesos, buscando una utilización racional de los recursos materiales y energéticos.",
+     "Se han previsto y determinado las necesidades relacionadas con el desarrollo de las diversas fases y técnicas propias del apoyo a la función directiva.",
+     "Se han determinado las posibles medidas de corrección en función de los resultados obtenidos.",
+     "Se han caracterizado y realizado las valoraciones de costes de las diferentes actuaciones de su competencia para decidir o proponer a sus superiores entre varias alternativas."
+    ]
+   }
+  ]
+ }
+]

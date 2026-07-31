@@ -8,12 +8,14 @@ let _iaProgressTimer = null
 let _iaProgressPhase = 0
 
 // IDs de los selects de módulo en cada pestaña
-const IA_MOD_SELS = ['ia-r-mod', 'ia-a-mod', 'ia-i-mod', 'ia-ap-mod', 'ia-t-mod']
+const IA_MOD_SELS = ['ia-r-mod', 'ia-a-mod', 'ia-i-mod', 'ia-p-mod', 'ia-g-mod',
+                     'ia-e-mod', 'ia-c-mod', 'ia-ap-mod', 'ia-t-mod']
 
 // Módulos cuyo --modulo necesita RAs en el select
 const IA_MOD_TO_RA = {
   'ia-r-mod': 'ia-r-ra',
   'ia-a-mod': 'ia-a-ra',
+  'ia-e-mod': 'ia-e-ra',
 }
 
 // ── Inicialización de la sección ──────────────────────────────────────────────
@@ -46,8 +48,11 @@ function initIaSection() {
   // Rellenar selects de RA para el módulo seleccionado
   _updateIaRas('ia-r-mod')
   _updateIaRas('ia-a-mod')
-  // La pestaña Informe depende del módulo: recargar sus alumnos
+  _updateIaRas('ia-e-mod')
+  // Informe y plan dependen del módulo: recargar su alumnado
   if (typeof iaInformeLoadAlumnos === 'function') iaInformeLoadAlumnos()
+  if (typeof iaPlanLoadAlumnos === 'function') iaPlanLoadAlumnos()
+  if (typeof iaCorregirLoad === 'function') iaCorregirLoad()
 
   // Wiring: cambio de módulo → actualizar RAs
   Object.keys(IA_MOD_TO_RA).forEach(modSelId => {
@@ -109,19 +114,41 @@ function iaTab(el, id) {
 }
 
 // ── Terminal ──────────────────────────────────────────────────────────────────
-function _humanizeIaMessage(text) {
+// Todos los avisos normativos que puede emitir el motor, con su gravedad.
+// Si el motor añade uno nuevo y no está aquí, se muestra igualmente su texto tal cual:
+// más vale un mensaje en bruto que un aviso que no llega.
+const IA_CODIGOS = [
+  ['RA_NO_EVALUADO',      'error',   'Faltan calificaciones en algunos Resultados de Aprendizaje. Completa la pestaña de Notas antes de generar el informe.'],
+  ['PONDERACION_CERO',    'error',   'La suma de las ponderaciones de los RA es 0%. Revisa la configuración del módulo.'],
+  ['NOTA_INVALIDA',       'error',   'Se ha detectado un formato o rango de nota incorrecto (debe estar entre 0 y 10).'],
+  ['ERROR_RED',           'error',   'No se ha podido conectar con el servidor de IA. Revisa tu conexión a internet o inténtalo más tarde.'],
+  ['SIN_DATOS',           'error',   'Faltan datos para generar esto. Revisa que el módulo tenga alumnado, actividades y notas.'],
+  ['RESPUESTA_NO_VALIDA', 'error',   'La respuesta del modelo no ha llegado en el formato esperado. Vuelve a intentarlo.'],
+  ['RA_NO_ENCONTRADO',    'error',   'El resultado de aprendizaje seleccionado no existe en este módulo.'],
+  ['SIN_IMAGENES',        'error',   'No he recibido ninguna foto del examen.'],
+  ['DEMASIADAS_IMAGENES', 'error',   'Demasiadas páginas para un solo examen (máximo 12).'],
+  ['IMAGEN_GRANDE',       'error',   'Alguna foto pesa más de 5 MB. Redúcela antes de corregir.'],
+  ['RA_SUSPENDIDO',       'warning', 'Hay algún RA suspenso: el resultado normativo es NO APTO aunque la media llegue a 5.'],
+  ['ABSENTISMO_CRITICO',  'warning', 'Absentismo por encima del umbral: puede implicar pérdida del derecho a la evaluación continua.'],
+  ['RA_LLAVE_SUSPENDIDO', 'warning', 'Ha suspendido un RA marcado como llave: el módulo queda NO APTO por ese solo motivo.'],
+]
+
+/** Todos los códigos presentes en el texto, en el orden en que los emite Python. */
+function _codigosEnTexto(text) {
   const raw = String(text || '')
-  const map = [
-    ['RA_NO_EVALUADO', 'Faltan calificaciones en algunos Resultados de Aprendizaje. Completa la pestaña de Notas antes de generar el informe.'],
-    ['RA_SUSPENDIDO', 'El alumno no cumple los criterios mínimos en algún RA. El resultado normativo es NO APTO.'],
-    ['NOTA_INVALIDA', 'Se ha detectado un formato o rango de nota incorrecto (debe ser entre 0 y 10).'],
-    ['PONDERACION_CERO', 'La suma de las ponderaciones de los RA es 0%. Revisa la configuración del módulo.'],
-    ['ERROR_RED', 'No se ha podido conectar con el servidor de IA. Revisa tu conexión a internet o inténtalo más tarde.'],
-  ]
-  for (const [prefix, msg] of map) {
-    if (raw.includes(prefix)) return msg
+  const vistos = []
+  for (const [codigo, tipo, msg] of IA_CODIGOS) {
+    // El motor los emite como «CODIGO: detalle»
+    const m = raw.match(new RegExp(`${codigo}:?\\s*([^\\n]*)`))
+    if (m) vistos.push({ codigo, tipo, msg, detalle: (m[1] || '').trim() })
   }
-  return raw.trim()
+  return vistos
+}
+
+function _humanizeIaMessage(text) {
+  const encontrados = _codigosEnTexto(text)
+  if (!encontrados.length) return String(text || '').trim()
+  return encontrados.map(c => c.msg + (c.detalle ? `\n   ${c.detalle}` : '')).join('\n\n')
 }
 
 function _showIaAlert(type, rawText) {
@@ -282,9 +309,15 @@ async function _extractFaltasPorcentaje(mod) {
 }
 
 function _hasNormativeCode(text) {
-  const raw = String(text || '')
-  return ['RA_NO_EVALUADO', 'RA_SUSPENDIDO', 'NOTA_INVALIDA', 'PONDERACION_CERO']
-    .find(prefix => raw.includes(prefix)) || null
+  const encontrados = _codigosEnTexto(text)
+  return encontrados.length ? encontrados[0].codigo : null
+}
+
+/** Gravedad del conjunto: si hay un solo error, el banner es de error. */
+function _iaAlertTypeForText(text) {
+  const encontrados = _codigosEnTexto(text)
+  if (!encontrados.length) return null
+  return encontrados.some(c => c.tipo === 'error') ? 'error' : 'warning'
 }
 
 function _iaAlertTypeForCode(code) {
@@ -311,7 +344,7 @@ function termAppend(id, d) {
 
 // ── Ejecutar comandos IA ──────────────────────────────────────────────────────
 async function runIA(cmd) {
-  const VALID = ['rubrica', 'actividad', 'informe', 'todo']
+  const VALID = ['rubrica', 'actividad', 'informe', 'plan', 'grupo', 'examen', 'todo']
   if (!VALID.includes(cmd)) return
 
   // Limpiar terminal
@@ -363,7 +396,67 @@ async function runIA(cmd) {
       if (faltasPorcentaje) opts.faltasPorcentaje = faltasPorcentaje
       const rasLlave = _extractRaLlave(mod)
       if (rasLlave) opts.rasLlave = rasLlave
+      // Notas actividad a actividad del alumno/a: sin esto la IA solo ve medias
+      // por RA y no puede decir en qué falló exactamente.
+      const det = await _detalleActividadesAlumno(mod, opts.alumno)
+      if (det) opts.detalleJson = det
     }
+  }
+
+  if (cmd === 'plan') {
+    opts.modulo    = v('ia-p-mod')
+    opts.alumno    = v('ia-p-alumno-sel').trim()
+    opts.notas     = v('ia-p-notas').trim()
+    opts.semanas   = v('ia-p-semanas') || '4'
+    opts.proveedor = v('ia-p-prov')
+    if (!opts.modulo) { alert('Selecciona un módulo.'); return }
+    if (!opts.alumno) { alert('Selecciona un alumno/a.'); return }
+    if (!opts.notas)  { alert('No hay notas guardadas de este alumno/a.'); return }
+    if (!_isValidNotasClientFormat(opts.notas)) {
+      _showIaAlert('error', 'El formato de las notas es incorrecto.')
+      return
+    }
+    opts.consent    = document.getElementById('ia-p-consent')?.checked === true
+    opts.anonimizar = document.getElementById('ia-p-anonimizar')?.checked === true
+    if (!opts.consent) { alert('Confirma que entiendes el envío de datos académicos al proveedor IA.'); return }
+    const mod = _modulos.find(m => m.key === opts.modulo)
+    if (mod) {
+      const det = await _detalleActividadesAlumno(mod, opts.alumno)
+      if (det) opts.detalleJson = det
+    }
+  }
+
+  if (cmd === 'grupo') {
+    opts.modulo    = v('ia-g-mod')
+    opts.proveedor = v('ia-g-prov')
+    if (!opts.modulo) { alert('Selecciona un módulo.'); return }
+    if (document.getElementById('ia-g-consent')?.checked !== true) {
+      alert('Confirma que entiendes el envío de las calificaciones del grupo al proveedor IA.')
+      return
+    }
+    const mod = _modulos.find(m => m.key === opts.modulo)
+    if (!mod) return
+    try {
+      const alumnos = (await window.api.getAlumnos(mod.id)).filter(a => a.estado === 'Activo')
+      // Al grupo no le hacen falta los nombres: solo los identificadores internos
+      opts.alumnosJson     = JSON.stringify(alumnos.map(a => ({ id: a.id })))
+      opts.notasGridJson   = JSON.stringify(await window.api.getNotasGrid(mod.id))
+      opts.actividadesJson = JSON.stringify(await window.api.getActividades(mod.id))
+    } catch (e) {
+      _showIaAlert('error', 'No he podido leer las notas del grupo: ' + e.message)
+      return
+    }
+  }
+
+  if (cmd === 'examen') {
+    opts.modulo    = v('ia-e-mod')
+    opts.ra        = v('ia-e-ra')
+    opts.n         = v('ia-e-n') || '8'
+    opts.tipo      = v('ia-e-tipo') || 'mixto'
+    opts.duracion  = v('ia-e-duracion') || '50'
+    opts.proveedor = v('ia-e-prov')
+    if (!opts.modulo) { alert('Selecciona un módulo.'); return }
+    if (!opts.ra)     { alert('Selecciona el RA que quieres evaluar.'); return }
   }
 
   if (cmd === 'todo') {
@@ -393,7 +486,7 @@ window.api.onIA(d => {
   const normCode = _hasNormativeCode(rawText)
 
   if (normCode) {
-    const type = _iaAlertTypeForCode(normCode)
+    const type = _iaAlertTypeForText(rawText)
     if (type) {
       _activeIaBannerType = type
       _showIaAlert(type, rawText)
@@ -483,11 +576,43 @@ window.api.onApuntes(d => {
   termAppend(TID, d)
 })
 
-// ── Informe: carga alumnos del módulo y auto-rellena notas por RA ────────────
+/**
+ * Notas actividad a actividad de un alumno/a, con su UT y su RA. Es lo que
+ * permite que el informe y el plan citen evidencias concretas en vez de medias.
+ * Devuelve JSON listo para enviar, o null si no hay nada que contar.
+ */
+async function _detalleActividadesAlumno(mod, nombreAlumno) {
+  try {
+    const alumnos = await window.api.getAlumnos(mod.id)
+    const alumno = alumnos.find(a =>
+      `${a.apellidos || ''}${a.apellidos && a.nombre ? ', ' : ''}${a.nombre || ''}` === nombreAlumno)
+    if (!alumno) return null
+    const grid = await window.api.getNotasGrid(mod.id)
+    const acts = await window.api.getActividades(mod.id)
+    const detalle = grid.filter(g => g.alumno_id === alumno.id).map(g => {
+      const act = acts.find(a => a.id === g.actividad_id) || {}
+      return {
+        descripcion: act.descripcion || '',
+        ut_id: act.ut_id || '', ra_id: act.ra_id || '',
+        nota: g.nota_rec != null ? g.nota_rec : g.nota,
+      }
+    }).filter(d => d.nota != null && d.ra_id)
+    return detalle.length ? JSON.stringify(detalle) : null
+  } catch (_) {
+    return null   // informe y plan funcionan igual sin el detalle
+  }
+}
 
-async function iaInformeLoadAlumnos() {
-  const key = v('ia-i-mod')
-  const sel = document.getElementById('ia-i-alumno-sel')
+// ── Informe y plan: cargan alumnado del módulo y auto-rellenan notas por RA ──
+// Comparten lógica: cambia solo el prefijo de los identificadores ('i' / 'p').
+
+async function iaPlanLoadAlumnos() { return iaInformeLoadAlumnos('p') }
+async function iaPlanAutoNotas()   { return iaInformeAutoNotas('p') }
+
+
+async function iaInformeLoadAlumnos(pref = 'i') {
+  const key = v(`ia-${pref}-mod`)
+  const sel = document.getElementById(`ia-${pref}-alumno-sel`)
   if (!sel) return
   if (!key) { sel.innerHTML = '<option value="">— selecciona módulo —</option>'; return }
 
@@ -501,12 +626,13 @@ async function iaInformeLoadAlumnos() {
         `${esc(a.apellidos||'')}${a.apellidos&&a.nombre?', ':''}${esc(a.nombre||'')}</option>`
       ).join('')
   } catch(_) { /* sin alumnos */ }
-  document.getElementById('ia-i-notas').value = ''
+  const campo = document.getElementById(`ia-${pref}-notas`)
+  if (campo) campo.value = ''
 }
 
-async function iaInformeAutoNotas() {
-  const key     = v('ia-i-mod')
-  const alumnoName = v('ia-i-alumno-sel')
+async function iaInformeAutoNotas(pref = 'i') {
+  const key     = v(`ia-${pref}-mod`)
+  const alumnoName = v(`ia-${pref}-alumno-sel`)
   if (!key || !alumnoName) return
 
   try {
@@ -590,14 +716,15 @@ async function iaInformeAutoNotas() {
     })
 
     // Rellenar campo notas y mostrar recordatorio de criterio
-    document.getElementById('ia-i-notas').value = notasPairs.join(',')
-    const hint = document.getElementById('ia-i-notas-hint')
+    const campoNotas = document.getElementById(`ia-${pref}-notas`)
+    if (campoNotas) campoNotas.value = notasPairs.join(',')
+    const hint = document.getElementById(pref === 'i' ? 'ia-i-notas-hint' : 'ia-p-hint')
     if (hint) {
       hint.textContent = minExam != null
         ? `Criterio: APTO exige todos los RA >=5 y exámenes >=${minExam}.`
         : 'Criterio: APTO exige todos los RA >=5 (la media no compensa un RA suspenso).'
     }
-    const notasEl = document.getElementById('ia-i-notas')
+    const notasEl = document.getElementById(`ia-${pref}-notas`)
     if (notasEl) {
       notasEl.dataset.minExam = minExam != null ? String(minExam) : ''
       const pondPairs = ras.map(ra => `${ra.id}:${(raPondOverrides[ra.id] !== undefined ? raPondOverrides[ra.id] : (ra.pond || 0))}`)
@@ -617,4 +744,386 @@ function _termLine(termId, text, cls) {
   el.appendChild(line)
   el.appendChild(document.createElement('br'))
   el.scrollTop = el.scrollHeight
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CORRECCIÓN DE EXÁMENES DESDE FOTO
+// ═══════════════════════════════════════════════════════════════
+// Sigue los principios del prompt maestro de corrección: un examen es de un solo
+// alumno, la rúbrica son los criterios del decreto, y la nota que devuelve la IA
+// es una PROPUESTA que el profesorado revisa antes de que entre en el cuaderno.
+
+let _fotosExamen = []
+let _notaPropuesta = null
+
+/** Carga RAs, alumnado y actividades del módulo elegido en la pestaña. */
+async function iaCorregirLoad() {
+  const key = v('ia-c-mod')
+  const mod = _modulos.find(m => m.key === key)
+  const selRa  = document.getElementById('ia-c-ra')
+  const selAl  = document.getElementById('ia-c-alumno')
+  const selAct = document.getElementById('ia-c-actividad')
+  if (!mod) return
+
+  let ras = []
+  try {
+    const data = typeof mod.data_json === 'string' ? JSON.parse(mod.data_json) : mod.data_json
+    ras = data?.ras || []
+  } catch (_) { /* módulo sin datos normativos */ }
+  if (selRa) {
+    selRa.innerHTML = ras.length
+      ? ras.map(r => `<option value="${esc(r.id)}">${esc(r.id)}: ${esc(r.nombre)}</option>`).join('')
+      : '<option value="">Sin RAs</option>'
+  }
+
+  try {
+    const alumnos = (await window.api.getAlumnos(mod.id)).filter(a => a.estado === 'Activo')
+    if (selAl) {
+      selAl.innerHTML = '<option value="">— selecciona alumno/a —</option>' + alumnos.map(a =>
+        `<option value="${a.id}">${esc(a.apellidos || '')}${a.apellidos && a.nombre ? ', ' : ''}${esc(a.nombre || '')}</option>`
+      ).join('')
+    }
+    const acts = await window.api.getActividades(mod.id)
+    if (selAct) {
+      selAct.innerHTML = '<option value="">— actividad donde guardarla —</option>' + acts.map(a =>
+        `<option value="${a.id}">${esc(a.descripcion || '')}${a.ra_id ? ' · ' + esc(a.ra_id) : ''}</option>`
+      ).join('')
+    }
+  } catch (_) { /* módulo sin alumnado todavía */ }
+}
+
+/** Diálogo nativo para elegir las páginas del examen. */
+async function iaElegirFotos() {
+  try {
+    const rutas = await window.api.elegirFotosExamen()
+    _fotosExamen = Array.isArray(rutas) ? rutas : []
+    const el = document.getElementById('ia-c-fotos')
+    if (!el) return
+    el.textContent = _fotosExamen.length
+      ? `${_fotosExamen.length} página(s): ${_fotosExamen.map(p => p.split('/').pop()).join(' · ')}`
+      : 'Ninguna foto seleccionada. Elige las páginas de un solo alumno, en orden.'
+  } catch (e) {
+    _showIaAlert('error', 'No he podido abrir el selector de fotos: ' + e.message)
+  }
+}
+
+async function runCorreccion() {
+  const modulo = v('ia-c-mod')
+  const ra     = v('ia-c-ra')
+  const aid    = v('ia-c-alumno')
+  if (!modulo) { alert('Selecciona un módulo.'); return }
+  if (!ra)     { alert('Selecciona el RA que evalúa este examen.'); return }
+  if (!_fotosExamen.length) { alert('Elige primero las fotos del examen.'); return }
+  if (document.getElementById('ia-c-consent')?.checked !== true) {
+    alert('Confirma que entiendes que las fotos se envían al proveedor IA.')
+    return
+  }
+
+  const sel = document.getElementById('ia-c-alumno')
+  const nombre = sel && sel.selectedIndex > 0 ? sel.options[sel.selectedIndex].text : 'Alumno/a'
+  const term = document.getElementById('ia-corregir-term')
+  if (term) term.innerHTML = ''
+  document.getElementById('ia-c-propuesta').style.display = 'none'
+  _notaPropuesta = null
+  _activeIaCmd = 'corregir'
+  _setIaLoading('corregir', true)
+
+  window.api.genCorreccion({
+    modulo, ra, alumno: nombre,
+    numero: v('ia-c-numero'),
+    imagenes: _fotosExamen,
+    proveedor: v('ia-c-prov'),
+    anonimizar: document.getElementById('ia-c-anonimizar')?.checked === true,
+    enunciado: v('ia-c-enunciado'),
+  })
+  void aid
+}
+
+// Respuestas del corrector: mismo terminal, y captura de la nota propuesta
+window.api.onCorreccion(d => {
+  const term = document.getElementById('ia-corregir-term')
+  if (!term) return
+  const texto = d && typeof d.text === 'string' ? d.text : ''
+  const marca = texto.match(/NOTA_PROPUESTA:([\d.,]+)/)
+  if (marca) {
+    _notaPropuesta = parseFloat(String(marca[1]).replace(',', '.'))
+    const caja = document.getElementById('ia-c-propuesta')
+    const nota = document.getElementById('ia-c-nota')
+    if (nota) nota.textContent = isNaN(_notaPropuesta) ? '—' : _notaPropuesta.toFixed(2)
+    if (caja) caja.style.display = ''
+  }
+  termAppend('ia-corregir-term', d)
+  if (d && d.type === 'done') {
+    _setIaLoading('corregir', false)
+    if (typeof _loteExamenTerminado === 'function' && _loteActual != null) {
+      _loteExamenTerminado(_notaPropuesta)
+      _notaPropuesta = null
+    }
+  }
+})
+
+/** La nota solo entra en el cuaderno cuando el profesorado pulsa aquí. */
+async function iaGuardarNotaPropuesta() {
+  const actId = Number(v('ia-c-actividad'))
+  const aid   = Number(v('ia-c-alumno'))
+  const aviso = document.getElementById('ia-c-guardado')
+  if (!actId) { alert('Elige en qué actividad quieres guardar la nota.'); return }
+  if (!aid)   { alert('Elige el alumno/a.'); return }
+  if (_notaPropuesta == null || isNaN(_notaPropuesta)) { alert('Todavía no hay ninguna nota propuesta.'); return }
+  try {
+    await window.api.saveNota(aid, actId, Math.round(_notaPropuesta * 100) / 100)
+    if (aviso) {
+      aviso.textContent = '✓ Guardada. Revísala en Notas.'
+      setTimeout(() => { aviso.textContent = '' }, 6000)
+    }
+  } catch (e) {
+    alert('No se ha podido guardar: ' + e.message)
+  }
+}
+
+// ── Corrección por lotes ─────────────────────────────────────────────────────
+// El orden importa: primero se reparten las fotos y el reparto se VERIFICA en
+// pantalla (sin gastar nada), después se corrige uno para calibrar el criterio y
+// solo entonces se lanza el resto con los ajustes acordados.
+
+let _lote = []            // [{numero, rutas, archivos, aviso, alumnoId, nota, estado}]
+let _loteCola = []        // índices pendientes de corregir
+let _loteActual = null
+let _lotePausado = false  // pausa entre exámenes: el que está en curso termina
+
+async function iaAgruparFotos() {
+  const caja = document.getElementById('ia-c-lote')
+  if (!_fotosExamen.length) { alert('Elige primero las fotos de la tanda.'); return }
+  try {
+    const r = await window.api.agruparFotos({
+      imagenes: _fotosExamen,
+      modo: v('ia-c-modo'),
+      paginas: Number(v('ia-c-paginas')) || 0,
+    })
+    if (r.error) { caja.textContent = r.error; return }
+
+    _lote = r.grupos.map(g => ({ ...g, alumnoId: '', nota: null, estado: '' }))
+    const alumnos = await _alumnosDelModulo()
+    const opciones = a => '<option value="">— sin asignar —</option>' + alumnos.map(al =>
+      `<option value="${al.id}"${String(a) === String(al.id) ? ' selected' : ''}>` +
+      `${esc(al.apellidos || '')}${al.apellidos && al.nombre ? ', ' : ''}${esc(al.nombre || '')}</option>`).join('')
+
+    caja.innerHTML = `
+      <div style="margin-bottom:6px">
+        <b>${r.total_examenes}</b> exámenes · ${r.total_fotos} fotos ·
+        ${r.paginas_por_examen} páginas por examen
+        ${r.incidencias.length ? `<span style="color:var(--red)"> · ⚠ revisa ${r.incidencias.join(', ')}</span>` : ' · todo cuadra'}
+      </div>
+      <table style="width:100%;font-size:11px;border-collapse:collapse">
+        <tr><th style="text-align:left">Nº</th><th style="text-align:left">Fotos</th>
+            <th style="text-align:left">Alumno/a</th><th style="text-align:left">Estado</th></tr>
+        ${_lote.map((g, i) => `
+          <tr style="border-top:1px solid var(--border)">
+            <td style="padding:3px 6px"><b>${esc(g.numero)}</b></td>
+            <td style="padding:3px 6px;color:${g.aviso ? 'var(--red)' : 'var(--text3)'}">
+              ${esc(g.archivos.join(' · '))}${g.aviso ? ' ⚠ ' + esc(g.aviso) : ''}</td>
+            <td style="padding:3px 6px"><select onchange="iaAsignarAlumno(${i}, this.value)">${opciones(g.alumnoId)}</select></td>
+            <td style="padding:3px 6px" id="ia-c-estado-${i}">—</td>
+          </tr>`).join('')}
+      </table>`
+    document.getElementById('ia-c-lote-acciones').style.display = ''
+    document.getElementById('ia-c-calibrado').style.display = 'none'
+    document.getElementById('ia-c-resultados').style.display = 'none'
+  } catch (e) {
+    caja.textContent = 'No he podido agrupar: ' + e.message
+  }
+}
+
+async function _alumnosDelModulo() {
+  const mod = _modulos.find(m => m.key === v('ia-c-mod'))
+  if (!mod) return []
+  try {
+    return (await window.api.getAlumnos(mod.id)).filter(a => a.estado === 'Activo')
+  } catch { return [] }
+}
+
+function iaAsignarAlumno(i, id) { if (_lote[i]) _lote[i].alumnoId = id }
+
+/** Atajo: el examen 01 al primero de la lista, el 02 al segundo… */
+async function iaAsignarPorOrden() {
+  if (!_lote.length) { alert('Verifica primero el reparto de las fotos.'); return }
+  const alumnos = await _alumnosDelModulo()
+  _lote.forEach((g, i) => { g.alumnoId = alumnos[i] ? String(alumnos[i].id) : '' })
+  await iaAgruparFotos()   // repinta con las asignaciones ya puestas
+  _lote.forEach((g, i) => { const s = document.querySelectorAll('#ia-c-lote select')[i]; if (s) s.value = g.alumnoId })
+}
+
+function _puedeCorregirLote() {
+  if (!_lote.length) { alert('Verifica primero el reparto de las fotos.'); return false }
+  if (!v('ia-c-ra')) { alert('Selecciona el RA que evalúa este examen.'); return false }
+  if (document.getElementById('ia-c-consent')?.checked !== true) {
+    alert('Confirma que entiendes que las fotos se envían al proveedor IA.')
+    return false
+  }
+  return true
+}
+
+/** Refresca el contador y qué botones tienen sentido ahora mismo. */
+function _pintarEstadoCola() {
+  const hechos = _lote.filter(g => g.nota != null).length
+  const prog = document.getElementById('ia-c-progreso')
+  const pausar = document.getElementById('ia-c-pausar')
+  const reanudar = document.getElementById('ia-c-reanudar')
+  const descartar = document.getElementById('ia-c-descartar')
+  const enCurso = _loteActual != null
+  const quedan = _loteCola.length
+
+  if (prog) {
+    prog.textContent = !_lote.length ? ''
+      : _lotePausado && quedan ? `en pausa · ${hechos} de ${_lote.length} corregidos · quedan ${quedan}`
+      : enCurso ? `corrigiendo ${hechos + 1} de ${_lote.length}…`
+      : `${hechos} de ${_lote.length} corregidos`
+  }
+  if (pausar)    pausar.style.display    = (enCurso || quedan) && !_lotePausado ? '' : 'none'
+  if (reanudar)  reanudar.style.display  = _lotePausado && quedan ? '' : 'none'
+  if (descartar) descartar.style.display = _lotePausado && quedan ? '' : 'none'
+}
+
+/** Pausa entre exámenes: el que ya está enviado se termina y se guarda. */
+function iaPausarLote() {
+  _lotePausado = true
+  _pintarEstadoCola()
+}
+
+function iaReanudarLote() {
+  if (!_loteCola.length) { _lotePausado = false; _pintarEstadoCola(); return }
+  _lotePausado = false
+  const siguiente = _loteCola.shift()
+  _lanzarCorreccion(siguiente)
+  _pintarEstadoCola()
+}
+
+/** Deja la tanda donde está: lo corregido se conserva y se puede guardar. */
+function iaDescartarCola() {
+  _loteCola = []
+  _lotePausado = false
+  _pintarEstadoCola()
+  _pintarResultadosLote()
+}
+
+function _lanzarCorreccion(i) {
+  const g = _lote[i]
+  _loteActual = i
+  const celda = document.getElementById(`ia-c-estado-${i}`)
+  if (celda) celda.textContent = 'corrigiendo…'
+  _pintarEstadoCola()
+  _activeIaCmd = 'corregir'
+  _setIaLoading('corregir', true)
+  window.api.genCorreccion({
+    modulo: v('ia-c-mod'), ra: v('ia-c-ra'),
+    alumno: 'Alumno/a', numero: g.numero,
+    imagenes: g.rutas,
+    proveedor: v('ia-c-prov'),
+    anonimizar: document.getElementById('ia-c-anonimizar')?.checked === true,
+    enunciado: v('ia-c-enunciado'),
+    ajustes: v('ia-c-ajustes'),
+  })
+}
+
+function iaCorregirPrimero() {
+  if (!_puedeCorregirLote()) return
+  _loteCola = []
+  _lotePausado = false
+  document.getElementById('ia-corregir-term').innerHTML = ''
+  _lanzarCorreccion(0)
+}
+
+function iaCorregirResto() {
+  if (!_puedeCorregirLote()) return
+  _loteCola = _lote.map((_, i) => i).filter(i => i > 0 && _lote[i].nota == null)
+  if (!_loteCola.length) { alert('No queda ningún examen por corregir.'); return }
+  _lotePausado = false
+  const siguiente = _loteCola.shift()
+  _lanzarCorreccion(siguiente)
+}
+
+/** Se llama al terminar cada examen de la tanda. */
+function _loteExamenTerminado(nota) {
+  if (_loteActual == null) return
+  const g = _lote[_loteActual]
+  if (g) {
+    g.nota = nota
+    g.estado = nota == null ? 'sin nota' : `${nota}`
+    const celda = document.getElementById(`ia-c-estado-${_loteActual}`)
+    if (celda) celda.textContent = g.estado
+  }
+  const primero = _loteActual === 0
+  _loteActual = null
+
+  if (_loteCola.length && _lotePausado) {
+    // La pausa se pidió mientras este examen estaba en marcha: se guarda lo hecho
+    // y la cola espera. Nada se pierde.
+    _pintarEstadoCola()
+    _pintarResultadosLote()
+    return
+  }
+  if (_loteCola.length) {
+    const siguiente = _loteCola.shift()
+    setTimeout(() => _lanzarCorreccion(siguiente), 600)
+    return
+  }
+  _pintarEstadoCola()
+  if (primero) {
+    // Calibración: ahora decide ella si hay que ajustar antes de seguir
+    document.getElementById('ia-c-calibrado').style.display = ''
+  }
+  _pintarResultadosLote()
+}
+
+function _pintarResultadosLote() {
+  const corregidos = _lote.filter(g => g.nota != null)
+  if (!corregidos.length) return
+  const caja = document.getElementById('ia-c-resultados')
+  caja.style.display = ''
+  caja.innerHTML = `
+    <div style="font-size:12px;font-weight:700;margin-bottom:6px">
+      Notas propuestas · marca las que aceptas</div>
+    <table style="width:100%;font-size:11px;border-collapse:collapse">
+      ${_lote.map((g, i) => g.nota == null ? '' : `
+        <tr style="border-top:1px solid var(--border)">
+          <td style="padding:3px 6px"><input type="checkbox" id="ia-c-ok-${i}" checked/></td>
+          <td style="padding:3px 6px"><b>${esc(g.numero)}</b></td>
+          <td style="padding:3px 6px">${g.alumnoId ? '' : '<span style="color:var(--red)">sin asignar</span>'}</td>
+          <td style="padding:3px 6px"><input type="number" min="0" max="10" step="0.1"
+              id="ia-c-nota-${i}" value="${g.nota}" style="width:64px"/></td>
+        </tr>`).join('')}
+    </table>
+    <div class="form-row" style="margin-top:8px;align-items:flex-end">
+      <div class="field" style="max-width:280px"><label>Actividad donde guardarlas</label>
+        <select id="ia-c-act-lote"></select></div>
+      <button class="btn btn-success btn-sm" onclick="iaGuardarNotasLote()">Guardar las marcadas</button>
+      <span id="ia-c-lote-guardado" style="font-size:12px;color:var(--green)"></span>
+    </div>`
+  const origen = document.getElementById('ia-c-actividad')
+  const destino = document.getElementById('ia-c-act-lote')
+  if (origen && destino) destino.innerHTML = origen.innerHTML
+}
+
+async function iaGuardarNotasLote() {
+  const actId = Number(v('ia-c-act-lote'))
+  if (!actId) { alert('Elige en qué actividad se guardan.'); return }
+  let n = 0, sinAsignar = 0
+  for (let i = 0; i < _lote.length; i++) {
+    const g = _lote[i]
+    if (g.nota == null) continue
+    if (document.getElementById(`ia-c-ok-${i}`)?.checked !== true) continue
+    if (!g.alumnoId) { sinAsignar++; continue }
+    const nota = parseFloat(document.getElementById(`ia-c-nota-${i}`).value)
+    if (isNaN(nota)) continue
+    try {
+      await window.api.saveNota(Number(g.alumnoId), actId, Math.round(nota * 100) / 100)
+      n++
+    } catch (e) { console.error('nota no guardada', e) }
+  }
+  const aviso = document.getElementById('ia-c-lote-guardado')
+  if (aviso) {
+    aviso.textContent = `✓ ${n} nota(s) guardada(s)` +
+      (sinAsignar ? ` · ${sinAsignar} sin alumno asignado` : '')
+    setTimeout(() => { aviso.textContent = '' }, 8000)
+  }
 }

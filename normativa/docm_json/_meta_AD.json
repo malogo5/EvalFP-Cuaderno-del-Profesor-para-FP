@@ -1,0 +1,586 @@
+[
+ {
+  "archivo": "ad_gdje",
+  "dual_ra": null,
+  "modulo": {
+   "codigo": "0647",
+   "abrev": "GDJE",
+   "ciclo": "Asistencia a la Dirección",
+   "ciclo_clave": "AD",
+   "ciclo_nivel": "CFGS",
+   "curso": "1º AD",
+   "horas_sem": 2,
+   "total_horas": 67,
+   "anno": "2026-2027",
+   "eval_count": 3,
+   "decreto": "Decreto 41/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9482), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM"
+  },
+  "ras": [
+   {
+    "ut": "Las administraciones públicas y el Derecho",
+    "eval": 1,
+    "tags": "Constitución · Poderes del Estado · Unión Europea · Jerarquía normativa · Boletines oficiales",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Búsqueda y actualización de información jurídica",
+    "eval": 1,
+    "tags": "Bases de datos jurídicas · Boletines oficiales · Legislación aplicable · Archivo de normativa",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Documentación jurídica de la empresa",
+    "eval": 2,
+    "tags": "Escritura de constitución · Estatutos · Libros societarios · Registro Mercantil · Poderes",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Contratos privados y documentos de fe pública",
+    "eval": 2,
+    "tags": "Compraventa · Arrendamiento · Notaría · Registro de la Propiedad · Contratos mercantiles",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Trámites ante organismos públicos",
+    "eval": 3,
+    "tags": "Procedimiento administrativo · Plazos · Recursos · Sede electrónica · Certificado digital",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   }
+  ]
+ },
+ {
+  "archivo": "ad_rhrsc",
+  "dual_ra": null,
+  "modulo": {
+   "codigo": "0648",
+   "abrev": "RHRSC",
+   "ciclo": "Asistencia a la Dirección",
+   "ciclo_clave": "AD",
+   "ciclo_nivel": "CFGS",
+   "curso": "1º AD",
+   "horas_sem": 2,
+   "total_horas": 68,
+   "anno": "2026-2027",
+   "eval_count": 3,
+   "decreto": "Decreto 41/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9482), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM"
+  },
+  "ras": [
+   {
+    "ut": "Ética empresarial y cultura de empresa",
+    "eval": 1,
+    "tags": "Valores · Códigos éticos · Clima laboral · Comportamiento responsable",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Responsabilidad social corporativa",
+    "eval": 1,
+    "tags": "Grupos de interés · Memorias de sostenibilidad · ODS · Auditoría social",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Comunicación en el departamento de recursos humanos",
+    "eval": 2,
+    "tags": "Habilidades sociales · Motivación · Liderazgo · Trabajo en equipo · Gestión de conflictos",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Selección de personal",
+    "eval": 2,
+    "tags": "Perfil del puesto · Reclutamiento · Pruebas · Entrevista · Protección de datos",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Formación y desarrollo profesional",
+    "eval": 3,
+    "tags": "Plan de formación · Detección de necesidades · Promoción · Evaluación del desempeño",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   }
+  ]
+ },
+ {
+  "archivo": "ad_opi",
+  "dual_ra": null,
+  "modulo": {
+   "codigo": "0649",
+   "abrev": "OPI",
+   "ciclo": "Asistencia a la Dirección",
+   "ciclo_clave": "AD",
+   "ciclo_nivel": "CFGS",
+   "curso": "1º AD",
+   "horas_sem": 7,
+   "total_horas": 223,
+   "anno": "2026-2027",
+   "eval_count": 3,
+   "decreto": "Decreto 41/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9482), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM"
+  },
+  "ras": [
+   {
+    "ut": "Equipos, aplicaciones y red",
+    "eval": 1,
+    "tags": "Instalación y actualización · Configuración · Seguridad · Copias de seguridad · Incidencias",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Mecanografía por ordenador",
+    "eval": 1,
+    "tags": "Teclado extendido · Escritura al tacto · Velocidad y precisión · Ergonomía",
+    "instrumentos": [
+     "practica"
+    ]
+   },
+   {
+    "ut": "Gestión de archivos y búsqueda de información",
+    "eval": 1,
+    "tags": "Estructura de carpetas · Nomenclatura · Búsqueda avanzada · Digitalización · Archivo electrónico",
+    "instrumentos": [
+     "practica"
+    ]
+   },
+   {
+    "ut": "Hoja de cálculo avanzada",
+    "eval": 2,
+    "tags": "Funciones · Referencias · Tablas dinámicas · Gráficos · Macros · Plantillas",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Procesador de textos avanzado",
+    "eval": 2,
+    "tags": "Estilos · Secciones · Índices · Combinar correspondencia · Formularios · Control de cambios",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Bases de datos",
+    "eval": 2,
+    "tags": "Tablas y relaciones · Consultas · Formularios · Informes · Importación y exportación",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Integración de información y multimedia",
+    "eval": 3,
+    "tags": "Vinculación e incrustación · Imagen · Audio y vídeo · Formatos · PDF",
+    "instrumentos": [
+     "practica"
+    ]
+   },
+   {
+    "ut": "Correo y agenda electrónica",
+    "eval": 3,
+    "tags": "Cuentas y firmas · Filtros y reglas · Calendario · Tareas · Netiqueta",
+    "instrumentos": [
+     "practica"
+    ]
+   },
+   {
+    "ut": "Presentaciones multimedia",
+    "eval": 3,
+    "tags": "Diseño · Plantillas corporativas · Animaciones · Notas del orador · Exposición",
+    "instrumentos": [
+     "practica",
+     "proyecto"
+    ]
+   }
+  ]
+ },
+ {
+  "archivo": "ad_piac",
+  "dual_ra": null,
+  "modulo": {
+   "codigo": "0650",
+   "abrev": "PIAC",
+   "ciclo": "Asistencia a la Dirección",
+   "ciclo_clave": "AD",
+   "ciclo_nivel": "CFGS",
+   "curso": "1º AD",
+   "horas_sem": 6,
+   "total_horas": 205,
+   "anno": "2026-2027",
+   "eval_count": 3,
+   "decreto": "Decreto 41/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9482), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM"
+  },
+  "ras": [
+   {
+    "ut": "El patrimonio empresarial",
+    "eval": 1,
+    "tags": "Activo · Pasivo · Patrimonio neto · Masas patrimoniales · Equilibrio",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Metodología contable y PGC de PYMES",
+    "eval": 1,
+    "tags": "Partida doble · Cuentas · Diario y mayor · Marco conceptual · Normas de valoración",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Tributación de la actividad comercial",
+    "eval": 2,
+    "tags": "IVA · IRPF · Impuesto de Sociedades · Modelos y plazos · Presentación telemática",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Documentación de compraventa",
+    "eval": 2,
+    "tags": "Pedido · Albarán · Factura · Facturación electrónica · Archivo",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Gestión de cobros y pagos",
+    "eval": 2,
+    "tags": "Medios de pago · Efectos comerciales · Vencimientos · Impagados",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Registro contable del ciclo comercial",
+    "eval": 3,
+    "tags": "Compras y ventas · Existencias · Gastos e ingresos · Regularización · Cierre",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Control de tesorería con aplicaciones informáticas",
+    "eval": 3,
+    "tags": "Previsión de tesorería · Conciliación bancaria · Software contable · Informes",
+    "instrumentos": [
+     "practica"
+    ]
+   }
+  ]
+ },
+ {
+  "archivo": "ad_cac",
+  "dual_ra": null,
+  "modulo": {
+   "codigo": "0651",
+   "abrev": "CAC",
+   "ciclo": "Asistencia a la Dirección",
+   "ciclo_clave": "AD",
+   "ciclo_nivel": "CFGS",
+   "curso": "1º AD",
+   "horas_sem": 4,
+   "total_horas": 148,
+   "anno": "2026-2027",
+   "eval_count": 3,
+   "decreto": "Decreto 41/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9482), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM"
+  },
+  "ras": [
+   {
+    "ut": "Comunicación empresarial e imagen corporativa",
+    "eval": 1,
+    "tags": "Comunicación interna y externa · Imagen de marca · Publicidad y promoción · Redes sociales",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Comunicación oral presencial y no presencial",
+    "eval": 1,
+    "tags": "Atención telefónica · Videoconferencia · Escucha activa · Protocolo · Comunicación no verbal",
+    "instrumentos": [
+     "practica"
+    ]
+   },
+   {
+    "ut": "Comunicación escrita profesional",
+    "eval": 1,
+    "tags": "Cartas e informes · Estilo y ortografía · Correo electrónico · Documentos de la Administración",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Registro y gestión de la correspondencia",
+    "eval": 2,
+    "tags": "Registro de entrada y salida · Distribución interna · Digitalización · Archivo y custodia · Protección de datos",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Atención a la clientela",
+    "eval": 2,
+    "tags": "Tipos de clientela · Necesidades · Asertividad · Fases de la atención",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Quejas y reclamaciones",
+    "eval": 3,
+    "tags": "Normativa de consumo · Hoja de reclamaciones · Mediación y arbitraje · OMIC",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Servicio postventa y fidelización",
+    "eval": 3,
+    "tags": "Postventa · Encuestas de satisfacción · Indicadores · CRM · Mejora continua",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   }
+  ]
+ },
+ {
+  "archivo": "ad_pe",
+  "dual_ra": null,
+  "modulo": {
+   "codigo": "0661",
+   "abrev": "PE",
+   "ciclo": "Asistencia a la Dirección",
+   "ciclo_clave": "AD",
+   "ciclo_nivel": "CFGS",
+   "curso": "2º AD",
+   "horas_sem": 4,
+   "total_horas": 157,
+   "anno": "2026-2027",
+   "eval_count": 2,
+   "decreto": "Decreto 41/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9482), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM"
+  },
+  "ras": [
+   {
+    "ut": "Fundamentos de relaciones públicas",
+    "eval": 1,
+    "tags": "Comunicación corporativa · Públicos · Medios · Patrocinio y mecenazgo",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Protocolo empresarial",
+    "eval": 1,
+    "tags": "Precedencias · Presidencias · Tipos de mesa · Invitaciones · Regalos de empresa",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Protocolo institucional",
+    "eval": 1,
+    "tags": "Normativa de precedencias · Símbolos del Estado · Banderas · Actos oficiales",
+    "instrumentos": [
+     "examen",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Apoyo a la comunicación profesional",
+    "eval": 2,
+    "tags": "Comunicación interna y externa · Portavocía · Relación con medios · Redes sociales",
+    "instrumentos": [
+     "practica"
+    ]
+   },
+   {
+    "ut": "Cartas de servicios y compromisos de calidad",
+    "eval": 2,
+    "tags": "Compromisos · Indicadores · Garantías · Certificación",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Excelencia en la atención al cliente",
+    "eval": 2,
+    "tags": "Expectativas · Fidelización · Quejas · Mejora continua",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   }
+  ]
+ },
+ {
+  "archivo": "ad_oee",
+  "dual_ra": null,
+  "modulo": {
+   "codigo": "0662",
+   "abrev": "OEE",
+   "ciclo": "Asistencia a la Dirección",
+   "ciclo_clave": "AD",
+   "ciclo_nivel": "CFGS",
+   "curso": "2º AD",
+   "horas_sem": 7,
+   "total_horas": 313,
+   "anno": "2026-2027",
+   "eval_count": 2,
+   "decreto": "Decreto 41/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9482), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM"
+  },
+  "ras": [
+   {
+    "ut": "Equipo de trabajo y clima laboral",
+    "eval": 1,
+    "tags": "Motivación · Liderazgo · Delegación · Gestión de conflictos · Compromiso",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Coordinación con la dirección",
+    "eval": 1,
+    "tags": "Agenda de la dirección · Prioridades · Delegación · Confidencialidad",
+    "instrumentos": [
+     "practica"
+    ]
+   },
+   {
+    "ut": "Organización del trabajo de asistencia a la dirección",
+    "eval": 1,
+    "tags": "Gestión del tiempo · Planificación · Interlocutores · Objetivos",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Organización de reuniones y eventos corporativos",
+    "eval": 2,
+    "tags": "Convocatoria · Logística · Protocolo · Presupuesto · Acta y seguimiento",
+    "instrumentos": [
+     "proyecto",
+     "practica"
+    ]
+   },
+   {
+    "ut": "Organización de viajes nacionales e internacionales",
+    "eval": 2,
+    "tags": "Itinerarios · Reservas · Documentación · Divisas · Liquidación de gastos",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   }
+  ]
+ },
+ {
+  "archivo": "ad_gai",
+  "dual_ra": null,
+  "modulo": {
+   "codigo": "0663",
+   "abrev": "GAI",
+   "ciclo": "Asistencia a la Dirección",
+   "ciclo_clave": "AD",
+   "ciclo_nivel": "CFGS",
+   "curso": "2º AD",
+   "horas_sem": 6,
+   "total_horas": 284,
+   "anno": "2026-2027",
+   "eval_count": 2,
+   "decreto": "Decreto 41/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9482), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM"
+  },
+  "ras": [
+   {
+    "ut": "Gestión de proyectos con aplicaciones específicas",
+    "eval": 1,
+    "tags": "Tareas e hitos · Recursos · Diagrama de Gantt · Costes · Seguimiento",
+    "instrumentos": [
+     "practica",
+     "proyecto"
+    ]
+   },
+   {
+    "ut": "Documentos integrados",
+    "eval": 1,
+    "tags": "Vinculación e incrustación · Plantillas corporativas · Gráficos · Maquetación · PDF",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   },
+   {
+    "ut": "Presentaciones audiovisuales",
+    "eval": 1,
+    "tags": "Guion · Diseño · Audio y vídeo · Publicación · Exposición",
+    "instrumentos": [
+     "practica",
+     "proyecto"
+    ]
+   },
+   {
+    "ut": "Herramientas colaborativas y Web 2.0",
+    "eval": 2,
+    "tags": "Trabajo en la nube · Documentos compartidos · Formularios · Redes profesionales · Firma digital",
+    "instrumentos": [
+     "practica"
+    ]
+   },
+   {
+    "ut": "Sistemas de gestión documental",
+    "eval": 2,
+    "tags": "Metadatos · Flujos de trabajo · Versionado · Digitalización certificada · Conservación",
+    "instrumentos": [
+     "practica",
+     "examen"
+    ]
+   }
+  ]
+ }
+]

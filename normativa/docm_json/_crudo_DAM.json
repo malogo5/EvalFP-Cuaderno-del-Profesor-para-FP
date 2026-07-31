@@ -1,0 +1,1484 @@
+[
+ {
+  "codigo": "0483",
+  "nombre": "Sistemas informáticos",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Evalúa sistemas informáticos identificando sus componentes y características.",
+    "ces": [
+     "Se han reconocido los componentes físicos de un sistema informático y sus mecanismos de interconexión.",
+     "Se ha verificado el proceso de puesta en marcha de un equipo.",
+     "Se han clasificado, instalado y configurado diferentes tipos de dispositivos periféricos.",
+     "Se han identificado los tipos de redes y sistemas de comunicación.",
+     "Se han identificado los componentes de una red informática.",
+     "Se han interpretado mapas físicos y lógicos de una red informática.",
+     "Se han utilizado diferentes sistemas de numeración."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Instala sistemas operativos planificando el proceso e interpretando documentación técnica.",
+    "ces": [
+     "Se han identificado los elementos funcionales de un sistema informático.",
+     "Se han analizado las características, funciones y arquitectura de un sistema operativo.",
+     "Se han comparado sistemas operativos en base a sus requisitos, características, campos de aplicación y licencias de uso.",
+     "Se han instalado diferentes sistemas operativos.",
+     "Se han aplicado técnicas de actualización y recuperación del sistema.",
+     "Se han utilizado maquinas virtuales para instalar y probar sistemas operativos.",
+     "Se han documentado los procesos realizados.",
+     "Se ha configurado el arranque del sistema",
+     "Se ha verificado el correcto funcionamiento de los controladores de dispositivos"
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Gestiona la información del sistema identificando las estructuras de almacenamiento y aplicando medidas para asegurar la integridad de los datos.",
+    "ces": [
+     "Se han comparado sistemas de archivos.",
+     "Se ha identificado la estructura y función de los directorios del sistema operativo.",
+     "Se han utilizado herramientas en entorno gráfico y comandos para localizar información en el sistema de archivos.",
+     "Se han creado diferentes tipos de particiones y unidades lógicas.",
+     "Se han realizado copias de seguridad y su posterior restauración",
+     "Se han automatizado tareas.",
+     "Se han instalado y evaluado utilidades relacionadas con la gestión de información."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Gestiona sistemas operativos utilizando comandos y herramientas gráficas y evaluando las necesidades del sistema.",
+    "ces": [
+     "Se han configurado cuentas de usuario locales y grupos.",
+     "Se ha asegurado el acceso al sistema mediante el uso de directivas de cuenta y directivas de contraseñas.",
+     "Se han identificado, arrancado y detenido servicios y procesos.",
+     "Se ha protegido el acceso a la información mediante el uso de permisos locales.",
+     "Se han utilizado comandos para realizar las tareas básicas de configuración del sistema.",
+     "Se ha monitorizado el sistema.",
+     "Se han instalado y evaluado utilidades para el mantenimiento y optimización del sistema.",
+     "Se han evaluado las necesidades del sistema informático en relación con el desarrollo de aplicaciones."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Interconecta sistemas en red configurando dispositivos y protocolos.",
+    "ces": [
+     "Se ha configurado el protocolo TCP/IP.",
+     "Se han configurado redes de área local cableadas.",
+     "Se han configurado redes de área local inalámbricas.",
+     "Se han utilizado dispositivos de interconexión de redes.",
+     "Se ha configurado el acceso a redes de área extensa.",
+     "Se han gestionado puertos de comunicaciones.",
+     "Se ha verificado el funcionamiento de la red mediante el uso de comandos y herramientas básicas.",
+     "Se han aplicado protocolos seguros de comunicaciones.",
+     "Se han configurado servidores para mejorar la gestión de las comunicaciones."
+    ]
+   },
+   {
+    "ra": 6,
+    "enunciado": "Opera sistemas en red gestionando sus recursos e identificando las restricciones de seguridad existentes.",
+    "ces": [
+     "Se ha configurado el acceso a recursos locales y recursos de red.",
+     "Se han identificado los derechos de usuario y directivas de seguridad.",
+     "Se han explotado servidores de ficheros, servidores de impresión y servidores de aplicaciones.",
+     "Se ha accedido a los servidores utilizando técnicas de conexión remota.",
+     "Se ha evaluado la necesidad de proteger los recursos y el sistema.",
+     "Se han instalado y evaluado utilidades de seguridad básica."
+    ]
+   },
+   {
+    "ra": 7,
+    "enunciado": "Elabora documentación valorando y utilizando aplicaciones informáticas de propósito general.",
+    "ces": [
+     "Se ha clasificado software en función de su licencia y propósito.",
+     "Se han analizado las necesidades específicas de software asociadas al uso de sistemas informáticos en diferentes entornos productivos.",
+     "Se han realizado tareas de documentación mediante el uso de herramientas ofimáticas.",
+     "Se han utilizado sistemas de correo y mensajería electrónica.",
+     "Se han utilizado los servicios de transferencia de ficheros.",
+     "Se han utilizado métodos de búsqueda de documentación técnica mediante el uso de servicios de Internet."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0484",
+  "nombre": "Bases de datos",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Reconoce los elementos de las bases de datos analizando sus funciones y valorando la utilidad de los sistemas gestores.",
+    "ces": [
+     "Se han analizado los sistemas lógicos de almacenamiento y sus características.",
+     "Se han identificado los distintos tipos de bases de datos según el modelo de datos utilizado.",
+     "Se han identificado los distintos tipos de bases de datos en función de la ubicación de la información.",
+     "Se ha evaluado la utilidad de un sistema gestor de bases de datos.",
+     "Se ha reconocido la función de cada uno de los elementos de un sistema gestor de bases de datos.",
+     "Se han clasificado los sistemas gestores de bases de datos.",
+     "Se ha reconocido la utilidad de las bases de datos distribuidas.",
+     "Se han analizado las políticas de fragmentación de la información."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Crea bases de datos definiendo su estructura y las características de sus elementos según el modelo relacional.",
+    "ces": [
+     "Se ha analizado el formato de almacenamiento de la información.",
+     "Se han creado las tablas y las relaciones entre ellas.",
+     "Se han seleccionado los tipos de datos adecuados.",
+     "Se han definido los campos clave en las tablas.",
+     "Se han implantado las restricciones reflejadas en el diseño lógico.",
+     "Se han creado vistas.",
+     "Se han creado los usuarios y se les han asignado privilegios.",
+     "Se han utilizando asistentes, herramientas gráficas y los lenguajes de definición y control de datos."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Consulta la información almacenada en una base de datos empleando asistentes, herramientas gráficas y el lenguaje de manipulación de datos.",
+    "ces": [
+     "Se han identificado las herramientas y sentencias para realizar consultas.",
+     "Se han realizado consultas simples sobre una tabla.",
+     "Se han realizado consultas sobre el contenido de varias tablas mediante composiciones internas.",
+     "Se han realizado consultas sobre el contenido de varias tablas mediante composiciones externas.",
+     "Se han realizado consultas resumen.",
+     "Se han realizado consultas con subconsultas."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Modifica la información almacenada en la base de datos utilizando asistentes, herramientas gráficas y el lenguaje de manipulación de datos.",
+    "ces": [
+     "Se han identificado las herramientas y sentencias para modificar el contenido de la base de datos.",
+     "Se han insertado, borrado y actualizado datos en las tablas.",
+     "Se ha incluido en una tabla la información resultante de la ejecución de una consulta.",
+     "Se han diseñado guiones de sentencias para llevar a cabo tareas complejas.",
+     "Se ha reconocido el funcionamiento de las transacciones.",
+     "Se han anulado parcial o totalmente los cambios producidos por una transacción.",
+     "Se han identificado los efectos de las distintas políticas de bloqueo de registros.",
+     "Se han adoptado medidas para mantener la integridad y consistencia de la información."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Desarrolla procedimientos almacenados evaluando y utilizando las sentencias del lenguaje incorporado en el sistema gestor de bases de datos.",
+    "ces": [
+     "Se han identificado las diversas formas de automatizar tareas.",
+     "Se han reconocido los métodos de ejecución de guiones.",
+     "Se han identificado las herramientas disponibles para editar guiones.",
+     "Se han definido y utilizado guiones para automatizar tareas.",
+     "Se ha hecho uso de las funciones proporcionadas por el sistema gestor.",
+     "Se han definido funciones de usuario.",
+     "Se han utilizado estructuras de control de flujo.",
+     "Se han definido disparadores.",
+     "Se han utilizado cursores."
+    ]
+   },
+   {
+    "ra": 6,
+    "enunciado": "Diseña modelos relacionales normalizados interpretando diagramas entidad/relación.",
+    "ces": [
+     "Se han utilizado herramientas gráficas para representar el diseño lógico.",
+     "Se han identificado las tablas del diseño lógico.",
+     "Se han identificado las entidades e interrelaciones en un universo del discurso.",
+     "Se han identificado los atributos que forman parte del esquema.",
+     "Se han identificado los distintos tipos de atributos.",
+     "Se han identificado los campos que forman parte de las tablas del diseño lógico.",
+     "Se han analizado las relaciones entre las tablas del diseño lógico.",
+     "Se han identificado los campos clave.",
+     "Se han aplicado reglas de integridad.",
+     "Se han aplicado reglas de normalización.",
+     "Se han analizado y documentado las restricciones que no pueden plasmarse en el diseño lógico."
+    ]
+   },
+   {
+    "ra": 7,
+    "enunciado": "Gestiona la información almacenada en bases de datos objeto-relacionales, evaluando y utilizando las posibilidades que proporciona el sistema gestor.",
+    "ces": [
+     "Se han identificado las características de las bases de datos objeto- relacionales.",
+     "Se han creado tipos de datos objeto, sus atributos y métodos.",
+     "Se han creado tablas de objetos y tablas de columnas tipo objeto.",
+     "Se han creado tipos de datos colección.",
+     "Se han realizado consultas.",
+     "Se ha modificado la información almacenada manteniendo la integridad y consistencia de los datos."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0485",
+  "nombre": "Programación",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Reconoce la estructura de un programa informático, identificando y relacionando los elementos propios del lenguaje de programación utilizado.",
+    "ces": [
+     "Se han identificado los bloques que componen la estructura de un programa informático.",
+     "Se han creado proyectos de desarrollo de aplicaciones",
+     "Se han utilizado entornos integrados de desarrollo.",
+     "Se han identificado los distintos tipos de variables y la utilidad específica de cada uno.",
+     "Se ha modificado el código de un programa para crear y utilizar variables.",
+     "Se han creado y utilizado constantes y literales.",
+     "Se han clasificado, reconocido y utilizado en expresiones los operadores del lenguaje.",
+     "Se ha comprobado el funcionamiento de las conversiones de tipo explícitas e implícitas.",
+     "Se han introducido comentarios en el código.",
+     "Se han creado y utilizado procedimientos y funciones.",
+     "Se ha utilizado el paso de parámetros en procedimientos y funciones."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Escribe y prueba programas sencillos, reconociendo y aplicando los fundamentos de la programación orientada a objetos.",
+    "ces": [
+     "Se han identificado los fundamentos de la programación orientada a objetos.",
+     "Se han escrito programas simples.",
+     "Se han instanciado objetos a partir de clases predefinidas.",
+     "Se han utilizado métodos y propiedades de los objetos.",
+     "Se han escrito llamadas a métodos estáticos.",
+     "Se han utilizado parámetros en la llamada a métodos.",
+     "Se han incorporado y utilizado librerías de objetos.",
+     "Se han utilizado constructores y destructores de objetos.",
+     "Se ha utilizado el entorno integrado de desarrollo en la creación y compilación de programas simples."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Escribe y depura código, analizando y utilizando las estructuras de control del lenguaje.",
+    "ces": [
+     "Se ha escrito y probado código que haga uso de estructuras de selección.",
+     "Se han utilizado estructuras de repetición.",
+     "Se han reconocido las posibilidades de las sentencias de salto.",
+     "Se ha escrito código utilizando control de excepciones.",
+     "Se han creado programas ejecutables utilizando diferentes estructuras de control.",
+     "Se han probado y depurado los programas.",
+     "Se ha comentado y documentado el código."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Desarrolla programas organizados en clases analizando y aplicando los principios de la programación orientada a objetos.",
+    "ces": [
+     "Se ha reconocido la sintaxis, estructura y componentes típicos de una clase.",
+     "Se han definido clases.",
+     "Se han definido propiedades y métodos.",
+     "Se han creado constructores.",
+     "Se han desarrollado programas que instancien y utilicen objetos de las clases creadas anteriormente.",
+     "Se han utilizado mecanismos para controlar la visibilidad de las clases y de sus miembros.",
+     "Se han definido y utilizado clases heredadas.",
+     "Se han creado y utilizado métodos estáticos.",
+     "Se han definido y utilizado interfaces.",
+     "Se han creado y utilizado conjuntos y librerías de clases."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Realiza operaciones de entrada y salida de información, utilizando procedimientos específicos del lenguaje y librerías de clases.",
+    "ces": [
+     "Se ha utilizado la consola para realizar operaciones de entrada y salida de información.",
+     "Se han aplicado formatos en la visualización de la información.",
+     "Se han reconocido las posibilidades de entrada / salida del lenguaje y las librerías asociadas.",
+     "Se han utilizado ficheros para almacenar y recuperar información.",
+     "Se han creado programas que utilicen diversos métodos de acceso al contenido de los ficheros.",
+     "Se han utilizado las herramientas del entorno de desarrollo para crear interfaces gráficos de usuario simples.",
+     "Se han programado controladores de eventos.",
+     "Se han escrito programas que utilicen interfaces gráficos para la entrada y salida de información."
+    ]
+   },
+   {
+    "ra": 6,
+    "enunciado": "Escribe programas que manipulen información seleccionando y utilizando tipos avanzados de datos.",
+    "ces": [
+     "Se han escrito programas que utilicen arrays.",
+     "Se han reconocido las librerías de clases relacionadas con tipos de datos avanzados.",
+     "Se han utilizado listas para almacenar y procesar información.",
+     "Se han utilizado iteradores para recorrer los elementos de las listas.",
+     "Se han reconocido las características y ventajas de cada una de la colecciones de datos disponibles.",
+     "Se han creado clases y métodos genéricos.",
+     "Se han utilizado expresiones regulares en la búsqueda de patrones en cadenas de texto.",
+     "Se han identificado las clases relacionadas con el tratamiento de documentos XML.",
+     "Se han realizado programas que realicen manipulaciones sobre documentos XML."
+    ]
+   },
+   {
+    "ra": 7,
+    "enunciado": "Desarrolla programas aplicando características avanzadas de los lenguajes orientados a objetos y del entorno de programación.",
+    "ces": [
+     "Se han identificado los conceptos de herencia, superclase, subclase y polimorfismo.",
+     "Se han utilizado modificadores para bloquear y forzar la herencia de clases y métodos.",
+     "Se ha reconocido la incidencia de los constructores en la herencia.",
+     "Se han creado clases heredadas que sobrescriban la implementación de métodos de la superclase.",
+     "Se han diseñado y aplicado jerarquías de clases.",
+     "Se han probado y depurado las jerarquías de clases.",
+     "Se han realizado programas que implementen y utilicen jerarquías de clases.",
+     "Se ha comentado y documentado el código."
+    ]
+   },
+   {
+    "ra": 8,
+    "enunciado": "Utiliza bases de datos orientadas a objetos, analizando sus características y aplicando técnicas para mantener la persistencia de la información.",
+    "ces": [
+     "Se han identificado las características de las bases de datos orientadas a objetos.",
+     "Se ha analizado su aplicación en el desarrollo de aplicaciones mediante lenguajes orientados a objetos.",
+     "Se han instalado sistemas gestores de bases de datos orientados a objetos.",
+     "Se han clasificado y analizado los distintos métodos soportados por los sistemas gestores para la gestión de la información almacenada.",
+     "Se han creado bases de datos y las estructuras necesarias para el almacenamiento de objetos.",
+     "Se han programado aplicaciones que almacenen objetos en las bases de datos creadas.",
+     "Se han realizado programas para recuperar, actualizar y eliminar objetos de las bases de datos.",
+     "Se han realizado programas para almacenar y gestionar tipos de datos estructurados, compuestos y relacionados."
+    ]
+   },
+   {
+    "ra": 9,
+    "enunciado": "Gestiona información almacenada en bases de datos relacionales manteniendo la integridad y consistencia de los datos.",
+    "ces": [
+     "Se han identificado las características y métodos de acceso a sistemas gestores de bases de datos relacionales.",
+     "Se han programado conexiones con bases de datos.",
+     "Se ha escrito código para almacenar información en bases de datos.",
+     "Se han creado programas para recuperar y mostrar información almacenada en bases de datos.",
+     "Se han efectuado borrados y modificaciones sobre la información almacenada.",
+     "Se han creado aplicaciones que ejecuten consultas sobre bases de datos.",
+     "Se han creado aplicaciones para posibilitar la gestión de información presente en bases de datos relacionales."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0373",
+  "nombre": "Lenguajes de marcas y sistemas de gestión de información",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Reconoce las características de lenguajes de marcas analizando e interpretando fragmentos de código.",
+    "ces": [
+     "Se han identificado las características generales de los lenguajes de marcas.",
+     "Se han reconocido las ventajas que proporcionan en el tratamiento de la información.",
+     "Se han clasificado los lenguajes de marcas e identificado los más relevantes.",
+     "Se han diferenciado sus ámbitos de aplicación.",
+     "Se ha reconocido la necesidad y los ámbitos específicos de aplicación de un lenguaje de marcas de propósito general.",
+     "Se han analizado las características propias del lenguaje XML.",
+     "Se ha identificado la estructura de un documento XML y sus reglas sintácticas.",
+     "Se ha contrastado la necesidad de crear documentos XML bien formados y la influencia en su procesamiento.",
+     "Se han identificado las ventajas que aportan los espacios de nombres.",
+     "Se conocen los mecanismos de codificación XML propios de cada idioma.",
+     "Se conocen los fundamentos básicos de programación"
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Utiliza lenguajes de marcas para la transmisión de información a través de la Web analizando la estructura de los documentos e identificando sus elementos.",
+    "ces": [
+     "Se han identificado y clasificado los lenguajes de marcas relacionados con la Web y sus diferentes versiones.",
+     "Se ha analizado la estructura de un documento HTML e identificado las secciones que lo componen.",
+     "Se ha reconocido la funcionalidad de las principales etiquetas y atributos del lenguaje HTML.",
+     "Se han establecido las semejanzas y diferencias entre los lenguajes HTML y XHTML.",
+     "Se ha reconocido la utilidad de XHTML en los sistemas de gestión de información.",
+     "Se han utilizado herramientas en la creación documentos Web.",
+     "Se han identificado las ventajas que aporta la utilización de hojas de estilo.",
+     "Se han aplicado hojas de estilo."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Genera canales de contenidos analizando y utilizando tecnologías de sindicación.",
+    "ces": [
+     "Se han identificado las ventajas que aporta la sindicación de contenidos en la gestión y transmisión de la información.",
+     "Se han definido sus ámbitos de aplicación.",
+     "Se han analizado las tecnologías en que se basa la sindicación de contenidos.",
+     "Se ha identificado la estructura y la sintaxis de un canal de contenidos.",
+     "Se han creado y validado canales de contenidos.",
+     "Se ha comprobado la funcionalidad y el acceso a los canales.",
+     "Se han utilizado herramientas específicas como agregadores y directorios de canales.",
+     "Se conocen las características distintivas de distintos formatos de agregación en XML."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Establece mecanismos de validación para documentos XML utilizando métodos para definir su sintaxis y estructura.",
+    "ces": [
+     "Se ha establecido la necesidad de describir la información transmitida en los documentos XML y sus reglas.",
+     "Se han identificado las tecnologías relacionadas con la definición de documentos XML.",
+     "Se ha analizado la estructura y sintaxis específica utilizada en la descripción.",
+     "Se han creado descripciones de documentos XML.",
+     "Se han utilizado descripciones en la elaboración y validación de documentos XML.",
+     "Se han asociado las descripciones con los documentos.",
+     "Se han utilizado herramientas específicas.",
+     "Se han documentado las descripciones."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Realiza conversiones sobre documentos XML utilizando técnicas y herramientas de procesamiento.",
+    "ces": [
+     "Se ha identificado la necesidad de la conversión de documentos XML.",
+     "Se han establecido ámbitos de aplicación.",
+     "Se han analizado las tecnologías implicadas y su modo de funcionamiento.",
+     "Se ha descrito la sintaxis específica utilizada en la conversión y adaptación de documentos XML.",
+     "Se han creado especificaciones de conversión.",
+     "Se han identificado y caracterizado herramientas específicas relacionadas con la conversión de documentos XML.",
+     "Se han realizado conversiones con distintos formatos de salida.",
+     "Se han documentado y depurado las especificaciones de conversión.",
+     "Se ha utilizado el modelo DOM para extraer información de un documento XML.",
+     "Se reconoce la importancia del uso de estándares abiertos"
+    ]
+   },
+   {
+    "ra": 6,
+    "enunciado": "Gestiona información en formato XML analizando y utilizando tecnologías de almacenamiento y lenguajes de consulta.",
+    "ces": [
+     "Se han identificado los principales métodos de almacenamiento de la información usada en documentos XML.",
+     "Se han identificado los inconvenientes de almacenar información en formato XML.",
+     "Se han establecido tecnologías eficientes de almacenamiento de información en función de sus características.",
+     "Se han utilizado sistemas gestores de bases de datos relacionales en el almacenamiento de información en formato XML.",
+     "Se han utilizado técnicas específicas para crear documentos XML a partir de información almacenada en bases de datos relacionales.",
+     "Se han identificado las características de los sistemas gestores de bases de datos nativas XML.",
+     "Se han instalado y analizado sistemas gestores de bases de datos nativas XML.",
+     "Se han utilizado técnicas para gestionar la información almacenada en bases de datos nativas XML.",
+     "Se han identificado lenguajes y herramientas para el tratamiento y almacenamiento de información y su inclusión en documentos XML."
+    ]
+   },
+   {
+    "ra": 7,
+    "enunciado": "Trabaja con sistemas empresariales de gestión de información realizando tareas de importación, integración, aseguramiento y extracción de la información.",
+    "ces": [
+     "Se han reconocido las ventajas de los sistemas de gestión y planificación de recursos empresariales.",
+     "Se han evaluado las características de las principales aplicaciones de gestión empresarial.",
+     "Se han instalado aplicaciones de gestión empresarial.",
+     "Se han configurado y adaptado las aplicaciones.",
+     "Se ha establecido y verificado el acceso seguro a la información.",
+     "Se han generado informes.",
+     "Se han realizado tareas de integración con aplicaciones ofimáticas.",
+     "Se han realizado procedimientos de extracción de información para su tratamiento e incorporación a diversos sistemas.",
+     "Se han realizado tareas de asistencia y resolución de incidencias.",
+     "Se han elaborado documentos relativos a la explotación de la aplicación.",
+     "Se ha procesado información XML procedente una aplicación de gestión empresarial"
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0487",
+  "nombre": "Entornos de desarrollo",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Reconoce los elementos y herramientas que intervienen en el desarrollo de un programa informático, analizando sus características y las fases en las que actúan hasta llegar a su puesta en funcionamiento.",
+    "ces": [
+     "Se ha reconocido la relación de los programas con los componentes del sistema informático: memoria, procesador y periféricos, entre otros.",
+     "Se han identificado las fases de desarrollo de una aplicación informática.",
+     "Se han diferenciado los conceptos de código fuente, código objeto y código ejecutable.",
+     "Se han reconocido las características de la generación de código intermedio para su ejecución en máquinas virtuales.",
+     "Se han clasificado los lenguajes de programación.",
+     "Se ha evaluado la funcionalidad ofrecida por las herramientas utilizadas en programación."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Evalúa entornos integrados de desarrollo, analizando, sus características para editar código fuente y generar ejecutables.",
+    "ces": [
+     "Se han instalado entornos de desarrollo, propietarios y libres.",
+     "Se han añadido y eliminado módulos en el entorno de desarrollo.",
+     "Se ha personalizado y automatizado el entorno de desarrollo.",
+     "Se ha configurado el sistema de actualización del entorno de desarrollo.",
+     "Se han generado ejecutables a partir de código fuente de diferentes lenguajes en un mismo entorno de desarrollo.",
+     "Se han generado ejecutables a partir de un mismo código fuente con varios entornos de desarrollo.",
+     "Se han identificado las características comunes y específicas de diversos entornos de desarrollo.",
+     "Se han identificado ventajas e inconvenientes en el uso de distintos entornos de desarrollo."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Verifica el funcionamiento de programas, diseñando y realizando pruebas.",
+    "ces": [
+     "Se han identificado los diferentes tipos de pruebas.",
+     "Se han definido casos de prueba.",
+     "Se han identificado las herramientas de depuración y prueba de aplicaciones ofrecidas por el entorno de desarrollo.",
+     "Se han utilizado herramientas de depuración para definir puntos de ruptura y seguimiento.",
+     "Se han utilizado las herramientas de depuración para examinar y modificar el comportamiento de un programa en tiempo de ejecución.",
+     "Se han efectuado pruebas unitarias de clases y funciones.",
+     "Se han implementado pruebas automáticas.",
+     "Se han documentado las incidencias detectadas."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Optimiza código empleando las herramientas disponibles en el entorno de desarrollo.",
+    "ces": [
+     "Se han identificado los patrones de refactorización más usuales.",
+     "Se han elaborado las pruebas asociadas a la refactorización.",
+     "Se ha revisado el código fuente usando un analizador de código.",
+     "Se han identificado las posibilidades de configuración de un analizador de código.",
+     "Se han aplicado patrones de refactorización con las herramientas que proporciona el entorno de desarrollo.",
+     "Se ha realizado el control de versiones integrado en el entorno de desarrollo.",
+     "Se han utilizado herramientas del entorno de desarrollo para documentar las clases."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Genera diagramas de clases valorando su importancia en el desarrollo de aplicaciones y empleando las herramientas disponibles en el entorno.",
+    "ces": [
+     "Se han identificado los conceptos básicos de la programación orientada a objetos.",
+     "Se ha instalado el módulo del entorno integrado de desarrollo que permite la utilización de diagramas de clases.",
+     "Se han identificado las herramientas para la elaboración de diagramas de clases.",
+     "Se ha interpretado el significado de diagramas de clases.",
+     "Se han trazado diagramas de clases a partir de las especificaciones de las mismas.",
+     "Se ha generado código a partir de un diagrama de clases.",
+     "Se ha generado un diagrama de clases mediante ingeniería inversa."
+    ]
+   },
+   {
+    "ra": 6,
+    "enunciado": "Genera diagramas de comportamiento valorando su importancia en el desarrollo de aplicaciones y empleando las herramientas disponibles en el entorno.",
+    "ces": [
+     "Se han identificado los distintos tipos de diagramas de comportamiento.",
+     "Se ha reconocido el significado de los diagramas de casos de uso.",
+     "Se han interpretado diagramas de interacción.",
+     "Se han elaborado diagramas de interacción sencillos.",
+     "Se ha interpretado el significado de diagramas de secuencia.",
+     "Se han elaborado diagramas de secuencia sencillos.",
+     "Se ha interpretado el significado de diagramas de colaboración.",
+     "Se han elaborado diagramas de colaboración sencillos.",
+     "Se ha interpretado el significado de diagramas de actividades.",
+     "Se han elaborado diagramas de actividades sencillos.",
+     "Se han interpretado diagramas de estados.",
+     "Se han planteado diagramas de estados sencillos."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0486",
+  "nombre": "Acceso a datos",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Desarrolla aplicaciones que gestionan información almacenada en ficheros identificando el campo de aplicación de los mismos y utilizando clases específicas.",
+    "ces": [
+     "Se han utilizado clases para la gestión de ficheros y directorios.",
+     "Se han valorado las ventajas y los inconvenientes de las distintas formas de acceso.",
+     "Se han utilizado las operaciones básicas para acceder a ficheros de acceso secuencial, directo y aleatorio.",
+     "Se han utilizado clases para recuperar información almacenada en un fichero XML.",
+     "Se han utilizado clases para almacenar información en un fichero XML.",
+     "Se han utilizado clases para convertir a otro formato información contenida en un fichero XML.",
+     "Se han previsto y gestionado las excepciones.",
+     "Se han probado y documentado las aplicaciones desarrolladas."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Desarrolla aplicaciones que gestionan información almacenada en bases de datos relacionales identificando y utilizando mecanismos de conexión.",
+    "ces": [
+     "Se han valorado las ventajas e inconvenientes de utilizar conectores.",
+     "Se han utilizado gestores de bases de datos embebidos e independientes.",
+     "Se ha utilizado el conector idóneo en la aplicación.",
+     "Se ha establecido la conexión.",
+     "Se ha definido la estructura de la base de datos.",
+     "Se han desarrollado aplicaciones que modifican el contenido de la base de datos.",
+     "Se han definido los objetos destinados a almacenar el resultado de las consultas.",
+     "Se han desarrollado aplicaciones que efectúan consultas.",
+     "Se han ejecutado procedimientos en la base de datos.",
+     "Se han eliminado los objetos una vez finalizada su función.",
+     "Se han gestionado las transacciones.",
+     "Se han definido modelos que comunican con la base de datos. Patrón Modelo-Vista-Controlador (MVC)"
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Gestiona la persistencia de los datos identificando herramientas de mapeo objeto relacional (ORM) y desarrollando aplicaciones que las utilizan.",
+    "ces": [
+     "Se ha instalado la herramienta ORM.",
+     "Se ha configurado la herramienta ORM.",
+     "Se han definido los ficheros de mapeo.",
+     "Se han aplicado mecanismos de persistencia a los objetos.",
+     "Se han desarrollado aplicaciones que modifican y recuperan objetos persistentes.",
+     "Se han desarrollado aplicaciones que realizan consultas usando el lenguaje SQL.",
+     "Se ha valorado la utilización de lenguajes propios de la herramienta ORM.",
+     "Se han gestionado las transacciones.",
+     "Se han creado diagramas ORM que presentan el mapeo entre clases persistentes y entidades.",
+     "Se han sincronizado diagramas de clase con diagramas entidad relación."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Desarrolla aplicaciones que gestionan la información almacenada en bases de datos objeto relacionales y orientadas a objetos valorando sus características y utilizando los mecanismos de acceso incorporados.",
+    "ces": [
+     "Se han identificado las ventajas e inconvenientes de las bases de datos que almacenan objetos.",
+     "Se han establecido y cerrado conexiones.",
+     "Se han identificado distintos tipos de objetos y sus componentes.",
+     "Se ha gestionado la persistencia de objetos simples.",
+     "Se ha gestionado la persistencia de objetos estructurados.",
+     "Se ha utilizado jerarquías de tipo, herencia y polimorfismo para gestionar objetos complejos.",
+     "Se han desarrollado aplicaciones que realizan consultas.",
+     "Se han modificado los objetos almacenados.",
+     "Se han identificado las características principales del estándar ODMG.",
+     "Se han gestionado las transacciones.",
+     "Se han probado y documentado las aplicaciones desarrolladas.",
+     "Se ha utilizado el lenguaje de consultas OQL."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Desarrolla aplicaciones que gestionan la información almacenada en bases de datos nativas XML evaluando y utilizando clases específicas.",
+    "ces": [
+     "Se han valorado las ventajas e inconvenientes de utilizar una base de datos nativa XML.",
+     "Se ha instalado el gestor de base de datos.",
+     "Se ha configurado el gestor de base de datos.",
+     "Se ha establecido la conexión con la base de datos.",
+     "Se han desarrollado aplicaciones que efectúan consultas sobre el contenido de la base de datos.",
+     "Se han utilizado los lenguajes de consulta suministrados por el gestor de bases de datos.",
+     "Se han añadido y eliminado colecciones de la base de datos.",
+     "Se han desarrollado aplicaciones para añadir, modificar y eliminar documentos XML de la base de datos.",
+     "Se han desarrollado modelos de datos XML."
+    ]
+   },
+   {
+    "ra": 6,
+    "enunciado": "Programa componentes de acceso a datos identificando las características que debe poseer un componente y utilizando herramientas de desarrollo.",
+    "ces": [
+     "Se han valorado las ventajas e inconvenientes de utilizar programación orientada a componentes.",
+     "Se han identificado herramientas de desarrollo de componentes.",
+     "Se han programado componentes que gestionan información almacenada en ficheros.",
+     "Se han programado componentes que gestionan mediante conectores información almacenada en bases de datos.",
+     "Se han programado componentes que gestionan información usando mapeo objeto relacional.",
+     "Se han programado componentes que gestionan información almacenada en bases de datos objeto relacionales y orientadas a objetos.",
+     "Se han programado componentes que gestionan información almacenada en una base de datos nativa XML.",
+     "Se han probado y documentado los componentes desarrollados.",
+     "Se han integrado los componentes desarrollados en aplicaciones."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0488",
+  "nombre": "Desarrollo de interfaces",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Genera interfaces gráficos de usuario mediante editores visuales utilizando las funcionalidades del editor y adaptando el código generado.",
+    "ces": [
+     "Se ha creado un interfaz gráfico utilizando los asistentes de un editor visual.",
+     "Se han utilizado las funciones del editor para ubicar los componentes del interfaz.",
+     "Se han modificado las propiedades de los componentes para adecuarlas a las necesidades de la aplicación.",
+     "Se ha analizado el código generado por el editor visual.",
+     "Se ha modificado el código generado por el editor visual.",
+     "Se han enlazado componentes a orígenes de datos.",
+     "Se han asociado a los eventos las acciones correspondientes.",
+     "Se ha desarrollado una aplicación que incluye el interfaz gráfico obtenido."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Genera interfaces gráficos de usuario basados en XML utilizando herramientas específicas y adaptando el documento XML generado.",
+    "ces": [
+     "Se han reconocido las ventajas de generar interfaces de usuario a partir de su descripción en XML.",
+     "Se ha generado la descripción del interfaz en XML usando un editor gráfico.",
+     "Se ha analizado el documento XML generado.",
+     "Se ha modificado el documento XML.",
+     "Se han asignado acciones a los eventos.",
+     "Se ha depurado el documento XML.",
+     "Se ha generado el código correspondiente al interfaz a partir del documento XML.",
+     "Se ha programado una aplicación que incluye el interfaz generado."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Crea componentes visuales valorando y empleando herramientas específicas.",
+    "ces": [
+     "Se han identificado las herramientas para diseño y prueba de componentes.",
+     "Se han creado componentes visuales.",
+     "Se han definido sus propiedades y asignado valores por defecto.",
+     "Se han modificado las propiedades de los componentes.",
+     "Se han determinado los eventos a los que debe responder el componente y se les han asociado las acciones correspondientes.",
+     "Se han realizado pruebas unitarias sobre los componentes desarrollados.",
+     "Se han documentado los componentes creados.",
+     "Se han empaquetado componentes.",
+     "Se han programado aplicaciones cuyo interfaz gráfico utiliza los componentes creados."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Diseña interfaces gráficos identificando y aplicando criterios de usabilidad.",
+    "ces": [
+     "Se han reconocido las normas ISO para la usabilidad.",
+     "Se han creado menús que se ajustan a los estándares.",
+     "Se han creado menús contextuales cuya estructura y contenido siguen los estándares establecidos.",
+     "Se han distribuido las acciones en menús, barras de herramientas, botones de comando, entre otros, siguiendo un criterio coherente.",
+     "Se han distribuido adecuadamente los controles en la interfaz de usuario.",
+     "Se ha utilizado el tipo de control más apropiado en cada caso",
+     "Se ha diseñado el aspecto de la interfaz de usuario (colores y fuentes entre otros) atendiendo a su legibilidad.",
+     "Se ha verificado que los mensajes generados por la aplicación son adecuados en extensión y claridad.",
+     "Se han realizado pruebas para evaluar la usabilidad de la aplicación."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Crea informes evaluando y utilizando herramientas gráficas.",
+    "ces": [
+     "Se ha establecido la estructura del informe.",
+     "Se han generado informes básicos a partir de una fuente de datos mediante asistentes.",
+     "Se han establecido filtros sobre los valores a presentar en los informes.",
+     "Se han incluido valores calculados, recuentos y totales.",
+     "Se han incluido gráficos generados a partir de los datos.",
+     "Se han utilizado herramientas para generar el código correspondiente a los informes de una aplicación.",
+     "Se ha modificado el código correspondiente a los informes.",
+     "Se ha desarrollado una aplicación que incluye informes incrustados."
+    ]
+   },
+   {
+    "ra": 6,
+    "enunciado": "Documenta aplicaciones seleccionando y utilizando herramientas específicas.",
+    "ces": [
+     "Se han identificado sistemas de generación de ayudas.",
+     "Se han generado ayudas en los formatos habituales.",
+     "Se han generado ayudas sensibles al contexto.",
+     "Se ha documentado la estructura de la información persistente.",
+     "Se ha confeccionado el manual de usuario y la guía de referencia.",
+     "Se han confeccionado los manuales de instalación, configuración y administración.",
+     "Se han confeccionado tutoriales."
+    ]
+   },
+   {
+    "ra": 7,
+    "enunciado": "Prepara aplicaciones para su distribución evaluando y utilizando herramientas específicas.",
+    "ces": [
+     "Se han empaquetado los componentes que requiere la aplicación.",
+     "Se ha personalizado el asistente de instalación",
+     "Se ha empaquetado la aplicación para ser instalada de forma típica, completa o personalizada.",
+     "Se han generado paquetes de instalación utilizando el entorno de desarrollo.",
+     "Se han generado paquetes de instalación utilizando herramientas externas.",
+     "Se han generado paquetes instalables en modo desatendido.",
+     "Se ha preparado el paquete de instalación para que la aplicación pueda ser correctamente desinstalada.",
+     "Se ha preparado la aplicación para ser descargada desde un servidor web y ejecutada."
+    ]
+   },
+   {
+    "ra": 8,
+    "enunciado": "Evalúa el funcionamiento de aplicaciones diseñando y ejecutando pruebas.",
+    "ces": [
+     "Se ha establecido una estrategia de pruebas.",
+     "Se han realizado pruebas de integración de los distintos elementos.",
+     "Se han realizado pruebas de regresión.",
+     "Se han realizado pruebas de volumen y estrés.",
+     "Se han realizado pruebas de seguridad.",
+     "Se han realizado pruebas de uso de recursos por parte de la aplicación.",
+     "Se ha documentado la estrategia de pruebas y los resultados obtenidos.",
+     "Se han realizado pruebas de usuario."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0489",
+  "nombre": "Programación multimedia y dispositivos móviles",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Aplica tecnologías de desarrollo para dispositivos móviles evaluando sus características y capacidades.",
+    "ces": [
+     "Se han analizado las limitaciones que plantea la ejecución de aplicaciones en los dispositivos móviles.",
+     "Se han identificado los distintos sistemas operativos existentes para dispositivos móviles y sus características principales.",
+     "Se han identificado las tecnologías de desarrollo de aplicaciones para dispositivos móviles.",
+     "Se han instalado, configurado y utilizado entornos de trabajo para el desarrollo de aplicaciones para dispositivos móviles.",
+     "Se han identificado configuraciones que clasifican los dispositivos móviles en base a sus características.",
+     "Se han descrito perfiles que establecen la relación entre el dispositivo y la aplicación.",
+     "Se ha analizado la estructura de aplicaciones existentes para dispositivos móviles identificando las clases utilizadas.",
+     "Se han realizado modificaciones sobre aplicaciones existentes.",
+     "Se han utilizado emuladores para comprobar el funcionamiento de las aplicaciones."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Desarrolla aplicaciones para dispositivos móviles analizando y empleando las tecnologías y librerías específicas.",
+    "ces": [
+     "Se ha generado la estructura de clases necesaria para la aplicación.",
+     "Se han analizado y utilizado las clases que modelan ventanas, menús, alertas y controles para el desarrollo de aplicaciones gráficas sencillas.",
+     "Se han analizado cómo funcionan los servicios disponibles en los dispositivos móviles y su utilidad en el desarrollo de las aplicaciones.",
+     "Se han identificado los proveedores de contenido.",
+     "Se han utilizado las clases necesarias para la conexión y comunicación con dispositivos inalámbricos.",
+     "Se han utilizado las clases necesarias para el intercambio de mensajes de texto y multimedia.",
+     "Se han utilizado las clases necesarias para establecer conexiones y comunicaciones HTTP y HTTPS.",
+     "Se han utilizado las clases necesarias para establecer conexiones con almacenes de datos garantizando la persistencia.",
+     "Se ha recuperado y utilizado la información proporcionada por la red.",
+     "Se han definido distintos requerimientos de seguridad en las aplicaciones.",
+     "Se han realizado pruebas de interacción usuario-aplicación para optimizar las aplicaciones desarrolladas a partir de emuladores.",
+     "Se han empaquetado y desplegado las aplicaciones desarrolladas en dispositivos móviles reales.",
+     "Se han registrado las aplicaciones en centros de distribución autorizados.",
+     "Se han documentado los procesos necesarios para el desarrollo de las aplicaciones."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Desarrolla programas que integran contenidos multimedia analizando y empleando las tecnologías y librerías específicas.",
+    "ces": [
+     "Se han analizado entornos de desarrollo multimedia.",
+     "Se han reconocido las clases que permiten la captura, procesamiento y almacenamiento de datos multimedia.",
+     "Se han utilizado clases para la conversión de datos multimedia de un formato a otro.",
+     "Se han utilizado clases para construir procesadores para la transformación de las fuentes de datos multimedia.",
+     "Se han utilizado clases para el control de eventos, tipos de media y excepciones, entre otros.",
+     "Se han utilizado clases para la creación y control de animaciones.",
+     "Se han utilizado clases para construir reproductores de contenidos multimedia.",
+     "Se han depurado y documentado los programas desarrollados."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Selecciona y prueba motores de juegos analizando la arquitectura de juegos 2D y 3D.",
+    "ces": [
+     "Se han identificado los elementos que componen la arquitectura de un juego 2D y 3D.",
+     "Se han analizado los componentes de un motor de juegos.",
+     "Se han analizado entornos de desarrollo de juegos.",
+     "Se han analizado diferentes motores de juegos, sus características y funcionalidades.",
+     "Se han identificado los bloques funcionales de un juego existente.",
+     "Se han definido y ejecutado procesos de render.",
+     "Se ha reconocido la representación lógica y espacial de una escena gráfica sobre un juego existente."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Desarrolla juegos 2D y 3D sencillos utilizando motores de juegos.",
+    "ces": [
+     "Se ha establecido la lógica de un nuevo juego.",
+     "Se han creado objetos y definido los fondos.",
+     "Se han instalado y utilizado extensiones para el manejo de escenas.",
+     "Se han utilizado instrucciones gráficas para determinar las propiedades finales de la superficie de un objeto o imagen.",
+     "Se ha incorporado sonido a los diferentes eventos del juego.",
+     "Se han desarrollado e implantado juegos para dispositivos móviles.",
+     "Se han realizado pruebas de funcionamiento y optimización de los juegos desarrollados.",
+     "Se han documentado las fases de diseño y desarrollo de los juegos creados."
+    ]
+   },
+   {
+    "ra": 6,
+    "enunciado": "Desarrolla aplicaciones basadas en la localización.",
+    "ces": [
+     "Se han analizado las distintas tecnologías de localización (GPS, A-GPS,...).",
+     "Se han utilizado mapas para localizar una serie de ubicaciones concretas.",
+     "Se han utilizado datos de localización en distintas aplicaciones móviles.",
+     "Se han documentado los procesos necesarios para el desarrollo de las aplicaciones de localización."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0490",
+  "nombre": "Programación de servicios y procesos",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Desarrolla aplicaciones compuestas por varios procesos reconociendo y aplicando principios de programación paralela.",
+    "ces": [
+     "Se han reconocido las características de la programación concurrente y sus ámbitos de aplicación.",
+     "Se han identificado las diferencias entre programación paralela y programación distribuida, sus ventajas e inconvenientes.",
+     "Se han analizado las características de los procesos y de su ejecución por el sistema operativo.",
+     "Se han caracterizado los hilos de ejecución y descrito su relación con los procesos.",
+     "Se han utilizado clases para programar aplicaciones que crean subprocesos.",
+     "Se han utilizado mecanismos para sincronizar y obtener el valor devuelto por los subprocesos iniciados.",
+     "Se han desarrollado aplicaciones que gestionen y utilicen procesos para la ejecución de varias tareas en paralelo.",
+     "Se han depurado y documentado las aplicaciones desarrolladas."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Desarrolla aplicaciones compuestas por varios hilos de ejecución analizando y aplicando librerías específicas del lenguaje de programación.",
+    "ces": [
+     "Se han identificado situaciones en las que resulte útil la utilización de varios hilos en un programa.",
+     "Se han reconocido los mecanismos para crear, iniciar y finalizar hilos.",
+     "Se han programado aplicaciones que implementen varios hilos.",
+     "Se han identificado los posibles estados de ejecución de un hilo y programado aplicaciones que los gestionen.",
+     "Se han utilizado mecanismos para compartir información entre varios hilos de un mismo proceso.",
+     "Se han desarrollado programas formados por varios hilos sincronizados mediante técnicas específicas.",
+     "Se ha establecido y controlado la prioridad de cada uno de los hilos de ejecución.",
+     "Se han depurado y documentado los programas desarrollados."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Programa mecanismos de comunicación en red empleando sockets y analizando el escenario de ejecución.",
+    "ces": [
+     "Se han identificado escenarios que precisan establecer comunicación en red entre varias aplicaciones.",
+     "Se han identificado los roles de cliente y de servidor y sus funciones asociadas.",
+     "Se han reconocido librerías y mecanismos del lenguaje de programación que permiten programar aplicaciones en red.",
+     "Se ha analizado el concepto de socket, sus tipos y características.",
+     "Se han utilizado sockets para programar una aplicación cliente que se comunique con un servidor.",
+     "Se ha desarrollado una aplicación servidor en red y verificado su funcionamiento.",
+     "Se han desarrollado aplicaciones que utilizan sockets para intercambiar información.",
+     "Se han utilizado hilos para implementar los procedimientos de las aplicaciones relativos a la comunicación en red."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Desarrolla aplicaciones que ofrecen servicios en red, utilizando librerías de clases y aplicando criterios de eficiencia y disponibilidad.",
+    "ces": [
+     "Se han analizado librerías que permitan implementar protocolos estándar de comunicación en red.",
+     "Se han programado clientes de protocolos estándar de comunicaciones y verificado su funcionamiento.",
+     "Se han desarrollado y probado servicios de comunicación en red.",
+     "Se han analizado los requerimientos necesarios para crear servicios capaces de gestionar varios clientes concurrentes.",
+     "Se han incorporado mecanismos para posibilitar la comunicación simultánea de varios clientes con el servicio.",
+     "Se ha verificado la disponibilidad del servicio.",
+     "Se han depurado y documentado las aplicaciones desarrolladas."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Protege las aplicaciones y los datos definiendo y aplicando criterios de seguridad en el acceso, almacenamiento y transmisión de la información.",
+    "ces": [
+     "Se han identificado y aplicado principios y prácticas de programación segura.",
+     "Se han analizado las principales técnicas y prácticas criptográficas.",
+     "Se han definido e implantado políticas de seguridad para limitar y controlar el acceso de los usuarios a las aplicaciones desarrolladas.",
+     "Se han utilizado esquemas de seguridad basados en roles.",
+     "Se han empleado algoritmos criptográficos para proteger el acceso a la información almacenada.",
+     "Se han identificado métodos para asegurar la información transmitida.",
+     "Se han desarrollado aplicaciones que utilicen sockets seguros para la transmisión de información.",
+     "Se han depurado y documentado las aplicaciones desarrolladas."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0491",
+  "nombre": "Sistemas de gestión empresarial",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Identifica sistemas de planificación de recursos empresariales y de gestión de relaciones con clientes (ERP-CRM) reconociendo sus características y verificando la configuración del sistema informático.",
+    "ces": [
+     "Se ha reconocido la organización de una empresa.",
+     "Se han reconocido los diferentes sistemas ERP-CRM que existen en el mercado.",
+     "Se han comparado sistemas ERP-CRM en función de sus características y requisitos.",
+     "Se ha identificado el sistema operativo adecuado a cada sistema ERP-CRM.",
+     "Se ha identificado el sistema gestor de datos adecuado a cada sistema ERP-CRM.",
+     "Se han verificado las configuraciones del sistema operativo y del gestor de datos para garantizar la funcionalidad del ERP-CRM.",
+     "Se ha identificado el sistema de gestión empresarial con acceso móvil.",
+     "Se han documentado las operaciones realizadas.",
+     "Se han documentado las incidencias producidas durante el proceso."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Implanta sistemas ERP-CRM interpretando la documentación técnica e identificando las diferentes opciones y módulos.",
+    "ces": [
+     "Se han identificado los diferentes tipos de licencia.",
+     "Se han identificado los módulos que componen el ERP-CRM.",
+     "Se han realizado instalaciones monopuesto.",
+     "Se han realizado instalaciones cliente/servidor.",
+     "Se han configurado los módulos instalados.",
+     "Se han realizado instalaciones adaptadas a las necesidades planteadas en diferentes supuestos.",
+     "Se ha verificado el funcionamiento del ERP-CRM.",
+     "Se han documentado las operaciones realizadas y las incidencias.",
+     "Se ha instalado y configurado la asistencia técnica y remota en un sistema ERP-CRM."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Realiza operaciones de gestión y consulta de la información siguiendo las especificaciones de diseño y utilizando las herramientas proporcionadas por los sistemas ERP-CRM.",
+    "ces": [
+     "Se han utilizado herramientas y lenguajes de consulta y manipulación de datos proporcionados por los sistemas ERP-CRM.",
+     "Se han generado formularios.",
+     "Se han generado informes.",
+     "Se han exportado datos e informes.",
+     "Se han automatizado las extracciones de datos mediante procesos.",
+     "Se han realizado auditorías de control de acceso a datos y trazas del sistema.",
+     "Se han documentado las operaciones realizadas y las incidencias observadas."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Adapta sistemas ERP-CRM identificando los requerimientos de un supuesto empresarial y utilizando las herramientas proporcionadas por los mismos.",
+    "ces": [
+     "Se han identificado las posibilidades de adaptación del ERP-CRM.",
+     "Se han adaptado definiciones de campos, tablas y vistas de la base de datos del ERP-CRM.",
+     "Se han adaptado consultas.",
+     "Se han adaptado interfaces de entrada de datos y de procesos.",
+     "Se han personalizado informes.",
+     "Se han creado gráficos personalizados.",
+     "Se han adaptado procedimientos almacenados de servidor.",
+     "Se han realizado pruebas.",
+     "Se han documentado las operaciones realizadas y las incidencias observadas."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Desarrolla componentes para un sistema ERP-CRM analizando y utilizando el lenguaje de programación incorporado.",
+    "ces": [
+     "Se han reconocido las sentencias del lenguaje propio del sistema ERP-CRM.",
+     "Se han utilizado los elementos de programación del lenguaje para crear componentes de manipulación de datos.",
+     "Se han modificado componentes software para añadir nuevas funcionalidades al sistema.",
+     "Se han integrado los nuevos componentes software en el sistema ERP-CRM.",
+     "Se ha verificado el correcto funcionamiento de los componentes creados.",
+     "Se han documentado todos los componentes creados o modificados."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0492",
+  "nombre": "Proyecto de desarrollo de aplicaciones multiplataforma",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Identifica necesidades del sector productivo relacionándolas con proyectos tipo que puedan satisfacerlas.",
+    "ces": [
+     "Se han clasificado las empresas del sector por sus características organizativas y el tipo de producto o servicio que ofrecen.",
+     "Se han caracterizado las empresas tipo indicando la estructura organizativa y las funciones de cada departamento.",
+     "Se han identificado las necesidades más demandadas a las empresas.",
+     "Se han valorado las oportunidades de negocio previsibles en el sector.",
+     "Se ha identificado el tipo de proyecto requerido para dar respuesta a las demandas previstas.",
+     "Se han determinado las características específicas requeridas al proyecto según los requerimientos.",
+     "Se han determinado las obligaciones fiscales, laborales y de prevención de riesgos y sus condiciones de aplicación.",
+     "Se han identificado posibles ayudas o subvenciones para la incorporación de nuevas tecnologías de producción o de servicio propuestas.",
+     "Se ha elaborado el guión de trabajo que se va a seguir para la elaboración del proyecto."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Diseña proyectos relacionados con las competencias expresadas en el título, desarrollando las fases que lo componen.",
+    "ces": [
+     "Se ha recopilado información relativa a los aspectos que van a ser tratados en el proyecto.",
+     "Se ha realizado el estudio de viabilidad técnica del proyecto.",
+     "Se han identificado las fases del proyecto especificando su contenido y plazos de ejecución.",
+     "Se han establecido los objetivos que se pretenden conseguir identificando su alcance.",
+     "Se han determinado las actividades necesarias para el desarrollo del proyecto",
+     "Se han previsto los recursos materiales y personales necesarios para realizar el proyecto.",
+     "Se han identificado las necesidades de financiación para la puesta en marcha del proyecto.",
+     "Se ha definido y elaborado la documentación necesaria para su diseño.",
+     "Se han identificado los aspectos que se deben controlar para garantizar la calidad del proyecto."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Planifica la ejecución del proyecto, determinando el plan de intervención y la documentación asociada.",
+    "ces": [
+     "Se han secuenciado las tareas en función de las necesidades de implementación.",
+     "Se han determinado los recursos y la logística necesaria para cada tarea.",
+     "Se han identificado las necesidades de permisos y autorizaciones para llevar a cabo las tareas.",
+     "Se han determinado los procedimientos para ejecución de las tareas.",
+     "Se han identificado los riesgos inherentes a la ejecución del proyecto, definiendo el plan de prevención de riesgos y los medios necesarios.",
+     "Se han planificado la asignación de recursos materiales y humanos según los tiempos de ejecución.",
+     "Se ha hecho la valoración económica que da respuesta a las condiciones de la ejecución del proyecto.",
+     "Se ha definido y elaborado la documentación necesaria para la ejecución del proyecto."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Define los procedimientos para el seguimiento y control en la ejecución del proyecto, justificando la selección de variables e instrumentos empleados.",
+    "ces": [
+     "Se ha definido el procedimiento de evaluación de las actividades o intervenciones realizadas durante la ejecución del proyecto.",
+     "Se han definido los indicadores de calidad para realizar la evaluación del proyecto.",
+     "Se ha definido el procedimiento para el registro y evaluación de las incidencias que puedan presentarse durante la ejecución del proyecto.",
+     "Se ha definido el procedimiento para la solución de las incidencias registradas.",
+     "Se ha definido el procedimiento para la gestión y registro de los cambios en los recursos y en las tareas.",
+     "Se ha establecido el procedimiento para la participación en la evaluación de los usuarios y se han elaborado documentos específicos.",
+     "Se ha establecido un sistema para garantizar el cumplimiento del pliego de condiciones del proyecto cuando éste existe."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0493",
+  "nombre": "Formación y orientación laboral",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Selecciona oportunidades de empleo, identificando las diferentes posibilidades de inserción y las alternativas de aprendizaje a lo largo de la vida.",
+    "ces": [
+     "Se ha valorado la importancia de la formación permanente como factor clave para la empleabilidad y la adaptación a las exigencias del proceso productivo.",
+     "Se han identificado los itinerarios formativos-profesionales relacionados con el perfil profesional del Técnico o Técnica Superior en Desarrollo de Aplicaciones Multiplataforma.",
+     "Se han determinado las aptitudes y actitudes requeridas para la actividad profesional relacionada con el perfil del título.",
+     "Se han identificado los principales yacimientos de empleo, autoempleo, así como de inserción laboral para el Técnico o Técnica Superior en Desarrollo de Aplicaciones Multiplataforma.",
+     "Se han determinado las técnicas utilizadas en el proceso de búsqueda de empleo.",
+     "Se ha valorado la importancia de las nuevas tecnologías de la información y la comunicación para la búsqueda activa de empleo.",
+     "Se han previsto las alternativas de autoempleo en los sectores profesionales relacionados con el título.",
+     "Se ha realizado la valoración de la personalidad, aspiraciones, intereses, actitudes y formación propia para la toma de decisiones, evitando, en su caso, los condicionamientos por razón de sexo o de otra índole.",
+     "Se han identificado las posibilidades del Técnico o Técnica Superior en Desarrollo de Aplicaciones Multiplataforma en las ofertas de empleo público de las diferentes Administraciones.",
+     "Se han valorado las oportunidades del Técnico o Técnica Superior en Desarrollo de Aplicaciones Multiplataforma contexto global así como las posibilidades de transferencia de las cualificaciones que lo integran, a través del principio de libertad de circulación de servicios en la Unión Europea.",
+     "Se han identificado las habilitaciones especiales requeridas para el desempeño de determinadas actividades profesionales en el sector informático."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Aplica las estrategias del trabajo en equipo, valorando su eficacia y eficiencia para la consecución de los objetivos de la organización.",
+    "ces": [
+     "Se han valorado las ventajas de trabajo en equipo en situaciones de trabajo relacionadas con el perfil del Técnico o Técnica Superior en Desarrollo de Aplicaciones Multiplataforma, frente al trabajo individual.",
+     "Se han identificado los equipos de trabajo que pueden constituirse en una situación real de trabajo.",
+     "Se han identificado las fases que atraviesa el desarrollo de la actividad de un equipo de trabajo.",
+     "Se han aplicado técnicas de dinamización de grupos de trabajo.",
+     "Se han determinado las características del equipo de trabajo eficaz frente a los equipos ineficaces mediante la adecuada gestión del conocimiento en los mismos.",
+     "Se ha valorado positivamente la necesaria existencia de diversidad de roles y opiniones asumidos por los miembros de un equipo.",
+     "Se ha descrito el proceso de toma de decisiones en equipo, valorando convenientemente la participación y el consenso de sus miembros.",
+     "Se ha valorado la necesidad de adaptación e integración en aras al funcionamiento eficiente de un equipo de trabajo.",
+     "Se han analizado los procesos de dirección y liderazgo presentes en el funcionamiento de los equipos de trabajo",
+     "Se ha reconocido la posible existencia de conflicto entre los miembros de un grupo como un aspecto característico de las organizaciones.",
+     "Se han identificado los tipos de conflictos, etapas que atraviesan y sus fuentes.",
+     "Se han determinado procedimientos para la resolución del conflicto.",
+     "Se han analizado las distintas tácticas y técnicas de negociación tanto para la resolución de conflictos como para el progreso profesional."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Ejerce los derechos y cumple las obligaciones que se derivan de las relaciones laborales, reconociéndolas en los diferentes contratos de trabajo.",
+    "ces": [
+     "Se han identificado los conceptos básicos del derecho del trabajo y sus normas fundamentales.",
+     "Se han distinguido los principales organismos que intervienen en las relaciones entre empresarios y trabajadores y las fuentes legales que las regulan.",
+     "Se han diferenciado las relaciones laborales sometidas a la regulación del estatuto de los trabajadores de las relaciones laborales especiales y excluidas.",
+     "Se han determinado los derechos y obligaciones derivados de la relación laboral.",
+     "Se han clasificado las principales modalidades de contratación, identificando las medidas de fomento de la contratación para determinados colectivos.",
+     "Se han valorado las medidas establecidas por la legislación vigente para la conciliación de la vida personal, laboral y familiar.",
+     "Se han identificado las causas y efectos de la modificación, suspensión y extinción de la relación laboral.",
+     "Se ha analizado el recibo de salarios, identificando los principales elementos que lo integran.",
+     "Se han analizado los elementos que caracterizan al tiempo de la prestación laboral.",
+     "Se han determinado las distintas formas de representación de los trabajadores para la defensa de sus intereses laborales.",
+     "Se han analizado las diferentes medidas de conflicto colectivo y los procedimientos de solución de conflictos",
+     "Se han determinado las condiciones de trabajo pactadas en un convenio colectivo aplicable a un sector profesional relacionado con el título de Técnico o Técnica Superior en Desarrollo de Aplicaciones Multiplataforma.",
+     "Se han identificado las características definitorias de los nuevos entornos de organización del trabajo.",
+     "Se han identificado los principales beneficios que las nuevas organizaciones han generado a favor de los trabajadores y de las trabajadoras."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Determina la acción protectora del sistema de la Seguridad Social ante las distintas contingencias cubiertas, identificando las distintas clases de prestaciones.",
+    "ces": [
+     "Se ha valorado el papel de la Seguridad Social como pilar esencial para la mejora de la calidad de vida de los ciudadanos.",
+     "Se han enumerado las diversas contingencias que cubre el sistema de Seguridad Social.",
+     "Se han identificado los regímenes existentes en el sistema de la Seguridad Social especialmente el régimen general y en el régimen especial de trabajadores autónomos.",
+     "Se han identificado las obligaciones de empresario y empresaria y trabajador y trabajadora dentro del sistema de Seguridad Social.",
+     "Se han identificado en un supuesto sencillo las bases de cotización de un trabajador y las cuotas correspondientes a trabajador y empresario.",
+     "Se han clasificado las prestaciones del sistema de Seguridad Social, identificando los requisitos.",
+     "Se han determinado las posibles situaciones legales de desempleo en supuestos prácticos sencillos.",
+     "Se ha realizado el cálculo de la duración y cuantía de una prestación por desempleo de nivel contributivo básico."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Evalúa los riesgos derivados de su actividad, analizando las condiciones de trabajo y los factores de riesgo presentes en su entorno laboral.",
+    "ces": [
+     "Se ha valorado la importancia de la cultura preventiva en todos los ámbitos y actividades de la empresa.",
+     "Se han relacionado las condiciones laborales con la salud del trabajador y de la trabajadora.",
+     "Se han clasificado los factores de riesgo ligados a condiciones de seguridad, ambientales, ergonómicas y psicosociales en la actividad, así como los daños derivados de los mismos.",
+     "Se han identificado las situaciones de riesgo más habituales en los entornos de trabajo del Técnico o Técnica Superior en Desarrollo de Aplicaciones Multiplataforma.",
+     "Se han definido las distintas técnicas de motivación y su determinación como factor clave de satisfacción e insatisfacción laboral.",
+     "Se ha determinado la evaluación de riesgos en la empresa.",
+     "Se han determinado las condiciones de trabajo con significación para la prevención en los entornos de trabajo relacionados con el perfil profesional del Técnico o Técnica Superior en Desarrollo de Aplicaciones Multiplataforma.",
+     "Se han clasificado y descrito los tipos de daños profesionales, con especial referencia a accidentes de trabajo y enfermedades profesionales, relacionados con el perfil profesional del Técnico o Técnica Superior en Desarrollo de Aplicaciones Multiplataforma."
+    ]
+   },
+   {
+    "ra": 6,
+    "enunciado": "Participa en la elaboración de un plan de prevención de riesgos en una pequeña empresa, identificando las responsabilidades de todos los agentes implicados.",
+    "ces": [
+     "Se ha identificado la normativa básica en materia de prevención de riesgos laborales.",
+     "Se han descrito las funciones específicas de nivel básico en prevención de riesgos laborales.",
+     "Se han determinado los principales derechos y deberes en materia de prevención de riesgos laborales, así como las responsabilidades derivadas del incumplimiento de las obligaciones preventivas.",
+     "Se han clasificado las distintas formas de gestión de la prevención en la empresa, en función de los distintos criterios establecidos en la normativa sobre prevención de riesgos laborales.",
+     "Se han determinado las formas de representación de los trabajadores y de las trabajadoras en la empresa en materia de prevención de riesgos.",
+     "Se han identificado los organismos públicos relacionados con la prevención de riesgos laborales.",
+     "Se ha valorado la importancia de la existencia de un plan preventivo en la empresa, que incluya la secuenciación de actuaciones a realizar en caso de emergencia.",
+     "Se ha definido el contenido del plan de prevención en un centro de trabajo relacionado con el sector profesional del Técnico o Técnica Superior en Desarrollo de Aplicaciones Multiplataforma.",
+     "Se ha proyectado un plan de emergencia y evacuación en una pequeña y mediana empresa."
+    ]
+   },
+   {
+    "ra": 7,
+    "enunciado": "Aplica las medidas de prevención y protección, analizando las situaciones de riesgo en el entorno laboral del Técnico o Técnica Superior en Desarrollo de Aplicaciones Multiplataforma.",
+    "ces": [
+     "Se han definido las técnicas de prevención y de protección, individuales y colectivas, que deben aplicarse para evitar los daños en su origen y minimizar sus consecuencias en caso de que sean inevitables.",
+     "Se ha analizado el significado y alcance de los distintos tipos de señalización de seguridad.",
+     "Se han analizado los protocolos de actuación en caso de emergencia.",
+     "Se han identificado las técnicas de clasificación y transporte de heridos en caso de emergencia donde existan víctimas de diversa gravedad.",
+     "Se han identificado las técnicas básicas de primeros auxilios que han de ser aplicadas en el lugar del accidente ante distintos tipos de daños y la composición y uso del botiquín.",
+     "Se han determinado los requisitos y condiciones para la vigilancia de la salud del trabajador y su importancia como medida de prevención."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0494",
+  "nombre": "Empresa e iniciativa emprendedora",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Reconoce las capacidades asociadas a la iniciativa emprendedora, analizando los requerimientos derivados de los puestos de trabajo y de las actividades empresariales.",
+    "ces": [
+     "Se ha identificado el concepto de innovación y su relación con el progreso de la sociedad y el aumento en el bienestar de los individuos y la competitividad empresarial, en el ámbito de la actividad de mecanizado.",
+     "Se ha analizado el concepto de cultura emprendedora y su importancia como fuente de creación de empleo y bienestar social, así como las buenas prácticas que han de inspirar su implementación.",
+     "Se ha valorado la importancia de la iniciativa individual, la creatividad, la formación y la colaboración como requisitos indispensables para tener éxito en la actividad emprendedora.",
+     "Se ha analizado la capacidad de iniciativa en el trabajo de una persona empleada de una PYME dedicada al desarrollo de aplicaciones multiplataforma.",
+     "Se ha analizado el desarrollo de la actividad emprendedora de un empresario o empresaria que se inicie en el sector de la informática y los factores más influyentes en la consolidación de la empresa creada.",
+     "Se ha analizado el concepto de riesgo como elemento inevitable de toda actividad emprendedora.",
+     "Se ha analizado el concepto de empresario o empresaria y los requisitos y actitudes necesarios para desarrollar la actividad empresarial.",
+     "Se ha valorado la importancia de la cualificación profesional en el proceso de creación de una empresa.",
+     "Se ha descrito la estrategia empresarial relacionándola con los objetivos de la empresa.",
+     "Se ha definido una determinada idea de negocio del ámbito del desarrollo de aplicaciones multiplataforma, así como su viabilidad, que servirá de punto de partida para la elaboración de un plan de empresa.",
+     "Se han identificado los factores diferenciadores del negocio del ámbito de la informática que pretende constituirse, respecto de otros sectores."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Define la oportunidad de creación de una pequeña empresa, valorando el impacto sobre el entorno de actuación e incorporando valores éticos.",
+    "ces": [
+     "Se han descrito las funciones básicas que se realizan en una empresa y se ha analizado el concepto de sistema aplicado a la empresa.",
+     "Se han identificado los principales componentes del entorno general que rodea a la empresa; en especial el entorno económico, social, demográfico y cultural, analizando el impacto de la empresa sobre el mismo, así como su incidencia en los nuevos yacimientos de empleo.",
+     "Se ha analizado la influencia en la actividad empresarial de las relaciones con los clientes, con los proveedores y con la competencia como principales integrantes del entorno específico.",
+     "Se han identificado los elementos del entorno de una pequeña y mediana empresa de informática.",
+     "Se han analizado los conceptos de cultura empresarial e imagen corporativa, y su relación con los objetivos empresariales.",
+     "Se ha analizado el fenómeno de la responsabilidad social y ética de las empresas y su importancia como un elemento de la estrategia empresarial.",
+     "Se ha elaborado el balance social de una empresa de informática, y se han descrito los principales costes sociales en que incurren estas empresas, así como los beneficios sociales que producen.",
+     "Se han identificado, en empresas de informática, prácticas que incorporan valores éticos y sociales.",
+     "Se ha llevado a cabo un estudio de viabilidad económica y financiera de una PYME de desarrollo de aplicaciones multiplataforma.",
+     "Se han definido los aspectos más relevantes a incorporar en el plan de empresa referentes al marketing mix.",
+     "Se han identificado los programas y planes específicos de fomento del autoempleo en Castilla-La Mancha así como el resto de las políticas activas de fomento del autoempleo.",
+     "Se han identificado las diferentes organizaciones empresariales del entorno socioeconómico y las ventajas del asociacionismo empresarial."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Realiza las actividades para la constitución y puesta en marcha de una empresa, seleccionando la forma jurídica e identificando las obligaciones legales asociadas.",
+    "ces": [
+     "Se han analizado las diferentes formas jurídicas de la empresa.",
+     "Se ha especificado el grado de responsabilidad legal de los propietarios o propietarias de la empresa en función de la forma jurídica elegida.",
+     "Se ha diferenciado el tratamiento fiscal establecido para las diferentes formas jurídicas de la empresa.",
+     "Se han analizado los trámites exigidos por la legislación vigente para la constitución y puesta en marcha de una pequeña y mediana empresa.",
+     "Se ha realizado una búsqueda exhaustiva de las diferentes ayudas, subvenciones e incentivos fiscales para la creación de empresas de informática en la localidad de referencia.",
+     "Se ha incluido en el plan de empresa todo lo relativo a la elección de la forma jurídica, estudio de viabilidad económico-financiera, trámites administrativos, ayudas y subvenciones.",
+     "Se han identificado las vías de asesoramiento y gestión administrativa externas existentes a la hora de poner en marcha una pequeña y mediana empresa.",
+     "Se han analizado las fuentes de financiación y las inversiones necesarias en una pequeña y mediana empresa de informática.",
+     "Se ha incluido en el plan de empresa todo lo relativo a la selección, formación y desarrollo de la carrera profesional de sus recursos humanos, haciendo especial hincapié en la utilización de la entrevista como instrumento para el conocimiento de los futuros trabajadores y trabajadoras de la empresa."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Realiza actividades de gestión administrativa y financiera básica de una pequeña y mediana empresa, identificando las principales obligaciones contables y fiscales y cumplimentando la documentación.",
+    "ces": [
+     "Se han analizado los conceptos básicos de contabilidad, así como las técnicas de registro de la información contable.",
+     "Se han descrito las técnicas básicas de análisis de la información contable, en especial en lo referente a la solvencia, liquidez y rentabilidad de la empresa.",
+     "Se han definido las obligaciones fiscales de una empresa de informática.",
+     "Se han diferenciado los tipos de impuestos, así como el plazo de presentación de documentos oficiales teniendo en cuenta el calendario fiscal vigente.",
+     "Se ha cumplimentado la documentación básica de carácter comercial y contable (facturas, albaranes, notas de pedido, letras de cambio, cheques y otros) para una pequeña y mediana empresa de informática, y se han descrito los circuitos que dicha documentación recorre en la empresa.",
+     "Se han incluido los planes específicos requeridos por la normativa aplicable referentes a prevención de riesgos, igualdad de oportunidades y protección del medio ambiente.",
+     "Se han identificado los principales instrumentos de financiación bancaria.",
+     "Se ha incluido la anterior documentación en el plan de empresa."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Define su inserción en el mercado laboral como trabajadora o trabajador autónomo, analizando el régimen jurídico de su actividad, así como la realidad de las trabajadoras y de los trabajadores autónomos económicamente dependientes.",
+    "ces": [
+     "Se ha analizado el régimen profesional y los derechos colectivos de la trabajadora y del trabajador autónomo, conforme a la legislación vigente.",
+     "Se han descrito los trámites requeridos para el establecimiento de la trabajadora y del trabajador autónomo, así como las subvenciones y ayudas con las que cuenta para el desarrollo de su actividad.",
+     "Se han analizado las obligaciones fiscales de la trabajadora y del trabajador autónomo.",
+     "Se han identificado los aspectos esenciales de la acción protectora del Régimen Especial de la Seguridad Social de los Trabajadores por Cuenta Propia o Autónomos.",
+     "Se han analizado los principales aspectos del régimen profesional de las trabajadoras y de los trabajadores autónomos económicamente dependientes."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "0495",
+  "nombre": "Formación en centros de trabajo",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Identifica la estructura y organización de la empresa relacionándolas con el desarrollo y comercialización de los productos que obtiene.",
+    "ces": [
+     "Se han identificado la estructura organizativa de la empresa y las funciones de cada área de la misma.",
+     "Se han reconocido las relaciones organizativas y funcionales del departamento de control de calidad de los demás departamentos de la empresa.",
+     "Se ha comparado la estructura de la empresa con las organizaciones empresariales tipo existentes en el sector.",
+     "Se han relacionado las características del mercado, tipos de clientes y proveedores y su posible influencia en el desarrollo de la actividad productiva.",
+     "Se han identificado los elementos que constituyen la red logística de la empresa: proveedores, clientes, sistemas de producción, almacenaje, y otros.",
+     "Se han identificado los procedimientos de trabajo en el desarrollo del proceso productivo.",
+     "Se han valorado las competencias necesarias de los recursos humanos, profesionales, personales y sociales para el desarrollo óptimo de la actividad.",
+     "Se ha valorado la idoneidad de los canales de comercialización más frecuentes en esta actividad."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Aplica hábitos éticos y laborales en el desarrollo de su actividad profesional de acuerdo con las características del puesto de trabajo y con los procedimientos establecidos en la empresa.",
+    "ces": [
+     "Se han reconocido y justificado: • La disponibilidad personal y temporal necesarias en el puesto de trabajo. • Las actitudes personales (puntualidad y empatía, entre otras) y profesionales (orden, limpieza y responsabilidad, entre otras) necesarias para el puesto de trabajo. • Los requerimientos actitudinales ante la prevención de riesgos en la actividad profesional, así como las medidas de protección social. • Los requerimientos actitudinales referidos a la calidad en la actividad profesional. • Las actitudes relacionales con el propio equipo de trabajo y con las jerarquías establecidas en la empresa. • Las actitudes relacionadas con la documentación de las actividades realizadas en el ámbito laboral. • Las necesidades formativas para la inserción y reinserción laboral en el ámbito científico y técnico del buen hacer del profesional.",
+     "Se han identificado las normas de prevención de riesgos laborales y los aspectos fundamentales de la Ley de Prevención de Riesgos Laborales de aplicación en la actividad profesional.",
+     "Se han aplicado los equipos de protección individual según los riesgos de la actividad profesional y las normas de la empresa.",
+     "Se ha mantenido una actitud de respeto al medio ambiente en las actividades desarrolladas y aplicando las normas internas y externas al respecto",
+     "Se ha mantenido organizado, limpio y libre de obstáculos el puesto de trabajo o el área correspondiente al desarrollo de la actividad.",
+     "Se ha responsabilizado del trabajo asignado interpretando y cumpliendo las instrucciones recibidas.",
+     "Se ha establecido una comunicación eficaz con la persona responsable en cada situación y con los miembros del equipo, manteniendo un trato fluido y correcto.",
+     "Se ha coordinado con el resto del equipo comunicando las incidencias relevantes que se presenten.",
+     "Se ha valorado la importancia de su actividad y la necesidad de adaptación a los cambios de tareas asignadas en el desarrollo de los procesos productivos de la empresa, integrándose en las nuevas funciones.",
+     "Se ha responsabilizado de la aplicación de las normas y procedimientos en el desarrollo de su trabajo."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Organiza el procedimiento de trabajo que debe desarrollar, no sólo interpretando la documentación específica, sino también identificando las tareas asignadas a partir de la planificación de proyectos.",
+    "ces": [
+     "Se ha interpretado la normativa o bibliografía adecuada al tipo de tarea que se va a desarrollar.",
+     "Se han definido las fases del proceso o tarea que se va a realizar.",
+     "Se ha planificado el trabajo secuenciando y priorizando las distintas fases.",
+     "Se han identificado los equipos, y servicios auxiliares necesarios para el desarrollo de la tarea encomendada.",
+     "Se ha organizado el aprovisionamiento y almacenaje de los recursos materiales necesarios.",
+     "Se ha valorado el orden y el método en la realización de las fases y/o tareas.",
+     "Se ha identificado la normativa que es preciso observar según la tarea."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Gestiona y utiliza sistemas informáticos y entornos de desarrollo, evaluando sus requerimientos y características en función del propósito de uso.",
+    "ces": [
+     "Se ha trabajado sobre diferentes sistemas informáticos, identificando en cada caso su hardware, sistemas operativos y aplicaciones instaladas y las restricciones o condiciones específicas de uso.",
+     "Se ha gestionado la información en diferentes sistemas, aplicando medidas que aseguren la integridad y disponibilidad de los datos.",
+     "Se ha participado en la gestión de recursos en red identificando las restricciones de seguridad existentes.",
+     "Se han utilizado aplicaciones informáticas para elaborar, distribuir y mantener documentación técnica y de asistencia a usuarios.",
+     "Se han utilizado entornos de desarrollo para editar, depurar, probar y documentar código, además de generar ejecutables.",
+     "Se han gestionado entornos de desarrollo añadiendo y empleando complementos específicos en las distintas fases de proyectos de desarrollo."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Participa en el desarrollo de aplicaciones con acceso a datos planificando la estructura de la base de datos y evaluando el alcance y la repercusión de las transacciones.",
+    "ces": [
+     "Se ha interpretado el diseño lógico de bases de datos que aseguran la accesibilidad a los datos.",
+     "Se ha participado en la materialización del diseño lógico sobre algún sistema gestor de bases de datos.",
+     "Se han utilizado bases de datos aplicando técnicas para mantener la persistencia de la información.",
+     "Se han ejecutado consultas directas y procedimientos capaces de gestionar y almacenar objetos y datos de la base de datos.",
+     "Se han establecido conexiones con bases de datos para ejecutar consultas y recuperar los resultados en objetos de acceso a datos.",
+     "Se han desarrollado formularios e informes como parte de aplicaciones que gestionan de forma integral la información almacenada en una base de datos.",
+     "Se ha comprobado la configuración de los servicios de red para garantizar la ejecución segura de las aplicaciones Cliente-Servidor.",
+     "Se ha elaborado la documentación asociada a la gestión de las bases de datos empleadas y las aplicaciones desarrolladas."
+    ]
+   },
+   {
+    "ra": 6,
+    "enunciado": "Interviene en el desarrollo de juegos, aplicaciones multimedia y aplicaciones para dispositivos móviles empleando las herramientas y lenguajes específicos y cumpliendo el guión y las especificidades establecidas.",
+    "ces": [
+     "Se ha manipulado material multimedia en múltiples formatos, analizando y utilizando librerías específicas para la conversión entre formatos y para la integración de contenidos multimedia en una aplicación.",
+     "Se ha participado en la preparación e integración de materiales multimedia en una aplicación, siguiendo las instrucciones del equipo de diseño.",
+     "Se han utilizado y gestionado entornos de desarrollo específicos para aplicaciones destinadas a dispositivos móviles, así como entornos y motores para el desarrollo de juegos.",
+     "Se ha colaborado en el desarrollo de aplicaciones interactivas para dispositivos móviles, basados en el manejo de eventos y en la integración de elementos interactivos y animaciones.",
+     "Se ha verificado la usabilidad de las aplicaciones desarrolladas, colaborando en los cambios y medidas necesarias para cumplir los niveles exigidos.",
+     "Se ha participado en el desarrollo de juegos y aplicaciones en el ámbito del entretenimiento empleando distintas técnicas, motores y entornos de desarrollo."
+    ]
+   },
+   {
+    "ra": 7,
+    "enunciado": "Colabora en el desarrollo y prueba de aplicaciones multiplataforma, desde la interfaz hasta la programación de procesos y servicios, incluyendo su empaquetado y distribución así como todas las ayudas y documentación asociadas.",
+    "ces": [
+     "Se ha participado en el desarrollo de la interfaz para aplicaciones multiplataforma empleando componentes visuales estándar o definiendo componentes personalizados.",
+     "Se han creado ayudas generales y ayudas sensibles al contexto para las aplicaciones desarrolladas, empleando herramientas específicas.",
+     "Se han creado tutoriales, manuales de usuario, de instalación, y de configuración de las aplicaciones desarrolladas.",
+     "Se han empaquetado aplicaciones para su distribución preparando paquetes autoinstalables con la aplicación y todos sus elementos de ayuda y asistencia incorporados.",
+     "Se han aplicado técnicas de programación multihilo y mecanismos de comunicación habitualmente empleados para desarrollar aplicaciones en red, valorando su repercusión.",
+     "Se ha participado en la definición y elaboración de la documentación y del resto de componentes empleados en los protocolos de asistencia al usuario de la aplicación."
+    ]
+   },
+   {
+    "ra": 8,
+    "enunciado": "Participa en el proceso de implantación y adaptación de sistemas de gestión de recursos y de planificación empresarial (ERP-CRM) analizando sus características y valorando los cambios realizados.",
+    "ces": [
+     "Se ha reconocido la funcionalidad de los sistemas ERP-CRM en un supuesto empresarial real, evaluando la utilidad de cada uno de sus módulos.",
+     "Se ha participado en la instalación y configuración de sistemas ERP-CRM.",
+     "Se ha valorado y analizado el proceso de adaptación de un sistema ERP-CRM a los requerimientos de un supuesto empresarial real.",
+     "Se ha intervenido en la gestión de la información almacenada en sistemas ERP-CRM garantizando su integridad.",
+     "Se ha colaborado en el desarrollo de componentes personalizados para un sistema ERP-CRM, utilizando el lenguaje de programación proporcionado por el sistema."
+    ]
+   },
+   {
+    "ra": 9,
+    "enunciado": "Determina las características técnicas de la instalación a partir de las funcionalidades y necesidades establecidas.",
+    "ces": [
+     "Se han identificado los principales procesos.",
+     "Se han especificado las características de los equipos y accesorios relacionándolos con su función.",
+     "Se han dimensionado los equipos y elementos que configuran la instalación.",
+     "Se ha realizado el inventario de programas y componentes de la instalación según las especificaciones establecidas.",
+     "Se han descrito las principales medidas de seguridad a adoptar.",
+     "Se ha identificado la normativa aplicable a la instalación."
+    ]
+   },
+   {
+    "ra": 10,
+    "enunciado": "Participa en el diseño, la puesta en marcha y el mantenimiento de instalaciones con servicios de red local e Internet, documentando la intervención realizada.",
+    "ces": [
+     "Se ha adecuado el plan de trabajo a las normas de calidad establecidas.",
+     "Se han desarrollado planes de instalación definiendo etapas, relación de tareas y tiempos previstos.",
+     "Se ha realizado la instalación y/o configuración del sistema operativo.",
+     "Se han desarrollado tareas de automatización del sistema.",
+     "Se ha comprobado la funcionalidad del sistema según los requisitos establecidos.",
+     "Se han desarrollado planes de aprovisionamiento y condiciones de almacenamiento de los equipos y materiales.",
+     "Se ha interpretado documentación técnica de la instalación.",
+     "Se han realizado las copias de seguridad de los datos según el plan de seguridad establecido.",
+     "Se ha documentado la intervención realizada anotando las incidencias producidas durante la intervención."
+    ]
+   },
+   {
+    "ra": 11,
+    "enunciado": "Asiste a los usuarios resolviendo problemas de la explotación del sistema, según las normas y tiempos establecidos.",
+    "ces": [
+     "Se han identificado las necesidades de los usuarios.",
+     "Se han descrito los procesos que realiza el sistema con indicaciones comprensibles para los usuarios.",
+     "Se han resuelto las incidencias en los tiempos previstos.",
+     "Se han realizado intervenciones sobre los procesos de los usuarios con arreglo al procedimiento establecido.",
+     "Se han asignado los recursos del sistema de forma adecuada a las necesidades de los usuarios.",
+     "Se han documentado las incidencias producidas durante la asistencia a los usuarios.",
+     "Se han elaborado manuales de instrucciones de servicio y mantenimiento de las instalaciones."
+    ]
+   }
+  ]
+ },
+ {
+  "codigo": "CLM0022",
+  "nombre": "Inglés técnico para los ciclos formativos de grado superior de la familia profesional de informática y comunicaciones",
+  "ras": [
+   {
+    "ra": 1,
+    "enunciado": "Valora la importancia del idioma, tanto para la propia etapa formativa como para su inserción laboral, orientando su aprendizaje a las necesidades específicas del sector.",
+    "ces": [
+     "Se han determinado las situaciones más frecuentes en las que el idioma será necesario para su desempeño profesional y académico.",
+     "Se han identificado las destrezas comunicativas que se deben mejorar de cara a responder a las necesidades planteadas.",
+     "Se ha desarrollado interés en el idioma, no sólo como instrumento para la consecución de objetivos profesionales, sino que se han valorado, además, sus aspectos sociales y culturales, lo que favorece la integración en un entorno laboral cada vez más multicultural y plurilingüe."
+    ]
+   },
+   {
+    "ra": 2,
+    "enunciado": "Comprende tanto textos estándar de temática general como documentos especializados, sabiendo extraer y procesar la información técnica que se encuentra en manuales y textos, propios del sector.",
+    "ces": [
+     "Se han identificado y comprendido las ideas centrales de los textos tanto de temas generales como especializados.",
+     "Se han localizado y seleccionado, tras una lectura rápida, datos específicos en textos breves, cuadros, gráficos y diagramas.",
+     "Se ha accedido a la bibliografía complementaria y materiales de consulta necesarios o recomendados para el resto de módulos del ciclo formativo, encontrando en catálogos, bibliotecas o Internet la información deseada.",
+     "Se ha familiarizado con los patrones de organización más habituales de los textos, facilitando así tanto la comprensión como la rápida localización de la información en los mismos.",
+     "Se ha deducido el significado de palabras desconocidas a través de su contexto, gracias a la comprensión de las relaciones entre las palabras de una frase y entre las frases de un párrafo.",
+     "Se han entendido y utilizado las instrucciones y explicaciones de manuales (de mantenimiento, de instrucciones, tutoriales…) para resolver un problema específico."
+    ]
+   },
+   {
+    "ra": 3,
+    "enunciado": "Inicia y mantiene conversaciones a velocidad normal y en lengua estándar sobre asuntos cotidianos del trabajo propios del sector o de carácter general, aunque para ello se haya recurrido a estrategias comunicativas como hacer pausas para clarificar, repetir o confirmar lo escuchado / dicho.",
+    "ces": [
+     "Se ha intercambiado información técnica mediante simulaciones de las formas de comunicación más habituales en el trabajo: conversaciones telefónicas, reuniones, presentaciones…",
+     "Se han explicado y justificado planes, intenciones, acciones y opiniones.",
+     "Se ha desarrollado la capacidad de solicitar y seguir indicaciones detalladas en el ámbito laboral para la resolución de problemas, tales como el funcionamiento de objetos, maquinaria o programas de ordenador.",
+     "Se han practicado estrategias de clarificación, como pedir a alguien que aclare o reformule de forma más precisa lo que acaba de decir o repetir parte de lo que alguien ha dicho para confirmar la comprensión.",
+     "Se ha mostrado capacidad de seguir conferencias o charlas en lengua estándar sobre temas de su especialidad, distinguiendo las ideas principales de las secundarias, siempre que la estructura de la presentación sea sencilla y clara.",
+     "Se ha practicado la toma de notas de reuniones en tiempo real para posteriormente ser capaz de transmitir los puntos esenciales de la presentación.",
+     "Se ha transmitido y resumido oralmente de forma sencilla lo leído en documentos de trabajo, utilizando algunas palabras y el orden del texto original.",
+     "Se han descrito procedimientos, dando instrucciones detalladas de cómo realizar las actuaciones más frecuentes dentro del ámbito laboral.",
+     "Se han realizado con éxito simulaciones de entrevistas laborales, asumiendo tanto el rol de entrevistado como de entrevistador, siempre que el cuestionario haya sido preparado con antelación.",
+     "Se ha logrado un discurso que, si bien afectado por ocasionales pérdidas de fluidez y por una pronunciación, entonación y acento influenciados por la lengua materna, permite hacer presentaciones breves sobre temas conocidos que son seguidas y comprendidas sin dificultad."
+    ]
+   },
+   {
+    "ra": 4,
+    "enunciado": "Es capaz de escribir textos coherentes y bien estructurados sobre temas habituales del sector.",
+    "ces": [
+     "Se han elaborado ejemplos de los escritos más habituales del ámbito laboral, ajustando éstos a los modelos estándar propios del sector: informes de actuaciones, entradas en libros de servicio, presentaciones y respuestas comerciales…",
+     "Se ha redactado el currículum vitae y sus documentos asociados (carta de presentación, respuesta a una oferta de trabajo…) de cara a preparar la inserción en el mercado laboral.",
+     "Se ha solicitado o transmitido por carta, fax, correo electrónico o circular interna una información puntual breve al entorno laboral: compañeros de trabajo, clientes…",
+     "Se han redactado descripciones detalladas de los objetos, procesos y sistemas más habituales del sector.",
+     "Se ha resumido información recopilada de diversas fuentes acerca de temas habituales del sector profesional y se ha expresado una opinión bien argumentada sobre dicha información."
+    ]
+   },
+   {
+    "ra": 5,
+    "enunciado": "Posee y usa el vocabulario y los recursos suficientes para producir y comprender textos tanto orales como escritos del sector. Los errores gramaticales no suelen dificultar la comunicación.",
+    "ces": [
+     "Se ha adquirido el vocabulario técnico necesario, de manera que se recurre al diccionario tan sólo ocasionalmente para la comprensión de los documentos y el desarrollo de actividades más frecuentes del sector.",
+     "Se han puesto en práctica las estructuras gramaticales básicas más utilizadas dentro del sector profesional, consiguiendo comunicar con un satisfactorio grado de corrección.",
+     "Se han desarrollado estrategias de aprendizaje autónomo para afrontar los retos comunicativos que el idioma planteará a lo largo de la carrera profesional."
+    ]
+   }
+  ]
+ }
+]

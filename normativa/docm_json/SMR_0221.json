@@ -1,0 +1,195 @@
+{
+ "archivo": "smr_mf",
+ "modulo": {
+  "nombre": "Montaje y Mantenimiento de Equipos",
+  "codigo": "0221",
+  "abrev": "MME",
+  "ciclo": "Sistemas Microinformáticos y Redes (SMR)",
+  "ciclo_clave": "SMR",
+  "ciclo_nivel": "CFGM",
+  "curso": "1º SMR",
+  "horas_sem": 6,
+  "total_horas": 204,
+  "anno": "2026-2027",
+  "eval_count": 3,
+  "decreto": "Decreto 107/2009, de 04/08/2009, currículo del ciclo de Sistemas Microinformáticos y Redes en Castilla-La Mancha (DOCM, NID 2009/11413) · RA y CE literales del Anexo I"
+ },
+ "ras": [
+  {
+   "ut": "Selecciona los componentes de integración de un equipo…",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Selecciona los componentes de integración de un equipo microinformático estándar, describiendo sus funciones y comparando prestaciones de distintos fabricantes.",
+   "ces": [
+    "Se han descrito los bloques que componen un equipo microinformático y sus funciones.",
+    "Se ha reconocido la arquitectura de buses.",
+    "Se han descrito las características de los tipos de microprocesadores (frecuencia, tensiones, potencia, zócalos, entre otros).",
+    "Se ha descrito la función de los disipadores y ventiladores.",
+    "Se han descrito las características y utilidades más importantes de la configuración de la placa base.",
+    "Se han evaluado tipos de chasis para la placa base y el resto de componentes.",
+    "Se han identificado y manipulado los componentes básicos (módulos de memoria, discos fijos y sus controladoras, soportes de memorias auxiliares, entre otros).",
+    "Se ha analizado la función del adaptador gráfico y el monitor.",
+    "Se han identificado y manipulado distintos adaptadores (gráficos, LAN, módems, entre otros).",
+    "Se han identificado los elementos que acompañan a un componente de integración (documentación, controladores, cables y utilidades, entre otros).",
+    "Se ha realizado la elaboración de documentación inventarial."
+   ]
+  },
+  {
+   "ut": "Ensambla un equipo microinformático",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Ensambla un equipo microinformático, interpretando planos e instrucciones del fabricante aplicando técnicas de montaje.",
+   "ces": [
+    "Se han seleccionado las herramientas y útiles necesarios para el ensamblado de equipos microinformáticos.",
+    "Se ha interpretado la documentación técnica de todos los componentes a ensamblar.",
+    "Se ha determinado el sistema de apertura / cierre del chasis y los distintos sistemas de fijación para ensamblardesensamblar los elementos del equipo.",
+    "Se han ensamblado diferentes conjuntos de placa base, microprocesador y elementos de refrigeración en diferentes modelos de chasis, según las especificaciones dadas.",
+    "Se han ensamblado los módulos de memoria RAM, los discos fijos, las unidades de lectura / grabación en soportes de memoria auxiliar y otros componentes.",
+    "Se han configurado parámetros básicos del conjunto accediendo a la configuración de la placa base.",
+    "Se han ejecutado utilidades de chequeo y diagnóstico para verificar las prestaciones del conjunto ensamblado.",
+    "Se ha realizado un informe de montaje.",
+    "Se ha reconocido la secuencia del proceso de arranque de un ordenador: el arranque a nivel eléctrico, las señales de error del POST de la BIOS."
+   ]
+  },
+  {
+   "ut": "Mide parámetros eléctricos",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Mide parámetros eléctricos, identificando el tipo de señal y relacionándola con sus unidades características.",
+   "ces": [
+    "Se ha identificado el tipo de señal a medir con el aparato correspondiente.",
+    "Se ha seleccionado la magnitud, el rango de medida y se ha conectado el aparato según la magnitud a medir.",
+    "Se ha relacionado la medida obtenida con los valores típicos.",
+    "Se han identificado los bloques de una fuente de alimentación (F.A.) para un ordenador personal.",
+    "Se han enumerado las tensiones proporcionadas por una F.A. típica.",
+    "Se han medido las tensiones en F.A. típicas de ordenadores personales.",
+    "Se han identificado los bloques de un sistema de alimentación ininterrumpida.",
+    "Se han medido las señales en los puntos significativos de un SAI.",
+    "Se han reconocido los tipos de circuitos eléctricos: C.A. /C.C. y se conocen las magnitudes fundamentales, medidas básicas.",
+    "Se conocen los aparatos de medida."
+   ]
+  },
+  {
+   "ut": "Mantiene equipos informáticos",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Mantiene equipos informáticos interpretando las recomendaciones de los fabricantes y relacionando las disfunciones con sus causas.",
+   "ces": [
+    "Se han reconocido las señales acústicas y/o visuales que avisan de problemas en el hardware de un equipo.",
+    "Se han identificado y solventado las averías producidas por sobrecalentamiento del microprocesador.",
+    "Se han identificado y solventado averías típicas de un equipo microinformático (mala conexión de componentes, incompatibilidades, problemas en discos fijos, suciedad, entre otras).",
+    "Se han sustituido componentes deteriorados.",
+    "Se ha verificado la compatibilidad de los componentes sustituidos.",
+    "Se han realizado actualizaciones y ampliaciones de componentes.",
+    "Se han elaborado informes de avería (reparación o ampliación)."
+   ]
+  },
+  {
+   "ut": "Instala software en un equipo informático",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Instala software en un equipo informático utilizando una imagen almacenada en un soporte de memoria y justificando el procedimiento a seguir.",
+   "ces": [
+    "Se ha reconocido la diferencia entre una instalación estándar y una preinstalación de software.",
+    "Se han identificado y probado las distintas secuencias de arranque configurables en la placa base.",
+    "Se han inicializado equipos desde distintos soportes de memoria auxiliar.",
+    "Se han realizado imágenes de una preinstalación de software.",
+    "Se han restaurado imágenes sobre el disco fijo desde distintos soportes.",
+    "Se han descrito las utilidades para la creación de imágenes de partición / disco.",
+    "Se ha realizado la instalación de S.O y configuración del mismo.",
+    "Se ha realizado la creación de particiones y unidades lógicas.",
+    "Se ha realizado redimensión de particiones.",
+    "Se ha realizado la instalación y configuración de programas de mantenimiento.",
+    "Se ha realizado la instalación y configuración de programas de optimización del sistema."
+   ]
+  },
+  {
+   "ut": "Reconoce nuevas tendencias en el ensamblaje de equipos microinformáticos",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Reconoce nuevas tendencias en el ensamblaje de equipos microinformáticos describiendo sus ventajas y adaptándolas a las características de uso de los equipos.",
+   "ces": [
+    "Se han reconocido las nuevas posibilidades para dar forma al conjunto chasis-placa base.",
+    "Se han descrito las prestaciones y características de algunas de las plataformas semiensambladas («barebones ») más representativas del momento.",
+    "Se han descrito las características de los ordenadores de entretenimiento multimedia (HTPC), los chasis y componentes específicos empleados en su ensamblado.",
+    "Se han descrito las características diferenciales que demandan los equipos informáticos empleados en otros campos de aplicación específicos.",
+    "Se ha evaluado la presencia de la informática móvil como mercado emergente, con una alta demanda en equipos y dispositivos con características específicas: móviles, PDA, navegadores, entre otros.",
+    "Se ha evaluado la presencia del «modding» como corriente alternativa al ensamblado de equipos microinformáticos."
+   ]
+  },
+  {
+   "ut": "Mantiene periféricos",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Mantiene periféricos, interpretando las recomendaciones de los fabricantes de equipos y relacionando disfunciones con sus causas.",
+   "ces": [
+    "Se han identificado y solucionado problemas mecánicos en periféricos de impresión estándar.",
+    "Se han sustituido consumibles en periféricos de impresión estándar.",
+    "Se han identificado y solucionado problemas mecánicos en periféricos de entrada.",
+    "Se han asociado las características y prestaciones de los periféricos de captura de imágenes digitales, fijas y en movimiento con sus posibles aplicaciones.",
+    "Se han asociado las características y prestaciones de otros periféricos multimedia con sus posibles aplicaciones.",
+    "Se han reconocido los usos y ámbitos de aplicación de equipos de fotocopiado, impresión digital profesional y filmado.",
+    "Se han aplicado técnicas de mantenimiento preventivo a los periféricos."
+   ]
+  },
+  {
+   "ut": "Cumple las normas de prevención de riesgos laborales y de protección…",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Cumple las normas de prevención de riesgos laborales y de protección ambiental, identificando los riesgos asociados, las medidas y equipos para prevenirlos.",
+   "ces": [
+    "Se han identificado los riesgos y el nivel de peligrosidad que suponen la manipulación de los materiales, herramientas, útiles, máquinas y medios de transporte.",
+    "Se han operado las máquinas respetando las normas de seguridad.",
+    "Se han identificado las causas más frecuentes de accidentes en la manipulación de materiales, herramientas, máquinas de corte y conformado, entre otras.",
+    "Se han descrito los elementos de seguridad (protecciones, alarmas, pasos de emergencia, entre otros) de las máquinas y los equipos de protección individual (calzado, protección ocular, indumentaria, entre otros) que se deben emplear en las distintas operaciones de montaje y mantenimiento.",
+    "Se ha relacionado la manipulación de materiales, herramientas y máquinas con las medidas de seguridad y protección personal requeridos.",
+    "Se han identificado las posibles fuentes de contaminación del entorno ambiental.",
+    "Se han clasificado los residuos generados para su retirada selectiva.",
+    "Se ha valorado el orden y la limpieza de instalaciones y equipos como primer factor de prevención de riesgos.",
+    "Se conoce y se cumple la normativa sobre ergonomía."
+   ]
+  },
+  {
+   "ut": "Verifica equipos",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Verifica equipos interpretando resultados de las pruebas realizadas.",
+   "ces": [
+    "Se han realizado y se conocen las pruebas de integridad y estabilidad.",
+    "Se han realizado y se conocen las pruebas de rendimiento.",
+    "Se conocen las herramientas de diagnóstico (del sistema operativo y externas).",
+    "Se han realizado pruebas con software de diagnóstico.",
+    "Se han realizado pruebas con sistemas operativos en almacenamiento extraíble.",
+    "Se han elaborado Informes sobre pruebas, problemas, reparaciones y soluciones."
+   ]
+  }
+ ],
+ "dual_ra": null
+}

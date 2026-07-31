@@ -200,6 +200,7 @@ function renderCatCards() {
     const added = addedKeys.has(m.key)
     const sel   = _catSelectedKey === m.key
     const horas = m.total_horas || m.horas || ''
+    const aula  = m.horas_aula && m.horas_aula !== horas ? m.horas_aula : 0
     const nRas  = m.n_ras || ''
     return `
     <div class="cat-card ${added?'already-added':''} ${sel?'selected':''}"
@@ -207,7 +208,8 @@ function renderCatCards() {
       <div class="cat-card-abrev">${esc(m.abrev)}</div>
       <div class="cat-card-nombre">${esc(m.nombre)}</div>
       <div class="cat-card-meta">
-        ${horas ? `<span class="cat-card-pill">${esc(String(horas))}h</span>` : ''}
+        ${horas ? `<span class="cat-card-pill" title="Duración oficial del módulo">${esc(String(horas))}h</span>` : ''}
+        ${aula  ? `<span class="cat-card-pill" title="Horas en el aula; el resto es formación en empresa">${esc(String(aula))}h aula</span>` : ''}
         ${nRas  ? `<span class="cat-card-pill">${esc(String(nRas))} RA</span>` : ''}
         ${m.curso ? `<span class="cat-card-pill">${esc(m.curso)}</span>` : ''}
       </div>
@@ -223,10 +225,12 @@ async function selectCatCard(key) {
     _modData = await window.api.getModuloData(key)
     const m = _modData.modulo
     const horas = m.total_horas || m.horas || '?'
+    const aula  = m.horas_aula && m.horas_aula !== horas
+      ? ` (${m.horas_aula}h de aula + ${horas - m.horas_aula}h en empresa)` : ''
     const info = document.getElementById('cat-sel-info')
     info.innerHTML = `
       <b>${esc(m.abrev)}</b> — ${esc(m.nombre)}
-      <span style="color:var(--text2);margin-left:10px">${esc(m.ciclo||'')} · ${esc(String(horas))}h · ${_modData.ras.length} RAs</span>`
+      <span style="color:var(--text2);margin-left:10px">${esc(m.ciclo||'')} · ${esc(String(horas))}h${esc(aula)} · ${_modData.ras.length} RAs</span>`
     document.getElementById('cat-footer').style.display = 'flex'
     renderCatCards()   // re-render to show selected state
   } catch(e) {

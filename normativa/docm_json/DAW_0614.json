@@ -1,0 +1,136 @@
+{
+ "archivo": "dep",
+ "modulo": {
+  "nombre": "Despliegue de Aplicaciones Web",
+  "codigo": "0614",
+  "abrev": "DEAW",
+  "ciclo": "Desarrollo de Aplicaciones Web (DAW)",
+  "ciclo_clave": "DAW",
+  "ciclo_nivel": "CFGS",
+  "curso": "2º DAW",
+  "horas_sem": 3,
+  "total_horas": 130,
+  "anno": "2026-2027",
+  "eval_count": 3,
+  "decreto": "Decreto 230/2011, de 28/07/2011, currículo del ciclo de Desarrollo de Aplicaciones Web en Castilla-La Mancha (DOCM, NID 2011/11276) · RA y CE literales del Anexo I"
+ },
+ "ras": [
+  {
+   "ut": "Implantación de arquitecturas web",
+   "tags": "DNS · Dominios · Hosting · VPS · CDN · HTTPS",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Implanta arquitecturas web analizando y aplicando criterios de funcionalidad.",
+   "ces": [
+    "Se han analizado aspectos generales de arquitecturas web, sus características, ventajas e inconvenientes.",
+    "Se han descrito los fundamentos y protocolos en los que se basa el funcionamiento de un servidor web.",
+    "Se ha realizado la instalación y configuración básica de servidores web.",
+    "Se han clasificado y descrito los principales servidores de aplicaciones.",
+    "Se ha realizado la instalación y configuración básica de servidores de aplicaciones.",
+    "Se han realizado pruebas de funcionamiento de los servidores web y de aplicaciones.",
+    "Se ha analizado la estructura y recursos que componen una aplicación web.",
+    "Se han descrito los requerimientos del proceso de implantación de una aplicación web.",
+    "Se han documentado los procesos de instalación y configuración realizados sobre los servidores web y sobre las aplicaciones."
+   ]
+  },
+  {
+   "ut": "Administración de servidores web",
+   "tags": "Nginx · Apache · Virtualhost · SSL/TLS · WAF",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Gestiona servidores web, evaluando y aplicando criterios de configuración para el acceso seguro a los servicios.",
+   "ces": [
+    "Se han reconocido los parámetros de administración más importantes del servidor web.",
+    "Se ha ampliado la funcionalidad del servidor mediante la activación y configuración de módulos.",
+    "Se han creado y configurado sitios virtuales.",
+    "Se han configurado los mecanismos de autenticación y control de acceso del servidor.",
+    "Se han obtenido e instalado certificados digitales.",
+    "Se han establecido mecanismos para asegurar las comunicaciones entre el cliente y el servidor.",
+    "Se han realizado pruebas de funcionamiento y rendimiento del servidor web.",
+    "Se ha elaborado documentación relativa a la configuración, administración segura y recomendaciones de uso del servidor.",
+    "Se han realizado los ajustes necesarios para la implantación de aplicaciones en el servidor web."
+   ]
+  },
+  {
+   "ut": "Implanta aplicaciones web en servidores de aplicaciones",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Implanta aplicaciones web en servidores de aplicaciones, evaluando y aplicando criterios de configuración para su funcionamiento seguro.",
+   "ces": [
+    "Se han descrito los componentes y el funcionamiento de los servicios proporcionados por el servidor de aplicaciones.",
+    "Se han identificado los principales archivos de configuración y de bibliotecas compartidas.",
+    "Se ha configurado el servidor de aplicaciones para cooperar con el servidor web.",
+    "Se han configurado y activado los mecanismos de seguridad del servidor de aplicaciones.",
+    "Se han configurado y utilizado los componentes web del servidor de aplicaciones.",
+    "Se han realizado los ajustes necesarios para el despliegue de aplicaciones sobre el servidor.",
+    "Se han realizado pruebas de funcionamiento y rendimiento de la aplicación web desplegada.",
+    "Se ha elaborado documentación relativa a la administración y recomendaciones de uso del servidor de aplicaciones.",
+    "Se ha elaborado documentación relativa al despliegue de aplicaciones sobre el servidor de aplicaciones."
+   ]
+  },
+  {
+   "ut": "Administra servidores de transferencia de archivos",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Administra servidores de transferencia de archivos, evaluando y aplicando criterios de configuración que garanticen la disponibilidad del servicio.",
+   "ces": [
+    "Se han instalado y configurado servidores de transferencia de archivos.",
+    "Se han creado usuarios y grupos para el acceso remoto al servidor.",
+    "Se ha configurado el acceso anónimo.",
+    "Se ha comprobado el acceso al servidor, tanto en modo activo como en modo pasivo.",
+    "Se han realizado pruebas con clientes en línea de comandos y clientes en modo gráfico.",
+    "Se ha utilizado el protocolo seguro de transferencia de archivos.",
+    "Se han configurado y utilizado servicios de transferencia de archivos integrados en servidores web.",
+    "Se ha utilizado el navegador como cliente del servicio de transferencia de archivos.",
+    "Se ha elaborado documentación relativa a la configuración y administración del servicio de transferencia de archivos."
+   ]
+  },
+  {
+   "ut": "Verifica la ejecución de aplicaciones Web comprobando los parámetros…",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Verifica la ejecución de aplicaciones Web comprobando los parámetros de configuración de servicios de red.",
+   "ces": [
+    "Se ha descrito la estructura, nomenclatura y funcionalidad de los sistemas de nombres jerárquicos.",
+    "Se han identificado las necesidades de configuración del servidor de nombres en función de los requerimientos de ejecución de las aplicaciones Web desplegadas.",
+    "Se han identificado la función, elementos y estructuras lógicas del servicio de directorio.",
+    "Se ha analizado la configuración y personalización del servicio de directorio.",
+    "Se ha analizado la capacidad del servicio de directorio como mecanismo de autenticación centralizada de los usuarios en una red.",
+    "Se han especificado los parámetros de configuración en el servicio de directorios adecuados para el proceso de validación de usuarios de la aplicación web.",
+    "Se ha elaborado documentación relativa a las adaptaciones realizadas en los servicios de red."
+   ]
+  },
+  {
+   "ut": "Elabora la documentación de la aplicación web",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Elabora la documentación de la aplicación web evaluando y seleccionando herramientas de generación de documentación y control de versiones.",
+   "ces": [
+    "Se han identificado diferentes herramientas de generación de documentación.",
+    "Se han documentado los componentes software utilizando los generadores específicos de las plataformas.",
+    "Se han utilizado diferentes formatos para la documentación.",
+    "Se han utilizado herramientas colaborativas para la elaboración y mantenimiento de la documentación.",
+    "Se ha instalado, configurado y utilizado un sistema de control de versiones.",
+    "Se ha garantizado la accesibilidad y seguridad de la documentación almacenada por el sistema de control de versiones.",
+    "Se ha documentado la instalación, configuración y uso del sistema de control de versiones utilizado."
+   ]
+  }
+ ],
+ "dual_ra": null
+}

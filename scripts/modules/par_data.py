@@ -1,220 +1,136 @@
+"""EvalFP — Planificación y Administración de Redes · 0370 · Administración de Sistemas Informáticos en Red (ASIR)
+Decreto 200/2010, de 03/08/2010, currículo del ciclo de Administración de Sistemas Informáticos en Red en Castilla-La Mancha (DOCM, NID 2010/13389) · RA y CE literales del Anexo I
+RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
+Duración: 157 h · 5 h/semana · 1º ASIR.
 """
-EvalFP — Datos del módulo PAR (Planificación y Administración de Redes)
-Módulo: 0370 · 1º ASIR · Ciclo: ASIR
-Curso académico: 2026-2027
-
-Para añadir un nuevo módulo, copia este fichero, renómbralo y adapta las listas.
-"""
-
-# ─── MÓDULO ──────────────────────────────────────────────────────────────────
 MODULO = {
-    "nombre":      "Planificación y Administración de Redes",
-    "codigo":      "0370",
-    "abrev":       "PAR",
-    "ciclo":       "Administración de Sistemas Informáticos en Red (ASIR)",
-    "curso":       "1º ASIR",
-    "horas_sem":   5,
-    "total_horas": 155,
-    "anno":        "2026-2027",
-    "eval_count":  3,
-    "ciclo_clave": "ASIR",
-    "ciclo_nivel": "CFGS",
-    "decreto": "RD 1629/2009, de 30 de octubre · Decreto CLM 200/2010, de 3 de agosto (DOCM)",
+    "nombre":"Planificación y Administración de Redes","codigo":"0370","abrev":"PAR",
+    "ciclo":"Administración de Sistemas Informáticos en Red (ASIR)","ciclo_clave":"ASIR","ciclo_nivel":"CFGS",
+    "curso":"1º ASIR","horas_sem":5,"total_horas":157,"anno":"2026-2027","eval_count":3,
+    "decreto":"Decreto 200/2010, de 03/08/2010, currículo del ciclo de Administración de Sistemas Informáticos en Red en Castilla-La Mancha (DOCM, NID 2010/13389) · RA y CE literales del Anexo I",
 }
-
-# ─── UNIDADES DE TRABAJO ─────────────────────────────────────────────────────
 UTS = [
-    {
-        "id":     "UT1",
-        "nombre": "Introducción a las redes locales",
-        "horas":  20,
-        "eval":   1,
-        "tags":   "OSI · TCP/IP · Ethernet",
-    },
-    {
-        "id":     "UT2",
-        "nombre": "Dispositivos de red y medios de transmisión",
-        "horas":  22,
-        "eval":   1,
-        "tags":   "Switch · Router · Cableado estructurado",
-    },
-    {
-        "id":     "UT3",
-        "nombre": "Configuración y administración de conmutadores",
-        "horas":  22,
-        "eval":   2,
-        "tags":   "VLANs · STP · Port-security",
-    },
-    {
-        "id":     "UT4",
-        "nombre": "Configuración y administración de routers",
-        "horas":  28,
-        "eval":   2,
-        "tags":   "OSPF · RIP · NAT · ACLs",
-    },
-    {
-        "id":     "UT5",
-        "nombre": "Configuración de redes inalámbricas",
-        "horas":  20,
-        "eval":   2,
-        "tags":   "WiFi 6 · WPA3 · RADIUS",
-    },
-    {
-        "id":     "UT6",
-        "nombre": "Introducción a las redes WAN y servicios de red",
-        "horas":  22,
-        "eval":   3,
-        "tags":   "DHCP · DNS · VPN · MPLS",
-    },
-    {
-        "id":     "UT7",
-        "nombre": "Resolución de incidencias de red",
-        "horas":  21,
-        "eval":   3,
-        "tags":   "Wireshark · ping · traceroute · SNMP",
-    },
+    {"id":"UT1","nombre":"Introducción a las redes locales","horas":27,"eval":1,"tags":"OSI · TCP/IP · Ethernet"},
+    {"id":"UT2","nombre":"Dispositivos de red y medios de transmisión","horas":24,"eval":1,"tags":"Switch · Router · Cableado estructurado"},
+    {"id":"UT3","nombre":"Configuración y administración de conmutadores","horas":27,"eval":2,"tags":"VLANs · STP · Port-security"},
+    {"id":"UT4","nombre":"Configuración y administración de routers","horas":26,"eval":2,"tags":"OSPF · RIP · NAT · ACLs"},
+    {"id":"UT5","nombre":"Configura redes locales virtuales","horas":18,"eval":3,"tags":""},
+    {"id":"UT6","nombre":"Realiza tareas avanzadas de administración de red","horas":20,"eval":3,"tags":""},
+    {"id":"UT7","nombre":"Conecta redes privadas a redes públicas","horas":15,"eval":3,"tags":""},
 ]
-
-# ─── RESULTADOS DE APRENDIZAJE ───────────────────────────────────────────────
 RAS = [
-    {
-        "id":     "RA1",
-        "pond":   15,
-        "nombre": "Reconoce la estructura de las redes de datos describiendo sus elementos "
-                  "y funcionamiento.",
-    },
-    {
-        "id":     "RA2",
-        "pond":   20,
-        "nombre": "Integra ordenadores y periféricos en redes cableadas e inalámbricas, "
-                  "evaluando su funcionamiento y prestaciones.",
-    },
-    {
-        "id":     "RA3",
-        "pond":   20,
-        "nombre": "Administra conmutadores estableciendo opciones de configuración para "
-                  "su integración en la red.",
-    },
-    {
-        "id":     "RA4",
-        "pond":   25,
-        "nombre": "Administra las funciones de un router estableciendo opciones de "
-                  "configuración para su integración en la red.",
-    },
-    {
-        "id":     "RA5",
-        "pond":   10,
-        "nombre": "Configura redes inalámbricas en modo infraestructura describiendo sus "
-                  "características y relacionándolas con su área de aplicación.",
-    },
-    {
-        "id":     "RA6",
-        "pond":   10,
-        "nombre": "Soluciona problemas de conectividad en redes locales y en redes con "
-                  "salida a Internet identificando las causas y describiendo las soluciones.",
-    },
+    {"id":"RA1","pond":17,"nombre":"Reconoce la estructura de las redes de datos identificando sus elementos y principios de funcionamiento."},
+    {"id":"RA2","pond":15,"nombre":"Integra ordenadores y periféricos en redes cableadas e inalámbricas, evaluando su funcionamiento y prestaciones."},
+    {"id":"RA3","pond":17,"nombre":"Administra conmutadores estableciendo opciones de configuración para su integración en la red."},
+    {"id":"RA4","pond":17,"nombre":"Administra las funciones básicas de un «router» estableciendo opciones de configuración para su integración en la red."},
+    {"id":"RA5","pond":11,"nombre":"Configura redes locales virtuales identificando su campo de aplicación."},
+    {"id":"RA6","pond":13,"nombre":"Realiza tareas avanzadas de administración de red analizando y utilizando protocolos dinámicos de encaminamiento."},
+    {"id":"RA7","pond":10,"nombre":"Conecta redes privadas a redes públicas identificando y aplicando diferentes tecnologías."},
 ]
-
-# ─── ASIGNACIONES UT → RA → CEs ──────────────────────────────────────────────
 ASIGNACIONES = [
-    ("UT1", "RA1", ["CR1","CR2","CR3","CR4","CR5","CR6"]),
-    ("UT2", "RA2", ["CR1","CR2","CR3","CR4","CR5","CR6","CR7"]),
-    ("UT2", "RA1", ["CR7","CR8"]),
-    ("UT3", "RA3", ["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8"]),
-    ("UT4", "RA4", ["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9"]),
-    ("UT5", "RA5", ["CR1","CR2","CR3","CR4","CR5","CR6"]),
-    ("UT5", "RA4", ["CR10"]),
-    ("UT6", "RA4", ["CR11","CR12"]),
-    ("UT7", "RA6", ["CR1","CR2","CR3","CR4","CR5","CR6","CR7"]),
+    ("UT1","RA1",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9","CR10","CR11","CR12"]),
+    ("UT2","RA2",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9","CR10","CR11"]),
+    ("UT3","RA3",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9","CR10","CR11","CR12"]),
+    ("UT4","RA4",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9","CR10","CR11","CR12"]),
+    ("UT5","RA5",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8"]),
+    ("UT6","RA6",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9"]),
+    ("UT7","RA7",["CR1","CR2","CR3","CR4","CR5","CR6","CR7"]),
 ]
-
-# ─── EVALUACIÓN POR RA ───────────────────────────────────────────────────────
-EVAL_RAS = {
-    1: ["RA1", "RA2"],         # Eval 1: 15% + 20% = 35%
-    2: ["RA3", "RA4", "RA5"],  # Eval 2: 20% + 25% + 10% = 55%
-    3: ["RA6"],                # Eval 3: 10%
-}
-
-# ─── RA DUAL ─────────────────────────────────────────────────────────────────
+EVAL_RAS = {1:["RA1","RA2"], 2:["RA3","RA4"], 3:["RA5","RA6","RA7"]}
 DUAL_RA = "RA6"
-DUAL_PCT_NOTA = 0.10
-DUAL_JUSTIFICACION = (
-    "RA6 — Resolución de problemas de red — se evalúa en modalidad DUAL "
-    "de acuerdo con el artículo 42 de la Ley Orgánica 3/2022. "
-    "El alumno/a resuelve incidencias reales en el entorno laboral bajo "
-    "supervisión del tutor/a de empresa. Peso en nota final: 10%."
-)
-
-# ─── INSTRUMENTOS DE EVALUACIÓN POR RA ───────────────────────────────────────
 RA_INSTRUMENTOS = {
-    "RA1": ["examen", "practica"],
-    "RA2": ["examen", "practica"],
-    "RA3": ["examen", "practica"],
-    "RA4": ["examen", "practica"],
-    "RA5": ["practica"],
-    "RA6": ["empresa"],
+    "RA1":["examen","practica"],
+    "RA2":["examen","practica"],
+    "RA3":["examen","practica"],
+    "RA4":["examen","practica"],
+    "RA5":["practica"],
+    "RA6":["empresa"],
+    "RA7":["examen","practica"],
 }
-
-# ─── CRITERIOS DE EVALUACIÓN (BOE RD 1629/2009) ──────────────────────────────
 CES = {
-    "RA1": [
-        {"id": "CR1", "texto": "Se han descrito los principios de las comunicaciones entre dispositivos."},
-        {"id": "CR2", "texto": "Se han identificado los estándares de comunicaciones en redes de área local."},
-        {"id": "CR3", "texto": "Se han descrito las topologías de red y sus características."},
-        {"id": "CR4", "texto": "Se han descrito los modelos de referencia OSI y TCP/IP."},
-        {"id": "CR5", "texto": "Se han relacionado los modelos OSI y TCP/IP identificando los protocolos de cada capa."},
-        {"id": "CR6", "texto": "Se ha descrito el encapsulamiento de la información en los distintos niveles de los modelos de referencia."},
-        {"id": "CR7", "texto": "Se han identificado las principales tecnologías Ethernet y sus características."},
-        {"id": "CR8", "texto": "Se ha analizado el direccionamiento en redes IPv4 e IPv6."},
-    ],
-    "RA2": [
-        {"id": "CR1", "texto": "Se han instalado y configurado adaptadores de red."},
-        {"id": "CR2", "texto": "Se han utilizado aplicaciones para configurar y verificar el direccionamiento en redes."},
-        {"id": "CR3", "texto": "Se han conectado equipos y dispositivos de red utilizando distintos medios."},
-        {"id": "CR4", "texto": "Se han instalado y configurado conmutadores."},
-        {"id": "CR5", "texto": "Se han instalado y configurado puntos de acceso inalámbrico."},
-        {"id": "CR6", "texto": "Se han establecido los parámetros de configuración de los dispositivos de red."},
-        {"id": "CR7", "texto": "Se ha evaluado la idoneidad de distintos medios de transmisión para cada aplicación."},
-    ],
-    "RA3": [
-        {"id": "CR1", "texto": "Se han descrito las funciones de los conmutadores en la red."},
-        {"id": "CR2", "texto": "Se han configurado VLANs en un conmutador."},
-        {"id": "CR3", "texto": "Se han configurado enlaces troncales entre conmutadores."},
-        {"id": "CR4", "texto": "Se ha analizado y configurado el protocolo Spanning Tree."},
-        {"id": "CR5", "texto": "Se han configurado protocolos de agregación de enlaces."},
-        {"id": "CR6", "texto": "Se han aplicado medidas de seguridad en el acceso a los conmutadores."},
-        {"id": "CR7", "texto": "Se han configurado listas de control de acceso en los puertos del conmutador."},
-        {"id": "CR8", "texto": "Se ha verificado el funcionamiento de las VLANs en una red conmutada."},
-    ],
-    "RA4": [
-        {"id": "CR1",  "texto": "Se han descrito las funciones y características de los routers."},
-        {"id": "CR2",  "texto": "Se han configurado los parámetros básicos de un router."},
-        {"id": "CR3",  "texto": "Se han configurado rutas estáticas."},
-        {"id": "CR4",  "texto": "Se han configurado protocolos de enrutamiento dinámico (RIP, OSPF)."},
-        {"id": "CR5",  "texto": "Se han configurado listas de control de acceso (ACL)."},
-        {"id": "CR6",  "texto": "Se ha configurado el servicio NAT."},
-        {"id": "CR7",  "texto": "Se han configurado interfaces WAN."},
-        {"id": "CR8",  "texto": "Se han verificado los parámetros de configuración y funcionamiento del router."},
-        {"id": "CR9",  "texto": "Se han documentado los procedimientos de configuración y las incidencias."},
-        {"id": "CR10", "texto": "Se ha configurado el acceso a Internet desde una red local."},
-        {"id": "CR11", "texto": "Se han configurado servicios DHCP en el router."},
-        {"id": "CR12", "texto": "Se han configurado servicios DNS en el router."},
-    ],
-    "RA5": [
-        {"id": "CR1", "texto": "Se han descrito los estándares de redes inalámbricas."},
-        {"id": "CR2", "texto": "Se han descrito los modos de funcionamiento de las redes inalámbricas."},
-        {"id": "CR3", "texto": "Se han configurado redes inalámbricas en modo infraestructura."},
-        {"id": "CR4", "texto": "Se han aplicado protocolos de seguridad en redes inalámbricas."},
-        {"id": "CR5", "texto": "Se han establecido parámetros de acceso de usuarios a la red inalámbrica."},
-        {"id": "CR6", "texto": "Se ha verificado el funcionamiento de la red inalámbrica."},
-    ],
-    "RA6": [
-        {"id": "CR1", "texto": "Se han descrito los procedimientos para el diagnóstico de incidencias."},
-        {"id": "CR2", "texto": "Se han utilizado herramientas de diagnóstico de red."},
-        {"id": "CR3", "texto": "Se han identificado las causas de problemas de conectividad."},
-        {"id": "CR4", "texto": "Se han resuelto problemas de configuración de los dispositivos de red."},
-        {"id": "CR5", "texto": "Se han aplicado medidas correctoras a las incidencias detectadas."},
-        {"id": "CR6", "texto": "Se han documentado las incidencias y las soluciones aplicadas."},
-        {"id": "CR7", "texto": "Se han interpretado los registros de los dispositivos de red."},
-    ],
+    "RA1":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han identificado los factores que impulsan la continua expansión y evolución de las redes de datos.",
+        "Se han diferenciado los distintos medios de transmisión utilizados en las redes.",
+        "Se han reconocido los distintos tipos de red y sus topologías.",
+        "Se han descrito las arquitecturas de red y los niveles que las componen.",
+        "Se ha descrito el concepto de protocolo de comunicación.",
+        "Se ha descrito el funcionamiento de las pilas de protocolos en las distintas arquitecturas de red.",
+        "Se han presentado y descrito los elementos funcionales, físicos y lógicos, de las redes de datos.",
+        "Se han diferenciado los dispositivos de interconexión de redes atendiendo al nivel funcional en el que se encuadran.",
+        "Se ha descrito la aplicación de un estándar de cableado estructurado, identificando los distintos subsistemas: troncal y horizontal.",
+        "Se ha presentado y descrito el algoritmo de acceso al medio CSMA/CD.",
+        "Se ha descrito el formato de una trama Ethernet, identificando sus campos y funcionalidad de cada uno de ellos.",
+        "Se reconocen las ventajas de la convergencia entre distintas redes.",
+    ], start=1)],
+    "RA2":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han identificado los estándares para redes cableadas e inalámbricas.",
+        "Se han montado cables directos, cruzados y de consola.",
+        "Se han utilizado comprobadores para verificar la conectividad de distintos tipos de cables.",
+        "Se ha utilizado el sistema de direccionamiento lógico IP para asignar direcciones de red y máscaras de subred.",
+        "Se han configurado adaptadores de red cableados e inalámbricos bajo distintos sistemas operativos.",
+        "Se han integrado dispositivos en redes cableadas e inalámbricas.",
+        "Se ha comprobado la conectividad entre diversos dispositivos y adaptadores inalámbricos sobre distintas configuraciones.",
+        "Se han utilizado aplicaciones para representar el mapa físico y lógico de una red.",
+        "Se ha monitorizado la red mediante aplicaciones basadas en el protocolo SNMP.",
+        "Se ha utilizado el sistema de direccionamiento IPv6.",
+        "Se ha identificado los protocolos ARP y RARP para redes locales.",
+    ], start=1)],
+    "RA3":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han conectado conmutadores entre sí y con las estaciones de trabajo.",
+        "Se ha interpretado la información que proporcionan los «leds» del conmutador.",
+        "Se han utilizado distintos métodos para acceder al modo de configuración del conmutador.",
+        "Se han identificado los archivos que guardan la configuración del conmutador.",
+        "Se ha administrado la tabla de direcciones MAC del conmutador.",
+        "Se ha configurado la seguridad del puerto.",
+        "Se ha actualizado el sistema operativo del conmutador.",
+        "Se han utilizado los comandos proporcionados por el sistema operativo del conmutador que permiten hacer el seguimiento de posibles incidencias.",
+        "Se ha verificado el funcionamiento del Spanning Tree Protocol en un conmutador.",
+        "Se han modificado los parámetros que determinan el proceso de selección del puente raíz.",
+        "Se reconocen las diferencias fundamentales entre conmutadores administrables y no administrables.",
+        "Se ha hecho una copia de seguridad de la configuración del conmutador y se ha restaurado un conmutador a partir de la copia de seguridad realizada.",
+    ], start=1)],
+    "RA4":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se ha interpretado la información que proporcionan los «leds» del «router».",
+        "Se han utilizado distintos métodos para acceder al modo de configuración del «router».",
+        "Se han identificado las etapas de la secuencia de arranque del «router».",
+        "Se han utilizado los comandos para la configuración y administración básica del «router».",
+        "Se han identificado los archivos que guardan la configuración del «router» y se han gestionado mediante los comandos correspondientes.",
+        "Se han configurado rutas estáticas.",
+        "Se han utilizado los comandos proporcionados por el sistema operativo del «router» que permiten hacer el seguimiento de posibles incidencias.",
+        "Se ha configurado el «router» como servidor de direcciones IP dinámicas.",
+        "Se han descrito las capacidades de filtrado de tráfico del «router».",
+        "Se han utilizado comandos para gestionar listas de control de acceso.",
+        "Se ha recuperado el acceso a un «router» cuya contraseña se desconoce.",
+        "Se ha actualizado y realizado copia de seguridad del firmware del «router».",
+    ], start=1)],
+    "RA5":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han descrito las ventajas que presenta la utilización de redes locales virtuales (VLANs).",
+        "Se han implementado VLANs.",
+        "Se ha realizado el diagnóstico de incidencias en VLANs.",
+        "Se han configurado enlaces troncales.",
+        "Se ha utilizado un router para interconectar diversas VLANs.",
+        "Se han descrito las ventajas que aporta el uso de protocolos de administración centralizada de VLANs.",
+        "Se han configurado los conmutadores para trabajar de acuerdo con los protocolos de administración centralizada.",
+        "Se ha utilizado la VLAN nativa de un conmutador.",
+    ], start=1)],
+    "RA6":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se ha configurado el protocolo de enrutamiento RIPv1.",
+        "Se han configurado redes con el protocolo RIPv2.",
+        "Se ha realizado el diagnóstico de fallos en una red que utiliza RIP.",
+        "Se ha valorado la necesidad de utilizar máscaras de longitud variable en IPv4.",
+        "Se ha dividido una red principal en subredes de distintos tamaños con VLSM.",
+        "Se han realizado agrupaciones de redes con CIDR.",
+        "Se ha habilitado y configurado OSPF en un «router».",
+        "Se ha establecido y propagado una ruta por defecto usando OSPF.",
+        "Se han configurado redes con protocolos de enrutamiento propietarios.",
+    ], start=1)],
+    "RA7":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han descrito las ventajas e inconvenientes del uso de la traducción de direcciones de red (NAT).",
+        "Se ha utilizado NAT para realizar la traducción estática de direcciones de red.",
+        "Se ha utilizado NAT para realizar la traducción dinámica de direcciones de red.",
+        "Se han descrito las características de las tecnologías «Frame Relay», RDSI y ADSL.",
+        "Se han descrito las analogías y diferencias entre las tecnologías «Wifi» y «Wimax».",
+        "Se han descrito las características de las tecnologías UMTS y HSDPA.",
+        "Se han descrito las características de tecnologías emergentes tanto basadas en cable como inalámbricas.",
+    ], start=1)],
 }

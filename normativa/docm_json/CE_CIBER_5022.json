@@ -1,0 +1,128 @@
+{
+ "archivo": "ce_ciber_brs",
+ "modulo": {
+  "nombre": "Bastionado de Redes y Sistemas",
+  "codigo": "5022",
+  "abrev": "BRS",
+  "ciclo": "CE Ciberseguridad en Entornos de las TI",
+  "ciclo_clave": "CE_CIBER",
+  "ciclo_nivel": "CE",
+  "curso": "CE Ciberseguridad",
+  "horas_sem": 6,
+  "total_horas": 185,
+  "anno": "2026-2027",
+  "eval_count": 2,
+  "decreto": "Decreto 77/2022, de 12/07/2022, currículo del Curso de Especialización en Ciberseguridad en Entornos de las Tecnologías de la Información en Castilla-La Mancha (DOCM) · RA y CE literales del Anexo II"
+ },
+ "ras": [
+  {
+   "ut": "Diseño de planes de securización",
+   "tags": "CIS Controls · NIST · ISO 27001 · Plan director · Análisis de riesgos · MAGERIT",
+   "instrumentos": [
+    "practica"
+   ],
+   "enunciado": "Diseña planes de securización incorporando buenas prácticas para el bastionado de sistemas y redes.",
+   "ces": [
+    "Se han identificado los activos, las amenazas y vulnerabilidades de la organización.",
+    "Se ha evaluado las medidas de seguridad actuales.",
+    "Se ha elaborado un análisis de riesgo de la situación actual en ciberseguridad de la organización",
+    "Se ha priorizado las medidas técnicas de seguridad a implantar en la organización teniendo también en cuenta los principios de la economía circular.",
+    "Se ha diseñado y elaborado un plan de medidas técnicas de seguridad a implantar en la organización, apropiadas para garantizar un nivel de seguridad adecuado en función de los riesgos de la organización.",
+    "Se han identificado las mejores prácticas en base a estándares, guías y políticas de securización adecuadas para el bastionado de los sistemas y redes de la organización."
+   ]
+  },
+  {
+   "ut": "Configura sistemas de control de acceso y autenticación de personas…",
+   "tags": "",
+   "instrumentos": [
+    "practica"
+   ],
+   "enunciado": "Configura sistemas de control de acceso y autenticación de personas preservando la confidencialidad y privacidad de los datos.",
+   "ces": [
+    "Se han definido los mecanismos de autenticación en base a distintos / múltiples factores (físicos, inherentes y basados en el conocimiento), existentes.",
+    "Se han definido protocolos y políticas de autenticación basados en contraseñas y frases de paso, en base a las principales vulnerabilidades y tipos de ataques.",
+    "Se han definido protocolos y políticas de autenticación basados en certificados digitales y tarjetas inteligentes, en base a las principales vulnerabilidades y tipos de ataques.",
+    "Se han definido protocolos y políticas de autenticación basados en tokens, OTPs, etc., en base a las principales vulnerabilidades y tipos de ataques.",
+    "Se han definido protocolos y políticas de autenticación basados en características biométricas, según las principales vulnerabilidades y tipos de ataques."
+   ]
+  },
+  {
+   "ut": "Administra credenciales de acceso a sistemas informáticos",
+   "tags": "",
+   "instrumentos": [
+    "practica"
+   ],
+   "enunciado": "Administra credenciales de acceso a sistemas informáticos aplicando los requisitos de funcionamiento y seguridad establecidos.",
+   "ces": [
+    "Se han identificado los tipos de credenciales más utilizados.",
+    "Se han generado y utilizado diferentes certificados digitales como medio de acceso a un servidor remoto.",
+    "Se ha comprobado la validez y la autenticidad de un certificado digital de un servicio web.",
+    "Se han comparado certificados digitales válidos e inválidos por diferentes motivos.",
+    "Se ha instalado y configurado un servidor seguro para la administración de credenciales (tipo RADIUS - Remote Access Dial In User Service)."
+   ]
+  },
+  {
+   "ut": "Diseña redes de computadores contemplando los requisitos de seguridad",
+   "tags": "",
+   "instrumentos": [
+    "practica"
+   ],
+   "enunciado": "Diseña redes de computadores contemplando los requisitos de seguridad.",
+   "ces": [
+    "Se ha incrementado el nivel de seguridad de una red local plana segmentándola físicamente y utilizando técnicas y dispositivos de enrutamiento.",
+    "Se ha optimizado una red local plana utilizando técnicas de segmentación lógica (VLANs).",
+    "Se ha adaptado un segmento de una red local ya operativa utilizando técnicas de subnetting para incrementar su segmentación respetando los direccionamientos existentes.",
+    "Se han configurado las medidas de seguridad adecuadas en los dispositivos que dan acceso a una red inalámbrica (routers, puntos de acceso, etc.).",
+    "Se ha establecido un túnel seguro de comunicaciones entre dos sedes geográficamente separadas."
+   ]
+  },
+  {
+   "ut": "Configura dispositivos y sistemas informáticos cumpliendo los…",
+   "tags": "",
+   "instrumentos": [
+    "practica"
+   ],
+   "enunciado": "Configura dispositivos y sistemas informáticos cumpliendo los requisitos de seguridad.",
+   "ces": [
+    "Se han configurado dispositivos de seguridad perimetral acorde a una serie de requisitos de seguridad.",
+    "Se han detectado errores de configuración de dispositivos de red mediante el análisis de tráfico.",
+    "Se han identificado comportamientos no deseados en una red a través del análisis de los registros (Logs), de un cortafuego.",
+    "Se han implementado contramedidas frente a comportamientos no deseados en una red.",
+    "Se han caracterizado, instalado y configurado diferentes herramientas de monitorización."
+   ]
+  },
+  {
+   "ut": "Configura dispositivos para la instalación de sistemas informáticos…",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Configura dispositivos para la instalación de sistemas informáticos minimizando las probabilidades de exposición a ataques.",
+   "ces": [
+    "Se ha configurado la BIOS para incrementar la seguridad del dispositivo y su contenido minimizando las probabilidades de exposición a ataques.",
+    "Se ha preparado un sistema informático para su primera instalación teniendo en cuenta las medidas de seguridad necesarias.",
+    "Se ha configurado un sistema informático para que un actor malicioso no pueda alterar la secuencia de arranque con fines de acceso ilegítimo.",
+    "Se ha instalado un sistema informático utilizando sus capacidades de cifrado del sistema de ficheros para evitar la extracción física de datos.",
+    "Se ha particionado el sistema de ficheros del sistema informático para minimizar riesgos de seguridad."
+   ]
+  },
+  {
+   "ut": "Configura sistemas informáticos minimizando las probabilidades de…",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Configura sistemas informáticos minimizando las probabilidades de exposición a ataques.",
+   "ces": [
+    "Se han enumerado y eliminado los programas, servicios y protocolos innecesarios que hayan sido instalados por defecto en el sistema.",
+    "Se han configurado las características propias del sistema informático para imposibilitar el acceso ilegítimo mediante técnicas de explotación de procesos.",
+    "Se ha incrementado la seguridad del sistema de administración remoto SSH y otros.",
+    "Se ha instalado y configurado un Sistema de detección de intrusos en un Host (HIDS) en el sistema informático.",
+    "Se han instalado y configurado sistemas de copias de seguridad."
+   ]
+  }
+ ],
+ "dual_ra": null
+}

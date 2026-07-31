@@ -69,6 +69,7 @@ npm run build:win
 - [docs/decisiones_arquitectura.md](docs/decisiones_arquitectura.md)
 - [docs/version_2.md](docs/version_2.md)
 - [docs/casos_uso.md](docs/casos_uso.md)
+- [tests/e2e/AUDITORIA_CURSO.md](tests/e2e/AUDITORIA_CURSO.md) — auditoría completa de usuario sobre la app real.
 
 ## Licencia
 

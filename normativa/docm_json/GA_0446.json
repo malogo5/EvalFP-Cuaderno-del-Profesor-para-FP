@@ -1,0 +1,153 @@
+{
+ "archivo": "ga_eau",
+ "modulo": {
+  "nombre": "Empresa en el aula",
+  "codigo": "0446",
+  "total_horas": 145,
+  "ciclo": "Gestión Administrativa",
+  "ciclo_clave": "GA",
+  "ciclo_nivel": "CFGM",
+  "anno": "2026-2027",
+  "eval_count": 2,
+  "decreto": "Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)",
+  "abrev": "EAU",
+  "curso": "2º GA",
+  "horas_sem": 7
+ },
+ "ras": [
+  {
+   "ut": "El proyecto de empresa en el aula",
+   "eval": 1,
+   "tags": "Actividad y sector · Organigrama · Puestos y rotación · Plan de empresa",
+   "instrumentos": [
+    "practica",
+    "proyecto"
+   ],
+   "enunciado": "Identifica las características del proyecto de empresa creada en el aula tomando parte en la actividad que esta desarrolla.",
+   "ces": [
+    "Se han identificado las características internas y externas de la empresa creada en el aula.",
+    "Se han identificado los elementos que constituyen la red logística de la empresa creada: proveedores, clientela, sistemas de producción y/o comercialización, almacenaje, y otros.",
+    "Se han identificado los procedimientos de trabajo en el desarrollo del proceso productivo o comercial.",
+    "Se han relacionado características del mercado, tipo de clientela y proveedores y su posible influencia en el de - sarrollo de la actividad empresarial.",
+    "Se ha valorado la polivalencia de los puestos de trabajo administrativos en el desarrollo de la actividad de la empresa.",
+    "Se ha integrado en la empresa creada en el aula, describiendo su relación con el sector, su estructura organizativa y las funciones de cada departamento."
+   ]
+  },
+  {
+   "ut": "Comunicación interna y externa",
+   "eval": 1,
+   "tags": "Atención telefónica · Correo · Circulares · Registro · Trato a la clientela",
+   "instrumentos": [
+    "practica",
+    "proyecto"
+   ],
+   "enunciado": "Transmite información entre las distintas áreas y a clientela interna y externa de la empresa creada en el aula reconociendo y aplicando técnicas de comunicación.",
+   "ces": [
+    "Se han utilizado la forma y técnicas adecuadas en la atención y asesoramiento a clientela interna y externa con la empresa.",
+    "Se ha mantenido una actitud correcta en la atención y asesoramiento a clientes internos y externos con la em - presa.",
+    "Se ha transmitido la información de forma clara y precisa.",
+    "Se ha utilizado el tratamiento protocolario adecuado.",
+    "Se han identificado emisor y receptor en una conversación telefónica o presencial.",
+    "Se ha identificado al remitente y destinatario en comunicaciones escritas recibidas.",
+    "Se ha registrado la información relativa a las consultas realizadas en la herramienta de gestión de la relación con el cliente.",
+    "Se han aplicado técnicas de negociación básicas con clientela y proveedores."
+   ]
+  },
+  {
+   "ut": "Organización de la información",
+   "eval": 1,
+   "tags": "Archivo manual e informático · Bases de datos · Copias de seguridad · Confidencialidad",
+   "instrumentos": [
+    "practica",
+    "proyecto"
+   ],
+   "enunciado": "Organiza información explicando los diferentes métodos manuales y sistemas informáticos previstos.",
+   "ces": [
+    "Se han aplicado procedimientos adecuados para la obtención de información necesaria en la gestión de control de calidad del servicio prestado.",
+    "Se ha tramitado correctamente la información ante la persona o departamento de la empresa que corresponda.",
+    "Se han aplicado las técnicas de organización de la información.",
+    "Se ha analizado y sintetizado la información suministrada.",
+    "Se ha manejado como usuario la aplicación informática de control y seguimiento de clientes, proveedores y otros.",
+    "Se han aplicado las técnicas de archivo manuales e informáticas predecididas."
+   ]
+  },
+  {
+   "ut": "Documentación por departamentos",
+   "eval": 2,
+   "tags": "Compras · Ventas · Almacén · Tesorería · RRHH · Contabilidad",
+   "instrumentos": [
+    "practica",
+    "proyecto"
+   ],
+   "enunciado": "Elabora documentación administrativa, distinguiendo y aplicando las tareas administrativas de cada uno de los departamentos de la empresa.",
+   "ces": [
+    "Se han ejecutado las tareas administrativas del área de aprovisionamiento de la empresa.",
+    "Se han ejecutado las tareas administrativas del área comercial de la empresa.",
+    "Se han ejecutado las tareas administrativas del área de recursos humanos de la empresa.",
+    "Se han ejecutado las tareas administrativas del área de contabilidad de la empresa.",
+    "Se han ejecutado las tareas administrativas del área financiera de la empresa.",
+    "Se han ejecutado las tareas administrativas del área fiscal de la empresa.",
+    "Se ha aplicado la normativa vigente."
+   ]
+  },
+  {
+   "ut": "Gestión comercial de compras y ventas",
+   "eval": 2,
+   "tags": "Proveedores · Pedidos · Facturación · Cobros · Atención a la clientela",
+   "instrumentos": [
+    "practica",
+    "proyecto"
+   ],
+   "enunciado": "Realiza las actividades derivadas de la política comercial, identificando las funciones del departamento de ventas y compras.",
+   "ces": [
+    "Se ha elaborado y/o actualizado el catálogo de productos de la empresa.",
+    "Se ha manejado la base de datos de proveedores, comparando ofertas y estableciendo negociaciones de condi - ciones de compras.",
+    "Se han elaborado y/o actualizado las fichas de los clientes.",
+    "Se han elaborado listas de precios.",
+    "Se han confeccionado ofertas.",
+    "Se han identificado los canales de comercialización más frecuentes en la actividad específica."
+   ]
+  },
+  {
+   "ut": "Resolución de incidencias y reclamaciones",
+   "eval": 2,
+   "tags": "Criterios de resolución · Procedimiento · Registro · Seguimiento · Satisfacción",
+   "instrumentos": [
+    "practica",
+    "proyecto"
+   ],
+   "enunciado": "Atiende incidencias identificando criterios y procedimientos de resolución de problemas y reclamaciones.",
+   "ces": [
+    "Se han identificado la naturaleza y el origen de los problemas y reclamaciones.",
+    "Se ha identificado la documentación que se utiliza para recoger una reclamación.",
+    "Se han aplicado técnicas de comportamiento asertivo, resolutivo y positivo.",
+    "Se han buscado y propuesto soluciones a la resolución de los problemas.",
+    "Se ha seguido el proceso establecido para una reclamación.",
+    "Se ha verificado que el proceso de reclamación se ha seguido íntegramente."
+   ]
+  },
+  {
+   "ut": "Trabajo en equipo y desempeño profesional",
+   "eval": 2,
+   "tags": "Roles · Responsabilidad · Iniciativa · Autoevaluación · Rúbricas de desempeño",
+   "instrumentos": [
+    "practica",
+    "proyecto"
+   ],
+   "enunciado": "Trabaja en equipo reconociendo y valorando las diferentes aportaciones de cada uno de los miembros del grupo.",
+   "ces": [
+    "Se ha mantenido una actitud de respeto al profesor/a-gerente y a los compañeros y compañeras.",
+    "Se han cumplido las órdenes recibidas.",
+    "Se ha mantenido una comunicación fluida con los compañeros y compañeras.",
+    "Se han expuesto opiniones y puntos de vista ante una tarea.",
+    "Se ha valorado la organización de la propia tarea.",
+    "Se ha complementado el trabajo entre los compañeros y compañeras.",
+    "Se ha transmitido la imagen de la empresa.",
+    "Se ha realizado cada tarea con rigurosidad y corrección para obtener un resultado global satisfactorio",
+    "Se han respetado las normas establecidas y la cultura empresarial.",
+    "Se ha mantenido una actitud proactiva, participando en el grupo y desarrollando iniciativa emprendedora."
+   ]
+  }
+ ],
+ "dual_ra": null
+}

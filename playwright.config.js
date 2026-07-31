@@ -16,6 +16,11 @@ module.exports = defineConfig({
   testDir:  './tests/e2e',
   timeout:  45_000,           // Electron tarda en arrancar
 
+  // La auditoría de curso completo tarda varios minutos, así que no entra en
+  // `npm run test:e2e`. Se lanza con `npm run test:auditoria`, que activa
+  // AUDITORIA=1 para dejarla pasar el filtro.
+  testIgnore: process.env.AUDITORIA ? [] : ['**/curso-completo.spec.js'],
+
   // Reintentar una vez en CI si falla (flakiness de UI)
   retries: process.env.CI ? 1 : 0,
 

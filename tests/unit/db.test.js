@@ -13,7 +13,17 @@ import fs   from 'fs'
 
 // El mock de electron se inyecta en require.cache vía tests/unit/setup.js
 // (setupFiles en vitest.config.js) antes de que cualquier módulo cargue.
-const db = await import('../../db.js')
+// `node:sqlite` está disponible en Electron y en Node >= 22.5 (con
+// --experimental-sqlite) o Node >= 23.4. Si este Node no lo trae, la suite se
+// salta con aviso en lugar de romper toda la ejecución de `npm test`.
+const sqliteDisponible = await import('node:sqlite').then(() => true, () => false)
+if (!sqliteDisponible) {
+  console.warn(
+    `\n⚠️  tests/unit/db.test.js omitido: este Node (${process.version}) no expone node:sqlite.\n` +
+    '   La app no está afectada (Electron sí lo trae). Para ejecutarlos, usa Node >= 22.5.\n'
+  )
+}
+const db = sqliteDisponible ? await import('../../db.js') : null
 
 // ── Fixtures ─────────────────────────────────────────────────────────────────
 const MODULO_FIXTURE = {
@@ -58,7 +68,7 @@ afterEach(() => {
 })
 
 // ── Tests: Módulos ─────────────────────────────────────────────────────────────
-describe('Módulos', () => {
+describe.skipIf(!sqliteDisponible)('Módulos', () => {
   it('addModulo() inserta y devuelve un ID positivo', () => {
     const id = db.addModulo(MODULO_FIXTURE)
     expect(id).toBeTypeOf('number')
@@ -87,7 +97,7 @@ describe('Módulos', () => {
 })
 
 // ── Tests: Alumnos ─────────────────────────────────────────────────────────────
-describe('Alumnos', () => {
+describe.skipIf(!sqliteDisponible)('Alumnos', () => {
   let mid
 
   beforeEach(() => {
@@ -131,7 +141,7 @@ describe('Alumnos', () => {
 })
 
 // ── Tests: Notas ───────────────────────────────────────────────────────────────
-describe('Notas', () => {
+describe.skipIf(!sqliteDisponible)('Notas', () => {
   let mid, alumnoId, actividadId
 
   beforeEach(() => {
@@ -212,7 +222,7 @@ describe('Notas', () => {
 })
 
 // ── Tests: Config ──────────────────────────────────────────────────────────────
-describe('Config', () => {
+describe.skipIf(!sqliteDisponible)('Config', () => {
   it('setConfig/getConfig guarda y recupera valor', () => {
     db.setConfig('testKey', 'testValue')
     expect(db.getConfig('testKey')).toBe('testValue')
@@ -244,7 +254,7 @@ describe('Config', () => {
 })
 
 // ── Tests: Integridad referencial ──────────────────────────────────────────────
-describe('Integridad referencial (CASCADE)', () => {
+describe.skipIf(!sqliteDisponible)('Integridad referencial (CASCADE)', () => {
   it('eliminar módulo borra también sus alumnos en cascada', () => {
     const mid = db.addModulo({ ...MODULO_FIXTURE, key: `MOD_CAS_${Date.now()}` })
     db.saveAlumno(ALUMNO_FIXTURE(mid))

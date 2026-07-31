@@ -1,0 +1,32 @@
+[
+ {"archivo":"ad_pe","dual_ra":null,
+  "modulo":{"codigo":"0661","abrev":"PE","ciclo":"Asistencia a la Dirección","ciclo_clave":"AD","ciclo_nivel":"CFGS","curso":"2º AD","horas_sem":4,"total_horas":157,"anno":"2026-2027","eval_count":2,
+   "decreto":"Decreto 41/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9482), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM"},
+  "ras":[
+   {"ut":"Fundamentos de relaciones públicas","eval":1,"tags":"Comunicación corporativa · Públicos · Medios · Patrocinio y mecenazgo","instrumentos":["examen","practica"]},
+   {"ut":"Protocolo empresarial","eval":1,"tags":"Precedencias · Presidencias · Tipos de mesa · Invitaciones · Regalos de empresa","instrumentos":["practica","examen"]},
+   {"ut":"Protocolo institucional","eval":1,"tags":"Normativa de precedencias · Símbolos del Estado · Banderas · Actos oficiales","instrumentos":["examen","practica"]},
+   {"ut":"Apoyo a la comunicación profesional","eval":2,"tags":"Comunicación interna y externa · Portavocía · Relación con medios · Redes sociales","instrumentos":["practica"]},
+   {"ut":"Cartas de servicios y compromisos de calidad","eval":2,"tags":"Compromisos · Indicadores · Garantías · Certificación","instrumentos":["practica","examen"]},
+   {"ut":"Excelencia en la atención al cliente","eval":2,"tags":"Expectativas · Fidelización · Quejas · Mejora continua","instrumentos":["practica","examen"]}]},
+
+ {"archivo":"ad_oee","dual_ra":null,
+  "modulo":{"codigo":"0662","abrev":"OEE","ciclo":"Asistencia a la Dirección","ciclo_clave":"AD","ciclo_nivel":"CFGS","curso":"2º AD","horas_sem":7,"total_horas":313,"anno":"2026-2027","eval_count":2,
+   "decreto":"Decreto 41/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9482), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM"},
+  "ras":[
+   {"ut":"Equipo de trabajo y clima laboral","eval":1,"tags":"Motivación · Liderazgo · Delegación · Gestión de conflictos · Compromiso","instrumentos":["practica","examen"]},
+   {"ut":"Coordinación con la dirección","eval":1,"tags":"Agenda de la dirección · Prioridades · Delegación · Confidencialidad","instrumentos":["practica"]},
+   {"ut":"Organización del trabajo de asistencia a la dirección","eval":1,"tags":"Gestión del tiempo · Planificación · Interlocutores · Objetivos","instrumentos":["practica","examen"]},
+   {"ut":"Organización de reuniones y eventos corporativos","eval":2,"tags":"Convocatoria · Logística · Protocolo · Presupuesto · Acta y seguimiento","instrumentos":["proyecto","practica"]},
+   {"ut":"Organización de viajes nacionales e internacionales","eval":2,"tags":"Itinerarios · Reservas · Documentación · Divisas · Liquidación de gastos","instrumentos":["practica","examen"]}]},
+
+ {"archivo":"ad_gai","dual_ra":null,
+  "modulo":{"codigo":"0663","abrev":"GAI","ciclo":"Asistencia a la Dirección","ciclo_clave":"AD","ciclo_nivel":"CFGS","curso":"2º AD","horas_sem":6,"total_horas":284,"anno":"2026-2027","eval_count":2,
+   "decreto":"Decreto 41/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9482), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM"},
+  "ras":[
+   {"ut":"Gestión de proyectos con aplicaciones específicas","eval":1,"tags":"Tareas e hitos · Recursos · Diagrama de Gantt · Costes · Seguimiento","instrumentos":["practica","proyecto"]},
+   {"ut":"Documentos integrados","eval":1,"tags":"Vinculación e incrustación · Plantillas corporativas · Gráficos · Maquetación · PDF","instrumentos":["practica","examen"]},
+   {"ut":"Presentaciones audiovisuales","eval":1,"tags":"Guion · Diseño · Audio y vídeo · Publicación · Exposición","instrumentos":["practica","proyecto"]},
+   {"ut":"Herramientas colaborativas y Web 2.0","eval":2,"tags":"Trabajo en la nube · Documentos compartidos · Formularios · Redes profesionales · Firma digital","instrumentos":["practica"]},
+   {"ut":"Sistemas de gestión documental","eval":2,"tags":"Metadatos · Flujos de trabajo · Versionado · Digitalización certificada · Conservación","instrumentos":["practica","examen"]}]}
+]

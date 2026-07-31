@@ -19,15 +19,21 @@ def export_module(name):
 
     actividades = []
     orden = 1
-    uts_vistas = set()
+    # una práctica por cada par UT–RA: si una UT trabaja criterios de dos RA,
+    # cada RA necesita su propia actividad para poder calificarse
+    vistas = set()
+    ras_por_ut = {}
+    for ut_id, ra_id, _ in mod.ASIGNACIONES:
+        ras_por_ut.setdefault(ut_id, []).append(ra_id)
     for ut_id, ra_id, ces in mod.ASIGNACIONES:
-        if ut_id in uts_vistas:
+        if (ut_id, ra_id) in vistas:
             continue
-        uts_vistas.add(ut_id)
+        vistas.add((ut_id, ra_id))
         ut = next((u for u in mod.UTS if u["id"] == ut_id), {})
+        sufijo = f" ({ra_id})" if len(set(ras_por_ut.get(ut_id, []))) > 1 else ""
         actividades.append({
             "ut_id": ut_id, "ra_id": ra_id,
-            "descripcion": f"Práctica {ut_id} — {ut.get('nombre','')}",
+            "descripcion": f"Práctica {ut_id}{sufijo} — {ut.get('nombre','')}",
             "instrumento": "Práctica", "tipo": "practica",
             "peso": 30, "nota_max": 10,
             "eval": ut.get("eval", 1), "orden": orden
@@ -81,6 +87,7 @@ def main():
                 "curso":       m.get("curso", ""),
                 "horas_sem":   m.get("horas_sem", 0),
                 "total_horas": m.get("total_horas", 0),
+                "horas_aula":  m.get("horas_aula", 0),
             })
             details[name] = data
             print(f"  ✅  {name}")

@@ -130,6 +130,17 @@ contextBridge.exposeInMainWorld('api', {
   // Abre la carpeta unificada "Material IA" (rubricas/actividades/informes/apuntes)
   openMaterial: ()  => ipcRenderer.send('open-material'),
 
+  // ── Corrección de exámenes desde foto ────────────────────────────────────────
+  elegirFotosExamen: () => ipcRenderer.invoke('examen:elegirFotos'),
+  agruparFotos: opts => ipcRenderer.invoke('examen:agrupar', opts),
+  genCorreccion: opts => ipcRenderer.send('gen-correccion', opts),
+  onCorreccion:  cb   => ipcRenderer.on('gen-correccion-reply', (_, d) => cb(d)),
+
+  // ── Copias de seguridad ───────────────────────────────────────────────────────
+  listBackups:   ()  => ipcRenderer.invoke('backup:list'),
+  createBackup:  ()  => ipcRenderer.invoke('backup:create'),
+  openBackups:   ()  => ipcRenderer.send('backup:open'),
+
   // ── PDF ───────────────────────────────────────────────────────────────────────
   exportBoletin: (html, nombre) => {
     if (!_isStr(html, 2_000_000)) throw new Error('HTML demasiado largo')

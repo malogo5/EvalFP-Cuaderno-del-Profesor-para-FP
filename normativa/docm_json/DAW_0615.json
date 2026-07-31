@@ -1,0 +1,130 @@
+{
+ "archivo": "diw",
+ "modulo": {
+  "nombre": "Diseño de Interfaces Web",
+  "codigo": "0615",
+  "abrev": "DIW",
+  "ciclo": "Desarrollo de Aplicaciones Web (DAW)",
+  "ciclo_clave": "DAW",
+  "ciclo_nivel": "CFGS",
+  "curso": "2º DAW",
+  "horas_sem": 5,
+  "total_horas": 186,
+  "anno": "2026-2027",
+  "eval_count": 3,
+  "decreto": "Decreto 230/2011, de 28/07/2011, currículo del ciclo de Desarrollo de Aplicaciones Web en Castilla-La Mancha (DOCM, NID 2011/11276) · RA y CE literales del Anexo I"
+ },
+ "ras": [
+  {
+   "ut": "Planificación de interfaces gráficas",
+   "tags": "UX · Arquitectura de información · Personas · User Journey",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Planifica la creación de una interfaz web valorando y aplicando especificaciones de diseño.",
+   "ces": [
+    "Se ha reconocido la importancia de la comunicación visual y sus principios básicos.",
+    "Se han analizado y seleccionado los colores y tipografías adecuados para su visualización en pantalla.",
+    "Se han analizado alternativas para la presentación de la información en documentos Web.",
+    "Se ha valorado la importancia de definir y aplicar la guía de estilo en el desarrollo de una aplicación Web.",
+    "Se han utilizado y valorado distintas aplicaciones para el diseño de documentos Web.",
+    "Se han utilizado marcos, tablas y capas para presentar la información de manera ordenada.",
+    "Se han creado y utilizado plantillas de diseño."
+   ]
+  },
+  {
+   "ut": "Uso de estilos CSS avanzados",
+   "tags": "Flexbox · Grid · Variables CSS · Animaciones · Media Queries",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Crea interfaces Web homogéneos definiendo y aplicando estilos.",
+   "ces": [
+    "Se han reconocido las posibilidades de modificar las etiquetas HTML.",
+    "Se han definido estilos de forma directa.",
+    "Se han definido y asociado estilos globales en hojas externas.",
+    "Se han definido hojas de estilos alternativas.",
+    "Se han redefinido estilos.",
+    "Se han identificado las distintas propiedades de cada elemento.",
+    "Se han creado clases de estilos.",
+    "Se han utilizado herramientas de validación de hojas de estilos.",
+    "Se ha utilizado y actualizado la guía de estilo."
+   ]
+  },
+  {
+   "ut": "Prepara archivos multimedia para la Web",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Prepara archivos multimedia para la Web, analizando sus características y manejando herramientas especificas.",
+   "ces": [
+    "Se han reconocido las implicaciones de las licencias y los derechos de autor en el uso de material multimedia.",
+    "Se han identificado los formatos de imagen, audio y vídeo a utilizar.",
+    "Se han analizado las herramientas disponibles para generar contenido multimedia.",
+    "Se han empleado herramientas para el tratamiento digital de la imagen.",
+    "Se han utilizado herramientas para manipular audio y vídeo.",
+    "Se han realizado animaciones a partir de imágenes fijas.",
+    "Se han importado y exportado imágenes, audio y vídeo en diversos formatos según su finalidad.",
+    "Se ha aplicado la guía de estilo."
+   ]
+  },
+  {
+   "ut": "Integra contenido multimedia en documentos Web",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Integra contenido multimedia en documentos Web valorando su aportación y seleccionando adecuadamente los elementos interactivos.",
+   "ces": [
+    "Se han reconocido y analizado las tecnologías relacionadas con la inclusión de contenido multimedia e interactivo.",
+    "Se han identificado las necesidades específicas de configuración de los navegadores Web para soportar contenido multimedia e interactivo.",
+    "Se han utilizado herramientas gráficas para el desarrollo de contenido multimedia interactivo.",
+    "Se ha analizado el código generado por las herramientas de desarrollo de contenido interactivo.",
+    "Se han agregado elementos multimedia a documentos Web.",
+    "Se ha añadido interactividad a elementos de un documento Web.",
+    "Se ha verificado el funcionamiento de los elementos multimedia e interactivos en distintos navegadores."
+   ]
+  },
+  {
+   "ut": "Accesibilidad y usabilidad web",
+   "tags": "WCAG 2.1 · WAI-ARIA · Contraste · Teclado · Screen readers",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Desarrolla interfaces Web accesibles, analizando las pautas establecidas y aplicando técnicas de verificación.",
+   "ces": [
+    "Se ha reconocido la necesidad de diseñar webs accesibles.",
+    "Se ha analizado la accesibilidad de diferentes documentos Web.",
+    "Se han identificado las principales pautas de accesibilidad al contenido.",
+    "Se han analizado los posibles errores según los puntos de verificación de prioridad.",
+    "Se ha alcanzado el nivel de conformidad deseado.",
+    "Se han verificado los niveles alcanzados mediante el uso de test externos.",
+    "Se ha verificado la visualización del interfaz con diferentes navegadores y tecnologías."
+   ]
+  },
+  {
+   "ut": "Desarrolla interfaces Web amigables",
+   "tags": "",
+   "instrumentos": [
+    "examen",
+    "practica"
+   ],
+   "enunciado": "Desarrolla interfaces Web amigables analizando y aplicando las pautas de usabilidad establecidas.",
+   "ces": [
+    "Se ha analizado la usabilidad de diferentes documentos Web.",
+    "Se ha valorado la importancia del uso de estándares en la creación de documentos Web.",
+    "Se ha modificado el interfaz Web para adecuarlo al objetivo que persigue y a los usuarios a los que va dirigido.",
+    "Se ha verificado la facilidad de navegación de un documento Web mediante distintos periféricos.",
+    "Se han analizado diferentes técnicas para verificar la usabilidad de un documento Web.",
+    "Se ha verificado la usabilidad del interfaz Web creado en diferentes navegadores y tecnologías."
+   ]
+  }
+ ],
+ "dual_ra": null
+}
