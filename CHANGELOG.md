@@ -3,6 +3,15 @@
 ## [3.3.1] - 2026-07-30
 
 ### Fixed
+- **Los modales dejaban de responder al ratón de cierta altura para abajo.** El lateral de la app
+  es zona de arrastre de la ventana (`-webkit-app-region: drag`) y sus botones la anulan uno a uno,
+  pero el hueco vacío bajo el último botón sigue siendo arrastrable. Cualquier diálogo abierto
+  encima perdía los clics de esa franja, que macOS se quedaba para mover la ventana: en el catálogo
+  eso dejaba muertos justamente los cuatro ciclos de Administración y Gestión. Los diálogos pasan a
+  `no-drag` salvo su cabecera. (No lo cazaban los tests: Playwright inyecta los clics en el
+  renderizador y se salta el reparto de zonas de arrastre del sistema.)
+- **El catálogo enseña cuántos módulos trae cada ciclo** y avisa, si uno está vacío, de que la copia
+  empaquetada de la aplicación es más antigua que el catálogo.
 - **Los criterios de evaluación ya no se confunden entre resultados de aprendizaje.** Los decretos
   numeran los criterios dentro de cada RA (RA1 tiene CR1…CR10 y RA2 vuelve a empezar por CR1), pero
   las actividades los guardaban con el id suelto: cualquier actividad con «CR1» contaba en el CR1

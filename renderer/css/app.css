@@ -695,6 +695,13 @@ tr[draggable="true"]:hover td:first-child{color:var(--accent2)}
 /* ══════════════════════════════════════
    CATÁLOGO DE MÓDULOS
 ══════════════════════════════════════ */
+/* El lateral de la app es zona de arrastre de la ventana y sus botones la anulan
+   uno a uno; por debajo del último queda un hueco que sigue siendo arrastrable.
+   Los diálogos se abren encima, y macOS se quedaba los clics de esa franja para
+   mover la ventana: el menú de un modal dejaba de responder de cierta altura
+   para abajo. Un modal nunca arrastra la ventana, salvo su cabecera. */
+dialog, dialog *{-webkit-app-region:no-drag}
+
 .cat-dialog{
   border:none;border-radius:14px;padding:0;overflow:hidden;
   background:var(--bg2);color:var(--text);

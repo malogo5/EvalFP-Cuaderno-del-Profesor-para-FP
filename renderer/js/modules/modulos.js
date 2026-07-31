@@ -150,10 +150,31 @@ async function openAddModulo() {
   document.getElementById('cat-count').textContent = _modsDisponibles.length
   document.getElementById('cat-search').value = ''
   _catSearch = ''
+  _pintarContadoresCiclo()
   // Activar primer ciclo con módulos disponibles
   selectCatCiclo(document.querySelector('.cat-ciclo-item.active') ||
                  document.querySelector('.cat-ciclo-item'))
   document.getElementById('modal-add-mod').showModal()
+}
+
+/**
+ * Cuántos módulos trae cada ciclo, ahí mismo en el menú. Un ciclo vacío se ve a
+ * la primera en vez de descubrirse al pinchar (y suele significar que la app
+ * está empaquetada con un catálogo viejo).
+ */
+function _pintarContadoresCiclo() {
+  const porClave = {}
+  for (const m of _modsDisponibles) porClave[m.ciclo_clave] = (porClave[m.ciclo_clave] || 0) + 1
+  document.querySelectorAll('.cat-ciclo-item').forEach(item => {
+    const n = porClave[item.dataset.clave] || 0
+    item.querySelector('.cat-ciclo-n')?.remove()
+    const badge = document.createElement('span')
+    badge.className = 'cat-ciclo-n'
+    badge.textContent = n
+    badge.style.cssText = 'float:right;font-size:10px;font-weight:700;opacity:.55'
+    item.appendChild(badge)
+    item.style.opacity = n ? '' : '.45'
+  })
 }
 
 function selectCatCiclo(el) {
@@ -192,7 +213,14 @@ function renderCatCards() {
 
   const cards = document.getElementById('cat-cards')
   if (!lista.length) {
-    cards.innerHTML = '<div style="color:var(--text2);font-size:13px;padding:20px 0">No hay módulos.</div>'
+    cards.innerHTML = _catSearch
+      ? `<div style="color:var(--text2);font-size:13px;padding:20px 0">Ningún módulo coincide con «${esc(_catSearch)}».</div>`
+      : `<div style="color:var(--text2);font-size:13px;padding:20px 0;line-height:1.6">
+           Este ciclo no tiene módulos en el catálogo que trae esta copia de la aplicación
+           (${_modsDisponibles.length} en total).<br>
+           Si esperabas encontrarlo, es que estás abriendo una versión empaquetada antigua:
+           vuelve a construirla con <b>npm run build:mac</b>.
+         </div>`
     return
   }
 
