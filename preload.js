@@ -91,6 +91,11 @@ contextBridge.exposeInMainWorld('api', {
   },
 
   // ── Ponderaciones RA ──────────────────────────────────────────────────────────
+  getRasSuperados:     mid => ipcRenderer.invoke('db:getRasSuperados', mid),
+  cerrarEvaluacionRAs: p   => ipcRenderer.invoke('db:cerrarEvaluacionRAs', p),
+  reabrirRaSuperado:   p   => ipcRenderer.invoke('db:reabrirRaSuperado', p),
+  getCalificacionesCE: mid => ipcRenderer.invoke('db:getCalificacionesCE', mid),
+  setCalificacionCE:   p   => ipcRenderer.invoke('db:setCalificacionCE', p),
   getRaPonderaciones: mid              => {
     _validateId(mid, 'modulo_id')
     return ipcRenderer.invoke('db:getRaPonderaciones', mid)

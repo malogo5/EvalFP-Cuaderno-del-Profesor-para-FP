@@ -1,7 +1,18 @@
+let _faltas = {}   // { alumnoId: horas } del módulo activo
+
 async function loadAlumnos() {
   const mid = document.getElementById('alumnos-mod-sel').value
   if (!mid) return
   _alumnos = await window.api.getAlumnos(mid)
+  // Faltas de asistencia por alumno (art. 3.3 de la Orden 201/2024)
+  _faltas = {}
+  try {
+    const cfg = await window.api.getAllConfig()
+    const pref = `faltas_${mid}_`
+    for (const [k, v] of Object.entries(cfg)) {
+      if (k.startsWith(pref) && String(v).trim() !== '') _faltas[Number(k.slice(pref.length))] = parseFloat(v)
+    }
+  } catch { /* sin faltas registradas */ }
   renderAlumnosTable()
 }
 
@@ -11,7 +22,7 @@ function renderAlumnosTable() {
   if (!_alumnos.length) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="6" style="padding:0">
+        <td colspan="7" style="padding:0">
           <div class="empty-state" style="margin:0">
             <div style="font-weight:700;color:var(--text);margin-bottom:6px">Todavía no hay alumnado en este módulo</div>
             <div style="margin-bottom:12px">Importa una lista o añade el primer alumno para empezar a trabajar.</div>
@@ -31,6 +42,7 @@ function renderAlumnosTable() {
       <td><input value="${esc(a.apellidos||'')}" onblur="updateAlumno(${a.id},'apellidos',this.value)"/></td>
       <td><input value="${esc(a.nombre||'')}" onblur="updateAlumno(${a.id},'nombre',this.value)"/></td>
       <td><input value="${esc(a.email||'')}" onblur="updateAlumno(${a.id},'email',this.value)"/></td>
+      <td>${_celdaFaltas(a)}</td>
       <td>
         <select onchange="updateAlumno(${a.id},'estado',this.value)">
           <option ${a.estado==='Activo'?'selected':''}>Activo</option>
@@ -42,8 +54,38 @@ function renderAlumnosTable() {
     </tr>
   `).join('')
   const activos = _alumnos.filter(a => a.estado === 'Activo').length
+  const mid = parseInt(document.getElementById('alumnos-mod-sel').value)
+  const enRiesgo = _aplicaEvaluacionContinua(mid)
+    ? _alumnos.filter(a => _porcentajeFalta(mid, a.id) > 25).length : 0
   document.getElementById('alumnos-footer').textContent =
-    `${_alumnos.length} alumnos/as · ${activos} activos · ${_alumnos.length - activos} fuera de activo`
+    `${_alumnos.length} alumnos/as · ${activos} activos · ${_alumnos.length - activos} fuera de activo` +
+    (enRiesgo ? ` · ⚠ ${enRiesgo} por debajo del 75 % de asistencia` : '')
+}
+
+/** Porcentaje de horas faltadas sobre las horas del módulo. */
+function _porcentajeFalta(mid, alumnoId) {
+  const horas = _horasModulo(mid)
+  const f = _faltas[alumnoId]
+  if (!horas || f == null) return 0
+  return (f / horas) * 100
+}
+
+/** Celda de faltas con el aviso del 75 % de asistencia. */
+function _celdaFaltas(a) {
+  const mid = parseInt(document.getElementById('alumnos-mod-sel').value)
+  const aplica = _aplicaEvaluacionContinua(mid)
+  const pct = _porcentajeFalta(mid, a.id)
+  const pierde = aplica && pct > 25
+  const etiqueta = _faltas[a.id] == null ? ''
+    : `<span title="${pct.toFixed(1)} % de las horas del módulo"
+             style="font-size:10px;font-weight:700;margin-left:4px;color:${pierde ? 'var(--red)' : 'var(--text3)'}">
+         ${pct.toFixed(0)}%${pierde ? ' ⚠' : ''}
+       </span>`
+  const ayuda = aplica
+    ? 'Horas de falta. Por encima del 25 % de las horas del módulo se pierde el derecho a la evaluación continua (Orden 201/2024, art. 3.3).'
+    : 'Horas de falta. En grado básico no se aplica la pérdida de evaluación continua (art. 3.4).'
+  return `<input type="number" min="0" step="1" value="${_faltas[a.id] ?? ''}" placeholder="—"
+      title="${ayuda}" style="width:52px" onblur="updateFaltas(${a.id},this.value)"/>${etiqueta}`
 }
 
 function updateAlumno(id, field, val) {
@@ -102,6 +144,41 @@ function updateAlumno(id, field, val) {
       console.error(e)
     }
   }, 400)
+}
+
+/**
+ * Horas de falta del alumno en el módulo, con el porcentaje sobre las horas de
+ * aula y el aviso del 75 % (Orden 201/2024, art. 3.3: por debajo de ese
+ * porcentaje se pierde el derecho a la evaluación continua en grado medio,
+ * superior y cursos de especialización; art. 3.4: no aplica en grado básico).
+ */
+async function updateFaltas(alumnoId, horas) {
+  const mid = parseInt(document.getElementById('alumnos-mod-sel').value)
+  if (!mid) return
+  const h = String(horas).trim() === '' ? null : parseFloat(horas)
+  if (h !== null && (isNaN(h) || h < 0)) { alert('Horas de falta inválidas.'); return }
+  try {
+    await window.api.setConfig(`faltas_${mid}_${alumnoId}`, h === null ? '' : String(h))
+    showSaved()
+    renderAlumnosTable()
+  } catch (e) {
+    alert('No se han podido guardar las faltas: ' + (e && e.message ? e.message : e))
+  }
+}
+
+/** Horas lectivas del módulo sobre las que se calcula el porcentaje de falta. */
+function _horasModulo(mid) {
+  const data = _getModData(mid)
+  return parseInt(data?.modulo?.horas_aula, 10) ||
+         parseInt(data?.modulo?.total_horas, 10) ||
+         (_modulos.find(m => m.id == mid)?.horas || 0)
+}
+
+/** ¿Este módulo puede perder la evaluación continua? En grado básico, no. */
+function _aplicaEvaluacionContinua(mid) {
+  const data = _getModData(mid)
+  const nivel = String(data?.modulo?.ciclo_nivel || '').toUpperCase()
+  return nivel !== 'CFGB'
 }
 
 async function addAlumno() {
@@ -170,6 +247,7 @@ async function confirmImportAlumnos() {
   document.getElementById('dlg-import-alumnos').close()
   try {
     const lines = txt.trim().split('\n').filter(Boolean)
+    const maxNum = _alumnos.reduce((m, a) => Math.max(m, a.num || 0), 0)
     let imported = 0
     let skipped  = 0
     for (let i = 0; i < lines.length; i++) {
@@ -184,7 +262,10 @@ async function confirmImportAlumnos() {
       )
       if (isDuplicate) { skipped++; continue }
 
-      const num = _alumnos.length + imported + 1
+      // Con el máximo, no con el recuento: si se ha dado de baja a alguien de
+      // en medio, contar filas repite un número de lista que ya existe, y ese
+      // número es el que identifica al alumnado en la corrección anónima.
+      const num = maxNum + imported + 1
 
       // Validate each imported alumno
       const alumnoData = {

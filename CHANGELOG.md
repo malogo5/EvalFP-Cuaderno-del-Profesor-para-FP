@@ -1,5 +1,44 @@
 # Changelog
 
+## [3.4.0] - 2026-07-31
+
+Correcciones de la auditoría integral (`AUDITORIA_INTEGRAL.md`). Dieciséis incidencias cerradas,
+cuatro de ellas críticas.
+
+### Fixed
+- **Un solo motor de calificación** (`renderer/js/core/calificacion.js`). Cada pantalla calculaba
+  por su cuenta y el mismo alumno tenía cuatro notas a la vez: 6,25 en Evaluaciones, 7,25 en el
+  Dashboard y 6,75 en el boletín que se lleva a casa. Ahora Evaluaciones, Dashboard, boletín e IA
+  consumen el mismo cálculo, y hay tests que fallan si vuelven a divergir.
+- **La 2ª convocatoria llega ya a los documentos.** Sus calificaciones vivían como JSON dentro de la
+  tabla de configuración, así que ni el boletín ni los informes las veían: a quien superaba el
+  módulo en la segunda le seguían diciendo que estaba suspenso. Pasan a la tabla
+  `calificaciones_ce`, con clave foránea, fecha y motivo, y con migración automática.
+- **`nota_max` deja de ser decorativo.** Una práctica calificada sobre 5 valía la mitad de lo que
+  debía: ningún cálculo normalizaba y la parrilla validaba siempre sobre 10.
+- **El alumnado con la matrícula anulada ya no recibe acta ni veredicto** (Orden 201/2024, art. 7.1).
+- **Un RA superado no vuelve a bajar.** Botón «Cerrar evaluación» que fija los RA alcanzados, con su
+  nota y su fecha (art. 4.3.f). Puede subir; bajar, no.
+- **Ponderación por criterio de evaluación**, como exige el art. 4.3.a. Sin ponderar, reparto a
+  partes iguales, como hasta ahora.
+- **Faltas de asistencia y RA llave con interfaz propia.** El motor de IA aplicaba dos reglas que
+  cambian el veredicto —pérdida de evaluación continua y RA necesario para la fase de empresa— con
+  datos que ninguna pantalla permitía introducir.
+- **Borrar una actividad avisa de cuántas calificaciones se lleva por delante.**
+- **Borrar un módulo no deja nada huérfano**: ni calificaciones por criterio ni configuración.
+- **La importación de alumnado numera con el máximo**, no con el recuento: al importar tras una baja
+  se repetía el número de lista, que es el identificador de la corrección anónima.
+- **Dar un criterio por alcanzado pide la evidencia** y guarda motivo y fecha.
+- **La base rechaza notas fuera de rango**, no solo la interfaz.
+- **A la 2ª convocatoria concurre también quien no se presentó**, y los indicadores de su cabecera
+  cuentan ya el mismo grupo.
+- **La marca de recuperación aparece en los exámenes de varias unidades.**
+- **`saveActividad` guarda también instrumento y tipo.**
+
+### Added
+- **`AUDITORIA_INTEGRAL.md`**: auditoría contra la Orden 201/2024 de Castilla-La Mancha, el
+  RD 659/2023 y la LOFP, con las incidencias clasificadas, la evidencia de cada una y lo que queda.
+
 ## [3.3.2] - 2026-07-31
 
 ### Fixed

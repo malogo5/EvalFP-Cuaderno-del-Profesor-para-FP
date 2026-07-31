@@ -331,6 +331,14 @@ ipcMain.handle('db:getModuloData', (_, key) => {
   return data
 })
 
+ipcMain.handle('db:getRasSuperados', (_, mid) => db.getRasSuperados(mid))
+ipcMain.handle('db:cerrarEvaluacionRAs', (_, { mid, evaluacion, filas }) =>
+  db.cerrarEvaluacionRAs(mid, evaluacion, filas))
+ipcMain.handle('db:reabrirRaSuperado', (_, { alumnoId, raId }) => db.reabrirRaSuperado(alumnoId, raId))
+
+ipcMain.handle('db:getCalificacionesCE', (_, mid) => db.getCalificacionesCE(mid))
+ipcMain.handle('db:setCalificacionCE', (_, payload) => db.setCalificacionCE(payload))
+
 ipcMain.handle('db:addModulo', (_, payload) => db.addModulo(payload))
 ipcMain.handle('db:deleteModulo', (_, id) => db.deleteModulo(id))
 

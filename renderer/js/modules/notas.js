@@ -21,45 +21,15 @@ function _notasEf(aid) {
 }
 
 /**
- * Calcula la nota ponderada de un alumno para las actividades dadas.
- * Agrupa las actividades por tipo (practica / examen / otros),
- * promedia las notas calificadas dentro de cada grupo y pondera cada
- * grupo por su peso total, NORMALIZANDO por la suma de pesos de los
- * grupos calificados: media = Σ(media_grupo × peso_grupo) / Σ(peso_grupo).
- * Así el resultado está siempre en la escala 0-10 aunque los pesos de la
- * evaluación no sumen 100 (p. ej. ISO EV1: 2 prácticas×30 + examen 70 = 130).
- * Los grupos sin ninguna nota no entran en la media (reponderación).
- * Devuelve '—' si no hay ninguna actividad calificada.
- *
- * @param {Array}  acts        - Actividades con .tipo, .peso e .id
- * @param {Object} notasAl    - { actividad_id: nota } para este alumno
- * @param {number} [decimals] - Decimales del resultado (default 2)
- * @returns {string}
+ * Media de las actividades calificadas de un alumno, con el motor único
+ * (js/core/calificacion.js): pondera por el peso de cada actividad y respeta la
+ * escala de cada instrumento (`nota_max`). Es una media de actividades, no la
+ * nota del módulo: esa se calcula por resultados de aprendizaje en Evaluaciones.
  */
 function _calcMediaPonderada(acts, notasAl, decimals = 2) {
-  const byTipo = {}
-  acts.forEach(act => {
-    if (!byTipo[act.tipo]) byTipo[act.tipo] = []
-    byTipo[act.tipo].push(act)
-  })
-  let sumNota = 0, sumPeso = 0
-  const todas = []   // fallback: media simple si ningún grupo tiene peso
-  Object.values(byTipo).forEach(tipoActs => {
-    // Peso total del grupo (incluye actividades sin calificar)
-    const grupoPeso = tipoActs.reduce((s, a) => s + (a.peso || 0), 0)
-    // Promedio simple de las calificadas en este grupo
-    const graded = tipoActs.map(a => notasAl?.[a.id]).filter(n => n != null && n !== '')
-    if (!graded.length) return
-    todas.push(...graded)
-    if (grupoPeso > 0) {
-      const avg = graded.reduce((s, n) => s + n, 0) / graded.length
-      sumNota += avg * grupoPeso
-      sumPeso += grupoPeso
-    }
-  })
-  if (sumPeso > 0) return (sumNota / sumPeso).toFixed(decimals)
-  if (todas.length) return (todas.reduce((s, n) => s + n, 0) / todas.length).toFixed(decimals)
-  return '—'
+  const { PRAC, EXAM } = pesosPorTipo(acts)
+  const m = mediaActividades(acts, notasAl, PRAC, EXAM)
+  return m === null ? '—' : m.toFixed(decimals)
 }
 
 async function exportNotasPDF() {
@@ -177,8 +147,9 @@ function renderNotasGrid() {
         const rec  = _notasRec[al.id]?.[act.id] ?? ''
         const cls = rec==='' ? '' : rec>=5 ? 'nota-apto' : rec>=4 ? 'nota-riesgo' : 'nota-noapto'
         return `<td style="text-align:center">
-          <input class="nota-cell ${cls}" type="number" min="0" max="10" step="0.1"
+          <input class="nota-cell ${cls}" type="number" min="0" max="${act.nota_max ?? 10}" step="0.1"
             value="${rec}" data-aid="${al.id}" data-actid="${act.id}" data-rec="1"
+            data-max="${act.nota_max ?? 10}"
             placeholder="${orig != null ? orig : ''}" title="Recuperación (original: ${orig != null ? orig : '—'})"
             style="border-color:var(--accent)"
             onchange="onNotaChange(this)" oninput="colorNota(this)"/>
@@ -189,8 +160,8 @@ function renderNotasGrid() {
       const rec  = _notasRec[al.id]?.[act.id]
       const cls = nota==='' ? '' : nota>=5 ? 'nota-apto' : nota>=4 ? 'nota-riesgo' : 'nota-noapto'
       return `<td style="text-align:center">
-        <input class="nota-cell ${cls}" type="number" min="0" max="10" step="0.1"
-          value="${nota}" data-aid="${al.id}" data-actid="${act.id}"
+        <input class="nota-cell ${cls}" type="number" min="0" max="${act.nota_max ?? 10}" step="0.1"
+          value="${nota}" data-aid="${al.id}" data-actid="${act.id}" data-max="${act.nota_max ?? 10}"
           onchange="onNotaChange(this)" oninput="colorNota(this)"/>
         ${rec != null ? `<div style="font-size:8px;color:var(--accent);font-weight:700" title="Nota de recuperación (efectiva)">rec: ${rec}</div>` : ''}
       </td>`
@@ -265,12 +236,14 @@ async function onNotaChange(el) {
     ? _notasRec[aid]?.[actId] ?? null
     : _notasGrid[aid]?.[actId] ?? null
 
-  // Validate nota (0-10)
+  // La nota se valida contra la escala de SU actividad: una práctica sobre 5 no
+  // admite un 7, y un instrumento sobre 20 no se corta en 10.
+  const notaMax = parseFloat(el.dataset.max) || 10
   if (val !== '') {
     const notaVal = parseFloat(val)
-    if (!validators.nota(notaVal)) {
-      alert('Nota inválida. Debe estar entre 0 y 10.')
-      el.value = ''
+    if (isNaN(notaVal) || notaVal < 0 || notaVal > notaMax) {
+      alert(`Nota inválida. Esta actividad se califica sobre ${notaMax}.`)
+      el.value = previous ?? ''
       return
     }
   }

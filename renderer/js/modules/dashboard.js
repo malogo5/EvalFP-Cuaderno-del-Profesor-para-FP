@@ -12,18 +12,32 @@ let _ord1OpenSet = new Set() // alumnoIds con tarjeta expandida (1ª Ordinaria)
 let _rec2Notas  = {}         // { alumnoId: { "RA|CE": nota } } — calificaciones 2ª Ordinaria por CE
 let _rec2Timer  = null
 
-async function _loadPardones(mid) {
+/**
+ * Carga de la tabla `calificaciones_ce` los criterios dados por alcanzados y las
+ * notas de la 2ª convocatoria. Antes vivían como JSON en la configuración y no
+ * los veía nadie más que esta pantalla.
+ */
+async function _loadCalificacionesCE(mid) {
+  _pardones = {}
+  _rec2Notas = {}
   try {
-    const cfg = await window.api.getAllConfig()
-    const raw = cfg[`pardones_${mid}`]
-    const stored = raw ? JSON.parse(raw) : {}
-    _pardones = {}
-    for (const [aid, ceIds] of Object.entries(stored)) {
-      // H2: ignorar claves legacy sin "|" (ambiguas entre RAs)
-      _pardones[Number(aid)] = new Set([...ceIds].filter(k => String(k).includes('|')))
+    const filas = await window.api.getCalificacionesCE(parseInt(mid))
+    for (const f of filas) {
+      const aid = Number(f.alumno_id)
+      const k = `${f.ra_id}|${f.ce_id}`
+      if (f.perdonado) {
+        if (!_pardones[aid]) _pardones[aid] = new Set()
+        _pardones[aid].add(k)
+      }
+      if (f.nota != null) {
+        if (!_rec2Notas[aid]) _rec2Notas[aid] = {}
+        _rec2Notas[aid][k] = Number(f.nota)
+      }
     }
-  } catch(_) { _pardones = {} }
+  } catch (e) { console.error('No se pudieron leer las calificaciones por criterio:', e) }
 }
+
+async function _loadPardones(mid) { await _loadCalificacionesCE(mid) }
 
 function _reloadEvalSec() {
   const activeNav = document.querySelector('.nav-item.active')
@@ -32,17 +46,36 @@ function _reloadEvalSec() {
   else loadDashboard()
 }
 
+/**
+ * Da por alcanzado un criterio en la 2ª convocatoria, o retira esa decisión.
+ * Pide un motivo: es una decisión de evaluación y tiene que quedar justificada y
+ * fechada, que es lo que se mira en una reclamación.
+ */
 async function togglePardonCe(mid, alumnoId, raId, ceId) {
-  const k = `${raId}|${ceId}`   // H2: clave compuesta
-  if (!_pardones[alumnoId]) _pardones[alumnoId] = new Set()
-  if (_pardones[alumnoId].has(k)) _pardones[alumnoId].delete(k)
-  else _pardones[alumnoId].add(k)
-  const toSave = {}
-  for (const [aid, ceSet] of Object.entries(_pardones)) {
-    const arr = [...ceSet]
-    if (arr.length) toSave[aid] = arr
+  const k = `${raId}|${ceId}`
+  const yaEstaba = _pardones[alumnoId]?.has(k)
+  let motivo = null
+  if (!yaEstaba) {
+    motivo = prompt(
+      `Vas a dar por alcanzado el criterio ${ceId} de ${raId}.\n\n` +
+      '¿Con qué evidencia? (prueba de recuperación, trabajo entregado, observación en el taller…)\n' +
+      'Queda registrado con la fecha.', '')
+    if (motivo === null) return              // cancelado
+    motivo = motivo.trim()
+    if (!motivo) { alert('Hace falta indicar la evidencia para dar un criterio por alcanzado.'); return }
   }
-  await window.api.setConfig(`pardones_${mid}`, JSON.stringify(toSave))
+  try {
+    await window.api.setCalificacionCE({
+      alumnoId, raId, ceId, convocatoria: 2,
+      nota: _rec2Notas[alumnoId]?.[k] ?? null,
+      perdonado: yaEstaba ? 0 : 1,
+      motivo: yaEstaba ? null : motivo,
+    })
+  } catch (e) {
+    alert('No se ha podido guardar: ' + (e && e.message ? e.message : e)); return
+  }
+  if (!_pardones[alumnoId]) _pardones[alumnoId] = new Set()
+  if (yaEstaba) _pardones[alumnoId].delete(k); else _pardones[alumnoId].add(k)
   _reloadEvalSec()
 }
 
@@ -79,115 +112,27 @@ function toggleOrd1Card(alumnoId) {
   else      _ord1OpenSet.add(alumnoId)
 }
 
-/**
- * H2 — Migración automática de claves legacy (sin "RA|") de rec2notas/pardones.
- * Una clave legacy "CR1" se reasigna a "RAx|CR1" cuando el alumno tiene UN ÚNICO
- * RA suspenso que contenga ese CE (intención inequívoca). Si hay varios candidatos
- * (o ninguno), la clave se conserva en formato legacy —el motor la ignora— y se
- * avisa una sola vez para reintroducirla a mano en 2ª Ordinaria.
- * Idempotente: se puede llamar en cada carga; solo escribe si migra algo.
- */
-async function _migrateLegacyRecKeys(mid, ras, cesByRa, actividades, ng, PRAC, EXAM, alumnos, asigs) {
-  const cfg = await window.api.getAllConfig()
-  const res = { migradas: 0, ambiguas: [] }
-  const nombreDe = aid => {
-    const al = (alumnos || []).find(a => a.id === Number(aid))
-    return al ? `${al.apellidos || ''}${al.apellidos && al.nombre ? ', ' : ''}${al.nombre || ''}` : `alumno ${aid}`
-  }
-  const candidatos = (alumnoId, ceId) => ras.filter(ra => {
-    if (!(cesByRa[ra.id] || []).some(c => c.id === ceId)) return false
-    const n = _calcNotaRA(ra.id, cesByRa[ra.id] || [], actividades, ng[alumnoId], PRAC, EXAM, asigs)
-    return n !== null && n < 5
-  })
-
-  // rec2notas: { aid: { clave: nota } }
-  try {
-    const raw = cfg[`rec2notas_${mid}`]
-    if (raw) {
-      const stored = JSON.parse(raw)
-      let dirty = false
-      for (const [aid, ceMap] of Object.entries(stored)) {
-        for (const key of Object.keys(ceMap)) {
-          if (key.includes('|')) continue
-          const cands = candidatos(Number(aid), key)
-          if (cands.length === 1) {
-            ceMap[`${cands[0].id}|${key}`] = ceMap[key]
-            delete ceMap[key]
-            res.migradas++; dirty = true
-          } else {
-            res.ambiguas.push(`${nombreDe(aid)} · ${key} (nota rec., ${cands.length} RAs posibles)`)
-          }
-        }
-      }
-      if (dirty) await window.api.setConfig(`rec2notas_${mid}`, JSON.stringify(stored))
-    }
-  } catch { /* JSON inválido — no migrar */ }
-
-  // pardones: { aid: [clave, ...] }
-  try {
-    const raw = cfg[`pardones_${mid}`]
-    if (raw) {
-      const stored = JSON.parse(raw)
-      let dirty = false
-      for (const [aid, arr] of Object.entries(stored)) {
-        stored[aid] = arr.map(key => {
-          if (String(key).includes('|')) return key
-          const cands = candidatos(Number(aid), key)
-          if (cands.length === 1) { res.migradas++; dirty = true; return `${cands[0].id}|${key}` }
-          res.ambiguas.push(`${nombreDe(aid)} · ${key} (aprobado, ${cands.length} RAs posibles)`)
-          return key
-        })
-      }
-      if (dirty) await window.api.setConfig(`pardones_${mid}`, JSON.stringify(stored))
-    }
-  } catch { /* JSON inválido — no migrar */ }
-
-  // Aviso único por módulo si quedan claves ambiguas
-  if (res.ambiguas.length && !cfg[`recmigra_avisado_${mid}`]) {
-    await window.api.setConfig(`recmigra_avisado_${mid}`, '1')
-    alert(`Migración de recuperaciones de 2ª Ordinaria (formato nuevo RA|CE):\n\n` +
-      `✓ ${res.migradas} calificaciones migradas automáticamente.\n` +
-      `⚠ ${res.ambiguas.length} no se pudieron asignar a un único RA y deben reintroducirse a mano:\n\n` +
-      res.ambiguas.map(s => `  · ${s}`).join('\n'))
-  } else if (res.migradas) {
-    console.log(`[migración H2] ${res.migradas} claves rec/pardon migradas a formato RA|CE.`)
-  }
-  return res
-}
-
-async function _loadRec2Notas(mid) {
-  try {
-    const cfg = await window.api.getAllConfig()
-    const raw = cfg[`rec2notas_${mid}`]
-    const stored = raw ? JSON.parse(raw) : {}
-    _rec2Notas = {}
-    for (const [aid, ceMap] of Object.entries(stored)) {
-      _rec2Notas[Number(aid)] = {}
-      for (const [ceId, nota] of Object.entries(ceMap)) {
-        // H2: ignorar claves legacy sin "|" (ambiguas entre RAs)
-        if (!String(ceId).includes('|')) continue
-        const n = parseFloat(nota)
-        if (!isNaN(n)) _rec2Notas[Number(aid)][ceId] = n
-      }
-    }
-  } catch(_) { _rec2Notas = {} }
-}
+// Ya viene cargado junto con los criterios alcanzados (una sola consulta).
+async function _loadRec2Notas(_mid) { /* _loadCalificacionesCE lo ha hecho */ }
 
 async function saveRec2Nota(mid, alumnoId, raId, ceId, notaStr) {
   clearTimeout(_rec2Timer)
-  const k = `${raId}|${ceId}`   // H2: clave compuesta
+  const k = `${raId}|${ceId}`
   if (!_rec2Notas[alumnoId]) _rec2Notas[alumnoId] = {}
   const nota = parseFloat(notaStr)
-  if (notaStr === '' || isNaN(nota)) {
-    delete _rec2Notas[alumnoId][k]
-  } else {
-    _rec2Notas[alumnoId][k] = Math.min(10, Math.max(0, nota))
+  const vacia = notaStr === '' || isNaN(nota)
+  const valor = vacia ? null : Math.min(10, Math.max(0, nota))
+  if (vacia) delete _rec2Notas[alumnoId][k]
+  else _rec2Notas[alumnoId][k] = valor
+  try {
+    await window.api.setCalificacionCE({
+      alumnoId, raId, ceId, convocatoria: 2,
+      nota: valor,
+      perdonado: _pardones[alumnoId]?.has(k) ? 1 : 0,
+    })
+  } catch (e) {
+    alert('No se ha podido guardar la nota de recuperación: ' + (e && e.message ? e.message : e))
   }
-  const toSave = {}
-  for (const [aid, ceMap] of Object.entries(_rec2Notas)) {
-    if (Object.keys(ceMap).length) toSave[aid] = ceMap
-  }
-  await window.api.setConfig(`rec2notas_${mid}`, JSON.stringify(toSave))
   _rec2Timer = setTimeout(() => _reloadEvalSec(), 50)
 }
 
@@ -230,45 +175,28 @@ async function loadDashboard() {
     return
   }
 
-  // H2 — migrar claves legacy de recuperaciones/pardones al formato RA|CE
-  {
-    const sPP = actividades.filter(a => a.tipo === 'practica').reduce((s, a) => s + (a.peso || 0), 0)
-    const sPE = actividades.filter(a => a.tipo === 'examen').reduce((s, a) => s + (a.peso || 0), 0)
-    const tP = sPP + sPE
-    await _migrateLegacyRecKeys(mid, ras, cesDict, actividades, ng,
-      tP > 0 ? sPP / tP : 0.30, tP > 0 ? sPE / tP : 0.70, _alumnos, asigs)
-  }
-
   // Cargar perdones y notas de recuperación
   await _loadPardones(mid)
   await _loadRec2Notas(mid)
 
-  // ── Helper: nota ponderada por RA para un alumno ────────────────
+  // Mínimo de examen del módulo: lo aplica el motor, igual que en Evaluaciones
+  const cfgDash = await window.api.getAllConfig()
+  const minRawD = cfgDash[`minexam_${mid}`]
+  const minExam = minRawD != null && String(minRawD).trim() !== '' ? parseFloat(minRawD) : null
+
+  // ── Motor único de calificación (js/core/calificacion.js) ──────
+  // Esta pantalla tenía su propio cálculo: la nota de RA salía de la media
+  // ponderada de las actividades, ignorando los criterios, y la nota final era la
+  // media simple de todas las notas. Daba 7,25 donde Evaluaciones daba 6,25.
+  const ctxCalculo = contextoModulo({
+    ras, cesByRa: cesDict, asignaciones: asigs, actividades, minExam,
+  })
+  const estadoDe = alumnoId => estadoModulo(ctxCalculo, ng[alumnoId])
+
   function computeRaNotas(alumnoId) {
-    const raContribs = {}
-    ras.forEach(ra => { raContribs[ra.id] = [] })
-    actividades.forEach(a => {
-      const nota = ng[alumnoId]?.[a.id]
-      if (nota == null) return
-      const p = a.peso || 1
-      if (a.ra_id && raContribs[a.ra_id]) {
-        raContribs[a.ra_id].push({ nota, peso: p })
-      } else if (a.ut_id) {
-        // Una UT puede trabajar varios RA: se cuentan todos, no solo el primero
-        const raIds = rasDeActividad(a, asigs)
-        if (raIds.length) {
-          const pesoPerRa = p / raIds.length
-          raIds.forEach(raId => { if (raContribs[raId]) raContribs[raId].push({ nota, peso: pesoPerRa }) })
-        }
-      }
-    })
+    const st = estadoDe(alumnoId)
     const raNotas = {}
-    ras.forEach(ra => {
-      const cs = raContribs[ra.id] || []
-      let sp = 0, spn = 0
-      cs.forEach(c => { spn += c.nota * c.peso; sp += c.peso })
-      raNotas[ra.id] = sp > 0 ? spn / sp : null
-    })
+    ras.forEach(ra => { raNotas[ra.id] = st.porRA[ra.id] ? st.porRA[ra.id].nota : null })
     return raNotas
   }
 
@@ -355,12 +283,8 @@ async function loadDashboard() {
   // H1 — regla de oro: superar el módulo exige TODOS los RA calificados ≥5,
   // no basta con que la media sea ≥5.
   const resumen = alumnos.map(al => {
-    const ns = actividades.map(a => ng[al.id]?.[a.id]).filter(n => n!=null)
-    const media = ns.length ? ns.reduce((a,b)=>a+b,0)/ns.length : null
-    const raNotas = computeRaNotas(al.id)
-    const rasPend = Object.entries(raNotas).filter(([,n]) => n !== null && n < 5).map(([k]) => k)
-    const superado = media !== null && media >= 5 && rasPend.length === 0
-    return { ...al, media, rasPend, superado }
+    const st = estadoDe(al.id)
+    return { ...al, media: st.media, rasPend: st.pendientes, superado: st.superado, acta: st.acta }
   })
 
   const conNota = resumen.filter(a => a.media !== null)
@@ -926,43 +850,85 @@ async function genBoletin(alumnoId) {
     </div>`
   }).join('')
 
-  // ── Nota por RA (media de actividades ponderada por peso) ────────────
-  const raNotas = {}
-  ras.forEach(ra => {
-    const contribs = raContribs[ra.id] || []
-    let sp = 0, spn = 0
-    contribs.forEach(c => { spn += c.nota * c.peso; sp += c.peso })
-    raNotas[ra.id] = sp > 0 ? spn / sp : null
+  // ── Nota por RA y nota final: motor único (js/core/calificacion.js) ──
+  // El boletín es el documento que se lleva a casa: tiene que decir exactamente
+  // lo mismo que el acta. Antes calculaba la nota como media de las medias de
+  // cada evaluación y salía 6,75 donde Evaluaciones decía 6,25.
+  const cfgBol   = await window.api.getAllConfig()
+  const minRawB  = cfgBol[`minexam_${mid}`]
+  const minExamB = minRawB != null && String(minRawB).trim() !== '' ? parseFloat(minRawB) : null
+  const ctxBol   = contextoModulo({
+    ras, cesByRa: cesDict, asignaciones: asigs, actividades, minExam: minExamB,
+  })
+  const stBol = estadoModulo(ctxBol, miNotas)
+
+  // 2ª convocatoria: el boletín tiene que reflejarla. Antes se quedaba en la 1ª y
+  // a quien había superado el módulo en la segunda le seguía diciendo que estaba
+  // suspenso, porque estas calificaciones vivían solo en la pantalla de la 2ª.
+  const { PRAC: pB, EXAM: eB } = pesosPorTipo(actividades)
+  const notaCEOrd2 = (raId, ceId) => {
+    const k = `${raId}|${ceId}`
+    if (_pardones[alumnoId]?.has(k)) return 5
+    const rec = _rec2Notas[alumnoId]?.[k]
+    if (rec != null) return rec
+    return notaCE(raId, ceId, actividades, miNotas, pB, eB)
+  }
+  const hayOrd2 = Object.keys(_rec2Notas[alumnoId] || {}).length > 0 ||
+                  (_pardones[alumnoId] ? _pardones[alumnoId].size > 0 : false)
+  const stBol2 = !hayOrd2 ? null : estadoModulo(ctxBol, miNotas, {
+    notaRAOverride: (ra, n) => {
+      const minKO = raMinExamKO(ra.id, cesDict[ra.id] || [], actividades, miNotas, minExamB, asigs)
+      if (n === null || (n >= 5 && !minKO)) return n
+      const lst = cesEvaluadosDeRa(ra.id, cesDict[ra.id] || [], actividades)
+      const g = lst.map(ce => notaCEOrd2(ra.id, ce.id)).filter(x => x != null)
+      return g.length ? g.reduce((s, x) => s + x, 0) / g.length : n
+    },
+    minKOOverride: (ra, ko) => {
+      if (!ko) return false
+      const lst = cesEvaluadosDeRa(ra.id, cesDict[ra.id] || [], actividades)
+      if (!lst.length) return true
+      return !lst.every(ce => { const n = notaCEOrd2(ra.id, ce.id); return n != null && n >= 5 })
+    },
   })
 
-  // ── 1ª Ord: nota final = media de RAs ponderada y REPONDERADA sobre los
-  // RA evaluados (H10) — el mismo motor que la sección Evaluaciones.
-  // (Antes usaba la "media de medias por evaluación", inconsistente.)
-  const rasCalificados = ras.filter(ra => raNotas[ra.id] !== null)
-  const pondBol = rasCalificados.reduce((s, ra) => s + (ra.pond || 0), 0)
-  const notaFinal = !rasCalificados.length ? mediaGlobal
-    : pondBol > 0
-      ? rasCalificados.reduce((s, ra) => s + raNotas[ra.id] * (ra.pond || 0), 0) / pondBol
-      : rasCalificados.reduce((s, ra) => s + raNotas[ra.id], 0) / rasCalificados.length
+  const raNotas = {}
+  ras.forEach(ra => { raNotas[ra.id] = stBol.porRA[ra.id] ? stBol.porRA[ra.id].nota : null })
+
+  const notaFinal = stBol.media
+  const actaBol   = stBol.acta
 
   // H1 — regla de oro: superar el módulo exige todos los RA calificados ≥5
-  const rasPendBol = ras.filter(ra => raNotas[ra.id] !== null && raNotas[ra.id] < 5)
-  const superadoBol = notaFinal != null && notaFinal >= 5 && rasPendBol.length === 0
+  const rasPendBol  = ras.filter(ra => stBol.pendientes.includes(ra.id))
+  const superadoBol = stBol.superado
   const clFinal = notaFinal == null ? 'sin' : superadoBol ? 'ok' : 'ko'
   const lblFinal = notaFinal == null ? '–' : superadoBol ? 'APTO/A' : 'NO APTO/A'
   const avisoRegla = notaFinal != null && !superadoBol && notaFinal >= 5 && rasPendBol.length
     ? `<div style="font-size:9px;color:#721c24;padding:4px 12px">Media ≥5 pero con RA pendientes (${e(rasPendBol.map(r => r.id).join(', '))}): la media no compensa un RA suspenso.</div>`
     : ''
 
-  // Bloque 1ª Ord
+  // Bloque 1ª Ord — con la calificación de acta, que es la que consta oficialmente
   const ord1Block = `<div class="conv">
     <div class="conv-hdr ord1">
       <span class="conv-num">1ª Ordinaria</span>
       <span class="conv-nota ${clFinal}">${notaFinal != null ? notaFinal.toFixed(2) : '—'}</span>
+      ${actaBol != null ? `<span style="font-size:10px;color:#555">acta: <b>${actaBol}</b></span>` : ''}
       <span class="${clFinal==='ok'?'b-ok':clFinal==='ko'?'b-ko':'b-sin'}" style="font-size:11px">${lblFinal}</span>
     </div>
     ${avisoRegla}
   </div>`
+
+  // Resultado de la 2ª convocatoria, cuando la hay
+  const ord2Resultado = stBol2 && stBol2.media != null ? `<div class="conv">
+    <div class="conv-hdr ord2">
+      <span class="conv-num">2ª Ordinaria · resultado</span>
+      <span class="conv-nota ${stBol2.superado ? 'ok' : 'ko'}">${stBol2.media.toFixed(2)}</span>
+      ${stBol2.acta != null ? `<span style="font-size:10px;color:#555">acta: <b>${stBol2.acta}</b></span>` : ''}
+      <span class="${stBol2.superado ? 'b-ok' : 'b-ko'}" style="font-size:11px">${stBol2.superado ? 'APTO/A' : 'NO APTO/A'}</span>
+    </div>
+    ${stBol2.pendientes.length
+      ? `<div style="font-size:9px;color:#721c24;padding:4px 12px">RA pendientes tras la 2ª convocatoria: ${e(stBol2.pendientes.join(', '))}</div>`
+      : '<div style="font-size:9px;color:#155724;padding:4px 12px">Todos los resultados de aprendizaje alcanzados.</div>'}
+  </div>` : ''
 
   // Bloque 2ª Ord (solo si no supera — por media o por RA pendiente)
   let ord2Block = ''
@@ -1024,7 +990,7 @@ async function genBoletin(alumnoId) {
     }
   }
 
-  const convBlocks = ord1Block + ord2Block
+  const convBlocks = ord1Block + ord2Resultado + ord2Block
 
   // ── Ensamblar HTML ────────────────────────────────────────────────────
   const nombre = `${alumno.apellidos || ''}, ${alumno.nombre || ''}`

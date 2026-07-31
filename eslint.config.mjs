@@ -108,7 +108,7 @@ export default [
   // Estos archivos exportan con module.exports para poder usarse
   // tanto en el renderer (inyectados como script) como en tests Node.
   {
-    files: ['renderer/js/utils/**/*.js'],
+    files: ['renderer/js/utils/**/*.js', 'renderer/js/core/**/*.js'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType:  'script',
@@ -118,6 +118,9 @@ export default [
       },
     },
     rules: {
+      // ce-keys.js y calificacion.js se cargan como scripts sueltos y se llaman
+      // entre sí por su nombre global: no-undef daría falsos positivos.
+      'no-undef':                'off',
       'no-unused-vars':          ['warn', { argsIgnorePattern: '^_' }],
       'no-console':              'off',
       'no-prototype-builtins':   'warn',

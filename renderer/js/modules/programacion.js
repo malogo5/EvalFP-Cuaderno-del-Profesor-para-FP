@@ -447,10 +447,21 @@ async function loadProgramacion() {
       <span style="font-size:11px;color:rgba(255,255,255,.6);font-weight:600">%</span>
     </span>`
 
+    // RA que hay que tener alcanzado para incorporarse a la fase de empresa
+    // (Orden 201/2024, art. 4.3.a). La programación debe especificarlos.
+    const llaveChk = `<label title="Marca los RA que el alumnado debe tener alcanzados para incorporarse a la fase de formación en empresa (Orden 201/2024, art. 4.3.a)"
+        style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:var(--text2);cursor:pointer;white-space:nowrap">
+      <input type="checkbox" ${ra.llave ? 'checked' : ''}
+        onchange="updateRaLlave(${mid},'${esc(ra.id)}',this.checked)"
+        style="accent-color:var(--accent);width:13px;height:13px"/>
+      🔑 para empresa
+    </label>`
+
     h += `<div style="border:1px solid var(--border);border-left:4px solid var(--accent2);border-radius:8px;overflow:hidden">
       <div style="background:var(--bg3);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
          <span style="font-size:13px;font-weight:800;color:var(--accent2);min-width:38px">${esc(ra.id)}</span>
          <span style="font-size:13px;font-weight:600;flex:1">${esc(ra.nombre)}</span>
+         ${llaveChk}
          ${pondInput}
          <span class="badge">${raEval}</span>
          ${utAsigs.length ? `<span class="badge">${esc(utAsigs.join(', '))}</span>` : ''}
@@ -466,10 +477,19 @@ async function loadProgramacion() {
          const marca = donde.length
            ? `<span title="Se evalúa en: ${esc(donde.join(' · '))}" style="color:var(--green);font-size:11px">●</span>`
            : `<span title="Ningún examen ni práctica evalúa este criterio todavía" style="color:var(--amber);font-size:11px">○</span>`
+         // Ponderación del criterio dentro del RA (Orden 201/2024, art. 4.3.a).
+         // En blanco = todos los criterios del RA valen lo mismo.
+         const pesoCe = `<input class="peso-cell" type="number" min="0" max="100" step="1"
+             value="${ce.peso != null && ce.peso !== '' ? ce.peso : ''}" placeholder="—"
+             data-mid="${mid}" data-raid="${esc(ra.id)}" data-ceid="${esc(ce.id)}"
+             onchange="updateCePeso(this)"
+             title="Peso de este criterio dentro del RA. En blanco, todos los criterios pesan igual."
+             style="width:52px;font-size:11px"/>`
          h += `<tr style="border-top:1px solid var(--border)">
            <td style="padding:4px 6px 4px 0;text-align:center;vertical-align:top;width:16px">${marca}</td>
            <td style="padding:4px 10px 4px 0;font-size:12px;font-weight:700;color:var(--accent);white-space:nowrap;vertical-align:top">${esc(ce.id)}</td>
            <td style="padding:4px 0;font-size:12px;color:var(--text2);line-height:1.5">${esc(ce.texto)}</td>
+           <td style="padding:4px 0 4px 8px;text-align:right;vertical-align:top;white-space:nowrap">${pesoCe}<span style="font-size:10px;color:var(--text3)">%</span></td>
          </tr>`
        }
        h += `</table></div>`
@@ -546,6 +566,64 @@ async function updateRaPond(el) {
       console.error(e)
     }
   }, 350)
+}
+
+/**
+ * Peso de un criterio dentro de su RA (Orden 201/2024, art. 4.3.a: la
+ * programación debe recoger los RA y sus criterios «con la ponderación
+ * establecida para cada uno de ellos»).
+ * Vacío = reparto a partes iguales, que es lo que hacía la aplicación antes.
+ */
+async function updateCePeso(el) {
+  const mid  = parseInt(el.dataset.mid)
+  const raId = el.dataset.raid
+  const ceId = el.dataset.ceid
+  if (!mid || !raId || !ceId) return
+  const vacio = String(el.value).trim() === ''
+  const peso  = vacio ? null : parseFloat(el.value)
+  if (!vacio && (isNaN(peso) || peso < 0 || peso > 100)) {
+    alert('Peso inválido. Debe estar entre 0 y 100.')
+    el.value = ''
+    return
+  }
+  const data = _getModData(mid)
+  if (!data) return
+  const ce = (data.ces?.[raId] || []).find(c => c.id === ceId)
+  if (!ce) return
+  if (vacio) delete ce.peso
+  else ce.peso = peso
+  await _saveModData(mid, data, false)
+
+  // Aviso si los criterios de ese RA no suman 100: se sigue guardando, pero
+  // mientras no cuadren el motor reparte a partes iguales.
+  const lista = data.ces[raId] || []
+  const conPeso = lista.filter(c => c.peso != null && c.peso !== '')
+  if (conPeso.length && conPeso.length === lista.length) {
+    const suma = conPeso.reduce((s, c) => s + Number(c.peso), 0)
+    if (Math.abs(suma - 100) > 0.1) {
+      showToast(`Los criterios de ${raId} suman ${Math.round(suma * 10) / 10}%: hasta que sumen 100 pesan todos igual`)
+    }
+  } else if (conPeso.length) {
+    showToast(`${raId}: faltan ${lista.length - conPeso.length} criterios por ponderar`)
+  }
+}
+
+/**
+ * Marca un RA como necesario para incorporarse a la fase de formación en
+ * empresa (Orden 201/2024, art. 4.3.a). El asistente de IA ya sabía usarlo, pero
+ * no había ninguna pantalla donde indicarlo.
+ */
+async function updateRaLlave(mid, raId, esLlave) {
+  const data = _getModData(mid)
+  if (!data) return
+  const ra = (data.ras || []).find(r => r.id === raId)
+  if (!ra) return
+  if (esLlave) ra.llave = true
+  else delete ra.llave
+  await _saveModData(mid, data, false)
+  showToast(esLlave
+    ? `${raId} marcado como necesario para la fase de empresa`
+    : `${raId} ya no condiciona la fase de empresa`)
 }
 
 function _refreshRaPondTotal(el) {
@@ -798,9 +876,22 @@ async function addActividad(mid, ev, tipo) {
 }
 
 async function deleteActividadRow(actId) {
-  if (!confirm('¿Eliminar esta actividad?')) return
+  // Borrar una actividad se lleva por delante sus calificaciones (cascada en la
+  // base de datos). Hay que decirlo ANTES, no después: es irreversible salvo
+  // restaurando una copia de seguridad.
+  const mid = parseInt(document.getElementById('prog-mod-sel')?.value || 0)
+  let conNota = 0
+  try {
+    const notas = await window.api.getNotasGrid(mid)
+    conNota = notas.filter(n => n.actividad_id === actId &&
+                                (n.nota != null || n.nota_rec != null)).length
+  } catch { /* si no se puede contar, se avisa igual en genérico */ }
+  const aviso = conNota
+    ? `\n\nTiene ${conNota} calificación${conNota > 1 ? 'es' : ''} puesta${conNota > 1 ? 's' : ''}, que se perderá${conNota > 1 ? 'n' : ''}.`
+    : ''
+  if (!confirm(`¿Eliminar esta actividad?${aviso}`)) return
   await window.api.deleteActividad(actId)
-  showSaved()
+  showToast(conNota ? `Actividad eliminada · ${conNota} calificaciones borradas` : 'Actividad eliminada')
   loadProgramacion()
 }
 

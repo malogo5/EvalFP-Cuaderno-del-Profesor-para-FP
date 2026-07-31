@@ -102,6 +102,8 @@ const MODULE_SCRIPTS = [
   // Identidad de los criterios (RA|CE): la usan programación, evaluaciones,
   // dashboard e IA, así que va antes que todos ellos.
   'js/utils/ce-keys.js',
+  // Motor único de calificación: lo comparten Evaluaciones, Dashboard, boletín e IA
+  'js/core/calificacion.js',
   // csrf-token.js y session-manager.js eliminados: son utilidades web sin uso
   // en una app Electron local sin servidor ni autenticación de usuarios.
   // password-validator.js eliminado: la validación de API keys la hace validators.js.
@@ -131,17 +133,18 @@ function registerWindowHandlers() {
     renderModulos, selectMod, updateModBadge, renderModDropdown, toggleModDropdown, closeModDropdown,
     renderModRasPanel, delModulo, openAddModulo, confirmAddModulo, closeModal,
     selectCatCiclo, filterCatalogo, selectCatCard,
-    loadProgramacion, updateRaPond, _refreshRaPondTotal, updateActividadPeso, updateActividadDesc,
+    loadProgramacion, updateRaPond, updateCePeso, _refreshRaPondTotal, updateActividadPeso, updateActividadDesc,
     setEvalCount, addActividad, deleteActividadRow, _refreshPesoTotal, _getModData, _saveModData,
-    saveUtField, addUt, deleteUt, openUtRasModal, _refreshUtHoras, _toggleRaSection, saveUtRas,
+    updateRaLlave, saveUtField, addUt, deleteUt, openUtRasModal, _refreshUtHoras, _toggleRaSection, saveUtRas,
     closeUtRasModal, applyModuloPesos, updateActividadUT, rellenarCesDesdeUts,
     openActUtsModal, saveActUts, closeActUtsModal,
     openActCesModal, saveActCes, closeActCesModal,
     actDragStart, actDragOver, actDragLeave, actDragEnd, actDrop,
     ceKey, actCubreCe, actividadDeRa, rasDeActividad, cesDisponiblesActividad, rasPorEvaluacion,
-    loadAlumnos, renderAlumnosTable, updateAlumno, addAlumno, importAlumnos, confirmImportAlumnos, removeAlumno,
+    cesEvaluadosDeRa, contextoModulo, estadoModulo, notaRA, notaCE, actaEntera,
+    loadAlumnos, renderAlumnosTable, updateAlumno, updateFaltas, addAlumno, importAlumnos, confirmImportAlumnos, removeAlumno,
     loadNotas, renderNotasGrid, onNotaChange, colorNota, exportNotasPDF, toggleRecMode,
-    loadEvaluaciones, setEvalTab, toggleEvalCard, toggleEvalCard2, toggleOrd2ShowAll, saveMinExam,
+    loadEvaluaciones, setEvalTab, cerrarSesionEvaluacion, toggleEvalCard, toggleEvalCard2, toggleOrd2ShowAll, saveMinExam,
     loadDashboard, genBoletin, togglePardonCe, saveRec2Nota, setRecSort, toggleRecCard, setOrd1Sort, toggleOrd1Card,
     initIaSection, iaTab, termAppend, runIA, runApuntes,
     iaInformeLoadAlumnos, iaInformeAutoNotas,

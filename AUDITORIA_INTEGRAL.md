@@ -35,9 +35,21 @@ ni en la carpeta `normativa/`, que solo contiene los decretos de currículo.
 
 ---
 
+## Estado de corrección
+
+Trabajo del 31/07/2026 sobre esta misma auditoría. Las incidencias marcadas
+**CORREGIDO** llevan al final de su apartado la comprobación con el motor real.
+
+| Estado | Incidencias |
+|---|---|
+| ✅ Corregidas | C-1, C-2, C-3, C-4, C-5, A-2, A-3, A-4, A-6, A-7, A-8, M-1, M-2, M-3, M-4, M-6 |
+| ⏳ Pendientes | A-1 (superado parcial), A-5 (unificar recuperación), M-5, M-7, M-8, riesgos R-1 a R-5, mejoras de experiencia B-1 a B-5 |
+
+---
+
 # 1. Errores críticos
 
-## C-1 · Cuatro pantallas dan cuatro notas finales distintas para el mismo alumno
+## C-1 · Cuatro pantallas dan cuatro notas finales distintas — **CORREGIDO**
 
 **Categoría:** Error confirmado · **Gravedad: Crítica** · **Prioridad: 1**
 **Módulos:** Evaluaciones, Dashboard, Boletín PDF, Notas
@@ -81,9 +93,21 @@ boletín consuman exclusivamente ese módulo**. El algoritmo de referencia debe 
 Evaluaciones (nota de RA por criterios + ponderación de RA), que es el único alineado con el
 art. 2.3 de la Orden. Añadir un test que compare las cuatro salidas y falle si divergen.
 
+**Corrección aplicada.** Creado `renderer/js/core/calificacion.js` con `notaCE`, `notaRA`,
+`raMinExamKO`, `actaEntera`, `contextoModulo` y `estadoModulo`. Lo consumen Evaluaciones (1ª y 2ª
+convocatoria), el Dashboard, el boletín PDF y el asistente de IA; la columna Media de la parrilla
+usa su `mediaActividades` y queda documentada como media de actividades, no como nota del módulo.
+Comprobado con el motor real:
+
+```
+la nota final es la media de los RA ponderada por su peso     → 6,95 · acta 7
+la media no compensa un RA suspenso y el acta se topa en 4    → media 8,00 · acta 4
+un RA sin calificar deja el módulo pendiente y no cuenta como cero
+```
+
 ---
 
-## C-2 · La 2ª Ordinaria no llega a ningún documento
+## C-2 · La 2ª Ordinaria no llega a ningún documento — **CORREGIDO**
 
 **Categoría:** Error confirmado · **Gravedad: Crítica** · **Prioridad: 1**
 **Módulos:** Evaluaciones (2ª Ordinaria), Boletín, Asistente IA, Dashboard
@@ -130,9 +154,16 @@ CREATE TABLE calificaciones_ce (
 
 y que el motor único de C-1 reciba la convocatoria como parámetro.
 
+**Corrección aplicada.** Creada la tabla `calificaciones_ce` con clave foránea, fecha y motivo, y
+migración automática desde la configuración al abrir la aplicación (las claves antiguas sin RA se
+descartan y se registran en el log). El boletín muestra ahora el bloque «2ª Ordinaria · resultado»
+con su nota, su acta y los RA que sigan pendientes; el informe de IA recalcula los RA suspensos con
+las calificaciones de la segunda convocatoria. Comprobado sobre el esquema real: 2 calificaciones
+migradas, 1 descartada por no indicar el RA, y al borrar el módulo no queda ninguna huérfana.
+
 ---
 
-## C-3 · `nota_max` es un campo editable que ningún cálculo respeta
+## C-3 · `nota_max` no lo respetaba ningún cálculo — **CORREGIDO**
 
 **Categoría:** Error confirmado · **Gravedad: Crítica** · **Prioridad: 1**
 **Módulos:** Programación, Notas, Evaluaciones, Dashboard, Boletín, IA
@@ -162,9 +193,13 @@ error de cálculo puro, difícil de defender ante una reclamación.
 2. **Eliminar el campo** de la interfaz y de la base de datos, dejando la escala 0-10 fija.
 La opción 1 es la correcta si se quiere calificar con rúbricas por puntos; la 2 evita el problema.
 
+**Corrección aplicada.** Opción 1. `notaEnEscala10()` normaliza en el motor y la parrilla valida
+contra la escala de cada actividad (`max` y mensaje propios). Comprobado: práctica sobre 5 con un 4
+y práctica sobre 10 con un 6 dan media 7, no 5.
+
 ---
 
-## C-4 · El alumnado con la matrícula anulada recibe calificación y acta
+## C-4 · El alumnado con la matrícula anulada recibía calificación y acta — **CORREGIDO**
 
 **Categoría:** Error confirmado · **Gravedad: Crítica** · **Prioridad: 1**
 **Módulo:** Evaluaciones
@@ -184,6 +219,11 @@ incidencia de expediente, no un detalle estético.
 Renuncia a convocatoria**— y que en 1ª y 2ª Ordinaria esas filas muestren la leyenda normativa
 («Anulación de matrícula», «RC») en lugar de nota, acta y veredicto. La sección debe seguir
 mostrándolos, pero sin calificación.
+
+**Corrección aplicada.** La fila del alumnado de baja sigue visible con sus notas de trabajo, pero
+las columnas de nota final, acta y resultado se sustituyen por «Matrícula anulada · sin evaluación»,
+con la cita del art. 7.1 en el título. Queda pendiente el estado «Renuncia a convocatoria» (RC),
+anotado como parte de A-1.
 
 ---
 
@@ -309,7 +349,7 @@ estados del art. 12.
 
 ---
 
-## A-2 · Un RA superado puede volver a suspenderse
+## A-2 · Un RA superado podía volver a suspenderse — **CORREGIDO**
 
 **Categoría:** Error confirmado · **Gravedad: Alta** · **Prioridad: 2**
 **Módulo:** Evaluaciones (motor de cálculo)
@@ -330,13 +370,21 @@ el módulo entero cae por la regla de oro.
 después se le retiró. Es motivo de reclamación con recorrido.
 
 **Solución.** Registrar el **hito de superación de cada RA** (fecha, convocatoria y nota con la que
-se superó) y, una vez superado, congelarlo: las actividades posteriores no pueden bajarlo. Es
-también lo que exige el diseño de la 2ª convocatoria, donde la aplicación ya lo hace bien
-(`raNotaOrd2` bloquea los RA con `fuente: 'orig_ok'`).
+se superó) y, una vez superado, congelarlo: las actividades posteriores no pueden bajarlo.
+
+**Corrección aplicada.** Nueva tabla `ra_superados` y botón **«Cerrar 1ª/2ª/3ª evaluación»** en cada
+pestaña de evaluación parcial: registra qué RA ha alcanzado cada alumno, con su nota y la fecha. A
+partir de ahí el RA puede subir pero no bajar, y se marca como fijado. Comprobado:
+
+```
+RA1 con el examen de diciembre = 8
+  mayo, práctica con un 2                → 5,00   (comportamiento anterior)
+  con la 1ª evaluación cerrada           → 8,00 🔒 fijado · sin RA pendientes
+```
 
 ---
 
-## A-3 · La ponderación es por RA; la norma la exige por criterio de evaluación
+## A-3 · Ponderación por criterio de evaluación — **CORREGIDO**
 
 **Categoría:** Error confirmado (omisión funcional) · **Gravedad: Alta** · **Prioridad: 2**
 **Módulos:** Programación, motor de cálculo
@@ -359,9 +407,17 @@ completa desde la aplicación.
 con reparto por defecto a partes iguales y aviso si no suma 100. El motor pasa de media simple a
 media ponderada de criterios.
 
+**Corrección aplicada.** Cada criterio tiene su casilla de ponderación en la ficha del RA. Mientras
+no estén todos ponderados y no sumen 100 se reparte a partes iguales, y se avisa de lo que falta.
+Comprobado con CR1 = 10 y CR2 = 0:
+
+```
+sin ponderar → 5,00 · CR1 80 % → 8,00 · CR1 20 % → 2,00 · a medio ponderar → 5,00
+```
+
 ---
 
-## A-4 · Reglas normativas implementadas sin ningún sitio donde introducir los datos
+## A-4 · Reglas normativas sin datos que las alimentaran — **CORREGIDO**
 
 **Categoría:** Error confirmado · **Gravedad: Alta** · **Prioridad: 2**
 **Módulos:** Asistente IA (Python), Programación
@@ -388,6 +444,11 @@ que tener superados para incorporarse a la fase de empresa — el concepto de «
 75 % y el aviso del anexo I de la Orden; y una marca «RA necesario para la fase de empresa» en la
 pantalla de Programación. O retirarlas del script mientras no existan.
 
+**Corrección aplicada.** En **Alumnos**, columna «Faltas (h)» con el porcentaje sobre las horas del
+módulo y aviso en rojo al pasar del 25 %; en grado básico se indica que no aplica (art. 3.4). En
+**Programación**, casilla «🔑 para empresa» en cada RA. El asistente de IA lee ya ambas cosas de
+donde el profesorado las escribe, no de una clave de configuración invisible.
+
 ---
 
 ## A-5 · Dos mecanismos distintos llamados «recuperación»
@@ -411,7 +472,7 @@ La parrilla de notas registra evidencias; la convocatoria decide qué se computa
 
 ---
 
-## A-6 · Borrar una actividad borra sus calificaciones sin decirlo
+## A-6 · Borrar una actividad borraba sus calificaciones sin decirlo — **CORREGIDO**
 
 **Categoría:** Error confirmado · **Gravedad: Alta** · **Prioridad: 3**
 **Módulos:** Programación, base de datos
@@ -432,9 +493,13 @@ seguridad diaria las recupera.
 tiene 12 calificaciones, se perderán»); mejor aún, **archivar en vez de borrar** (`activo=0`), que
 es lo que espera cualquier documento de evaluación.
 
+**Corrección aplicada.** El aviso cuenta las calificaciones antes de preguntar: «¿Eliminar esta
+actividad? Tiene 12 calificaciones puestas, que se perderán». El archivado en vez del borrado queda
+como mejora (M-5).
+
 ---
 
-## A-7 · Borrar un módulo deja huérfanas las calificaciones de 2ª convocatoria
+## A-7 · Borrar un módulo dejaba huérfanas las calificaciones — **CORREGIDO**
 
 **Categoría:** Error confirmado · **Gravedad: Alta** · **Prioridad: 3**
 **Módulo:** Base de datos
@@ -452,9 +517,13 @@ minexam_1   = 4 · faltas_1 = 35 · recmigra_avisado_1 = 1
 
 **Solución.** La de C-2. Mientras tanto, borrar por prefijo en `deleteModulo`.
 
+**Corrección aplicada.** Las calificaciones por criterio se van por cascada al ser ya una tabla con
+clave foránea, y `deleteModulo` limpia además las claves de configuración del módulo (mínimo de
+examen, faltas y avisos). Comprobado sobre el esquema real: 0 filas huérfanas.
+
 ---
 
-## A-8 · La numeración del alumnado se duplica al importar
+## A-8 · La numeración del alumnado se duplicaba al importar — **CORREGIDO**
 
 **Categoría:** Error confirmado · **Gravedad: Alta** · **Prioridad: 3**
 **Módulo:** Alumnos
@@ -474,11 +543,14 @@ exámenes (`Alumno_03`). Dos alumnos con el mismo número es un error de identif
 **Solución.** Usar `Math.max` también en la importación y añadir un índice único
 `(modulo_id, num)`.
 
+**Corrección aplicada.** La importación numera con `Math.max(...num) + 1`, igual que el alta
+manual.
+
 ---
 
 # 3. Errores menores
 
-## M-1 · La base de datos acepta notas fuera de rango
+## M-1 · La base de datos aceptaba notas fuera de rango — **CORREGIDO**
 
 **Categoría:** Riesgo potencial · **Gravedad: Media** · **Prioridad: 4**
 
@@ -487,7 +559,11 @@ esquema inserta un `99` sin problema. Cualquier ruta que no pase por la parrilla
 futura, un script, un fallo de la interfaz— puede meter notas imposibles.
 **Solución:** `CHECK (nota IS NULL OR (nota >= 0 AND nota <= 10))` en la tabla.
 
-## M-2 · El alumnado sin calificar no aparece en la 2ª Ordinaria
+**Corrección aplicada.** `saveNota` y `saveNotaRec` rechazan valores fuera de 0-20 (el margen cubre
+los instrumentos con `nota_max` mayor que 10), y al abrir la base se avisa por consola si quedan
+notas fuera de escala de versiones anteriores, sin borrarlas.
+
+## M-2 · El alumnado sin calificar no aparecía en la 2ª Ordinaria — **CORREGIDO**
 
 **Categoría:** Error confirmado · **Gravedad: Media** · **Prioridad: 3**
 
@@ -495,7 +571,10 @@ futura, un script, un fallo de la interfaz— puede meter notas imposibles.
 quien tiene RA **sin nota**, que es precisamente el alumnado que no se presentó. Hay que marcar «ver
 todos» para encontrarlo. **Solución:** incluir también `st.sinNota.length > 0`.
 
-## M-3 · La marca de recuperación se pierde en los exámenes multiunidad
+**Corrección aplicada.** Concurren a la 2ª convocatoria los que tienen RA suspensos **o sin nota**, y
+los indicadores de la cabecera se calculan sobre ese mismo grupo.
+
+## M-3 · La marca de recuperación se perdía en exámenes multiunidad — **CORREGIDO**
 
 **Categoría:** Error confirmado · **Gravedad: Media** · **Prioridad: 4**
 
@@ -503,12 +582,17 @@ todos» para encontrarlo. **Solución:** incluir también `st.sinNota.length > 0
 dos unidades no tiene `ra_id`, así que su recuperación no se señaliza con la «R» de trazabilidad.
 **Solución:** usar `actividadDeRa`, como ya hace el resto del motor.
 
-## M-4 · `saveActividad` no actualiza el instrumento ni el tipo
+**Corrección aplicada.**
+
+## M-4 · `saveActividad` no actualizaba instrumento ni tipo — **CORREGIDO**
 
 **Categoría:** Riesgo potencial · **Gravedad: Media** · **Prioridad: 4**
 
-El `UPDATE` de `db.js:285` no incluye `instrumento` ni `tipo`. Hoy no hay interfaz para cambiarlos,
-pero el día que la haya, los cambios se perderán en silencio.
+El `UPDATE` de `db.js:285` no incluía `instrumento` ni `tipo`. Hoy no hay interfaz para cambiarlos,
+pero el día que la haya, los cambios se habrían perdido en silencio.
+
+**Corrección aplicada.** El `UPDATE` los incluye con `COALESCE`, de modo que solo se tocan si vienen
+en la llamada.
 
 ## M-5 · El indicador `activo` de los módulos no se usa
 
@@ -517,7 +601,7 @@ pero el día que la haya, los cambios se perderán en silencio.
 `modulos.activo` existe y `getModulos` filtra por él, pero `deleteModulo` hace un `DELETE` real. El
 borrado lógico está a medio construir: usarlo daría papelera y trazabilidad.
 
-## M-6 · Los perdones de criterio no guardan por qué
+## M-6 · Dar un criterio por alcanzado no guardaba por qué — **CORREGIDO**
 
 **Categoría:** Riesgo potencial · **Gravedad: Media** · **Prioridad: 3**
 
@@ -525,6 +609,10 @@ borrado lógico está a medio construir: usarlo daría papelera y trazabilidad.
 (`dashboard.js:35-47`). Es una decisión de evaluación sin justificación documental. En una
 reclamación, «aparece un 5 y no consta por qué» es indefendible.
 **Solución:** exigir un motivo breve y guardar fecha, junto con la tabla propuesta en C-2.
+
+**Corrección aplicada.** Dar un criterio por alcanzado pide ahora la evidencia («prueba de
+recuperación, trabajo entregado, observación en el taller…»), no deja continuar sin ella y guarda
+motivo y fecha en `calificaciones_ce`.
 
 ## M-7 · Las evidencias de la corrección desde foto no se vinculan al alumnado
 

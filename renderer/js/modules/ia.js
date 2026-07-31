@@ -289,23 +289,44 @@ function _extractMetaFromMod(mod) {
   }
 }
 
+/**
+ * RA marcados en Programación como necesarios para la fase de empresa
+ * (Orden 201/2024, art. 4.3.a). Antes esto solo podía llegar escribiendo a mano
+ * una clave de configuración que ninguna pantalla ofrecía.
+ */
 function _extractRaLlave(mod) {
   const data = _extractMetaFromMod(mod)
+  const marcados = (data?.ras || []).filter(r => r && r.llave).map(r => String(r.id))
+  if (marcados.length) return marcados.join(',')
   const raw = data?.ras_llave ?? data?.rasLlave ?? data?.ra_llave ?? data?.raLlave ?? ''
   if (Array.isArray(raw)) return raw.map(String).filter(Boolean).join(',')
   return String(raw || '').trim()
 }
 
-async function _extractFaltasPorcentaje(mod) {
+/**
+ * Porcentaje de faltas del alumno sobre las horas del módulo, con las horas que
+ * se registran en la pantalla de Alumnos. Es lo que permite avisar de la pérdida
+ * del derecho a la evaluación continua (Orden 201/2024, art. 3.3).
+ */
+async function _extractFaltasPorcentaje(mod, alumnoId) {
   const data = _extractMetaFromMod(mod)
-  const raw = data?.faltas_porcentaje ?? data?.faltasPorcentaje ?? data?.absentismo ?? ''
-  if (raw != null && String(raw).trim() !== '') return String(raw).trim()
   try {
     const cfgAll = await window.api.getAllConfig()
+    if (alumnoId != null) {
+      const horasFalta = parseFloat(cfgAll?.[`faltas_${mod?.id}_${alumnoId}`])
+      const horasMod = parseInt(data?.modulo?.horas_aula, 10) ||
+                       parseInt(data?.modulo?.total_horas, 10) || 0
+      const nivel = String(data?.modulo?.ciclo_nivel || '').toUpperCase()
+      // En grado básico no se pierde la evaluación continua (art. 3.4)
+      if (nivel !== 'CFGB' && horasMod > 0 && !isNaN(horasFalta)) {
+        return ((horasFalta / horasMod) * 100).toFixed(1)
+      }
+    }
     const cfgKey = `faltas_${mod?.id}`
     if (cfgAll?.[cfgKey] != null && String(cfgAll[cfgKey]).trim() !== '') return String(cfgAll[cfgKey]).trim()
-  } catch (_) { /* sin configuración de absentismo */ }
-  return ''
+  } catch (_) { /* sin registro de faltas */ }
+  const raw = data?.faltas_porcentaje ?? data?.faltasPorcentaje ?? data?.absentismo ?? ''
+  return raw != null ? String(raw).trim() : ''
 }
 
 function _hasNormativeCode(text) {
@@ -392,7 +413,16 @@ async function runIA(cmd) {
 
     const mod = _modulos.find(m => m.key === opts.modulo)
     if (mod) {
-      const faltasPorcentaje = await _extractFaltasPorcentaje(mod)
+      // Faltas del alumno concreto del informe, para poder avisar de la pérdida
+      // del derecho a la evaluación continua (Orden 201/2024, art. 3.3)
+      let alumnoIdInforme = null
+      try {
+        const nombreSel = v('ia-i-alumno-sel')
+        const alumnosMod = await window.api.getAlumnos(mod.id)
+        alumnoIdInforme = alumnosMod.find(a =>
+          `${a.apellidos||''}${a.apellidos&&a.nombre?', ':''}${a.nombre||''}` === nombreSel)?.id ?? null
+      } catch { /* sin alumnado cargado */ }
+      const faltasPorcentaje = await _extractFaltasPorcentaje(mod, alumnoIdInforme)
       if (faltasPorcentaje) opts.faltasPorcentaje = faltasPorcentaje
       const rasLlave = _extractRaLlave(mod)
       if (rasLlave) opts.rasLlave = rasLlave
@@ -688,16 +718,35 @@ async function iaInformeAutoNotas(pref = 'i') {
       rows.forEach(r => { raPondOverrides[r.ra_id] = r.pond })
     } catch { /* sin overrides */ }
 
+    // Calificaciones de la 2ª convocatoria: el informe tenía que verlas. Antes
+    // se construía solo con las notas de junio y a quien había superado el módulo
+    // en la segunda le decía que seguía con RA suspensos.
+    const ord2 = {}
+    try {
+      const filas = await window.api.getCalificacionesCE(mod.id)
+      filas.filter(f => Number(f.alumno_id) === alumno.id).forEach(f => {
+        ord2[`${f.ra_id}|${f.ce_id}`] = f.perdonado ? 5 : (f.nota != null ? Number(f.nota) : null)
+      })
+    } catch { /* sin calificaciones de 2ª convocatoria */ }
+    const hayOrd2 = Object.keys(ord2).length > 0
+
     const notasPairs = []
     ras.forEach(ra => {
       const pond = raPondOverrides[ra.id] !== undefined ? raPondOverrides[ra.id] : (ra.pond || 0)
       // Guardar pond en ra para que el informe pueda incluirlo si lo necesita.
       ra.pond = pond
 
-      // Nota RA (H4): media ponderada por peso / fallback por tipo
-      const raNota = typeof _calcNotaRA === 'function'
-        ? _calcNotaRA(ra.id, cesByRa[ra.id] || [], acts, ng, PRAC, EXAM, modData?.asignaciones || [])
-        : null
+      // Nota RA con el motor único; si hay 2ª convocatoria, con sus criterios
+      const asigsIA = modData?.asignaciones || []
+      let raNota = notaRA(ra.id, cesByRa[ra.id] || [], acts, ng, PRAC, EXAM, asigsIA)
+      if (hayOrd2 && raNota !== null && raNota < 5) {
+        const lst = cesEvaluadosDeRa(ra.id, cesByRa[ra.id] || [], acts)
+        const g = lst.map(ce => {
+          const k = `${ra.id}|${ce.id}`
+          return ord2[k] != null ? ord2[k] : notaCE(ra.id, ce.id, acts, ng, PRAC, EXAM)
+        }).filter(n => n != null)
+        if (g.length) raNota = g.reduce((s, n) => s + n, 0) / g.length
+      }
       if (raNota !== null && raNota !== undefined) {
         notasPairs.push(`${ra.id}:${raNota.toFixed(1)}`)
       }

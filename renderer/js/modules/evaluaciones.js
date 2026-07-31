@@ -19,73 +19,39 @@ function toggleOrd2ShowAll() {
   loadEvaluaciones()
 }
 
-/**
- * Media ponderada de un conjunto de actividades calificadas (H4).
- * Pesa cada actividad por su `peso`. Si ninguna actividad calificada tiene
- * peso > 0, cae al comportamiento anterior: media por tipo × ratio global
- * práctica/examen (pesoPrac/pesoExam).
- */
-function _mediaActs(acts, notasAl, pesoPrac, pesoExam) {
-  const graded = acts.map(a => ({ a, n: notasAl?.[a.id] })).filter(x => x.n != null)
-  if (!graded.length) return null
-  const totW = graded.reduce((s, x) => s + (x.a.peso || 0), 0)
-  if (totW > 0) return graded.reduce((s, x) => s + x.n * (x.a.peso || 0), 0) / totW
-  const gP = graded.filter(x => x.a.tipo === 'practica').map(x => x.n)
-  const gE = graded.filter(x => x.a.tipo === 'examen').map(x => x.n)
-  const avgP = gP.length ? gP.reduce((s, n) => s + n, 0) / gP.length : null
-  const avgE = gE.length ? gE.reduce((s, n) => s + n, 0) / gE.length : null
-  if (avgP !== null && avgE !== null) return avgP * pesoPrac + avgE * pesoExam
-  return avgP !== null ? avgP : avgE
-}
+// El motor de cálculo vive en js/core/calificacion.js y lo comparten esta
+// pantalla, el Dashboard, el boletín y el asistente de IA. Estos alias se
+// conservan porque el resto del archivo los usa por su nombre antiguo.
+const _mediaActs   = mediaActividades
+const _calcNotaRA  = notaRA
+const _calcNotaCE  = notaCE
+const _raMinExamKO = raMinExamKO
+const _actaEntera  = actaEntera
 
-/** Nota de un RA desde sus CEs / actividades. */
-function _calcNotaRA(raId, raCeList, acts, notasAl, pesoPrac, pesoExam, asigs) {
-  if (raCeList?.length) {
-    // Solo entra en CE-path si hay actividades vinculadas a CEs de ESTE RA concreto.
-    // El id del criterio (CR1, CR2…) se repite en todos los RA del módulo, así que
-    // la comparación va siempre por el par RA+CE (ver renderer/js/utils/ce-keys.js).
-    const anyHasCEs = acts.some(a => raCeList.some(ce => actCubreCe(a, raId, ce.id)))
-    if (anyHasCEs) {
-      const ceGrades = []
-      for (const ce of raCeList) {
-        const ceActs = acts.filter(a => actCubreCe(a, raId, ce.id))
-        if (!ceActs.length) continue
-        const g = _mediaActs(ceActs, notasAl, pesoPrac, pesoExam)
-        if (g !== null) ceGrades.push(g)
-      }
-      if (ceGrades.length) return ceGrades.reduce((s, g) => s + g, 0) / ceGrades.length
-      return null
-    }
+/**
+ * Cierra una sesión de evaluación parcial: registra qué RA ha alcanzado cada
+ * alumno para que no puedan volver a bajar. Es la traducción del art. 4.3.f de
+ * la Orden 201/2024 («un resultado de aprendizaje superado no se puede volver a
+ * evaluar»), y de paso deja fecha de cuándo se acordó.
+ */
+async function cerrarSesionEvaluacion(mid, ev) {
+  const filas = window._evalCierrePendiente?.[ev] || []
+  if (!filas.length) {
+    alert('No hay ningún resultado de aprendizaje alcanzado que fijar en esta evaluación.')
+    return
   }
-  // Sin criterios marcados: cuentan las actividades del RA, incluidas las que solo
-  // se relacionan con él a través de sus UT (un examen de dos unidades no lleva ra_id).
-  const raActs = acts.filter(a => actividadDeRa(a, raId, raCeList, asigs))
-  if (!raActs.length) return null
-  return _mediaActs(raActs, notasAl, pesoPrac, pesoExam)
-}
-
-/** Nota de un CE concreto, dentro de su RA (CR1 de RA2 no es CR1 de RA5). */
-function _calcNotaCE(raId, ceId, acts, notasAl, pesoPrac, pesoExam) {
-  const ceActs = acts.filter(a => actCubreCe(a, raId, ceId))
-  if (!ceActs.length) return null
-  return _mediaActs(ceActs, notasAl, pesoPrac, pesoExam)
-}
-
-/**
- * H3 — true si algún examen calificado del RA queda por debajo del mínimo
- * exigido en la programación (minExam null = sin mínimo).
- */
-function _raMinExamKO(raId, raCeList, acts, notasAl, minExam, asigs) {
-  if (minExam == null) return false
-  const raActs = acts.filter(a => actividadDeRa(a, raId, raCeList, asigs))
-  return raActs.some(a => a.tipo === 'examen' && notasAl?.[a.id] != null && notasAl[a.id] < minExam)
-}
-
-/** H8 — Nota de acta: entero, ≥0,5 al alza; módulo no superado → 1-4. */
-function _actaEntera(media, superado) {
-  if (media === null) return null
-  const r = Math.floor(media + 0.5)
-  return superado ? Math.min(10, Math.max(5, r)) : Math.max(1, Math.min(4, r))
+  const alumnosAfectados = new Set(filas.map(f => f.alumnoId)).size
+  if (!confirm(
+    `Se van a fijar ${filas.length} resultado(s) de aprendizaje alcanzados por ${alumnosAfectados} alumno(s).\n\n` +
+    'A partir de ahora, una actividad posterior no podrá bajarlos.\n' +
+    'Puedes seguir subiéndolos, y reabrir uno concreto si te equivocas.\n\n¿Cerrar la evaluación?')) return
+  try {
+    const n = await window.api.cerrarEvaluacionRAs({ mid: parseInt(mid), evaluacion: ev, filas })
+    showToast(`${n} resultados de aprendizaje fijados`)
+    loadEvaluaciones()
+  } catch (e) {
+    alert('No se ha podido cerrar la evaluación: ' + (e && e.message ? e.message : e))
+  }
 }
 
 /** H3 — guardar mínimo de examen del módulo y recargar. */
@@ -156,15 +122,6 @@ async function loadEvaluaciones() {
   // si el profesor mueve una UT de trimestre, aquí se refleja igual).
   const evalRas   = rasPorEvaluacion(modData, evalCount)   // {1:[raId,...], 2:[...]}
 
-  // H2 — migrar claves legacy de recuperaciones/pardones al formato RA|CE
-  {
-    const sPP = actividades.filter(a => a.tipo === 'practica').reduce((s, a) => s + (a.peso || 0), 0)
-    const sPE = actividades.filter(a => a.tipo === 'examen').reduce((s, a) => s + (a.peso || 0), 0)
-    const tP = sPP + sPE
-    await _migrateLegacyRecKeys(mid, rasBase, cesByRa, actividades, ng,
-      tP > 0 ? sPP / tP : 0.30, tP > 0 ? sPE / tP : 0.70, alumnosTodos, asigsMod)
-  }
-
   // Estado compartido con dashboard
   await _loadPardones(mid)
   await _loadRec2Notas(mid)
@@ -192,11 +149,27 @@ async function loadEvaluaciones() {
     ...ra,
     pond: raPondOverrides[ra.id] !== undefined ? raPondOverrides[ra.id] : (ra.pond || 0)
   }))
+  // RA ya cerrados como superados en una sesión de evaluación anterior: no
+  // pueden volver a bajar (Orden 201/2024, art. 4.3.f).
+  const rasCerrados = {}   // { alumnoId: { raId: nota } }
+  try {
+    const filas = await window.api.getRasSuperados(parseInt(mid))
+    filas.forEach(f => {
+      const aid = Number(f.alumno_id)
+      if (!rasCerrados[aid]) rasCerrados[aid] = {}
+      rasCerrados[aid][f.ra_id] = Number(f.nota)
+    })
+  } catch { /* base antigua sin la tabla */ }
+
+  // Contexto del motor único de calificación (js/core/calificacion.js). Todas las
+  // notas de esta pantalla, del Dashboard y del boletín salen de ahí.
+  const ctxBase = { ras, cesByRa, asignaciones: asigsMod, actividades, minExam }
+  const ctxCalculo = contextoModulo(ctxBase)
+  const ctxDe = alumnoId => contextoModulo({ ...ctxBase, rasSuperados: rasCerrados[alumnoId] || null })
   // Un RA está en juego si alguna actividad lo califica: por ra_id, por criterios
   // marcados o por sus UT. Mirando solo ra_id, un RA evaluado con un examen de dos
   // unidades desaparecía de esta pantalla y se escapaba de la regla de oro.
-  const rasActivos = ras.filter(ra =>
-    actividades.some(a => actividadDeRa(a, ra.id, cesByRa[ra.id] || [], asigsMod)))
+  const rasActivos = ctxCalculo.rasActivos
 
   // Evaluación a la que pertenece cada RA (eval_ras > actividades)
   const raEvalMap = {}
@@ -223,24 +196,7 @@ async function loadEvaluaciones() {
    * los calificados). Antes contaban como 0 y arrastraban la media.
    */
   function estadoAlumno(alumnoId) {
-    const porRA = {}
-    const conNota = []              // { nota, pond } de los RA calificados
-    const pendientes = [], sinNota = []
-    rasActivos.forEach(ra => {
-      const n = notaRAde(ra, alumnoId)
-      const minKO = _raMinExamKO(ra.id, cesByRa[ra.id] || [], actividades, ng[alumnoId], minExam, asigsMod)
-      porRA[ra.id] = { nota: n, minKO }
-      if (n === null) { sinNota.push(ra.id); return }
-      conNota.push({ nota: n, pond: ra.pond || 0 })
-      if (n < 5 || minKO) pendientes.push(ra.id)
-    })
-    const pondSum = conNota.reduce((s, x) => s + x.pond, 0)
-    const media = !conNota.length ? null
-      : pondSum > 0 ? conNota.reduce((s, x) => s + x.nota * x.pond, 0) / pondSum
-      : conNota.reduce((s, x) => s + x.nota, 0) / conNota.length   // sin ponderaciones: media simple
-    const completo = sinNota.length === 0
-    const superado = completo && !pendientes.length && media !== null && media >= 5
-    return { porRA, media, pendientes, sinNota, completo, superado }
+    return estadoModulo(ctxDe(alumnoId), ng[alumnoId])
   }
 
   function nombreAl(al) {
@@ -251,7 +207,10 @@ async function loadEvaluaciones() {
 
   // Marca de recuperación sobre una celda de RA (H6)
   function recMark(alumnoId, raId) {
-    const raActIds = actividades.filter(a => String(a.ra_id) === String(raId)).map(a => a.id)
+    // Por ra_id, por criterios o por UT: un examen de dos unidades no lleva ra_id
+    // y su recuperación se quedaba sin señalizar.
+    const raActIds = actividades
+      .filter(a => actividadDeRa(a, raId, cesByRa[raId] || [], asigsMod)).map(a => a.id)
     const recs = raActIds.map(id => ngRec[alumnoId]?.[id]).filter(Boolean)
     if (!recs.length) return ''
     const det = recs.map(r => `${r.orig ?? '—'}→${r.rec}`).join(' · ')
@@ -360,7 +319,39 @@ async function loadEvaluaciones() {
       </tr>`
     }).join('')
 
-    const boletinCard = `<div style="border:1px solid var(--border2);border-radius:10px;overflow:hidden;margin-bottom:12px">
+    // Qué habría que fijar si se cierra esta sesión: los RA que cada alumno ya
+    // tiene alcanzados (≥5 y sin mínimo de examen pendiente).
+    if (!window._evalCierrePendiente) window._evalCierrePendiente = {}
+    window._evalCierrePendiente[ev] = alumnos.flatMap(al => {
+      const st = estadoAlumno(al.id)
+      return rasVistos
+        .filter(ra => {
+          const r = st.porRA[ra.id]
+          return r && r.nota !== null && r.nota >= 5 && !r.minKO &&
+                 !(rasCerrados[al.id] && rasCerrados[al.id][ra.id] != null)
+        })
+        .map(ra => ({ alumnoId: al.id, raId: ra.id, nota: st.porRA[ra.id].nota }))
+    })
+
+    // Cierre de la sesión de evaluación: deja constancia de los RA alcanzados
+    // para que no puedan volver a bajar con actividades posteriores.
+    const yaCerrados = rasVistos.filter(ra =>
+      alumnos.some(al => rasCerrados[al.id] && rasCerrados[al.id][ra.id] != null)).length
+    const cierreCard = `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+        padding:9px 14px;margin-bottom:12px;background:var(--bg3);border:1px solid var(--border);border-radius:10px">
+      <span style="font-size:11.5px;color:var(--text2)">
+        Al cerrar la sesión, los RA alcanzados quedan fijados: una actividad posterior ya no los baja.
+      </span>
+      ${yaCerrados ? `<span style="font-size:10.5px;padding:2px 9px;border-radius:8px;background:rgba(16,185,129,.12);color:var(--green);font-weight:700">🔒 ${yaCerrados} RA fijados</span>` : ''}
+      <button onclick="cerrarSesionEvaluacion(${mid},${ev})"
+        title="Registra los RA con nota ≥5 y sin mínimo pendiente como superados en esta sesión (Orden 201/2024, art. 4.3.f)"
+        style="margin-left:auto;background:var(--accent);color:#fff;border:none;border-radius:8px;
+               padding:5px 14px;font-size:11.5px;font-weight:700;cursor:pointer">
+        Cerrar ${evalLabel(ev).toLowerCase()}
+      </button>
+    </div>`
+
+    const boletinCard = cierreCard + `<div style="border:1px solid var(--border2);border-radius:10px;overflow:hidden;margin-bottom:12px">
       <div style="padding:9px 14px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         <span style="font-weight:700;font-size:13px">Boletín ${ev}ª evaluación</span>
         <span style="font-size:11px;color:var(--text3)">media reponderada de los RA trabajados hasta ahora (${rasVistos.map(r => r.id).join(', ')}) · el boletín NO sustituye al registro de RA pendientes</span>
@@ -529,6 +520,18 @@ async function loadEvaluaciones() {
         </div>`
       }).join('')
 
+      // Anulada la matrícula no hay evaluación en ninguna convocatoria (Orden
+      // 201/2024, art. 7.1): se ve la fila, con sus notas de trabajo, pero sin
+      // calificación final, sin acta y sin veredicto.
+      const celdasFinales = esBaja
+        ? `<td class="nc" colspan="3" style="font-size:11px;color:var(--text3);font-style:italic"
+               title="Orden 201/2024, art. 7.1: la anulación de matrícula supone no ser evaluado en ninguna convocatoria del curso">
+             Matrícula anulada · sin evaluación
+           </td>`
+        : `<td class="nc" style="font-weight:700;font-size:14px"><span class="${nFCls}">${nFTxt}</span></td>
+           <td class="nc" style="font-weight:700;font-size:14px"><span class="${actaCls}">${acta}</span></td>
+           <td style="text-align:center;font-weight:700;font-size:11px;${aptoSty}" ${motivo ? `title="${esc(motivo)}"` : ''}>${apto}${motivo ? ' *' : ''}</td>`
+
       return `
         <tr onclick="toggleEvalCard(${al.id})" style="cursor:pointer" ${esBaja ? 'class="fila-baja"' : ''}
             onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background=''">
@@ -537,9 +540,7 @@ async function loadEvaluaciones() {
             ${esc(nombreAl(al))} ${esBaja ? bajaBadge : ''}
           </td>
           ${raCells}
-          <td class="nc" style="font-weight:700;font-size:14px"><span class="${nFCls}">${nFTxt}</span></td>
-          <td class="nc" style="font-weight:700;font-size:14px"><span class="${actaCls}">${acta}</span></td>
-          <td style="text-align:center;font-weight:700;font-size:11px;${aptoSty}" ${motivo ? `title="${esc(motivo)}"` : ''}>${apto}${motivo ? ' *' : ''}</td>
+          ${celdasFinales}
           <td style="text-align:center">
             <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();genBoletin(${al.id})">📄 Boletín</button>
           </td>
@@ -646,26 +647,21 @@ async function loadEvaluaciones() {
     }
 
     // ── Estado 2ª ordinaria (H1: regla de oro · H10: reponderación) ──
+    // Mismo motor que la 1ª convocatoria: solo cambia de dónde sale la nota de
+    // cada RA y si el mínimo de examen sigue bloqueando. Así las dos convocatorias
+    // no pueden divergir en la media, la regla de oro ni la nota de acta.
     function estadoOrd2(alumnoId) {
-      const porRA = {}
-      const conNota = []
-      const pendientes = [], sinNota = []
-      rasActivos.forEach(ra => {
-        const r = raNotaOrd2(alumnoId, ra)
-        const minKO = raMinKOOrd2(alumnoId, ra)
-        porRA[ra.id] = { ...r, minKO }
-        if (r.nota === null) { sinNota.push(ra.id); return }
-        conNota.push({ nota: r.nota, pond: ra.pond || 0 })
-        // El mínimo de examen se sigue exigiendo en la 2ª convocatoria
-        if (r.nota < 5 || minKO) pendientes.push(ra.id)
+      const detalle = {}
+      const st = estadoModulo(ctxDe(alumnoId), ng[alumnoId], {
+        notaRAOverride: ra => {
+          const r = raNotaOrd2(alumnoId, ra)
+          detalle[ra.id] = r
+          return r.nota
+        },
+        minKOOverride: ra => raMinKOOrd2(alumnoId, ra),
       })
-      const pondSum = conNota.reduce((s, x) => s + x.pond, 0)
-      const media = !conNota.length ? null
-        : pondSum > 0 ? conNota.reduce((s, x) => s + x.nota * x.pond, 0) / pondSum
-        : conNota.reduce((s, x) => s + x.nota, 0) / conNota.length
-      const completo = sinNota.length === 0
-      const superado = completo && !pendientes.length && media !== null && media >= 5
-      return { porRA, media, pendientes, sinNota, completo, superado }
+      for (const id of Object.keys(detalle)) st.porRA[id] = { ...st.porRA[id], ...detalle[id] }
+      return st
     }
 
     // ── KPIs ──────────────────────────────────────────────────

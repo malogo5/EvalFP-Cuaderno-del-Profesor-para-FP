@@ -126,9 +126,75 @@ function getDb() {
     _db.exec(`ALTER TABLE actividades ADD COLUMN ces TEXT DEFAULT '[]'`)
   }
 
+  // Notas fuera de escala que hubiera dejado alguna versión anterior: la
+  // validación estaba solo en la interfaz y por IPC se podía colar un 99.
+  const fuera = _db.prepare(
+    'SELECT COUNT(*) AS n FROM notas WHERE nota < 0 OR nota > 10 OR nota_rec < 0 OR nota_rec > 10').get()
+  if (fuera && fuera.n > 0) {
+    console.warn(`[db] ${fuera.n} nota(s) fuera del rango 0-10; se dejan como están para no perder datos.`)
+  }
+
   if (legacy) _importarJsonLegacy(legacy)
 
+  _migrarCalificacionesCE()
+
   return _db
+}
+
+/**
+ * Traslada a la tabla `calificaciones_ce` las notas de 2ª convocatoria y los
+ * criterios dados por alcanzados que se guardaban como JSON en `config`.
+ * Solo se ejecuta si queda algo por migrar; después borra la clave de `config`
+ * para que no haya dos fuentes de verdad.
+ */
+function _migrarCalificacionesCE() {
+  let migradas = 0, ambiguas = 0
+  try {
+    const filas = _db.prepare(
+      "SELECT key, value FROM config WHERE key LIKE 'rec2notas_%' OR key LIKE 'pardones_%'").all()
+    if (!filas.length) return 0
+
+    const up = _db.prepare(`INSERT INTO calificaciones_ce
+      (alumno_id, ra_id, ce_id, convocatoria, nota, perdonado, motivo)
+      VALUES (?,?,?,2,?,?,?)
+      ON CONFLICT (alumno_id, ra_id, ce_id, convocatoria)
+      DO UPDATE SET nota=COALESCE(excluded.nota, nota),
+                    perdonado=MAX(perdonado, excluded.perdonado)`)
+    const existeAlumno = _db.prepare('SELECT 1 FROM alumnos WHERE id=?')
+
+    _db.exec('BEGIN')
+    for (const fila of filas) {
+      let datos = null
+      try { datos = JSON.parse(fila.value) } catch { datos = null }
+      const esPardon = fila.key.startsWith('pardones_')
+      for (const [aid, contenido] of Object.entries(datos || {})) {
+        const alumnoId = Number(aid)
+        if (!existeAlumno.get(alumnoId)) continue          // alumno ya borrado
+        const claves = esPardon ? contenido : Object.keys(contenido || {})
+        for (const clave of (claves || [])) {
+          const txt = String(clave)
+          if (!txt.includes('|')) { ambiguas++; continue } // clave antigua sin RA
+          const [raId, ceId] = txt.split('|')
+          const nota = esPardon ? null : Number(contenido[txt])
+          up.run(alumnoId, raId, ceId,
+                 esPardon || isNaN(nota) ? null : nota,
+                 esPardon ? 1 : 0,
+                 esPardon ? 'Migrado del formato anterior' : null)
+          migradas++
+        }
+      }
+      _db.prepare('DELETE FROM config WHERE key=?').run(fila.key)
+    }
+    _db.exec('COMMIT')
+    if (migradas || ambiguas) {
+      console.log(`[db] ${migradas} calificaciones por criterio migradas a tabla propia` +
+                  (ambiguas ? ` · ${ambiguas} descartadas por no indicar el RA` : '') + '.')
+    }
+  } catch (e) {
+    try { _db.exec('ROLLBACK') } catch { /* sin transacción activa */ }
+    console.error('[db] No se pudieron migrar las calificaciones por criterio:', e.message)
+  }
+  return migradas
 }
 
 function _initSchema() {
@@ -203,6 +269,38 @@ function _initSchema() {
       value TEXT
     );
 
+    -- Calificaciones por criterio de evaluación y convocatoria.
+    -- Son las notas de la 2ª convocatoria y los criterios que el profesorado da
+    -- por alcanzados. Vivían como JSON dentro de la tabla de configuración, fuera
+    -- del modelo: por eso el boletín y los informes no las veían y quedaban
+    -- huérfanas al borrar un módulo. Aquí tienen clave foránea, fecha y motivo.
+    CREATE TABLE IF NOT EXISTS calificaciones_ce (
+      alumno_id    INTEGER NOT NULL,
+      ra_id        TEXT    NOT NULL,
+      ce_id        TEXT    NOT NULL,
+      convocatoria INTEGER NOT NULL DEFAULT 2,
+      nota         REAL,
+      perdonado    INTEGER NOT NULL DEFAULT 0,
+      motivo       TEXT,
+      fecha        TEXT DEFAULT (datetime('now')),
+      PRIMARY KEY (alumno_id, ra_id, ce_id, convocatoria),
+      FOREIGN KEY (alumno_id) REFERENCES alumnos(id) ON DELETE CASCADE
+    );
+
+    -- RA que el equipo docente ha dado por superados en una sesión de evaluación.
+    -- «Un resultado de aprendizaje superado no se puede volver a evaluar»
+    -- (Orden 201/2024 de CLM, art. 4.3.f): sin este registro, una actividad
+    -- posterior volvía a bajar un RA que ya se había comunicado como alcanzado.
+    CREATE TABLE IF NOT EXISTS ra_superados (
+      alumno_id  INTEGER NOT NULL,
+      ra_id      TEXT    NOT NULL,
+      nota       REAL    NOT NULL,
+      evaluacion INTEGER,
+      fecha      TEXT DEFAULT (datetime('now')),
+      PRIMARY KEY (alumno_id, ra_id),
+      FOREIGN KEY (alumno_id) REFERENCES alumnos(id) ON DELETE CASCADE
+    );
+
     -- Ponderaciones de RAs por módulo (override del valor por defecto del JSON)
     CREATE TABLE IF NOT EXISTS ra_ponderaciones (
       modulo_id  INTEGER NOT NULL,
@@ -238,7 +336,88 @@ function addModulo({ key, abrev, nombre, ciclo, curso, anno, grupo, horas, decre
   return mid
 }
 
-const deleteModulo = id => getDb().prepare('DELETE FROM modulos WHERE id=?').run(id)
+/**
+ * Borra el módulo y todo lo suyo. Las cascadas se ocupan de alumnado,
+ * actividades, notas y calificaciones por criterio; la configuración por módulo
+ * hay que limpiarla a mano porque `config` es una tabla de clave-valor sin
+ * relación (antes quedaban ahí el mínimo de examen y avisos huérfanos).
+ */
+function deleteModulo(id) {
+  const db = getDb()
+  const mid = Number(id)
+  db.prepare('DELETE FROM modulos WHERE id=?').run(mid)
+  for (const pref of ['minexam_', 'faltas_', 'recmigra_avisado_', 'rec2notas_', 'pardones_']) {
+    db.prepare('DELETE FROM config WHERE key=?').run(`${pref}${mid}`)
+  }
+  return { changes: 1 }
+}
+
+// ── RA superados y cerrados en una sesión de evaluación ──────────────────────
+const getRasSuperados = moduloId => getDb().prepare(`
+  SELECT r.alumno_id, r.ra_id, r.nota, r.evaluacion, r.fecha
+  FROM ra_superados r JOIN alumnos a ON a.id = r.alumno_id
+  WHERE a.modulo_id = ?
+`).all(moduloId)
+
+/**
+ * Cierra una sesión de evaluación: deja constancia de los RA alcanzados.
+ * Nunca baja una nota ya registrada ni borra cierres anteriores.
+ */
+function cerrarEvaluacionRAs(moduloId, evaluacion, filas) {
+  const db = getDb()
+  const up = db.prepare(`INSERT INTO ra_superados (alumno_id, ra_id, nota, evaluacion, fecha)
+    VALUES (?,?,?,?,datetime('now'))
+    ON CONFLICT (alumno_id, ra_id) DO UPDATE SET
+      nota = MAX(nota, excluded.nota),
+      evaluacion = COALESCE(evaluacion, excluded.evaluacion)`)
+  let n = 0
+  db.exec('BEGIN')
+  try {
+    for (const f of (filas || [])) {
+      if (f && f.alumnoId && f.raId && f.nota != null) {
+        up.run(f.alumnoId, f.raId, f.nota, evaluacion ?? null); n++
+      }
+    }
+    db.exec('COMMIT')
+  } catch (e) { db.exec('ROLLBACK'); throw e }
+  return n
+}
+
+/** Reabre un RA concreto (corrección de un cierre hecho por error). */
+const reabrirRaSuperado = (alumnoId, raId) =>
+  getDb().prepare('DELETE FROM ra_superados WHERE alumno_id=? AND ra_id=?').run(alumnoId, raId)
+
+// ── Calificaciones por criterio (2ª convocatoria) ─────────────────────────────
+const getCalificacionesCE = moduloId => getDb().prepare(`
+  SELECT c.alumno_id, c.ra_id, c.ce_id, c.convocatoria, c.nota, c.perdonado, c.motivo, c.fecha
+  FROM calificaciones_ce c
+  JOIN alumnos a ON a.id = c.alumno_id
+  WHERE a.modulo_id = ?
+`).all(moduloId)
+
+/**
+ * Guarda —o borra— la calificación de un criterio en una convocatoria.
+ * Sin nota y sin perdón la fila se elimina: no se guardan huecos.
+ */
+function setCalificacionCE({ alumnoId, raId, ceId, convocatoria = 2, nota = null, perdonado = 0, motivo = null }) {
+  const db = getDb()
+  const n = nota === '' || nota === null || nota === undefined ? null : parseFloat(nota)
+  const p = perdonado ? 1 : 0
+  if (n === null && !p) {
+    db.prepare(`DELETE FROM calificaciones_ce
+      WHERE alumno_id=? AND ra_id=? AND ce_id=? AND convocatoria=?`)
+      .run(alumnoId, raId, ceId, convocatoria)
+    return null
+  }
+  db.prepare(`INSERT INTO calificaciones_ce
+    (alumno_id, ra_id, ce_id, convocatoria, nota, perdonado, motivo, fecha)
+    VALUES (?,?,?,?,?,?,?,datetime('now'))
+    ON CONFLICT (alumno_id, ra_id, ce_id, convocatoria)
+    DO UPDATE SET nota=excluded.nota, perdonado=excluded.perdonado,
+                  motivo=excluded.motivo, fecha=excluded.fecha`)
+    .run(alumnoId, raId, ceId, convocatoria, n, p, motivo)
+  return { alumnoId, raId, ceId, convocatoria, nota: n, perdonado: p, motivo }
+}
 
 // ── Alumnos ────────────────────────────────────────────────────────────────────
 const getAlumnos = moduloId =>
@@ -282,8 +461,10 @@ function saveActividad(a) {
   // `ces` llega como array desde el modal de criterios; se persiste como JSON
   const cesJson = Array.isArray(a.ces) ? JSON.stringify(a.ces) : (a.ces ?? '[]')
   if (a.id) {
-    db.prepare(`UPDATE actividades SET descripcion=?,peso=?,nota_max=?,eval=?,ut_id=?,ra_id=?,ces=?,orden=? WHERE id=?`)
-      .run(a.descripcion, a.peso, a.nota_max, a.eval??1, a.ut_id??null, a.ra_id??null, cesJson, a.orden??0, a.id)
+    db.prepare(`UPDATE actividades SET descripcion=?,instrumento=COALESCE(?,instrumento),
+        tipo=COALESCE(?,tipo),peso=?,nota_max=?,eval=?,ut_id=?,ra_id=?,ces=?,orden=? WHERE id=?`)
+      .run(a.descripcion, a.instrumento ?? null, a.tipo ?? null, a.peso, a.nota_max,
+           a.eval??1, a.ut_id??null, a.ra_id??null, cesJson, a.orden??0, a.id)
     return a.id
   }
   return Number(db.prepare(`INSERT INTO actividades
@@ -305,6 +486,11 @@ function getNotasGrid(moduloId) {
 
 function saveNota(alumnoId, actividadId, nota) {
   const val = nota === '' || nota === null ? null : parseFloat(nota)
+  // La escala la valida la interfaz contra `nota_max`, pero la base es la última
+  // línea: por IPC se podía guardar un 99 y arrastrarlo a todas las medias.
+  if (val !== null && (isNaN(val) || val < 0 || val > 20)) {
+    throw new Error(`Nota fuera de rango: ${nota}`)
+  }
   getDb().prepare(`
     INSERT INTO notas (alumno_id, actividad_id, nota)
     VALUES (?,?,?)
@@ -317,6 +503,9 @@ function saveNota(alumnoId, actividadId, nota) {
 // Si la actividad todavía no tiene fila en `notas`, se crea con nota=NULL.
 function saveNotaRec(alumnoId, actividadId, notaRec) {
   const val = notaRec === '' || notaRec === null ? null : parseFloat(notaRec)
+  if (val !== null && (isNaN(val) || val < 0 || val > 20)) {
+    throw new Error(`Nota de recuperación fuera de rango: ${notaRec}`)
+  }
   getDb().prepare(`
     INSERT INTO notas (alumno_id, actividad_id, nota_rec)
     VALUES (?,?,?)
@@ -373,5 +562,7 @@ module.exports = {
   getActividades, saveActividad, deleteActividad,
   getNotasGrid, saveNota, saveNotaRec, closeDb, backupTo,
   getRaPonderaciones, setRaPonderacion,
+  getCalificacionesCE, setCalificacionCE,
+  getRasSuperados, cerrarEvaluacionRAs, reabrirRaSuperado,
   getConfig, setConfig, deleteConfig, getAllConfig,
 }
