@@ -93,6 +93,31 @@ describe('Migración de criterios sueltos', () => {
   })
 })
 
+// La base de la media de un RA tiene que ser la misma en junio y en la segunda
+// convocatoria. Si no, perdonar un criterio que nadie evalúa sube la nota.
+describe('Criterios que se promedian en un RA', () => {
+  const acts = [{ id: 1, ut_id: 'UT1', ra_id: 'RA1', ces: '["RA1|CR1"]' }]
+
+  it('solo cuenta los criterios que alguna actividad evalúa', () => {
+    const ces = ce.cesEvaluadosDeRa('RA1', DATA.ces.RA1, acts)
+    expect(ces.map(c => c.id)).toEqual(['CR1'])
+  })
+
+  it('un criterio sin instrumento queda fuera aunque exista en el decreto', () => {
+    const ces = ce.cesEvaluadosDeRa('RA1', [{ id: 'CR1' }, { id: 'CR2' }, { id: 'CR9' }], acts)
+    expect(ces.map(c => c.id)).not.toContain('CR2')
+    expect(ces.map(c => c.id)).not.toContain('CR9')
+  })
+
+  it('no cuenta los criterios de otro RA con el mismo id', () => {
+    expect(ce.cesEvaluadosDeRa('RA2', DATA.ces.RA2, acts)).toEqual([])
+  })
+
+  it('sin actividades no hay criterios que promediar', () => {
+    expect(ce.cesEvaluadosDeRa('RA1', DATA.ces.RA1, [])).toEqual([])
+  })
+})
+
 describe('RAs por evaluación', () => {
   it('sigue a la evaluación de las UT que trabajan cada RA', () => {
     expect(ce.rasPorEvaluacion(DATA, 3)).toEqual({ 1: ['RA1'], 2: ['RA2', 'RA3'], 3: [] })

@@ -146,6 +146,18 @@ function cesDisponiblesActividad(act, asignaciones, cesPorRa) {
 }
 
 /**
+ * Criterios de un RA que alguna actividad evalúa de verdad.
+ *
+ * Es la BASE de la media del resultado de aprendizaje, y tiene que ser la misma
+ * en todas las convocatorias: si en junio se promedian los criterios evaluados y
+ * en la segunda convocatoria todos los del decreto, la misma nota sale distinta y
+ * un criterio sin instrumento puede subirla sin haberse evaluado nunca.
+ */
+function cesEvaluadosDeRa(raId, raCeList, acts) {
+  return (raCeList || []).filter(ce => (acts || []).some(a => actCubreCe(a, raId, ce.id)))
+}
+
+/**
  * RAs de cada evaluación deducidos de las UT, que son lo que el profesor mueve.
  * Devuelve { "1": [raId, …], … }; un RA repartido entre varias evaluaciones se
  * queda en la primera en la que se trabaja.
@@ -180,6 +192,7 @@ function rasPorEvaluacion(data, evalCount) {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     ceKey, ceKeyRa, ceKeyCe, actCesLista, rasDeActividad, actCubreCe, actCesDeRa,
-    actividadDeRa, migrarCesActividad, cesDisponiblesActividad, rasPorEvaluacion,
+    actividadDeRa, migrarCesActividad, cesDisponiblesActividad, cesEvaluadosDeRa,
+    rasPorEvaluacion,
   }
 }

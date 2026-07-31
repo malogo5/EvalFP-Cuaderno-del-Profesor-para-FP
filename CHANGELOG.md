@@ -1,5 +1,31 @@
 # Changelog
 
+## [3.3.2] - 2026-07-31
+
+### Fixed
+- **La 2ª convocatoria vuelve a cuadrar con la 1ª.** Tres fallos encadenados en el mismo panel:
+  - **El mínimo de examen dejaba de aplicarse.** Un RA suspenso en junio por tener el examen bajo
+    el mínimo aparecía superado en la segunda convocatoria **sin haber recuperado nada**, y el
+    alumno pasaba de NO APTO a APTO. Ahora el mínimo se sigue exigiendo y deja de bloquear solo
+    cuando se acreditan todos los criterios del RA.
+  - **La nota del RA se calculaba sobre bases distintas**: en junio, los criterios evaluados; en la
+    segunda, todos los del decreto. Como marcar un criterio como aprobado devuelve un 5, perdonar
+    criterios que **nadie evalúa** subía la nota (3,00 → 4,00 en el caso reproducido) sin haber
+    recuperado ninguno de los suspensos. Las dos convocatorias usan ya el mismo conjunto:
+    `cesEvaluadosDeRa()`.
+  - **Los criterios sin instrumento eran invisibles pero computaban.** Ahora se muestran atenuados
+    con la marca «sin instrumento» y no se pueden calificar ni dar por aprobados hasta que se les
+    asigne una actividad en Programación.
+- **A la 2ª convocatoria concurre también quien tiene RA sin nota** (no presentado), que antes se
+  quedaba fuera de la lista siendo quien más la necesitaba.
+- **Los indicadores de la cabecera de la 2ª ordinaria** se refieren ya al mismo grupo: antes «Con
+  recuperación» contaba a unos y «Superan 2ª / Media» a todo el alumnado activo.
+
+### Added
+- **`AUDITORIA_INTEGRAL.md`**: auditoría de la aplicación completa contra la Orden 201/2024 de
+  Castilla-La Mancha, el RD 659/2023 y la LOFP, con 21 incidencias clasificadas y un plan de
+  corrección en tres fases.
+
 ## [3.3.1] - 2026-07-31
 
 ### Changed

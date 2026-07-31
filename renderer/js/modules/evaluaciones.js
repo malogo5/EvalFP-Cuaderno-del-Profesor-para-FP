@@ -604,6 +604,12 @@ async function loadEvaluaciones() {
       return { nota: orig, fuente: 'pendiente' }
     }
 
+    // ── Criterios que se promedian, iguales en las dos convocatorias ──
+    // Solo los que alguna actividad evalúa. Un criterio sin instrumento no entra
+    // en la media ni aunque se marque como aprobado: en junio no entraba, y la
+    // nota del mismo RA no puede calcularse sobre bases distintas según el mes.
+    const cesDeRa = ra => cesEvaluadosDeRa(ra.id, cesByRa[ra.id] || [], actividades)
+
     // ── Nota de un RA en 2ª ordinaria ─────────────────────────
     // Si RA superado en 1ª (≥5 y sin mínimo KO): se mantiene bloqueado.
     // Si no: recalcular desde CEs con ceNotaOrd2.
@@ -612,22 +618,31 @@ async function loadEvaluaciones() {
       const minKO = _raMinExamKO(ra.id, cesByRa[ra.id] || [], actividades, ng[alumnoId], minExam, asigsMod)
       if (orig === null || (orig >= 5 && !minKO)) return { nota: orig, fuente: 'orig_ok', orig }
 
-      const ceLst = cesByRa[ra.id] || []
-      let ceIds = ceLst.map(c => c.id)
+      const ceLst = cesDeRa(ra)
+      if (!ceLst.length) return { nota: orig, fuente: 'orig_fail', orig }
 
-      if (!ceIds.length) {
-        // Fallback a asigsMod
-        const seen = new Set()
-        asigsMod.filter(a => a.ra === ra.id).forEach(asig =>
-          (asig.ces || []).forEach(id => { if (!seen.has(id)) { seen.add(id); ceIds.push(id) } })
-        )
-      }
-
-      if (!ceIds.length) return { nota: orig, fuente: 'orig_fail', orig }
-
-      const grades = ceIds.map(id => ceNotaOrd2(alumnoId, ra.id, id).nota).filter(n => n != null)
+      const grades = ceLst.map(ce => ceNotaOrd2(alumnoId, ra.id, ce.id).nota).filter(n => n != null)
       if (!grades.length) return { nota: orig, fuente: 'pendiente', orig }
       return { nota: grades.reduce((s, n) => s + n, 0) / grades.length, fuente: 'rec', orig }
+    }
+
+    /**
+     * ¿Sigue bloqueando el mínimo de examen en la 2ª convocatoria?
+     * El mínimo señala que ciertos criterios no están acreditados; deja de
+     * bloquear cuando el alumno los acredita todos en la recuperación, no antes.
+     * (Sin esto, un RA suspenso en junio por examen bajo mínimo aparecía superado
+     * en la segunda convocatoria sin haber recuperado nada.)
+     */
+    function raMinKOOrd2(alumnoId, ra) {
+      if (minExam == null) return false
+      const koEn1 = _raMinExamKO(ra.id, cesByRa[ra.id] || [], actividades, ng[alumnoId], minExam, asigsMod)
+      if (!koEn1) return false
+      const ceLst = cesDeRa(ra)
+      if (!ceLst.length) return true
+      return !ceLst.every(ce => {
+        const n = ceNotaOrd2(alumnoId, ra.id, ce.id).nota
+        return n !== null && n >= 5
+      })
     }
 
     // ── Estado 2ª ordinaria (H1: regla de oro · H10: reponderación) ──
@@ -637,10 +652,12 @@ async function loadEvaluaciones() {
       const pendientes = [], sinNota = []
       rasActivos.forEach(ra => {
         const r = raNotaOrd2(alumnoId, ra)
-        porRA[ra.id] = r
+        const minKO = raMinKOOrd2(alumnoId, ra)
+        porRA[ra.id] = { ...r, minKO }
         if (r.nota === null) { sinNota.push(ra.id); return }
         conNota.push({ nota: r.nota, pond: ra.pond || 0 })
-        if (r.nota < 5) pendientes.push(ra.id)
+        // El mínimo de examen se sigue exigiendo en la 2ª convocatoria
+        if (r.nota < 5 || minKO) pendientes.push(ra.id)
       })
       const pondSum = conNota.reduce((s, x) => s + x.pond, 0)
       const media = !conNota.length ? null
@@ -652,15 +669,19 @@ async function loadEvaluaciones() {
     }
 
     // ── KPIs ──────────────────────────────────────────────────
+    // Concurre a la 2ª convocatoria quien no superó el módulo en la 1ª: tanto por
+    // llevar RA suspensos como por tenerlos SIN NOTA (no presentado), que antes
+    // se quedaba fuera de la lista siendo justo quien más la necesita.
     const conRec = alumnos.filter(al => {
       const st = estadoAlumno(al.id)
-      return st.pendientes.length > 0
+      return st.pendientes.length > 0 || st.sinNota.length > 0
     })
     const estados2 = {}
     alumnos.forEach(al => { estados2[al.id] = estadoOrd2(al.id) })
-    const aptosRec   = alumnos.filter(al => estados2[al.id].superado).length
-    const noAptosRec = alumnos.filter(al => estados2[al.id].completo && !estados2[al.id].superado).length
-    const notasRec   = alumnos.map(al => estados2[al.id].media).filter(n => n !== null)
+    // Todos los indicadores se refieren al MISMO grupo: quien concurre a la 2ª.
+    const aptosRec   = conRec.filter(al => estados2[al.id].superado).length
+    const noAptosRec = conRec.filter(al => estados2[al.id].completo && !estados2[al.id].superado).length
+    const notasRec   = conRec.map(al => estados2[al.id].media).filter(n => n !== null)
     const mediaRec   = notasRec.length ? (notasRec.reduce((s, n) => s + n, 0) / notasRec.length).toFixed(1) : '—'
 
     const kpis = `<div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
@@ -726,6 +747,23 @@ async function loadEvaluaciones() {
           const ceOrigNota = _calcNotaCE(ra.id, ce.id, actividades, ng[al.id], PRAC, EXAM)
           const pardoned   = _pardones[al.id]?.has(k)
           const rec2n      = _rec2Notas[al.id]?.[k]
+
+          // Criterio que ninguna actividad evalúa: se ve, para saber que está ahí,
+          // pero no se puede calificar ni dar por aprobado — y no entra en la media.
+          const tieneActividad = actividades.some(a => actCubreCe(a, ra.id, ce.id))
+          if (!tieneActividad) {
+            return `<div style="display:flex;align-items:center;gap:8px;padding:4px 0;
+                                 border-top:1px solid var(--border);font-size:11px;opacity:.55">
+              <span style="width:16px;flex-shrink:0">○</span>
+              <span style="color:var(--accent);font-weight:700;min-width:36px;flex-shrink:0">${esc(ce.id)}</span>
+              <span style="flex:1;color:var(--text2);font-size:10.5px">${esc(ce.texto.length > 90 ? ce.texto.slice(0, 89) + '…' : ce.texto)}</span>
+              <span title="Ninguna práctica ni examen evalúa este criterio. Asígnale un instrumento en Programación; hasta entonces no puede recuperarse ni contar en la nota."
+                    style="font-size:9.5px;color:var(--amber);font-weight:700;white-space:nowrap">sin instrumento</span>
+              ${pardoned ? `<button onclick="event.stopPropagation();togglePardonCe(${mid},${al.id},'${raIdSafe}','${ceIdSafe}')"
+                  style="font-size:10px;padding:1px 7px;border-radius:5px;border:1px solid var(--border2);
+                         background:rgba(16,185,129,.1);color:var(--green);cursor:pointer;white-space:nowrap">↩ Quitar</button>` : ''}
+            </div>`
+          }
 
           // CE sin nota original ni recuperación ni perdón → no visto aún, omitir
           if (ceOrigNota === null && rec2n == null && !pardoned) return ''
