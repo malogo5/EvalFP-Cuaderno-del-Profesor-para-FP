@@ -624,7 +624,7 @@ test.describe('Un curso completo con EvalFP', () => {
       'los botones del lote no aparecen hasta verificar el reparto de fotos',
       'los botones del lote están disponibles sin haber comprobado qué foto es de quién')
     await page.evaluate(() => { window.__avisos = [] })
-    await page.evaluate(() => { try { window.iaCorregirPrimero() } catch (_) { /* da igual */ } })
+    await page.evaluate(() => { try { window.iaCorregirPrimero() } catch { /* da igual */ } })
     await page.waitForTimeout(300)
     const avisosLote = await page.evaluate(() => window.__avisos || [])
     comprueba(avisosLote.some(a => /reparto|fotos/i.test(a)), 'IA',

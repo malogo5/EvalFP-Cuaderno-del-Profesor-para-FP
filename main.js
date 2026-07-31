@@ -146,7 +146,6 @@ function getAppInfo() {
 
 // ── Automatic Database Backups ────────────────────────────────────────────────
 const backupsDir = () => path.join(app.getPath('userData'), 'backups')
-const dbPath = () => path.join(app.getPath('userData'), 'evalfp.db')
 
 function setupBackups() {
   try {

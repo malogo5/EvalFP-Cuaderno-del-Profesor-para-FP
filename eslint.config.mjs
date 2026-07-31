@@ -44,8 +44,25 @@ export default [
       'semi':              ['warn', 'never'],
       'no-var':            'error',
       'prefer-const':      'warn',
-      'eqeqeq':            ['warn', 'always'],   // warn (no error) para legacy !=
+      // `x != null` cubre null y undefined de una vez y es deliberado; el resto
+      // de comparaciones laxas sí se avisan.
+      'eqeqeq':            ['warn', 'always', { null: 'ignore' }],
       'no-throw-literal':  'error',
+    },
+  },
+
+  // ── Ficheros de configuración en ESM que se ejecutan en Node ──────────
+  // vitest.config.js lee process.versions para decidir si hace falta el flag
+  // --experimental-sqlite: sin este bloque, ESLint no conoce los globals de Node
+  // y `process` sale como no definido (el CI se caía justo aquí).
+  {
+    files: ['vitest.config.js', 'eslint.config.mjs'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType:  'module',
+      globals: {
+        ...globals.node,
+      },
     },
   },
 
