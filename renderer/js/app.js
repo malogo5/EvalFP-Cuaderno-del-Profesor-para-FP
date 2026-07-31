@@ -134,7 +134,7 @@ function registerWindowHandlers() {
     loadProgramacion, updateRaPond, _refreshRaPondTotal, updateActividadPeso, updateActividadDesc,
     setEvalCount, addActividad, deleteActividadRow, _refreshPesoTotal, _getModData, _saveModData,
     saveUtField, addUt, deleteUt, openUtRasModal, _refreshUtHoras, _toggleRaSection, saveUtRas,
-    closeUtRasModal, applyModuloPesos, updateActividadUT,
+    closeUtRasModal, applyModuloPesos, updateActividadUT, rellenarCesDesdeUts,
     openActUtsModal, saveActUts, closeActUtsModal,
     openActCesModal, saveActCes, closeActCesModal,
     actDragStart, actDragOver, actDragLeave, actDragEnd, actDrop,

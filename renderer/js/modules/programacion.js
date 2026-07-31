@@ -56,6 +56,21 @@ async function loadProgramacion() {
   // Dejarlo escrito en el módulo: es lo que leen los informes y los scripts de IA
   await _sincronizarEvalRas(mid, evalCount)
 
+  // Trazabilidad al revés: para cada criterio, qué actividades lo evalúan. Es la
+  // pregunta que hay que poder contestar en una reclamación.
+  const coberturaCe = {}
+  for (const act of actividades) {
+    for (const g of cesDisponiblesActividad(act, asigs, ces)) {
+      for (const ce of g.ces) {
+        if (!actCubreCe(act, g.raId, ce.id)) continue
+        const k = ceKey(g.raId, ce.id)
+        ;(coberturaCe[k] = coberturaCe[k] || []).push(act.descripcion || act.instrumento || 'actividad')
+      }
+    }
+  }
+  const totalCes = ras.reduce((s, ra) => s + (ces[ra.id] || []).length, 0)
+  const cesCubiertos = Object.keys(coberturaCe).length
+
   // ── cabecera ──────────────────────────────────────────────────
   let h = `
   <div class="card" style="margin-bottom:16px;padding:16px 20px;border-left:4px solid var(--accent)">
@@ -80,6 +95,11 @@ async function loadProgramacion() {
     h += `<div class="card" style="margin-bottom:16px">
       <div class="prog-section-title" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
         📝 Plan de Actividades y Evaluación
+        <button onclick="rellenarCesDesdeUts(${mid})"
+          title="Marca en cada actividad los criterios que su unidad de trabajo tiene asignados en el decreto. No toca las actividades que ya tengan criterios marcados."
+          style="background:transparent;color:var(--accent);border:1.5px solid var(--accent);border-radius:8px;padding:3px 12px;font-size:11.5px;font-weight:700;cursor:pointer">
+          Rellenar criterios desde las UT
+        </button>
         <span style="margin-left:auto;display:flex;align-items:center;gap:7px;font-size:12px;font-weight:400">
           <span style="color:var(--text2)">Evaluaciones</span>
           <select onchange="setEvalCount(${mid},this.value)"
@@ -142,6 +162,7 @@ async function loadProgramacion() {
             <th class="th-editable" style="width:72px;text-align:center">Peso %</th>
             <th class="th-editable" style="width:72px;text-align:center">Nota máx</th>
             <th class="th-editable" style="width:78px;text-align:center">UT</th>
+            <th style="width:56px;text-align:center" title="Resultado de aprendizaje que califica esta actividad, según sus unidades de trabajo">RA</th>
             <th style="width:62px;text-align:center" title="Criterios de evaluación asignados">CEs</th>
             <th style="width:30px"></th>
           </tr></thead>
@@ -198,6 +219,18 @@ async function loadProgramacion() {
                 </select>`
               })() : `<span style="font-size:11px;color:var(--text2)">${act.ut_id||'—'}</span>`}
             </td>
+            <td style="text-align:center">${(() => {
+              // El RA sale de las UT de la actividad: es el eslabón que faltaba para
+              // seguir la cadena actividad → UT → RA → criterios sin salir de aquí.
+              const rasAct = rasDeActividad(act, asigs)
+              if (!rasAct.length) {
+                return `<span title="Esta actividad no tiene unidad ni RA asignados, así que no califica nada"
+                  style="font-size:10px;font-weight:700;color:var(--amber);white-space:nowrap">sin RA</span>`
+              }
+              return rasAct.map(id =>
+                `<span style="font-size:10px;font-weight:700;color:var(--accent2);background:rgba(74,144,217,.12);padding:1px 5px;border-radius:4px;white-space:nowrap;display:inline-block;margin:1px">${esc(id)}</span>`
+              ).join('')
+            })()}</td>
             <td style="text-align:center">${(() => {
               if (!actId) return '<span style="font-size:11px;color:var(--text3)">—</span>'
               // Los criterios disponibles se agrupan por RA (un examen puede cubrir
@@ -374,8 +407,19 @@ async function loadProgramacion() {
         : `<span data-rapond-total style="font-size:10.5px;padding:2px 9px;border-radius:8px;background:rgba(245,158,11,.15);color:var(--amber);font-weight:700;margin-left:auto">⚠ suma ${totalRaPond}%</span>`)
     : ''
 
+  // Cuántos criterios evalúa de verdad alguna actividad. Sin esto, la programación
+  // puede tener criterios que nadie califica y no enterarte hasta la reclamación.
+  const cobBadge = totalCes
+    ? (cesCubiertos === totalCes
+        ? `<span style="font-size:10.5px;padding:2px 9px;border-radius:8px;background:rgba(16,185,129,.12);color:var(--green);font-weight:700"
+             title="Cada criterio del decreto está marcado en alguna actividad">✓ los ${totalCes} criterios se evalúan</span>`
+        : `<span style="font-size:10.5px;padding:2px 9px;border-radius:8px;background:rgba(245,158,11,.15);color:var(--amber);font-weight:700"
+             title="Los criterios sin actividad salen marcados abajo con ○. Asígnalos a una práctica o examen desde la columna CEs del plan.">⚠ ${totalCes - cesCubiertos} criterio${totalCes - cesCubiertos > 1 ? 's' : ''} sin actividad que los evalúe</span>`)
+    : ''
+
   h += `<div class="card" style="margin-bottom:16px">
-    <div class="prog-section-title">🎯 Resultados de Aprendizaje y Criterios de Evaluación
+    <div class="prog-section-title" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">🎯 Resultados de Aprendizaje y Criterios de Evaluación
+      ${cobBadge}
       ${raSumBadge}
     </div>
     <div style="display:flex;flex-direction:column;gap:10px">`
@@ -417,7 +461,13 @@ async function loadProgramacion() {
        h += `<div style="padding:8px 16px 10px 16px">
          <table style="width:100%;border-collapse:collapse">`
        for (const ce of raCes) {
+         // Dónde se evalúa este criterio: verde con el listado, o hueco si nadie lo evalúa
+         const donde = coberturaCe[ceKey(ra.id, ce.id)] || []
+         const marca = donde.length
+           ? `<span title="Se evalúa en: ${esc(donde.join(' · '))}" style="color:var(--green);font-size:11px">●</span>`
+           : `<span title="Ningún examen ni práctica evalúa este criterio todavía" style="color:var(--amber);font-size:11px">○</span>`
          h += `<tr style="border-top:1px solid var(--border)">
+           <td style="padding:4px 6px 4px 0;text-align:center;vertical-align:top;width:16px">${marca}</td>
            <td style="padding:4px 10px 4px 0;font-size:12px;font-weight:700;color:var(--accent);white-space:nowrap;vertical-align:top">${esc(ce.id)}</td>
            <td style="padding:4px 0;font-size:12px;color:var(--text2);line-height:1.5">${esc(ce.texto)}</td>
          </tr>`
@@ -1147,6 +1197,63 @@ function closeActCesModal() {
   const dlg = document.getElementById('modal-act-ces')
   if (dlg?.open) dlg.close()
   _actCesState = null
+}
+
+/**
+ * Marca en cada actividad los criterios que su unidad de trabajo tiene asignados
+ * en el decreto. Es el atajo para no ir criterio a criterio en un módulo recién
+ * dado de alta; después se quitan los que ese instrumento no evalúe.
+ * No toca las actividades que ya tengan criterios: la decisión del profesor manda.
+ */
+async function rellenarCesDesdeUts(mid) {
+  const data = _getModData(mid)
+  if (!data) return
+  const asigs    = data.asignaciones || []
+  const cesPorRa = data.ces || {}
+  const acts = await window.api.getActividades(parseInt(mid))
+
+  const candidatas = [], yaTenian = [], sinUt = []
+  for (const act of acts) {
+    const grupos = cesDisponiblesActividad(act, asigs, cesPorRa)
+    if (!grupos.length) { sinUt.push(act); continue }
+    const tiene = grupos.some(g => g.ces.some(ce => actCubreCe(act, g.raId, ce.id)))
+    if (tiene) { yaTenian.push(act); continue }
+    candidatas.push({ act, claves: grupos.flatMap(g => g.ces.map(ce => ceKey(g.raId, ce.id))) })
+  }
+
+  if (!candidatas.length) {
+    alert(yaTenian.length && !sinUt.length
+      ? 'Todas las actividades tienen ya sus criterios marcados.'
+      : `No hay ninguna actividad a la que rellenar:\n\n` +
+        `${yaTenian.length} ya tienen criterios.\n` +
+        `${sinUt.length} no tienen unidad de trabajo asignada — ponles la UT primero y vuelve a intentarlo.`)
+    return
+  }
+
+  const detalle = candidatas
+    .map(c => `  · ${c.act.descripcion || c.act.instrumento}  →  ${c.claves.length} criterios`)
+    .join('\n')
+  const avisos = [
+    yaTenian.length ? `${yaTenian.length} actividad(es) ya tienen criterios y no se tocan.` : '',
+    sinUt.length ? `${sinUt.length} no tienen UT asignada y se quedan igual.` : '',
+  ].filter(Boolean).join('\n')
+
+  if (!confirm(
+    `Se marcarán los criterios de su unidad en ${candidatas.length} actividad(es):\n\n${detalle}\n\n` +
+    (avisos ? avisos + '\n\n' : '') +
+    'Después puedes quitar en cada una los que ese instrumento no evalúe.\n\n¿Continuar?')) return
+
+  let hechas = 0
+  for (const c of candidatas) {
+    try {
+      await window.api.saveActividad({ ...c.act, ces: c.claves })
+      hechas++
+    } catch (e) {
+      console.error('rellenarCesDesdeUts:', c.act.id, e)
+    }
+  }
+  showToast(`Criterios marcados en ${hechas} actividad${hechas > 1 ? 'es' : ''}`)
+  loadProgramacion()
 }
 
 async function applyModuloPesos() {
