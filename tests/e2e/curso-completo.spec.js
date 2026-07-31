@@ -550,6 +550,54 @@ test.describe('Un curso completo con EvalFP', () => {
       'la programación aparece vacía')
     await captura(page, 'programacion')
 
+    // ── Coherencia de la elección de RA y CE ──────────────────────────────
+    // El plan de actividades, la distribución por evaluaciones y la ficha de
+    // cada RA salen del mismo sitio: tienen que decir lo mismo.
+    const coherencia = await page.evaluate(() => {
+      const texto = el => (el ? el.textContent.replace(/\s+/g, ' ').trim() : '')
+      const secciones = Array.from(document.querySelectorAll('#prog-panel .prog-section-title'))
+      const distCard = secciones.find(s => /Distribución de RAs/.test(s.textContent))?.closest('.card')
+      const raCard = secciones.find(s => /Resultados de Aprendizaje/.test(s.textContent))?.closest('.card')
+      // RA por evaluación según la tarjeta de distribución
+      const dist = {}
+      distCard?.querySelectorAll('div[style*="min-width:180px"]').forEach(col => {
+        const ev = (texto(col.querySelector('div')).match(/(\d)ª/) || [])[1]
+        if (!ev) return
+        dist[ev] = Array.from(col.querySelectorAll('span[style*="min-width:34px"]')).map(s => s.textContent.trim())
+      })
+      // Evaluación que declara la ficha de cada RA
+      const fichas = {}
+      raCard?.querySelectorAll('div[style*="border-left:4px solid var(--accent2)"]').forEach(b => {
+        const raId = b.querySelector('span')?.textContent.trim()
+        const ev = (texto(b).match(/Eval (\d)/) || [])[1]
+        if (raId) fichas[raId] = ev || null
+      })
+      // Contadores de criterios de las actividades: n/total, nunca n > total
+      const contadores = Array.from(document.querySelectorAll('#prog-panel button[data-ces]'))
+        .map(b => b.textContent.trim())
+      const badgeHoras = document.getElementById('ut-horas-badge')?.textContent.trim() || ''
+      return { dist, fichas, contadores, badgeHoras }
+    })
+
+    const desajustes = Object.entries(coherencia.dist).flatMap(([ev, ras]) =>
+      ras.filter(ra => coherencia.fichas[ra] && coherencia.fichas[ra] !== ev)
+        .map(ra => `${ra}: distribución dice ${ev}ª y su ficha ${coherencia.fichas[ra]}ª`))
+    comprueba(desajustes.length === 0, 'programación',
+      'la evaluación de cada RA es la misma en la distribución y en su ficha',
+      'un RA aparece en una evaluación distinta según dónde lo mires', desajustes.join(' · '))
+
+    const contadoresMal = coherencia.contadores.filter(t => {
+      const m = t.match(/^(\d+)\s*\/\s*(\d+)$/)
+      return m && Number(m[1]) > Number(m[2])
+    })
+    comprueba(contadoresMal.length === 0, 'programación',
+      'los criterios marcados en cada actividad nunca superan los disponibles',
+      'alguna actividad dice tener más criterios de los que existen', contadoresMal.join(', '))
+
+    comprueba(/✓/.test(coherencia.badgeHoras), 'programación',
+      `las horas de las UT cuadran con las del módulo (${coherencia.badgeHoras})`,
+      'la suma de horas de las UT no cuadra con la duración del módulo', coherencia.badgeHoras)
+
     await page.click('[data-sec="modulos"]')
     await page.waitForTimeout(900)
     const ras = await page.locator('#mod-ras-panel').textContent().catch(() => '')

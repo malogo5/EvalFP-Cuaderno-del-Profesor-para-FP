@@ -781,6 +781,31 @@ def _agrupar_ces_por_ra(mod) -> dict[str, list[str]]:
     return ces_por_ra
 
 
+def _ras_de_actividad(act: dict | None) -> list[str]:
+    """RA que califica una actividad.
+
+    Primero el suyo propio; si no lo tiene —caso del examen que cubre varias
+    unidades— los que digan sus criterios, que van guardados como "RA4|CR1"
+    porque el id del criterio se repite en todos los RA del módulo.
+    """
+    ra = str((act or {}).get("ra_id") or "").strip()
+    if ra:
+        return [ra]
+    ces = (act or {}).get("ces")
+    if isinstance(ces, str):
+        try:
+            ces = json.loads(ces or "[]")
+        except Exception:
+            ces = []
+    salida: list[str] = []
+    for clave in (ces or []):
+        if "|" in str(clave):
+            r = str(clave).split("|", 1)[0].strip()
+            if r and r not in salida:
+                salida.append(r)
+    return salida
+
+
 def _anonimizar_alumno_nombre(alumno: str, activo: bool = True) -> str:
     """Devuelve un identificador opaco si la anonimización está activa."""
     nombre = (alumno or "").strip()
@@ -1147,9 +1172,8 @@ def _cmd_grupo(args: list[str]):
         if n is None:
             continue
         act = act_por_id.get(fila.get("actividad_id")) or {}
-        ra = act.get("ra_id")
         por_actividad.setdefault(fila.get("actividad_id"), []).append(n)
-        if ra:
+        for ra in _ras_de_actividad(act):
             por_alumno_ra.setdefault(fila.get("alumno_id"), {}).setdefault(ra, []).append(n)
 
     def _media(xs):
@@ -1286,16 +1310,19 @@ def _cmd_generar_todo(args: list[str]):
                     if row.get('alumno_id') != alumno.get('id'):
                         continue
                     act = act_by_id.get(str(row.get('actividad_id')))
-                    ra_id = str((act or {}).get('ra_id') or row.get('ra_id') or '').strip()
-                    if not ra_id:
+                    ras_act = _ras_de_actividad(act) or (
+                        [str(row.get('ra_id')).strip()] if row.get('ra_id') else [])
+                    if not ras_act:
                         continue
                     nota_val = row.get('nota_rec') if row.get('nota_rec') is not None else row.get('nota')
                     try:
                         nota_num = float(nota_val)
                     except Exception:
                         continue
-                    peso = float((act or {}).get('peso') or 1)
-                    ra_map.setdefault(ra_id, []).append((nota_num, peso))
+                    # Si la actividad cubre varios RA, su peso se reparte entre ellos
+                    peso = float((act or {}).get('peso') or 1) / len(ras_act)
+                    for ra_id in ras_act:
+                        ra_map.setdefault(ra_id, []).append((nota_num, peso))
                 for ra_id, vals in ra_map.items():
                     den = sum(p for _, p in vals) or len(vals)
                     num = sum(n * p for n, p in vals)

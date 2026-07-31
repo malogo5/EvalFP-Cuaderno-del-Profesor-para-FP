@@ -647,6 +647,8 @@ async function iaInformeAutoNotas(pref = 'i') {
     // Obtener notas y actividades
     const notasArr = await window.api.getNotasGrid(mod.id)
     const acts     = await window.api.getActividades(mod.id)
+    // Criterios de las actividades con el id suelto → clave RA|CE (ver ce-keys.js)
+    await _migrarCesActividades(mod.id, acts, modData)
     const alumnos  = await window.api.getAlumnos(mod.id)
     const alumno   = alumnos.find(a =>
       `${a.apellidos||''}${a.apellidos&&a.nombre?', ':''}${a.nombre||''}` === alumnoName
@@ -694,7 +696,7 @@ async function iaInformeAutoNotas(pref = 'i') {
 
       // Nota RA (H4): media ponderada por peso / fallback por tipo
       const raNota = typeof _calcNotaRA === 'function'
-        ? _calcNotaRA(ra.id, cesByRa[ra.id] || [], acts, ng, PRAC, EXAM)
+        ? _calcNotaRA(ra.id, cesByRa[ra.id] || [], acts, ng, PRAC, EXAM, modData?.asignaciones || [])
         : null
       if (raNota !== null && raNota !== undefined) {
         notasPairs.push(`${ra.id}:${raNota.toFixed(1)}`)
@@ -704,10 +706,8 @@ async function iaInformeAutoNotas(pref = 'i') {
       const examNotas = acts.filter(a => {
         if (a.tipo !== 'examen') return false
         if (String(a.ra_id) === String(ra.id)) return true
-        // Si va por CEs, incluir exámenes que toquen CEs del RA
-        const ceList = cesByRa[ra.id] || []
-        const ceIdSet = new Set(ceList.map(c => c.id))
-        try { return JSON.parse(a.ces || '[]').some(id => ceIdSet.has(id)) } catch { return false }
+        // Si va por CEs, incluir exámenes que toquen CEs de ESTE RA (clave RA|CE)
+        return (cesByRa[ra.id] || []).some(ce => actCubreCe(a, ra.id, ce.id))
       }).map(a => ng[a.id]).filter(n => n != null)
       if (examNotas.length) {
         const minEx = Math.min(...examNotas)

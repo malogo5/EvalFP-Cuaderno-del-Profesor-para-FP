@@ -99,6 +99,9 @@ const esc = s  => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/
 const MODULE_SCRIPTS = [
   'js/utils/validators.js',
   'js/utils/rate-limiter.js',
+  // Identidad de los criterios (RA|CE): la usan programación, evaluaciones,
+  // dashboard e IA, así que va antes que todos ellos.
+  'js/utils/ce-keys.js',
   // csrf-token.js y session-manager.js eliminados: son utilidades web sin uso
   // en una app Electron local sin servidor ni autenticación de usuarios.
   // password-validator.js eliminado: la validación de API keys la hace validators.js.
@@ -131,7 +134,11 @@ function registerWindowHandlers() {
     loadProgramacion, updateRaPond, _refreshRaPondTotal, updateActividadPeso, updateActividadDesc,
     setEvalCount, addActividad, deleteActividadRow, _refreshPesoTotal, _getModData, _saveModData,
     saveUtField, addUt, deleteUt, openUtRasModal, _refreshUtHoras, _toggleRaSection, saveUtRas,
-    closeUtRasModal, applyModuloPesos,
+    closeUtRasModal, applyModuloPesos, updateActividadUT,
+    openActUtsModal, saveActUts, closeActUtsModal,
+    openActCesModal, saveActCes, closeActCesModal,
+    actDragStart, actDragOver, actDragLeave, actDragEnd, actDrop,
+    ceKey, actCubreCe, actividadDeRa, rasDeActividad, cesDisponiblesActividad, rasPorEvaluacion,
     loadAlumnos, renderAlumnosTable, updateAlumno, addAlumno, importAlumnos, confirmImportAlumnos, removeAlumno,
     loadNotas, renderNotasGrid, onNotaChange, colorNota, exportNotasPDF, toggleRecMode,
     loadEvaluaciones, setEvalTab, toggleEvalCard, toggleEvalCard2, toggleOrd2ShowAll, saveMinExam,
@@ -140,7 +147,7 @@ function registerWindowHandlers() {
     iaInformeLoadAlumnos, iaInformeAutoNotas,
     openAbout, closeAbout, loadAppInfo,
     loadAjustes, saveAjustes, setTheme,
-    v, esc, showSaved, evalLabel,
+    v, esc, showSaved, showToast, evalLabel,
   })
 }
 
@@ -186,9 +193,19 @@ function setupInlineEditing() {
 }
 
 function showSaved() {
+  showToast('✓ Guardado', 1400)
+}
+
+/** Aviso breve abajo a la derecha. Sin mensaje, el de siempre. */
+function showToast(texto, ms) {
+  if (!_toastEl) return
   clearTimeout(_toastTimer)
+  _toastEl.textContent = texto || '✓ Guardado'
   _toastEl.classList.add('show')
-  _toastTimer = setTimeout(() => _toastEl.classList.remove('show'), 1400)
+  _toastTimer = setTimeout(() => {
+    _toastEl.classList.remove('show')
+    _toastEl.textContent = '✓ Guardado'
+  }, ms || 2600)
 }
 
 // Etiqueta canónica de evaluación: 1 → "1ª Evaluación", 2 → "2ª Evaluación"…

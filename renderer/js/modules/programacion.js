@@ -24,10 +24,11 @@ async function loadProgramacion() {
   const ces        = data.ces        || {}
   const uts        = data.uts        || []
   const asigs      = data.asignaciones || []  // [{ut,ra,ces:[CRx...]}]
-  const evalRas    = data.eval_ras   || {}    // {1:[RA1,RA2], 2:[RA3]}
   const raInstr    = data.ra_instrumentos || {}
   // Cargar actividades desde BD (tienen los pesos reales editados por el profesor)
   const actividades = (await window.api.getActividades(parseInt(mid))) || data.actividades || []
+  // Criterios guardados con el id suelto ("CR1") → clave RA|CE, de una vez
+  await _migrarCesActividades(parseInt(mid), actividades, data)
 
   // Cargar overrides de ponderación de RAs y mezclar con los defaults del JSON
   const raPondOverrides = {}
@@ -45,6 +46,15 @@ async function loadProgramacion() {
   const raMap  = Object.fromEntries(ras.map(r => [r.id, r]))
   const evalCount = data.modulo?.eval_count || [...new Set(uts.map(u => u.eval||1))].length || 3
   const evals     = Array.from({length: evalCount}, (_, i) => i + 1)
+
+  // Qué RAs caen en cada evaluación. Fuente única: la evaluación de las UT que los
+  // trabajan, que es lo que el profesor mueve en la tabla de unidades. Así el plan
+  // de actividades, la distribución y la ficha de cada RA dicen siempre lo mismo.
+  const evalRasMap = rasPorEvaluacion(data, evalCount)
+  const evalDeRa   = {}
+  for (const [ev, lista] of Object.entries(evalRasMap)) for (const raId of lista) evalDeRa[raId] = ev
+  // Dejarlo escrito en el módulo: es lo que leen los informes y los scripts de IA
+  await _sincronizarEvalRas(mid, evalCount)
 
   // ── cabecera ──────────────────────────────────────────────────
   let h = `
@@ -95,23 +105,6 @@ async function loadProgramacion() {
         </div>
         <button onclick="applyModuloPesos()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer">Aplicar a todo el módulo</button>
       </div>`
-
-    // qué RAs caen en cada eval (desde evalRas o inferido de UTs)
-    const evalRasMap = {}
-    if (Object.keys(evalRas).length) {
-      for (const [ev, raList] of Object.entries(evalRas))
-        evalRasMap[String(ev)] = raList
-    } else {
-      // inferir desde asigs+uts
-      for (const ut of uts) {
-        const ev = String(ut.eval||1)
-        const asig = asigs.find(a => a.ut === ut.id)
-        if (asig) {
-          if (!evalRasMap[ev]) evalRasMap[ev] = []
-          if (!evalRasMap[ev].includes(asig.ra)) evalRasMap[ev].push(asig.ra)
-        }
-      }
-    }
 
     for (const ev of evals) {
       const acts = actividades.filter(a => a.eval === ev).sort((a,b) => {
@@ -207,19 +200,21 @@ async function loadProgramacion() {
             </td>
             <td style="text-align:center">${(() => {
               if (!actId) return '<span style="font-size:11px;color:var(--text3)">—</span>'
-              let actCes = []
-              try { actCes = JSON.parse(act.ces || '[]') } catch { /* ces inválido */ }
-              const count = actCes.length
-              // Soporta UT única (prácticas) y varias UTs separadas por coma (exámenes)
-              const utIds = (act.ut_id || '').split(',').map(s => s.trim()).filter(Boolean)
-              const utAsigsCes = asigs
-                .filter(a => utIds.includes(a.ut))
-                .flatMap(a => (ces[a.ra] || []).filter(ce => a.ces.includes(ce.id)))
-              const raCeList = act.ra_id ? (ces[act.ra_id] || []) : []
-              const total = utAsigsCes.length || raCeList.length
+              // Los criterios disponibles se agrupan por RA (un examen puede cubrir
+              // varias UT y varios RA) y se cuentan por su clave RA|CE, que es la
+              // única que identifica un criterio dentro del módulo.
+              const grupos = cesDisponiblesActividad(act, asigs, ces)
+              const total  = grupos.reduce((s, g) => s + g.ces.length, 0)
+              const validas = []
+              for (const g of grupos) {
+                for (const ce of g.ces) {
+                  if (actCubreCe(act, g.raId, ce.id)) validas.push(ceKey(g.raId, ce.id))
+                }
+              }
+              const count = validas.length
               if (!total) return '<span style="font-size:11px;color:var(--text3)">—</span>'
               const btnColor = count > 0 ? 'var(--green)' : 'var(--text3)'
-              const currentCesStr = JSON.stringify(actCes).replace(/"/g,'&quot;')
+              const currentCesStr = JSON.stringify(validas).replace(/"/g,'&quot;')
               const utIdSafe = (act.ut_id || '').replace(/'/g,"\\'")
               const raIdSafe = (act.ra_id || '').replace(/'/g,"\\'")
               return `<button onclick="openActCesModal(${actId},${mid},'${utIdSafe}','${raIdSafe}',this.dataset.ces)"
@@ -260,14 +255,10 @@ async function loadProgramacion() {
   }
 
   // ── 2. DISTRIBUCIÓN EVALUACIÓN (RAs por eval) ─────────────────
+  // Mismo mapa que el plan de actividades: un RA aparece en una sola evaluación,
+  // así las ponderaciones de las tres columnas suman el 100 % del módulo.
   const distRasMap = {}
-  for (let e = 1; e <= evalCount; e++) distRasMap[e] = []
-  for (const ut of uts) {
-    const ev = ut.eval || 1
-    if (ev < 1 || ev > evalCount) continue
-    const asig = asigs.find(a => a.ut === ut.id)
-    if (asig?.ra && !distRasMap[ev].includes(asig.ra)) distRasMap[ev].push(asig.ra)
-  }
+  for (let e = 1; e <= evalCount; e++) distRasMap[e] = evalRasMap[String(e)] || []
 
   if (evals.length) {
     h += `<div class="card" style="margin-bottom:16px">
@@ -302,17 +293,24 @@ async function loadProgramacion() {
   }
 
   // ── 3. TABLA DE UNIDADES DE TRABAJO ──────────────────────────
+  // Las UT reparten las horas de AULA. En los ciclos con fase en empresa
+  // (Grado Básico) la duración oficial incluye esas horas de empresa, que no
+  // se programan en UT: comparar contra ella dejaba el aviso siempre en ámbar.
+  const _horasAula = parseInt(data.modulo?.horas_aula, 10) || 0
+  const _horasOfi  = parseInt(data.modulo?.total_horas, 10) || mod.horas || 0
   const _sumUtH = uts.reduce((s, u) => s + (parseInt(u.horas, 10) || 0), 0)
-  const _modH    = mod.horas || 0
+  const _modH    = _horasAula || _horasOfi || 0
   const _hOk     = _sumUtH === _modH
+  const _hNota   = _horasAula && _horasAula !== _horasOfi ? ' de aula' : ''
   const _hBadgeSt = _hOk
     ? 'background:rgba(16,185,129,.12);color:var(--green)'
     : 'background:rgba(245,158,11,.15);color:var(--amber)'
   h += `<div class="card" style="margin-bottom:16px">
     <div class="prog-section-title" style="display:flex;align-items:center;gap:10px">
       📚 Unidades de Trabajo
-      <span id="ut-horas-badge" style="font-size:10.5px;padding:2px 10px;border-radius:8px;font-weight:700;${_hBadgeSt}">
-        Σ ${_sumUtH}h / ${_modH}h${_hOk?' ✓':' ⚠'}
+      <span id="ut-horas-badge" style="font-size:10.5px;padding:2px 10px;border-radius:8px;font-weight:700;${_hBadgeSt}"
+        title="${_hNota ? `${_horasOfi} h de duración oficial, de las que ${_horasAula} son de aula y el resto formación en empresa` : 'Duración del módulo'}">
+        Σ ${_sumUtH}h / ${_modH}h${esc(_hNota)}${_hOk?' ✓':' ⚠'}
       </span>
     </div>
     <div style="overflow-x:auto">
@@ -341,7 +339,7 @@ async function loadProgramacion() {
       <td style="text-align:center">
         <input class="peso-cell ut-horas-inp" type="number" min="0" max="999" value="${ut.horas||0}"
           style="width:70px"
-          oninput="_refreshUtHoras(this,${_modH})"
+          oninput="_refreshUtHoras(this,${_modH},'${_hNota}')"
           onchange="saveUtField(${mid},'${ut.id}','horas',this.value)"/></td>
       <td style="text-align:center">
         <select class="nota-cell" style="width:52px;padding:3px 4px;text-align:center;font-weight:600"
@@ -384,11 +382,8 @@ async function loadProgramacion() {
 
   for (const ra of ras) {
     const raCes = ces[ra.id] || []
-    // saber en qué eval cae este RA
-    let raEval = '—'
-    for (const [ev, raList] of Object.entries(evalRas)) {
-      if (raList.includes(ra.id)) { raEval = `Eval ${ev}`; break }
-    }
+    // En qué evaluación cae este RA (mismo mapa que las secciones de arriba)
+    const raEval = evalDeRa[ra.id] ? `Eval ${evalDeRa[ra.id]}` : 'Sin evaluación'
     const instrList = raInstr[ra.id] || []
     const instrStr  = instrList.map(i =>
       i==='practica'?'Práctica':i==='examen'?'Examen':i==='proyecto'?'Proyecto':
@@ -478,13 +473,16 @@ async function loadProgramacion() {
 async function updateRaPond(el) {
   const mid  = parseInt(el.dataset.mid)
   const raId = el.dataset.raid
-  const pond = parseFloat(el.value)
   if (!mid || !raId) return
 
-  // Validate ponderacion (0-100)
-  if (!validators.ponderacion(pond)) {
+  // Vaciar la casilla es legítimo: significa «este RA aún no está ponderado».
+  const vacio = String(el.value).trim() === ''
+  const pond  = vacio ? 0 : parseFloat(el.value)
+
+  if (!vacio && !validators.ponderacion(pond)) {
     alert('Ponderación inválida. Debe estar entre 0 y 100.')
     el.value = ''
+    _refreshRaPondTotal(el)
     return
   }
 
@@ -598,27 +596,45 @@ async function updateActividadDesc(el) {
   }, 400)
 }
 
+/**
+ * Reasigna las UT de una actividad dejándola coherente:
+ *  · ra_id pasa a ser el RA de esas UT (o se vacía si son varios, porque entonces
+ *    quien manda son los criterios marcados);
+ *  · los criterios que ya no pertenecen a ninguna de las UT nuevas se caen, en vez
+ *    de quedarse ahí calificando un RA que la actividad ya no toca.
+ * Devuelve cuántos criterios se han descartado.
+ */
+function _reasignarUtsActividad(act, utIds, data) {
+  act.ut_id = utIds.join(',')
+  const asigs = data?.asignaciones || []
+  const ras   = rasDeActividad({ ut_id: act.ut_id }, asigs)
+  act.ra_id   = ras.length === 1 ? ras[0] : null
+
+  const grupos    = cesDisponiblesActividad(act, asigs, data?.ces || {})
+  const validas   = new Set()
+  grupos.forEach(g => g.ces.forEach(ce => validas.add(ceKey(g.raId, ce.id))))
+  const antes     = actCesLista(act)
+  const migradas  = migrarCesActividad({ ...act, ces: antes }, asigs, data?.ces || {}) || antes
+  const conservar = migradas.filter(k => validas.has(k))
+  act.ces = conservar
+  return migradas.length - conservar.length
+}
+
 async function updateActividadUT(el) {
   const actId = parseInt(el.dataset.actid)
   if (!actId) return
-  // Handle both single-select and multi-select (examen)
+  // Vale tanto para el desplegable simple (práctica) como para varias UT (examen)
   const selected = Array.from(el.selectedOptions).map(o => o.value).filter(Boolean)
-  const utId = selected.join(',')
   const mid = parseInt(document.getElementById('prog-mod-sel')?.value || document.getElementById('eval-mod-sel')?.value || 0)
   if (!mid) return
   try {
     const acts = await window.api.getActividades(mid)
     const act = acts.find(a => a.id === actId)
     if (!act) return
-    act.ut_id = utId
-    // Auto-set ra_id only when a single UT is selected
-    if (selected.length === 1) {
-      const data = _getModData(mid)
-      const asig = (data?.asignaciones || []).find(a => a.ut === selected[0])
-      if (asig) act.ra_id = asig.ra
-    }
+    const perdidos = _reasignarUtsActividad(act, selected, _getModData(mid))
     await window.api.saveActividad(act)
     showSaved()
+    if (perdidos) loadProgramacion()   // el contador de criterios ha cambiado
   } catch(e) { console.error('updateActividadUT:', e) }
 }
 
@@ -690,26 +706,10 @@ async function setEvalCount(mid, count) {
     sorted.forEach((ut, i) => { ut.eval = Math.min(Math.floor(i / perEval) + 1, newCount) })
   }
 
-  // ── Redistribuir eval_ras ─────────────────────────────────────
-  // Siempre redistribuye proporcionalmente: ningún RA se pierde.
-  // Todos los evals 1..newCount quedan con entrada (aunque sea vacía).
-  if (data.eval_ras && Object.keys(data.eval_ras).length) {
-    const allRas = [...new Set(
-      Object.entries(data.eval_ras)
-        .sort(([a],[b]) => parseInt(a)-parseInt(b))
-        .flatMap(([,list]) => list)
-    )]
-    const newEvalRas = {}
-    for (let e = 1; e <= newCount; e++) newEvalRas[e] = []   // inicializar vacíos
-    if (allRas.length) {
-      const perEval = Math.ceil(allRas.length / newCount)
-      allRas.forEach((raId, i) => {
-        const ev = Math.min(Math.floor(i / perEval) + 1, newCount)
-        newEvalRas[ev].push(raId)
-      })
-    }
-    data.eval_ras = newEvalRas
-  }
+  // ── Recalcular eval_ras ───────────────────────────────────────
+  // Los RA siguen a sus UT: se recalcula desde el reparto que se acaba de hacer,
+  // en vez de repartirlos por su cuenta y acabar diciendo dos cosas distintas.
+  data.eval_ras = rasPorEvaluacion(data, newCount)
 
   // ── Redistribuir Actividades (en BD) ─────────────────────────
   // Siempre redistribuye proporcionalmente por eval+orden: ninguna actividad se pierde
@@ -776,6 +776,60 @@ function _refreshPesoTotal(changedInput, acts) {
 // EDICIÓN DE UTs — añadir / quitar / asignar RA+CE
 // ═══════════════════════════════════════════════════════════════
 
+/**
+ * Pasa los criterios de las actividades a la clave RA|CE.
+ * "CR1" a secas no dice nada: cada RA numera sus criterios desde uno, así que un
+ * id suelto hacía que una práctica de RA5 contase también en RA1. Se traduce una
+ * sola vez y queda guardado.
+ */
+async function _migrarCesActividades(mid, acts, data) {
+  const asigs    = data?.asignaciones || []
+  const cesPorRa = data?.ces || {}
+  if (!acts?.length || !Object.keys(cesPorRa).length) return 0
+  let migradas = 0
+  for (const act of acts) {
+    const nuevo = migrarCesActividad(act, asigs, cesPorRa)
+    if (!nuevo) continue
+    try {
+      await window.api.saveActividad({ ...act, ces: nuevo })
+      act.ces = JSON.stringify(nuevo)
+      migradas++
+    } catch (e) {
+      console.error('No se pudieron migrar los criterios de la actividad', act.id, e)
+    }
+  }
+  return migradas
+}
+
+/** ¿Dos repartos de RA por evaluación dicen lo mismo? */
+function _mismoEvalRas(a, b, evalCount) {
+  for (let e = 1; e <= evalCount; e++) {
+    const x = [...(a?.[String(e)] || [])].sort()
+    const y = [...(b?.[String(e)] || b?.[e] || [])].sort()
+    if (x.length !== y.length || x.some((v, i) => v !== y[i])) return false
+  }
+  for (const k of Object.keys(b || {})) {
+    if ((parseInt(k, 10) || 0) > evalCount && (b[k] || []).length) return false
+  }
+  return true
+}
+
+/**
+ * Deja escrito en el módulo el reparto de RA por evaluación que sale de las UT.
+ * Evaluaciones, Dashboard y los informes de IA leen `eval_ras`; si el profesor
+ * mueve una UT de trimestre y no se actualiza, cada pantalla cuenta una cosa.
+ */
+async function _sincronizarEvalRas(mid, evalCount) {
+  const data = _getModData(mid)
+  if (!data) return false
+  const nuevo = rasPorEvaluacion(data, evalCount)
+  if (_mismoEvalRas(nuevo, data.eval_ras, evalCount)) return false
+  data.eval_ras = nuevo
+  await window.api.setModuloDataJson(parseInt(mid), data)
+  _modulos = await window.api.getModulos()
+  return true
+}
+
 function _getModData(mid) {
   const mod = _modulos.find(m => m.id == mid)
   if (!mod?.data_json) return null
@@ -811,12 +865,38 @@ async function addUt(mid) {
 }
 
 async function deleteUt(mid, utId) {
-  if (!confirm(`¿Eliminar ${utId} del módulo?`)) return
+  const acts = await window.api.getActividades(parseInt(mid))
+  const afectadas = acts.filter(a =>
+    String(a.ut_id||'').split(',').map(s => s.trim()).includes(utId))
+  const aviso = afectadas.length
+    ? `\n\n${afectadas.length} actividad${afectadas.length > 1 ? 'es la tienen' : ' la tiene'} asignada y se ` +
+      `quedará${afectadas.length > 1 ? 'n' : ''} sin esa unidad y sin sus criterios.`
+    : ''
+  if (!confirm(`¿Eliminar ${utId} del módulo?${aviso}`)) return
   const data = _getModData(mid)
   if (!data) return
   data.uts          = (data.uts||[]).filter(u => u.id !== utId)
   data.asignaciones = (data.asignaciones||[]).filter(a => a.ut !== utId)
+  await _revisarActividadesDeUts(mid, data, [utId])
   await _saveModData(mid, data, true)
+}
+
+/**
+ * Repasa las actividades que usan estas UT después de tocar sus RA/CE: quita los
+ * criterios que ya no les corresponden y recoloca el RA. Si no, una actividad se
+ * queda calificando criterios que su unidad ya no trabaja.
+ */
+async function _revisarActividadesDeUts(mid, data, utIds) {
+  const acts = await window.api.getActividades(parseInt(mid))
+  let perdidos = 0
+  for (const act of acts) {
+    const suyas = String(act.ut_id||'').split(',').map(s => s.trim()).filter(Boolean)
+    if (!suyas.some(u => utIds.includes(u))) continue
+    const quedan = suyas.filter(u => (data.uts||[]).some(x => x.id === u))
+    perdidos += _reasignarUtsActividad(act, quedan, data)
+    await window.api.saveActividad(act)
+  }
+  return perdidos
 }
 
 function openUtRasModal(mid, utId) {
@@ -837,6 +917,9 @@ function openUtRasModal(mid, utId) {
     const checked = ra.id in asigMap
     const raCEs   = cesData[ra.id] || []
     const selCEs  = asigMap[ra.id] || []
+    // Se muestra EXACTAMENTE lo guardado: si el RA está asignado sin criterios,
+    // las casillas salen vacías. (Antes se marcaban todas y al volver a guardar
+    // la UT se quedaba con criterios que nadie había elegido.)
     html += `
     <div style="margin-bottom:10px;padding:10px 12px;background:var(--bg3);border-radius:10px;border:1px solid var(--border)">
       <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer">
@@ -850,7 +933,7 @@ function openUtRasModal(mid, utId) {
         ${raCEs.map(ce=>`
         <label style="display:flex;align-items:flex-start;gap:5px;cursor:pointer;padding:2px 0">
           <input type="checkbox" data-ra="${ra.id}" data-ce="${ce.id}" class="ut-ce-chk"
-            ${checked&&(selCEs.length===0||selCEs.includes(ce.id))?'checked':''}
+            ${checked && selCEs.includes(ce.id) ? 'checked' : ''}
             style="margin-top:2px;accent-color:var(--accent);flex-shrink:0"/>
           <span style="font-size:11px;color:var(--text2);line-height:1.35">
             <b style="color:var(--accent)">${ce.id}</b> ${esc(ce.texto)}
@@ -865,14 +948,14 @@ function openUtRasModal(mid, utId) {
   document.getElementById('modal-ut-ras').showModal()
 }
 
-function _refreshUtHoras(inp, modHoras) {
+function _refreshUtHoras(inp, modHoras, nota) {
   const table  = inp.closest('table')
   if (!table) return
   const suma   = Array.from(table.querySelectorAll('.ut-horas-inp')).reduce((s,i) => s+(parseInt(i.value)||0), 0)
   const badge  = document.getElementById('ut-horas-badge')
   if (!badge) return
   const ok = suma === modHoras
-  badge.textContent  = `Σ ${suma}h / ${modHoras}h${ok?' ✓':' ⚠'}`
+  badge.textContent  = `Σ ${suma}h / ${modHoras}h${nota||''}${ok?' ✓':' ⚠'}`
   badge.style.background = ok ? 'rgba(16,185,129,.12)' : 'rgba(245,158,11,.15)'
   badge.style.color      = ok ? 'var(--green)'         : 'var(--amber)'
 }
@@ -881,20 +964,35 @@ function _toggleRaSection(raId, checked) {
   const block = document.getElementById(`ces-block-${raId}`)
   if (!block) return
   block.style.display = checked ? 'grid' : 'none'
-  if (checked) block.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true)
+  const cajas = Array.from(block.querySelectorAll('input[type="checkbox"]'))
+  // Al marcar un RA se proponen todos sus criterios, pero solo si no había
+  // ninguno elegido: así desmarcar y volver a marcar no borra tu selección.
+  if (checked && !cajas.some(cb => cb.checked)) cajas.forEach(cb => { cb.checked = true })
 }
 
 async function saveUtRas() {
   if (!_utRasState) return
   const {mid, data, utId} = _utRasState
-  data.asignaciones = (data.asignaciones||[]).filter(a => a.ut !== utId)
+  const nuevas = []
+  const sinCriterios = []
   document.querySelectorAll('.ut-ra-chk:checked').forEach(raChk => {
     const raId = raChk.dataset.ra
     const ces  = Array.from(document.querySelectorAll(`.ut-ce-chk[data-ra="${raId}"]:checked`)).map(cb=>cb.dataset.ce)
-    data.asignaciones.push({ut: utId, ra: raId, ces})
+    if (!ces.length) sinCriterios.push(raId)
+    nuevas.push({ut: utId, ra: raId, ces})
   })
+  // Un RA marcado sin ningún criterio no evalúa nada: se avisa antes de guardar.
+  if (sinCriterios.length && !confirm(
+    `${sinCriterios.join(', ')} ${sinCriterios.length > 1 ? 'quedan' : 'queda'} en ${utId} sin ningún criterio marcado, ` +
+    'así que esa unidad no evaluará nada de ese resultado de aprendizaje.\n\n¿Guardar de todos modos?')) return
+
+  data.asignaciones = (data.asignaciones||[]).filter(a => a.ut !== utId).concat(nuevas)
+  const perdidos = await _revisarActividadesDeUts(mid, data, [utId])
   await _saveModData(mid, data, true)
   closeUtRasModal()
+  if (perdidos) {
+    showToast(`Se ${perdidos > 1 ? 'han quitado' : 'ha quitado'} ${perdidos} criterio${perdidos > 1 ? 's' : ''} de actividades de ${utId}`)
+  }
 }
 
 function closeUtRasModal() {
@@ -926,9 +1024,11 @@ function openActUtsModal(actId, mid, currentUtId) {
       <div style="font-size:10.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">${evalLabel(ev)}</div>`
     for (const ut of evUts) {
       const checked = selIds.includes(ut.id)
-      // Find associated RA for display
-      const asig = (data.asignaciones||[]).find(a => a.ut === ut.id)
-      const raLabel = asig ? `<span style="font-size:10px;font-weight:700;color:var(--accent2);background:rgba(74,144,217,.1);padding:1px 5px;border-radius:4px;margin-left:4px">${esc(asig.ra)}</span>` : ''
+      // Todos los RA que trabaja la UT, no solo el primero
+      const raIds = (data.asignaciones||[]).filter(a => a.ut === ut.id).map(a => a.ra)
+      const raLabel = raIds.map(raId =>
+        `<span style="font-size:10px;font-weight:700;color:var(--accent2);background:rgba(74,144,217,.1);padding:1px 5px;border-radius:4px;margin-left:4px">${esc(raId)}</span>`
+      ).join('')
       html += `<label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);margin-bottom:5px">
         <input type="checkbox" data-utid="${ut.id}" class="act-ut-chk" ${checked?'checked':''}
           style="accent-color:var(--accent);width:14px;height:14px;flex-shrink:0"/>
@@ -950,14 +1050,16 @@ async function saveActUts() {
   if (!_actUtsState) return
   const { actId, mid } = _actUtsState
   const selected = Array.from(document.querySelectorAll('.act-ut-chk:checked')).map(cb => cb.dataset.utid)
-  const utId = selected.join(',')
   try {
     const acts = await window.api.getActividades(mid)
     const act = acts.find(a => a.id === actId)
     if (!act) return
-    act.ut_id = utId
+    const perdidos = _reasignarUtsActividad(act, selected, _getModData(mid))
     await window.api.saveActividad(act)
     closeActUtsModal()
+    if (perdidos) {
+      showToast(`Se han quitado ${perdidos} criterio${perdidos > 1 ? 's' : ''} que ya no pertenecen a estas UT`)
+    }
     loadProgramacion()
   } catch(e) { console.error('saveActUts:', e) }
 }
@@ -983,28 +1085,11 @@ function openActCesModal(actId, mid, utId, raId, currentCesEncoded) {
 
   document.getElementById('act-ces-title').textContent = `${utId || raId} — Criterios de evaluación`
 
-  // CEs disponibles: todos los que cubre la UT de esta actividad (por asignaciones),
-  // agrupados por RA. Si la actividad no tiene UT, usamos solo los CEs del RA.
-  const asigs  = data.asignaciones || []
-  const cesMap = data.ces || {}
-  // Soporta UT única ("UT4") y múltiples separadas por coma ("UT4,UT5") — caso examen
-  const utIds = utId ? utId.split(',').map(s => s.trim()).filter(Boolean) : []
-  const utAsigs = utIds.length ? asigs.filter(a => utIds.includes(a.ut)) : []
-
-  // Construir lista [{raId, ces:[{id,texto}]}]
-  let grupos = []
-  if (utAsigs.length) {
-    for (const asig of utAsigs) {
-      const allRaCes = cesMap[asig.ra] || []
-      const cesFiltrados = allRaCes.filter(ce => asig.ces.includes(ce.id))
-      if (cesFiltrados.length) grupos.push({ raId: asig.ra, ces: cesFiltrados })
-    }
-  }
-  // Fallback: solo el RA de la actividad
-  if (!grupos.length) {
-    const fallback = cesMap[raId] || []
-    if (fallback.length) grupos.push({ raId, ces: fallback })
-  }
+  // CEs disponibles: los que cubren las UT de esta actividad (una o varias, caso
+  // examen), agrupados por RA. Sin UT, los del RA de la actividad.
+  const grupos = cesDisponiblesActividad(
+    { ut_id: utId, ra_id: raId }, data.asignaciones || [], data.ces || {}
+  )
 
   if (!grupos.length) {
     document.getElementById('act-ces-body').innerHTML =
@@ -1017,14 +1102,21 @@ function openActCesModal(actId, mid, utId, raId, currentCesEncoded) {
     Marca los criterios que evalúa esta actividad. La nota de cada RA se calcula como media de sus CEs cubiertos.
   </div>`
 
+  // Ojo: CR1 existe en todos los RA. Cada casilla guarda la clave RA|CE, de forma
+  // que marcar el CR1 de RA4 no marca de rebote el CR1 de RA5.
   for (const grupo of grupos) {
     if (grupos.length > 1) {
-      html += `<div style="font-size:10.5px;font-weight:700;color:var(--accent2);text-transform:uppercase;letter-spacing:.5px;margin:10px 0 5px">${esc(grupo.raId)}</div>`
+      const raNombre = (data.ras || []).find(r => r.id === grupo.raId)?.nombre || ''
+      html += `<div style="font-size:10.5px;font-weight:700;color:var(--accent2);text-transform:uppercase;letter-spacing:.5px;margin:10px 0 5px">
+        ${esc(grupo.raId)}${raNombre ? ` <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3)">· ${esc(raNombre)}</span>` : ''}
+      </div>`
     }
     for (const ce of grupo.ces) {
-      const checked = selCes.includes(ce.id)
+      const clave = ceKey(grupo.raId, ce.id)
+      const checked = selCes.includes(clave) ||
+        (selCes.includes(ce.id) && grupos.length === 1)   // selección antigua, sin RA
       html += `<label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;padding:8px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);margin-bottom:5px">
-        <input type="checkbox" data-ceid="${ce.id}" class="act-ce-chk" ${checked ? 'checked' : ''}
+        <input type="checkbox" data-cekey="${esc(clave)}" class="act-ce-chk" ${checked ? 'checked' : ''}
           style="accent-color:var(--accent);width:14px;height:14px;flex-shrink:0;margin-top:2px"/>
         <span style="font-size:11.5px;font-weight:700;color:var(--accent);white-space:nowrap;min-width:28px">${esc(ce.id)}</span>
         <span style="font-size:11.5px;color:var(--text);line-height:1.5">${esc(ce.texto)}</span>
@@ -1039,7 +1131,7 @@ function openActCesModal(actId, mid, utId, raId, currentCesEncoded) {
 async function saveActCes() {
   if (!_actCesState) return
   const { actId, mid } = _actCesState
-  const selected = Array.from(document.querySelectorAll('.act-ce-chk:checked')).map(cb => cb.dataset.ceid)
+  const selected = Array.from(document.querySelectorAll('.act-ce-chk:checked')).map(cb => cb.dataset.cekey)
   try {
     const acts = await window.api.getActividades(mid)
     const act = acts.find(a => a.id === actId)

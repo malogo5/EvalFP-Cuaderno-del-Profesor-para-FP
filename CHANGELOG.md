@@ -1,5 +1,35 @@
 # Changelog
 
+## [3.3.1] - 2026-07-30
+
+### Fixed
+- **Los criterios de evaluación ya no se confunden entre resultados de aprendizaje.** Los decretos
+  numeran los criterios dentro de cada RA (RA1 tiene CR1…CR10 y RA2 vuelve a empezar por CR1), pero
+  las actividades los guardaban con el id suelto: cualquier actividad con «CR1» contaba en el CR1
+  de **todos** los RA del módulo. En una prueba con notas 9, 3, 8, 4, 7, 2 y 10 en siete RA, los
+  siete salían ~6,1. Los criterios pasan a la clave compuesta `RA|CE` —la misma que ya usaban
+  perdones y notas de 2ª ordinaria— y las actividades guardadas se traducen solas al abrir la app.
+- **La evaluación de cada RA es ya la misma en toda la app.** El reparto por trimestres estaba
+  congelado en el catálogo y no seguía a las UT: mover una unidad de evaluación dejaba el Plan de
+  Actividades, la Distribución de RAs y la ficha del RA diciendo cosas distintas.
+- **Una UT con dos RA ya no pierde el segundo** en la distribución, en el reparto de pesos del
+  dashboard, al asignar UT a una actividad ni en el modal de UT del examen.
+- **Un RA evaluado solo con un examen de varias unidades vuelve a aparecer** en Evaluaciones (antes
+  hacía falta un `ra_id`, que un examen multiunidad no puede tener) y por tanto vuelve a entrar en
+  la regla de oro.
+- **El modal de RA/CE muestra lo guardado.** Un RA asignado sin criterios ya no aparece con todos
+  marcados; guardar uno sin ninguno pide confirmación, porque así no evalúa nada.
+- **En el modal de criterios de una actividad, cada casilla es la suya**: en un examen sobre dos RA,
+  marcar el CR1 de uno ya no marca el del otro.
+- **Cambiar o borrar la UT de una actividad recoloca su RA y sus criterios**, en vez de dejarlos
+  huérfanos calificando un RA que ya no toca; se avisa de cuántos se han quitado.
+- **Las horas de las UT se comparan con las horas de aula** en los módulos con formación en empresa
+  (Grado Básico): el aviso estaba siempre en ámbar.
+- **Vaciar la ponderación de un RA ya no da error**: significa que aún no está ponderado.
+- **Los informes de IA ya no se saltan los exámenes de varias unidades** al agrupar notas por RA.
+
+Detalle y reproducción en `INFORME_COHERENCIA_RA_CE.md`.
+
 ## [3.3.0] - 2026-07-30
 
 ### Changed

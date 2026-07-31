@@ -87,7 +87,7 @@ function toggleOrd1Card(alumnoId) {
  * avisa una sola vez para reintroducirla a mano en 2ª Ordinaria.
  * Idempotente: se puede llamar en cada carga; solo escribe si migra algo.
  */
-async function _migrateLegacyRecKeys(mid, ras, cesByRa, actividades, ng, PRAC, EXAM, alumnos) {
+async function _migrateLegacyRecKeys(mid, ras, cesByRa, actividades, ng, PRAC, EXAM, alumnos, asigs) {
   const cfg = await window.api.getAllConfig()
   const res = { migradas: 0, ambiguas: [] }
   const nombreDe = aid => {
@@ -96,7 +96,7 @@ async function _migrateLegacyRecKeys(mid, ras, cesByRa, actividades, ng, PRAC, E
   }
   const candidatos = (alumnoId, ceId) => ras.filter(ra => {
     if (!(cesByRa[ra.id] || []).some(c => c.id === ceId)) return false
-    const n = _calcNotaRA(ra.id, cesByRa[ra.id] || [], actividades, ng[alumnoId], PRAC, EXAM)
+    const n = _calcNotaRA(ra.id, cesByRa[ra.id] || [], actividades, ng[alumnoId], PRAC, EXAM, asigs)
     return n !== null && n < 5
   })
 
@@ -204,6 +204,8 @@ async function loadDashboard() {
 
   // Datos del módulo
   const modData   = _getModData(mid)
+  // Criterios de las actividades con el id suelto → clave RA|CE (ver ce-keys.js)
+  await _migrarCesActividades(parseInt(mid), allActividades, modData)
   const evalCount = modData?.modulo?.eval_count || 3
   const evals     = Array.from({length: evalCount}, (_, i) => i + 1)
   const actividades = allActividades.filter(a => evals.includes(a.eval))
@@ -234,7 +236,7 @@ async function loadDashboard() {
     const sPE = actividades.filter(a => a.tipo === 'examen').reduce((s, a) => s + (a.peso || 0), 0)
     const tP = sPP + sPE
     await _migrateLegacyRecKeys(mid, ras, cesDict, actividades, ng,
-      tP > 0 ? sPP / tP : 0.30, tP > 0 ? sPE / tP : 0.70, _alumnos)
+      tP > 0 ? sPP / tP : 0.30, tP > 0 ? sPE / tP : 0.70, _alumnos, asigs)
   }
 
   // Cargar perdones y notas de recuperación
@@ -252,8 +254,8 @@ async function loadDashboard() {
       if (a.ra_id && raContribs[a.ra_id]) {
         raContribs[a.ra_id].push({ nota, peso: p })
       } else if (a.ut_id) {
-        const utIds = String(a.ut_id).split(',').filter(Boolean)
-        const raIds = [...new Set(utIds.map(utId => asigs.find(as => as.ut === utId)?.ra).filter(Boolean))]
+        // Una UT puede trabajar varios RA: se cuentan todos, no solo el primero
+        const raIds = rasDeActividad(a, asigs)
         if (raIds.length) {
           const pesoPerRa = p / raIds.length
           raIds.forEach(raId => { if (raContribs[raId]) raContribs[raId].push({ nota, peso: pesoPerRa }) })
@@ -333,14 +335,13 @@ async function loadDashboard() {
       if (!ceIds.length) { recRaNotas[ra.id] = origNota; return }
       const ceGrades = []
       ceIds.forEach(ceId => {
-        const k = `${ra.id}|${ceId}`   // H2: clave compuesta
+        const k = ceKey(ra.id, ceId)   // H2: clave compuesta
         const recNota = _rec2Notas[alumnoId]?.[k]
         if (recNota != null) { ceGrades.push(recNota); return }
         if (_pardones[alumnoId]?.has(k)) { ceGrades.push(5); return }
-        // Nota original del CE: media de las actividades que lo cubren
-        const ceActs = actividades.filter(a => {
-          try { return JSON.parse(a.ces || '[]').includes(ceId) } catch { return false }
-        })
+        // Nota original del CE: media de las actividades que cubren ESE criterio
+        // de ESE RA (el id suelto se repite entre RAs)
+        const ceActs = actividades.filter(a => actCubreCe(a, ra.id, ceId))
         const ceActGrades = ceActs.map(a => ng[alumnoId]?.[a.id]).filter(n => n != null)
         if (ceActGrades.length) ceGrades.push(ceActGrades.reduce((s, n) => s + n, 0) / ceActGrades.length)
       })
@@ -758,12 +759,9 @@ async function genBoletin(alumnoId) {
       // Asignación directa de RA
       raContribs[a.ra_id].push({ nota, peso: p })
     } else if (a.ut_id) {
-      // Derivar RAs desde las UTs (examen multi-UT o práctica sin ra_id explícito)
-      const utIds = String(a.ut_id).split(',').filter(Boolean)
-      const raIds = [...new Set(utIds.map(utId => {
-        const asig = asigs.find(as => as.ut === utId)
-        return asig?.ra
-      }).filter(Boolean))]
+      // Derivar RAs desde las UTs (examen multi-UT o práctica sin ra_id explícito).
+      // Una UT puede trabajar varios RA: entran todos.
+      const raIds = rasDeActividad(a, asigs)
       if (raIds.length) {
         const pesoPerRa = p / raIds.length  // peso repartido entre RAs implicados
         raIds.forEach(raId => {

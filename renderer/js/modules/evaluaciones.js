@@ -39,19 +39,16 @@ function _mediaActs(acts, notasAl, pesoPrac, pesoExam) {
 }
 
 /** Nota de un RA desde sus CEs / actividades. */
-function _calcNotaRA(raId, raCeList, acts, notasAl, pesoPrac, pesoExam) {
+function _calcNotaRA(raId, raCeList, acts, notasAl, pesoPrac, pesoExam, asigs) {
   if (raCeList?.length) {
-    // Solo entra en CE-path si hay actividades vinculadas a CEs de ESTE RA concreto
-    const ceIdSet = new Set(raCeList.map(c => c.id))
-    const anyHasCEs = acts.some(a => {
-      try { return JSON.parse(a.ces || '[]').some(id => ceIdSet.has(id)) } catch { return false }
-    })
+    // Solo entra en CE-path si hay actividades vinculadas a CEs de ESTE RA concreto.
+    // El id del criterio (CR1, CR2…) se repite en todos los RA del módulo, así que
+    // la comparación va siempre por el par RA+CE (ver renderer/js/utils/ce-keys.js).
+    const anyHasCEs = acts.some(a => raCeList.some(ce => actCubreCe(a, raId, ce.id)))
     if (anyHasCEs) {
       const ceGrades = []
       for (const ce of raCeList) {
-        const ceActs = acts.filter(a => {
-          try { return JSON.parse(a.ces || '[]').includes(ce.id) } catch { return false }
-        })
+        const ceActs = acts.filter(a => actCubreCe(a, raId, ce.id))
         if (!ceActs.length) continue
         const g = _mediaActs(ceActs, notasAl, pesoPrac, pesoExam)
         if (g !== null) ceGrades.push(g)
@@ -60,16 +57,16 @@ function _calcNotaRA(raId, raCeList, acts, notasAl, pesoPrac, pesoExam) {
       return null
     }
   }
-  const raActs = acts.filter(a => String(a.ra_id) === String(raId))
+  // Sin criterios marcados: cuentan las actividades del RA, incluidas las que solo
+  // se relacionan con él a través de sus UT (un examen de dos unidades no lleva ra_id).
+  const raActs = acts.filter(a => actividadDeRa(a, raId, raCeList, asigs))
   if (!raActs.length) return null
   return _mediaActs(raActs, notasAl, pesoPrac, pesoExam)
 }
 
-/** Nota de un CE concreto. */
-function _calcNotaCE(ceId, acts, notasAl, pesoPrac, pesoExam) {
-  const ceActs = acts.filter(a => {
-    try { return JSON.parse(a.ces || '[]').includes(ceId) } catch { return false }
-  })
+/** Nota de un CE concreto, dentro de su RA (CR1 de RA2 no es CR1 de RA5). */
+function _calcNotaCE(raId, ceId, acts, notasAl, pesoPrac, pesoExam) {
+  const ceActs = acts.filter(a => actCubreCe(a, raId, ceId))
   if (!ceActs.length) return null
   return _mediaActs(ceActs, notasAl, pesoPrac, pesoExam)
 }
@@ -78,13 +75,9 @@ function _calcNotaCE(ceId, acts, notasAl, pesoPrac, pesoExam) {
  * H3 — true si algún examen calificado del RA queda por debajo del mínimo
  * exigido en la programación (minExam null = sin mínimo).
  */
-function _raMinExamKO(raId, raCeList, acts, notasAl, minExam) {
+function _raMinExamKO(raId, raCeList, acts, notasAl, minExam, asigs) {
   if (minExam == null) return false
-  const ceIdSet = new Set((raCeList || []).map(c => c.id))
-  const raActs = acts.filter(a => {
-    if (String(a.ra_id) === String(raId)) return true
-    try { return JSON.parse(a.ces || '[]').some(id => ceIdSet.has(id)) } catch { return false }
-  })
+  const raActs = acts.filter(a => actividadDeRa(a, raId, raCeList, asigs))
   return raActs.some(a => a.tipo === 'examen' && notasAl?.[a.id] != null && notasAl[a.id] < minExam)
 }
 
@@ -152,12 +145,16 @@ async function loadEvaluaciones() {
   })
 
   const modData   = _getModData(mid)
+  // Criterios de las actividades con el id suelto → clave RA|CE (ver ce-keys.js)
+  await _migrarCesActividades(parseInt(mid), actividades, modData)
   const evalCount = modData?.modulo?.eval_count || [...new Set(actividades.map(a => a.eval))].length || 3
   const evals     = Array.from({ length: evalCount }, (_, i) => i + 1)
   const rasBase   = modData?.ras          || []
   const cesByRa   = modData?.ces          || {}
   const asigsMod  = modData?.asignaciones || []
-  const evalRas   = modData?.eval_ras     || {}   // {1:[raId,...], 2:[...], 3:[...]}
+  // Evaluación de cada RA deducida de sus UT (misma fuente que Programación:
+  // si el profesor mueve una UT de trimestre, aquí se refleja igual).
+  const evalRas   = rasPorEvaluacion(modData, evalCount)   // {1:[raId,...], 2:[...]}
 
   // H2 — migrar claves legacy de recuperaciones/pardones al formato RA|CE
   {
@@ -165,7 +162,7 @@ async function loadEvaluaciones() {
     const sPE = actividades.filter(a => a.tipo === 'examen').reduce((s, a) => s + (a.peso || 0), 0)
     const tP = sPP + sPE
     await _migrateLegacyRecKeys(mid, rasBase, cesByRa, actividades, ng,
-      tP > 0 ? sPP / tP : 0.30, tP > 0 ? sPE / tP : 0.70, alumnosTodos)
+      tP > 0 ? sPP / tP : 0.30, tP > 0 ? sPE / tP : 0.70, alumnosTodos, asigsMod)
   }
 
   // Estado compartido con dashboard
@@ -195,7 +192,11 @@ async function loadEvaluaciones() {
     ...ra,
     pond: raPondOverrides[ra.id] !== undefined ? raPondOverrides[ra.id] : (ra.pond || 0)
   }))
-  const rasActivos = ras.filter(ra => actividades.some(a => String(a.ra_id) === String(ra.id)))
+  // Un RA está en juego si alguna actividad lo califica: por ra_id, por criterios
+  // marcados o por sus UT. Mirando solo ra_id, un RA evaluado con un examen de dos
+  // unidades desaparecía de esta pantalla y se escapaba de la regla de oro.
+  const rasActivos = ras.filter(ra =>
+    actividades.some(a => actividadDeRa(a, ra.id, cesByRa[ra.id] || [], asigsMod)))
 
   // Evaluación a la que pertenece cada RA (eval_ras > actividades)
   const raEvalMap = {}
@@ -211,7 +212,7 @@ async function loadEvaluaciones() {
 
   // ── Helpers ───────────────────────────────────────────────────
   const notaRAde = (ra, alumnoId) =>
-    _calcNotaRA(ra.id, cesByRa[ra.id] || [], actividades, ng[alumnoId], PRAC, EXAM)
+    _calcNotaRA(ra.id, cesByRa[ra.id] || [], actividades, ng[alumnoId], PRAC, EXAM, asigsMod)
 
   /**
    * H1/H3 — Estado completo de un alumno:
@@ -227,7 +228,7 @@ async function loadEvaluaciones() {
     const pendientes = [], sinNota = []
     rasActivos.forEach(ra => {
       const n = notaRAde(ra, alumnoId)
-      const minKO = _raMinExamKO(ra.id, cesByRa[ra.id] || [], actividades, ng[alumnoId], minExam)
+      const minKO = _raMinExamKO(ra.id, cesByRa[ra.id] || [], actividades, ng[alumnoId], minExam, asigsMod)
       porRA[ra.id] = { nota: n, minKO }
       if (n === null) { sinNota.push(ra.id); return }
       conNota.push({ nota: n, pond: ra.pond || 0 })
@@ -304,7 +305,7 @@ async function loadEvaluaciones() {
     const raIdsConf = evalRas[String(ev)] || evalRas[ev] || []
     const rasCov = raIdsConf.length
       ? rasActivos.filter(ra => raIdsConf.includes(ra.id))
-      : rasActivos.filter(ra => acts.some(a => String(a.ra_id) === String(ra.id)))
+      : rasActivos.filter(ra => acts.some(a => actividadDeRa(a, ra.id, cesByRa[ra.id] || [], asigsMod)))
 
     if (!acts.length && !rasCov.length) return `
       <div class="card" style="padding:0">
@@ -340,7 +341,7 @@ async function loadEvaluaciones() {
       const pend = [], sinN = []
       rasVistos.forEach(ra => {
         const n = notaRAde(ra, al.id)
-        const minKO = _raMinExamKO(ra.id, cesByRa[ra.id] || [], actividades, ng[al.id], minExam)
+        const minKO = _raMinExamKO(ra.id, cesByRa[ra.id] || [], actividades, ng[al.id], minExam, asigsMod)
         if (n !== null) { sum += n * ra.pond; pond += ra.pond }
         if (n === null) sinN.push(ra.id)
         else if (n < 5 || minKO) pend.push(ra.id + (minKO && n >= 5 ? ' ⚠mín' : ''))
@@ -372,17 +373,16 @@ async function loadEvaluaciones() {
 
     const raSecs = rasCov.map(ra => {
       const ceLst = cesByRa[ra.id] || []
-      // Actividades para calificación de este RA: todas las suyas (eval_ras es fuente de verdad)
+      // Actividades para calificación de este RA: todas las suyas —por ra_id, por
+      // criterios o por UT— aunque estén repartidas en varias evaluaciones.
       const actsRA = raIdsConf.length
-        ? actividades.filter(a => String(a.ra_id) === String(ra.id))
+        ? actividades.filter(a => actividadDeRa(a, ra.id, ceLst, asigsMod))
         : acts
-      const ceCov = new Set()
-      actsRA.forEach(a => { try { JSON.parse(a.ces || '[]').forEach(id => ceCov.add(id)) } catch { /* ces inválido */ } })
-      const ceLstEv = ceLst.filter(ce => ceCov.has(ce.id))
+      const ceLstEv = ceLst.filter(ce => actsRA.some(a => actCubreCe(a, ra.id, ce.id)))
 
       const belowFive = alumnos.filter(al => {
-        const n = _calcNotaRA(ra.id, ceLst, actsRA, ng[al.id], PRAC, EXAM)
-        const minKO = _raMinExamKO(ra.id, ceLst, actsRA, ng[al.id], minExam)
+        const n = _calcNotaRA(ra.id, ceLst, actsRA, ng[al.id], PRAC, EXAM, asigsMod)
+        const minKO = _raMinExamKO(ra.id, ceLst, actsRA, ng[al.id], minExam, asigsMod)
         return n !== null && (n < 5 || minKO)
       }).length
       const alertBadge = belowFive > 0
@@ -391,14 +391,14 @@ async function loadEvaluaciones() {
 
       const rows = [...alumnos, ...alumnosBaja].map(al => {
         const esBaja = al.estado !== 'Activo'
-        const notaRA = _calcNotaRA(ra.id, ceLst, actsRA, ng[al.id], PRAC, EXAM)
-        const minKO  = _raMinExamKO(ra.id, ceLst, actsRA, ng[al.id], minExam)
+        const notaRA = _calcNotaRA(ra.id, ceLst, actsRA, ng[al.id], PRAC, EXAM, asigsMod)
+        const minKO  = _raMinExamKO(ra.id, ceLst, actsRA, ng[al.id], minExam, asigsMod)
         const naTxt  = notaRA !== null ? notaRA.toFixed(1) : '—'
         const naCls  = notaRA === null ? '' : (notaRA >= 5 && !minKO) ? 'nota-apto' : notaRA >= 4 ? 'nota-riesgo' : 'nota-noapto'
         const minBadge = minKO && notaRA !== null && notaRA >= 5
           ? ` <span title="Examen por debajo del mínimo (${minExam}): RA no superado aunque la media sea ≥5" style="color:var(--red);font-weight:700;font-size:10px">⚠mín</span>` : ''
         const ceCells = ceLstEv.map(ce => {
-          const n   = _calcNotaCE(ce.id, actsRA, ng[al.id], PRAC, EXAM)
+          const n   = _calcNotaCE(ra.id, ce.id, actsRA, ng[al.id], PRAC, EXAM)
           const txt = n !== null ? n.toFixed(1) : '—'
           const cls = n === null ? '' : n >= 5 ? 'nota-apto' : n >= 4 ? 'nota-riesgo' : 'nota-noapto'
           return `<td class="nc"><span class="${cls}" style="font-size:12px;font-weight:600">${txt}</span></td>`
@@ -507,7 +507,7 @@ async function loadEvaluaciones() {
         const raCls  = nRa === null ? '' : okRA ? 'nota-apto' : nRa >= 4 ? 'nota-riesgo' : 'nota-noapto'
 
         const ceChips = ceLst.map(ce => {
-          const n   = _calcNotaCE(ce.id, actividades, ng[al.id], PRAC, EXAM)
+          const n   = _calcNotaCE(ra.id, ce.id, actividades, ng[al.id], PRAC, EXAM)
           const bg  = n === null ? 'var(--bg3)' : n >= 5 ? 'rgba(79,121,66,.1)' : 'rgba(178,59,59,.07)'
           const brd = n === null ? 'var(--border)' : n >= 5 ? 'rgba(79,121,66,.3)' : 'rgba(178,59,59,.25)'
           const clr = n === null ? 'var(--text2)' : n >= 5 ? 'var(--green)' : 'var(--red)'
@@ -589,7 +589,8 @@ async function loadEvaluaciones() {
         </div>
       </div>`
 
-    const ceKey = (raId, ceId) => `${raId}|${ceId}`   // H2
+    // ceKey() vive en js/utils/ce-keys.js: la clave es RA+CE porque el id del
+    // criterio (CR1, CR2…) se repite en todos los RA del módulo.
 
     // ── Nota efectiva de un CE en 2ª ordinaria ─────────────────
     // Prioridad: perdón → nota recuperación → nota original si >=5 → pendiente
@@ -598,7 +599,7 @@ async function loadEvaluaciones() {
       if (_pardones[alumnoId]?.has(k)) return { nota: 5, fuente: 'pardon' }
       const rec = _rec2Notas[alumnoId]?.[k]
       if (rec != null) return { nota: rec, fuente: 'rec' }
-      const orig = _calcNotaCE(ceId, actividades, ng[alumnoId], PRAC, EXAM)
+      const orig = _calcNotaCE(raId, ceId, actividades, ng[alumnoId], PRAC, EXAM)
       if (orig !== null && orig >= 5) return { nota: orig, fuente: 'orig_ok' }
       return { nota: orig, fuente: 'pendiente' }
     }
@@ -608,7 +609,7 @@ async function loadEvaluaciones() {
     // Si no: recalcular desde CEs con ceNotaOrd2.
     function raNotaOrd2(alumnoId, ra) {
       const orig  = notaRAde(ra, alumnoId)
-      const minKO = _raMinExamKO(ra.id, cesByRa[ra.id] || [], actividades, ng[alumnoId], minExam)
+      const minKO = _raMinExamKO(ra.id, cesByRa[ra.id] || [], actividades, ng[alumnoId], minExam, asigsMod)
       if (orig === null || (orig >= 5 && !minKO)) return { nota: orig, fuente: 'orig_ok', orig }
 
       const ceLst = cesByRa[ra.id] || []
@@ -722,7 +723,7 @@ async function loadEvaluaciones() {
           const raIdSafe   = ra.id.replace(/'/g, "\\'")
           const ceIdSafe   = ce.id.replace(/'/g, "\\'")
           const { nota: ceNota } = ceNotaOrd2(al.id, ra.id, ce.id)
-          const ceOrigNota = _calcNotaCE(ce.id, actividades, ng[al.id], PRAC, EXAM)
+          const ceOrigNota = _calcNotaCE(ra.id, ce.id, actividades, ng[al.id], PRAC, EXAM)
           const pardoned   = _pardones[al.id]?.has(k)
           const rec2n      = _rec2Notas[al.id]?.[k]
 

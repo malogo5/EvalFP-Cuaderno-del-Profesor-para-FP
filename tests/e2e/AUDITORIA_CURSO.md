@@ -4,11 +4,11 @@ Recorrido automático por la interfaz real de la aplicación, de septiembre a la
 sobre una base de datos temporal. Módulos usados: **ISO** (1º ASIR) y **OACE** (2º de Grado
 Básico), con 12 alumnos, una baja a mitad de curso y alumnado que suspende RA.
 
-Ejecutado: 31/7/2026, 16:45:19
+Ejecutado: 31/7/2026, 17:32:14
 
 | | |
 |---|---|
-| Comprobaciones correctas | 74 |
+| Comprobaciones correctas | 77 |
 | Avisos | 0 |
 | Fallos | 0 |
 
@@ -71,6 +71,9 @@ Ejecutado: 31/7/2026, 16:45:19
 - ✓ **multi-módulo** — programacion sigue al módulo elegido en el lateral
 - ✓ **multi-módulo** — en OACE solo veo su alumnado (8 filas)
 - ✓ **programación** — la programación muestra las UT del módulo
+- ✓ **programación** — la evaluación de cada RA es la misma en la distribución y en su ficha
+- ✓ **programación** — los criterios marcados en cada actividad nunca superan los disponibles
+- ✓ **programación** — las horas de las UT cuadran con las del módulo (Σ 200h / 200h de aula ✓)
 - ✓ **módulos** — veo los RA del módulo con sus ponderaciones
 - ✓ **módulos** — el módulo cita el decreto de Castilla-La Mancha
 - ✓ **ajustes** — las copias de seguridad están a la vista, con su carpeta
