@@ -101,6 +101,18 @@ describe('El superado parcial cuenta como superado (art. 18.4)', () => {
     }
   })
 
+  it('nadie promedia criterios a mano para la 2ª convocatoria', () => {
+    // Se han encontrado ya SIETE sitios calculando su propia 2ª convocatoria:
+    // Evaluaciones, el boletín, las tarjetas del Dashboard, su contador de
+    // pendientes, sus iconos y el informe de la IA. Todos promediaban los
+    // criterios a peso igual, ignorando la ponderación del art. 4.3.a, y ninguno
+    // veía las actividades de recuperación.
+    const sospechoso = /\bg\.reduce\(|grades\.reduce\(|ceGrades\.reduce\(/
+    for (const archivo of PANTALLAS.concat('renderer/js/modules/programacion.js')) {
+      expect(leer(archivo), `${archivo} promedia criterios por su cuenta`).not.toMatch(sospechoso)
+    }
+  })
+
   it('el motor sigue exponiendo los dos conceptos por separado', () => {
     // `superado` (art. 2.3, todo alcanzado incluida la empresa) y
     // `superadoParaPromocion` (art. 18.4, el SP también) no son lo mismo: el

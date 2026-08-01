@@ -732,12 +732,17 @@ async function iaInformeAutoNotas(pref = 'i') {
       const asigsIA = modData?.asignaciones || []
       let raNota = notaRA(ra.id, cesByRa[ra.id] || [], acts, ng, PRAC, EXAM, asigsIA)
       if (hayOrd2 && raNota !== null && raNota < 5) {
-        const lst = cesEvaluadosDeRa(ra.id, cesByRa[ra.id] || [], acts)
-        const g = lst.map(ce => {
-          const k = `${ra.id}|${ce.id}`
-          return ord2[k] != null ? ord2[k] : notaCE(ra.id, ce.id, acts, ng, PRAC, EXAM)
-        }).filter(n => n != null)
-        if (g.length) raNota = g.reduce((s, n) => s + n, 0) / g.length
+        // Séptima pantalla que se calculaba su propia 2ª convocatoria: promediaba
+        // los criterios a peso igual —ignorando la ponderación del art. 4.3.a— y
+        // no veía las actividades de recuperación. El informe de la IA acababa
+        // citando una nota que no coincidía con el acta.
+        const nueva = notaRA(ra.id, cesByRa[ra.id] || [], acts, ng, PRAC, EXAM, asigsIA, 2,
+          (raId, ceId, calculada) => {
+            const suelta = ord2[`${raId}|${ceId}`]
+            if (suelta == null) return calculada
+            return calculada == null ? suelta : Math.max(calculada, suelta)
+          })
+        if (nueva !== null) raNota = nueva
       }
       if (raNota !== null && raNota !== undefined) {
         notasPairs.push(`${ra.id}:${raNota.toFixed(1)}`)

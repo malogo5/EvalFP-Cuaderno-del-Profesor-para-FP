@@ -343,7 +343,12 @@ async function loadEvaluaciones() {
       })
       const bol = pond > 0 ? sum / pond : null
       const bolTxt = bol !== null ? bol.toFixed(1) : '—'
-      const bolCls = bol === null ? '' : bol >= 5 ? 'nota-apto' : bol >= 4 ? 'nota-riesgo' : 'nota-noapto'
+      // Verde solo si además no arrastra ningún RA pendiente: una media de 6 con
+      // un RA suspenso no es un aprobado, y pintarla en verde en el boletín que
+      // ve la familia contradice la regla de oro que aplica el acta.
+      const bolCls = bol === null ? ''
+        : (bol >= 5 && !pend.length) ? 'nota-apto'
+        : bol >= 4 ? 'nota-riesgo' : 'nota-noapto'
       const pendTxt = pend.length
         ? `<span style="color:var(--red);font-weight:600">${pend.join(', ')}</span>`
         : sinN.length === rasVistos.length ? '<span style="color:var(--text3)">sin notas</span>'

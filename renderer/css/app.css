@@ -189,16 +189,23 @@ html,body{
   color:var(--sb-footer-color);letter-spacing:.04em;
   border-top:1px solid var(--sb-footer-border);
 }
-/* La barra lateral entera es zona de arrastre de la ventana, y eso se traga los
-   clics de lo que haya encima: el botón «Acerca de» del pie no respondía, igual
-   que en su día los ciclos del catálogo. En vez de ir anulándolo elemento a
-   elemento —que es como se llegó al fallo—, se exime a TODO lo que se pulsa. */
-.sidebar button,
-.sidebar input,
-.sidebar select,
-.sidebar textarea,
-.sidebar a,
-.sidebar [onclick]{-webkit-app-region:no-drag}
+/* ══════════════════════════════════════════════════════════════════════
+   Zonas de arrastre de la ventana y clics
+   ══════════════════════════════════════════════════════════════════════
+   Las zonas con `-webkit-app-region: drag` mueven la ventana… y se tragan
+   los clics de todo lo que tengan encima. Ha pasado ya dos veces: los ciclos
+   del catálogo y el botón «Acerca de» del pie de la barra lateral.
+
+   Se exime aquí TODO lo pulsable de las tres zonas de arrastre, en vez de ir
+   anulándolo elemento a elemento, que es justo como se llega al fallo. Si se
+   añade una zona de arrastre nueva, hay que añadirla también a esta lista:
+   tests/unit/handlers.test.js falla si se olvida. */
+.sidebar button,   .sidebar input,   .sidebar select,
+.sidebar textarea, .sidebar a,       .sidebar [onclick],
+.topbar button,    .topbar input,    .topbar select,
+.topbar textarea,  .topbar a,        .topbar [onclick],
+.cat-header button, .cat-header input, .cat-header select,
+.cat-header textarea, .cat-header a, .cat-header [onclick]{-webkit-app-region:no-drag}
 
 /* ══════════════════════════════════════
    MAIN + TOPBAR

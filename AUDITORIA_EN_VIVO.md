@@ -224,3 +224,28 @@ la auditoría de julio. Corregido en la raíz: se exime del arrastre **todo lo q
 se pulsa** dentro de la barra —botones, campos, enlaces y cualquier elemento con
 `onclick`—, en vez de ir anulándolo elemento a elemento, que es como se llega a
 este fallo una y otra vez.
+
+
+---
+
+## Las tres familias, cerradas de raíz
+
+Los fallos de esta auditoría no eran ocho casos sueltos: eran **tres patrones**
+repitiéndose. Cerrarlos uno a uno es lo que hizo que volvieran. Ahora cada
+patrón tiene su guarda.
+
+**1 · Zonas de arrastre que se tragan los clics.** Ha pasado dos veces —los
+ciclos del catálogo y el botón «Acerca de»—. Las tres zonas con
+`-webkit-app-region: drag` eximen ya todo lo pulsable que contienen, y
+`handlers.test.js` falla si se añade una zona nueva sin eximirlo.
+
+**2 · Veredictos decididos con un booleano.** El art. 12 tiene tres estados y un
+ternario solo sabe expresar dos: el «superado parcial» acababa saliendo como NO
+APTO. Ninguna pantalla decide ya la etiqueta con un booleano. Y en el boletín de
+trimestre, una media de 6 con un RA suspenso deja de pintarse en verde.
+
+**3 · Pantallas que se calculan sus propios números.** Siete sitios distintos
+promediaban los criterios de la 2ª convocatoria a peso igual, ignorando la
+ponderación del art. 4.3.a, y ninguno veía las actividades de recuperación: el
+último era el informe de la IA, que citaba una nota que no coincidía con el acta.
+`motor-unico.test.js` falla ahora si alguien vuelve a promediar criterios a mano.

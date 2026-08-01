@@ -133,3 +133,23 @@ describe('Puente con el proceso principal', () => {
     expect(ausentes, `el renderer llama a window.api.${ausentes.join('/')} y preload.js no lo expone`).toEqual([])
   })
 })
+
+describe('Zonas de arrastre de la ventana', () => {
+  it('todo lo pulsable de una zona de arrastre está eximido', () => {
+    // `-webkit-app-region: drag` mueve la ventana y se come los clics de lo que
+    // tenga encima. Pasó con los ciclos del catálogo y con el botón «Acerca de»:
+    // los dos estaban dentro de una zona de arrastre y no respondían.
+    const css = leer('renderer/css/app.css')
+
+    // Clases que declaran zona de arrastre
+    const zonas = new Set()
+    for (const m of css.matchAll(/\.([a-z-]+)\s*\{[^}]*-webkit-app-region\s*:\s*drag/g)) zonas.add(m[1])
+    expect(zonas.size, 'no se encontró ninguna zona de arrastre').toBeGreaterThan(0)
+
+    // Cada zona tiene que eximir sus botones
+    const sinEximir = [...zonas].filter(z =>
+      !new RegExp(`\\.${z}\\s+button[^{]*\\{[^}]*no-drag`).test(css) &&
+      !new RegExp(`\\.${z}\\s+\\*\\s*\\{[^}]*no-drag`).test(css))
+    expect(sinEximir, `zonas de arrastre que se tragarán los clics: ${sinEximir.join(', ')}`).toEqual([])
+  })
+})
