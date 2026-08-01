@@ -318,6 +318,11 @@ function calificacionCualitativa(nota) {
  * ¿Este módulo es un ámbito de grado básico? Se marca en la programación; si no,
  * se deduce del nombre, que en los decretos es siempre «Ámbito de …».
  */
+// Nota: el catálogo de EvalFP no incluye los ámbitos de Grado Básico —Comunicación
+// y Sociedad, Ciencias Aplicadas—, porque los imparte profesorado de otras
+// especialidades y no de FP. Esta función y `calificacionCualitativa` se quedan
+// implementadas para cumplir el art. 25.2 si alguna vez hacen falta: se activan
+// poniendo `ambito: true` en el módulo.
 function moduloEsAmbito(modulo) {
   if (!modulo) return false
   if (modulo.ambito === true || modulo.ambito === false) return modulo.ambito

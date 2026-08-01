@@ -36,5 +36,8 @@ historial de git, en los commits anteriores a la 3.7.0.
    de la etapa anterior. Cuando se empaquete la 1.0 pública, ese camino sobra.
 3. **Firmar los instaladores.** Sin certificado, macOS y Windows siguen avisando de
    desarrollador no identificado en cada equipo nuevo.
-4. **Ámbitos de Grado Básico.** La calificación cualitativa ya está (IN/SU/BI/NT/SB); falta
-   comprobarla con un ciclo de grado básico completo y real.
+4. **Los ámbitos de Grado Básico no entran en el catálogo.** Comunicación y Sociedad y
+   Ciencias Aplicadas los imparte profesorado de otras especialidades, no de FP, así que
+   no son módulos de este cuaderno. La calificación cualitativa IN/SU/BI/NT/SB (art. 25.2)
+   se queda implementada y probada por si alguna vez hace falta —se fuerza poniendo
+   `ambito: true` en el módulo—, pero no hay nada que verificar con un ciclo real.
