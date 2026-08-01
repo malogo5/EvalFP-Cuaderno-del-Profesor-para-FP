@@ -644,8 +644,15 @@ async function genBoletin(alumnoId, evParcial = null) {
  *                             boletín del módulo completo.
  */
 async function _genBoletin(alumnoId, evParcial = null) {
-  // El botón Boletín existe en Dashboard Y en Evaluaciones: usar el selector activo
-  const mid = document.getElementById('dash-mod-sel')?.value ||
+  // El botón Boletín existe en Dashboard Y en Evaluaciones, y cada pantalla tiene
+  // su propio selector de módulo. Coger siempre el del Dashboard daba «Alumno/a no
+  // encontrado en este módulo» al pedir el boletín desde Evaluaciones con otro
+  // módulo abierto: se buscaba a esa persona en el módulo equivocado. Manda la
+  // sección que está a la vista.
+  const sec = document.querySelector('.nav-item.active')?.dataset?.sec
+  const selector = sec === 'evaluaciones' ? 'eval-mod-sel' : 'dash-mod-sel'
+  const mid = document.getElementById(selector)?.value ||
+              document.getElementById('dash-mod-sel')?.value ||
               document.getElementById('eval-mod-sel')?.value
   if (!mid) { alert('Selecciona un módulo primero.'); return }
 

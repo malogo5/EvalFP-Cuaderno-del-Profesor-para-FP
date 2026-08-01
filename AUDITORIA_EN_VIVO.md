@@ -1,0 +1,183 @@
+# Auditoría usando la aplicación · 01/08/2026
+
+Segunda vuelta de la auditoría, esta vez **manejando EvalFP como la maneja una
+profesora**: dando de alta módulos, importando alumnado, programando, calificando
+y sacando documentos. La primera auditoría se hizo leyendo el código y ejecutando
+el motor; esta busca lo que solo aparece al usar la aplicación.
+
+**Entorno.** EvalFP 3.8.0 · macOS · base de datos real, con copia de seguridad
+guardada aparte antes de empezar.
+
+**Datos de prueba.** Dos módulos nuevos, identificables por su grupo:
+
+| Módulo | Ciclo | Curso | Grupo | Evaluaciones |
+|---|---|---|---|---|
+| IMRTD · Instalación y Mantenimiento de Redes para Transmisión de Datos | CFGB Informática de Oficina | 2º | AUD-2A | 2 |
+| ISO · Implantación de Sistemas Operativos | CFGS ASIR | 1º | AUD-1A | 3 |
+
+---
+
+## V-1 · Un módulo no se puede dar de alta dos veces, para dos grupos
+
+**Categoría:** Error confirmado · **Gravedad: Alta**
+**Pantalla:** Módulos → Catálogo
+
+**Qué pasa.** En el catálogo, OACE aparece **en gris con la etiqueta «✓ Añadido»**
+y no responde al clic. Un módulo que ya está en el cuaderno no se puede volver a
+añadir.
+
+**Por qué importa.** Dar el mismo módulo a dos grupos es lo más normal del mundo
+en FP, y la propia documentación lo promete: *«Ponle el grupo si das el mismo
+módulo a dos clases»* (INSTALACION_Y_USO.md). El campo **Grupo / Clase** existe en
+el diálogo de alta, se rellena… y no sirve para lo único para lo que hace falta.
+
+**Cómo reproducirlo.** Módulos → ＋ Añadir módulo → cualquier módulo ya dado de
+alta. La tarjeta está atenuada y no se selecciona.
+
+---
+
+## V-2 · Un módulo recién creado llega con las ponderaciones sin cuadrar
+
+**Categoría:** Error confirmado · **Gravedad: Alta**
+**Pantalla:** Programación
+
+**Qué pasa.** Nada más dar de alta ISO, sin haber tocado un solo campo:
+
+```
+Ponderación del módulo:  Prácticas 60 %  /  Exámenes 70 %   →  130 %
+1ª Evaluación   ⚠ suma 130 %     (30 + 30 + 70)
+2ª Evaluación   ⚠ suma 160 %     (30 + 30 + 30 + 70)
+3ª Evaluación   ⚠ suma 160 %     (30 + 30 + 30 + 70)
+```
+
+**Por qué importa.** La aplicación se abre avisando de un error que ella misma ha
+creado. Quien no sepa interpretarlo se lo encuentra en las tres evaluaciones y no
+sabe si el problema es suyo. Y quien lo ignore está calificando sobre una base que
+no suma 100.
+
+---
+
+## V-3 · Los exámenes de arranque no evalúan ningún criterio, y pesan el 70 %
+
+**Categoría:** Error confirmado · **Gravedad: Crítica**
+**Pantalla:** Programación → columnas UT · RA · CES
+
+**Qué pasa.** Las tres actividades de examen que trae el módulo —«Examen
+Evaluación 1», «2» y «3»— llegan con:
+
+```
+UT: —      RA: sin RA      CES: —      PESO: 70 %
+```
+
+Es decir: **un instrumento con el 70 % del peso que no está ligado a ningún
+resultado de aprendizaje ni a ningún criterio**. Las prácticas sí traen su UT y su
+RA; los exámenes, no.
+
+**Por qué importa.** El motor calcula la nota de cada RA a partir de sus criterios.
+Una actividad que no cubre ningún criterio, no tiene RA y no cuelga de ninguna UT
+no entra en el cálculo de ningún RA. La consecuencia es que **se puede calificar
+el examen de toda una evaluación y que esa nota no mueva la calificación del
+módulo**, mientras sí aparece en la columna «Media act.» de la parrilla. Dos
+números distintos, y el que la profesora mira primero es el que no cuenta.
+
+---
+
+## V-4 · El campo de convocatorias es más estrecho que su propio dígito
+
+**Categoría:** Error confirmado (usabilidad) · **Gravedad: Media**
+**Pantalla:** Alumnos → columna «Convoc. · pend.»
+
+**Qué pasa.** El número de convocatorias consumidas **no se lee**: el campo recorta
+el dígito y solo se ve un trazo. Al pincharlo para escribir, el control de
+incremento ocupa prácticamente todo el ancho, así que el clic sube el valor en
+lugar de situar el cursor. En la prueba, un triple clic dejó el contador por
+encima de 4 y disparó el aviso de convocatorias agotadas del art. 8.2 sin que
+hubiera intención de cambiar nada.
+
+**Por qué importa.** Es un dato normativo —cuatro convocatorias en grado D, dos en
+grado E— que la aplicación muestra precisamente para que se pueda vigilar. Si no
+se lee, no cumple su función; y si se cambia solo, informa mal.
+
+---
+
+## V-5 · Al dar de alta un módulo, el detalle muestra el anterior
+
+**Categoría:** Error confirmado (interfaz) · **Gravedad: Baja**
+**Pantalla:** Módulos
+
+**Qué pasa.** Tras añadir IMRTD, su tarjeta queda marcada y el módulo activo pasa a
+ser IMRTD, pero la lista de RA y criterios de debajo sigue titulada **«RAS Y
+CRITERIOS DE EVALUACIÓN — OACE»**, con el contenido del módulo anterior. Se repitió
+igual al añadir ISO, que mostraba los RA de IMRTD. Pinchando la tarjeta se corrige.
+
+---
+
+## V-6 · Quien no tiene ninguna nota aparece con todos los RA bloqueados — **CORREGIDO**
+
+**Categoría:** Error confirmado · **Gravedad: Crítica**
+**Pantalla:** Evaluaciones → 2ª Ordinaria
+
+**Qué pasa.** Los cinco alumnos sin ninguna calificación salían con **🔒 en los
+ocho RA**, el candado que marca «aprobado en 1ª, no se vuelve a evaluar». Al
+desplegar su ficha, ningún criterio era editable.
+
+**Por qué importa.** A quien no se presentó a nada en junio **no se le podía
+recuperar nada en la segunda convocatoria**: la aplicación lo trataba como si lo
+tuviera todo aprobado. Es justo el alumnado que más necesita esa convocatoria.
+
+**Causa.** `raNotaOrd2` devolvía la fuente `orig_ok` —la que pinta el candado—
+tanto para un RA superado como para un RA **sin nota**: `if (orig === null || (orig
+>= 5 && !minKO))`. Un RA sin evaluar no está superado.
+
+**Corregido el 01/08/2026** y comprobado en pantalla: ahora solo lleva candado el
+RA que de verdad se aprobó.
+
+## V-7 · El boletín desde Evaluaciones buscaba al alumnado en otro módulo — **CORREGIDO**
+
+**Categoría:** Error confirmado · **Gravedad: Alta**
+**Pantalla:** Evaluaciones → cualquier pestaña con botón de boletín
+
+**Qué pasa.** Al pedir el boletín de la 1ª evaluación de una alumna de ISO, la
+aplicación respondía **«Alumno/a no encontrado en este módulo.»**
+
+**Causa.** `_genBoletin` resolvía el módulo con
+`dash-mod-sel?.value || eval-mod-sel?.value`. El selector del Dashboard existe en
+el DOM aunque no se esté viendo esa pantalla, así que ganaba siempre: se buscaba a
+la alumna de ISO entre el alumnado de otro módulo. Afectaba también al botón que
+ya existía en la 1ª Ordinaria.
+
+**Corregido el 01/08/2026**: manda el selector de la sección visible.
+
+## V-8 · Marcar los criterios de un examen son 27 clics
+
+**Categoría:** Mejora recomendada · **Gravedad: Media**
+**Pantalla:** Programación → botón de criterios
+
+Un examen que cubre dos unidades ofrece 27 criterios y hay que marcarlos **uno a
+uno**: no hay «marcar todos» ni «todos los de este RA». Es la tarea más repetitiva
+de la programación y la que más se abandona a medias — y abandonarla es
+exactamente lo que produce el V-3.
+
+---
+
+## Resumen
+
+| | Incidencia | Gravedad | Estado |
+|---|---|---|---|
+| V-1 | Un módulo no se puede dar de alta para dos grupos | Alta | Abierta |
+| V-2 | Ponderaciones sin cuadrar en un módulo recién creado | Alta | Abierta |
+| V-3 | Exámenes con el 70 % del peso que no evalúan nada | **Crítica** | Abierta |
+| V-4 | Campo de convocatorias ilegible e inmanejable | Media | Abierta |
+| V-5 | El detalle de Módulos va un módulo por detrás | Baja | Abierta |
+| V-6 | RA sin nota bloqueados en la 2ª convocatoria | **Crítica** | Corregida |
+| V-7 | Boletín desde Evaluaciones con el módulo equivocado | Alta | Corregida |
+| V-8 | Sin «marcar todos» en los criterios de una actividad | Media | Abierta |
+
+**Lo que confirma esta segunda vuelta.** La auditoría de código encontró errores de
+cálculo; esta encuentra otra familia distinta: **la aplicación calcula bien lo que
+se le da, pero deja llegar a la pantalla de notas un módulo que no está listo para
+calificar**, y no avisa. V-2 y V-3 juntos significan que alguien puede dar un curso
+entero calificando exámenes que no cuentan.
+
+*Auditoría realizada manejando EvalFP 3.8.0 en el equipo, con dos módulos dados de
+alta desde cero. Los módulos de prueba llevan los grupos AUD-1A y AUD-2A.*

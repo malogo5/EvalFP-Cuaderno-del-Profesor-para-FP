@@ -705,7 +705,12 @@ async function loadEvaluaciones() {
     function raNotaOrd2(alumnoId, ra) {
       const orig  = notaRAde(ra, alumnoId)
       const minKO = _raMinExamKO(ra.id, cesByRa[ra.id] || [], actividades, ng[alumnoId], minExam, asigsMod)
-      if (orig === null || (orig >= 5 && !minKO)) return { nota: orig, fuente: 'orig_ok', orig }
+      // Un RA sin ninguna nota NO está superado: es un RA sin evaluar. Tratarlo
+      // como «orig_ok» lo pintaba con el candado 🔒 de aprobado y lo dejaba fuera
+      // de la recuperación, de modo que a quien no se presentó a nada en junio no
+      // se le podía recuperar nada en la segunda convocatoria.
+      if (orig === null) return { nota: null, fuente: 'sin_evaluar', orig: null }
+      if (orig >= 5 && !minKO) return { nota: orig, fuente: 'orig_ok', orig }
 
       const ceLst = cesDeRa(ra)
       if (!ceLst.length) return { nota: orig, fuente: 'orig_fail', orig }
