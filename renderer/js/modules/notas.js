@@ -44,6 +44,16 @@ function _calcMediaPonderada(acts, notasAl, decimals = 2) {
  * la 2ª tiene su propia opción. Mezclarlas metería la nota de junio en la media
  * de un trimestre que ya está en el boletín.
  */
+/**
+ * Etiqueta de la columna: su unidad de trabajo, o el trimestre. Una prueba de
+ * recuperación no pertenece a ningún trimestre —se guarda con eval 1 por dentro—
+ * y ponerle «EV1» hacía pensar que era de la primera evaluación.
+ */
+function _etiquetaColumna(a) {
+  if (Number(a.convocatoria) === 2) return '2ª conv.'
+  return a.ut_id || 'EV' + a.eval
+}
+
 function _vistaNotas() {
   const evRaw = document.getElementById('notas-ev-sel')?.value ?? '0'
   const esRecuperacion = evRaw === 'R'
@@ -65,7 +75,7 @@ async function exportNotasPDF() {
 
   const titulo = `${mod?.abrev || 'Módulo'} — Registro de Notas` +
     (esRecuperacion ? ' · Recuperación (2ª convocatoria)' : ev ? ' · Evaluación ' + ev : '')
-  const thead = `<tr><th>Alumno/a</th>${acts.map(a=>`<th>${esc(a.instrumento)}<br/><small>${esc(a.ut_id||'EV'+a.eval)}</small></th>`).join('')}<th>Media act.</th></tr>`
+  const thead = `<tr><th>Alumno/a</th>${acts.map(a=>`<th>${esc(a.instrumento)}<br/><small>${esc(_etiquetaColumna(a))}</small></th>`).join('')}<th>Media act.</th></tr>`
   const tbody = alumnos.map(al => {
     // H6: exportar la nota efectiva; las recuperadas se marcan con *
     const efMap = _notasEf(al.id)
@@ -172,7 +182,7 @@ function renderNotasGrid() {
     <th class="sticky-col">Alumno/a</th>
     ${acts.map(a => `<th title="${esc(a.descripcion)}" style="text-align:center;min-width:58px">
       <div style="font-size:10px;max-width:56px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(a.instrumento)}</div>
-      <div style="font-size:9px;color:var(--text2)">${esc(a.ut_id||'EV'+a.eval)}</div>
+      <div style="font-size:9px;color:var(--text2)">${esc(_etiquetaColumna(a))}</div>
     </th>`).join('')}
     <th style="min-width:74px;text-align:center"
         title="Media de las actividades calificadas, ponderada por su peso. NO es la nota del módulo: esa se calcula por resultados de aprendizaje y está en Evaluaciones.">Media act.</th>

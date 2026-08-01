@@ -337,3 +337,26 @@ Las tablas usaban una etiqueta fija de «BAJA» para todo el alumnado no activo,
 que quien había renunciado a la convocatoria figuraba como baja. Son dos cosas
 distintas y en el acta se reflejan distinto (RC, art. 25.9). Ahora cada fila
 muestra su estado real.
+
+
+## V-15 · La prueba de recuperación se etiquetaba «EV1» en la parrilla — **CORREGIDO**
+
+**Categoría:** Mejora recomendada · **Gravedad: Baja** · **Pantalla:** Notas
+
+Las actividades de recuperación se guardan con `eval = 1` por dentro, así que la
+cabecera de su columna decía «EV1» y parecían de la primera evaluación. Ahora
+ponen **«2ª conv.»**.
+
+---
+
+## Curso completo, comprobado en la aplicación
+
+- **Cierre de evaluación**: fija los RA alcanzados, los marca con candado y
+  aguanta que se baje una nota después (V-13).
+- **Boletín de trimestre**: la media acumulada y los RA pendientes cuadran con la
+  tabla por RA.
+- **2ª convocatoria con actividades (A-5)**: la prueba de recuperación subió a una
+  alumna el RA1 de **2,6 a 7,0**, y siguió pendiente por el RA2, que no estaba
+  entre los criterios de esa prueba. Es exactamente el comportamiento que exige
+  la regla de oro.
+- **Alumnado de baja y con renuncia**: separado, sin acta y con su etiqueta.
