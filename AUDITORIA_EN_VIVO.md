@@ -349,6 +349,39 @@ ponen **«2ª conv.»**.
 
 ---
 
+## V-16 · El Asistente IA se calculaba sus propias notas — **CORREGIDO**
+
+**Categoría:** Fallo grave · **Gravedad: Alta** · **Pantalla:** Asistente IA
+
+Con una alumna que había recuperado el RA1 en la 2ª convocatoria, Evaluaciones
+decía **7,0** y el informe de la IA se autorrellenaba con **2,6** más una entrada
+fantasma «RA1_EX:2.0». Eran dos motores paralelos más:
+
+- el informe individual y el plan de recuperación se calculaban las notas por RA
+  a mano, sin ver las pruebas de recuperación (art. 21.5) ni los RA cerrados
+  (art. 4.3.f);
+- la radiografía del grupo y «Todo el módulo» las calculaban en Python con una
+  media aritmética de las notas crudas: sin el peso de cada actividad y sin la
+  escala del instrumento, así que un 18 sobre 20 valía 18.
+
+Ahora las cuatro usan `contextoModulo` + `estadoModulo`, y la aplicación manda a
+Python las notas por RA ya hechas (`--notas-ra-json`). Comprobado: el informe de
+la alumna pasó a decir **RA1:7,0 · RA2:4,0**, los mismos números del acta.
+
+---
+
+## V-17 · No dejaba hacer un informe a mitad de curso — **CORREGIDO**
+
+**Categoría:** Fallo grave · **Gravedad: Media** · **Pantalla:** Asistente IA
+
+«Faltan calificaciones en algunos Resultados de Aprendizaje» cortaba la
+generación en seco. En diciembre faltan casi todos: el informe de trimestre era
+imposible. Ahora es un aviso, el informe se redacta con lo evaluado, la nota se
+presenta como parcial y los RA que aún no se han trabajado se citan como tales
+para que la IA no los dé por suspensos.
+
+---
+
 ## Curso completo, comprobado en la aplicación
 
 - **Cierre de evaluación**: fija los RA alcanzados, los marca con candado y
@@ -360,3 +393,5 @@ ponen **«2ª conv.»**.
   entre los criterios de esa prueba. Es exactamente el comportamiento que exige
   la regla de oro.
 - **Alumnado de baja y con renuncia**: separado, sin acta y con su etiqueta.
+- **Asistente IA con datos reales**: informe individual y radiografía del grupo
+  generados contra la API, con las notas del motor único.

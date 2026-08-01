@@ -118,7 +118,7 @@ function iaTab(el, id) {
 // Si el motor añade uno nuevo y no está aquí, se muestra igualmente su texto tal cual:
 // más vale un mensaje en bruto que un aviso que no llega.
 const IA_CODIGOS = [
-  ['RA_NO_EVALUADO',      'error',   'Faltan calificaciones en algunos Resultados de Aprendizaje. Completa la pestaña de Notas antes de generar el informe.'],
+  ['RA_NO_EVALUADO',      'warning', 'Aún quedan resultados de aprendizaje por calificar: el informe sale con lo evaluado hasta ahora y la nota es parcial.'],
   ['PONDERACION_CERO',    'error',   'La suma de las ponderaciones de los RA es 0%. Revisa la configuración del módulo.'],
   ['NOTA_INVALIDA',       'error',   'Se ha detectado un formato o rango de nota incorrecto (debe estar entre 0 y 10).'],
   ['ERROR_RED',           'error',   'No se ha podido conectar con el servidor de IA. Revisa tu conexión a internet o inténtalo más tarde.'],
@@ -466,6 +466,8 @@ async function runIA(cmd) {
       opts.alumnosJson     = JSON.stringify(alumnos.map(a => ({ id: a.id })))
       opts.notasGridJson   = JSON.stringify(await window.api.getNotasGrid(mod.id))
       opts.actividadesJson = JSON.stringify(await window.api.getActividades(mod.id))
+      const nra = await _notasRaDelGrupo(mod)
+      if (nra) opts.notasRaJson = nra
     } catch (e) {
       _showIaAlert('error', 'No he podido leer las notas del grupo: ' + e.message)
       return
@@ -494,6 +496,8 @@ async function runIA(cmd) {
         opts.alumnosJson = JSON.stringify(alumnos)
         opts.notasGridJson = JSON.stringify(await window.api.getNotasGrid(mod.id))
         opts.actividadesJson = JSON.stringify(await window.api.getActividades(mod.id))
+        const nra = await _notasRaDelGrupo(mod)
+        if (nra) opts.notasRaJson = nra
       } catch { /* sin exportación de datos auxiliares */ }
     }
   }
@@ -627,6 +631,90 @@ async function _detalleActividadesAlumno(mod, nombreAlumno) {
   }
 }
 
+/**
+ * Notas por RA de todo el grupo, calculadas con el motor único.
+ *
+ * La radiografía del grupo y «Todo el módulo» se las calculaban en Python con
+ * una media aritmética de las notas crudas: sin el peso de cada actividad, sin
+ * la escala de cada instrumento, sin los RA cerrados y sin las pruebas de la 2ª
+ * convocatoria. Salían números que no coincidían con Evaluaciones ni con el acta.
+ *
+ * @returns {?string} JSON { alumno_id: { RA1: 7.0, … } } o null si no hay nada.
+ */
+async function _notasRaDelGrupo(mod) {
+  try {
+    const modData = _getModData(mod.id)
+    const ras = modData?.ras || []
+    if (!ras.length) return null
+
+    const alumnos = (await window.api.getAlumnos(mod.id)).filter(a => a.estado === 'Activo')
+    const acts    = await window.api.getActividades(mod.id)
+    const grid    = await window.api.getNotasGrid(mod.id)
+    if (!alumnos.length || !acts.length) return null
+
+    const cfgAll  = await window.api.getAllConfig()
+    const minRaw  = cfgAll[`minexam_${mod.id}`]
+    const minExam = minRaw != null && String(minRaw).trim() !== '' ? parseFloat(minRaw) : null
+
+    try {
+      const rows = await window.api.getRaPonderaciones(mod.id)
+      const ov = {}
+      rows.forEach(r => { ov[r.ra_id] = r.pond })
+      ras.forEach(ra => { if (ov[ra.id] !== undefined) ra.pond = ov[ra.id] })
+    } catch { /* sin overrides */ }
+
+    const ord2 = {}
+    try {
+      const filas = await window.api.getCalificacionesCE(mod.id)
+      filas.forEach(f => {
+        if (!ord2[f.alumno_id]) ord2[f.alumno_id] = {}
+        ord2[f.alumno_id][`${f.ra_id}|${f.ce_id}`] =
+          f.perdonado ? 5 : (f.nota != null ? Number(f.nota) : null)
+      })
+    } catch { /* sin 2ª convocatoria */ }
+
+    const cerrados = {}
+    try {
+      const filas = await window.api.getRasSuperados(mod.id)
+      filas.forEach(f => {
+        if (!cerrados[f.alumno_id]) cerrados[f.alumno_id] = {}
+        cerrados[f.alumno_id][f.ra_id] = f.nota != null ? Number(f.nota) : 5
+      })
+    } catch { /* base antigua */ }
+
+    const conv = acts.some(a => convocatoriaDe(a) === 2) || Object.keys(ord2).length ? 2 : 1
+    const notasPorAlumno = {}
+    grid.forEach(g => {
+      if (!notasPorAlumno[g.alumno_id]) notasPorAlumno[g.alumno_id] = {}
+      notasPorAlumno[g.alumno_id][g.actividad_id] = g.nota_rec != null ? g.nota_rec : g.nota
+    })
+
+    const salida = {}
+    alumnos.forEach(al => {
+      const ctx = contextoModulo({
+        ras, cesByRa: modData?.ces || {}, asignaciones: modData?.asignaciones || [],
+        actividades: acts, minExam, rasSuperados: cerrados[al.id] || null,
+        tieneFaseEmpresa: false, convocatoria: conv,
+      })
+      const st = estadoModulo(ctx, notasPorAlumno[al.id] || {}, {
+        notaCEOverride: (raId, ceId, calculada) => {
+          const suelta = (ord2[al.id] || {})[`${raId}|${ceId}`]
+          if (suelta == null) return calculada
+          return calculada == null ? suelta : Math.max(calculada, suelta)
+        },
+      })
+      const fila = {}
+      Object.entries(st.porRA).forEach(([raId, d]) => {
+        if (d.nota != null) fila[raId] = Number(d.nota.toFixed(2))
+      })
+      if (Object.keys(fila).length) salida[al.id] = fila
+    })
+    return Object.keys(salida).length ? JSON.stringify(salida) : null
+  } catch {
+    return null
+  }
+}
+
 // ── Informe y plan: cargan alumnado del módulo y auto-rellenan notas por RA ──
 // Comparten lógica: cambia solo el prefijo de los identificadores ('i' / 'p').
 
@@ -682,37 +770,30 @@ async function iaInformeAutoNotas(pref = 'i') {
     const ng = {}
     notasArr.forEach(n => { if (n.alumno_id === alumno.id) ng[n.actividad_id] = n.nota_rec ?? n.nota })
 
-    // Calcular notas por RA con el mismo motor que Evaluaciones (H4/H6) y
-    // preparar también una "nota de examen por RA" para validar mínimos en Python.
+    // Notas por RA con el motor único (js/core/calificacion.js). Esta pantalla
+    // se las calculaba por su cuenta: no veía las pruebas de recuperación de la
+    // 2ª convocatoria (art. 21.5) ni los RA cerrados en una sesión anterior
+    // (art. 4.3.f), así que el informe citaba notas que no coincidían con el acta.
     //
-    // Nota: en la app, el mínimo se aplica por actividades tipo examen (si alguna
-    // queda por debajo del mínimo, el RA no se considera superado). Para poder
-    // replicarlo en Python sin pasar todas las actividades, enviamos por cada RA
-    // el mínimo de sus exámenes como "<RA>_EX:<nota>" (si existe).
+    // Al mínimo de examen se le pasa además la nota que lo decide, «<RA>_EX»,
+    // porque el cálculo en Python no recibe las actividades.
     const cesByRa = modData?.ces || {}
 
-    // Pesos globales por tipo (fallback si no hay pesos en actividades)
-    const sumPP = acts.filter(a => a.tipo === 'practica').reduce((s, a) => s + (a.peso || 0), 0)
-    const sumPE = acts.filter(a => a.tipo === 'examen').reduce((s, a) => s + (a.peso || 0), 0)
-    const totP  = sumPP + sumPE
-    const PRAC  = totP > 0 ? sumPP / totP : 0.30
-    const EXAM  = totP > 0 ? sumPE / totP : 0.70
-
-    // Mínimo de examen configurado por módulo (si existe)
+    // Mínimo de examen y ponderaciones configurados para el módulo
     const cfgAll  = await window.api.getAllConfig()
     const minRaw  = cfgAll[`minexam_${mod.id}`]
     const minExam = minRaw != null && String(minRaw).trim() !== '' ? parseFloat(minRaw) : null
 
-    // Overrides de ponderación por RA (si existen)
     const raPondOverrides = {}
     try {
       const rows = await window.api.getRaPonderaciones(mod.id)
       rows.forEach(r => { raPondOverrides[r.ra_id] = r.pond })
     } catch { /* sin overrides */ }
+    ras.forEach(ra => {
+      if (raPondOverrides[ra.id] !== undefined) ra.pond = raPondOverrides[ra.id]
+    })
 
-    // Calificaciones de la 2ª convocatoria: el informe tenía que verlas. Antes
-    // se construía solo con las notas de junio y a quien había superado el módulo
-    // en la segunda le decía que seguía con RA suspensos.
+    // Criterios dados por alcanzados en la 2ª convocatoria
     const ord2 = {}
     try {
       const filas = await window.api.getCalificacionesCE(mod.id)
@@ -720,45 +801,44 @@ async function iaInformeAutoNotas(pref = 'i') {
         ord2[`${f.ra_id}|${f.ce_id}`] = f.perdonado ? 5 : (f.nota != null ? Number(f.nota) : null)
       })
     } catch { /* sin calificaciones de 2ª convocatoria */ }
-    const hayOrd2 = Object.keys(ord2).length > 0
+
+    // RA cerrados como superados en sesiones anteriores
+    let rasSuperados = null
+    try {
+      const filas = await window.api.getRasSuperados(mod.id)
+      const mios = filas.filter(f => Number(f.alumno_id) === alumno.id)
+      if (mios.length) {
+        rasSuperados = {}
+        mios.forEach(f => { rasSuperados[f.ra_id] = f.nota != null ? Number(f.nota) : 5 })
+      }
+    } catch { /* base antigua */ }
+
+    // La 2ª convocatoria entra en juego si hay prueba de recuperación o criterios
+    // dados por alcanzados; si no, el informe es el de la 1ª.
+    const hayRec = acts.some(a => convocatoriaDe(a) === 2)
+    const conv   = hayRec || Object.keys(ord2).length ? 2 : 1
+
+    const ctx = contextoModulo({
+      ras, cesByRa, asignaciones: modData?.asignaciones || [],
+      actividades: acts, minExam, rasSuperados,
+      tieneFaseEmpresa: false, convocatoria: conv,
+    })
+    const st = estadoModulo(ctx, ng, {
+      notaCEOverride: (raId, ceId, calculada) => {
+        const suelta = ord2[`${raId}|${ceId}`]
+        if (suelta == null) return calculada
+        return calculada == null ? suelta : Math.max(calculada, suelta)
+      },
+    })
 
     const notasPairs = []
     ras.forEach(ra => {
-      const pond = raPondOverrides[ra.id] !== undefined ? raPondOverrides[ra.id] : (ra.pond || 0)
-      // Guardar pond en ra para que el informe pueda incluirlo si lo necesita.
-      ra.pond = pond
-
-      // Nota RA con el motor único; si hay 2ª convocatoria, con sus criterios
-      const asigsIA = modData?.asignaciones || []
-      let raNota = notaRA(ra.id, cesByRa[ra.id] || [], acts, ng, PRAC, EXAM, asigsIA)
-      if (hayOrd2 && raNota !== null && raNota < 5) {
-        // Séptima pantalla que se calculaba su propia 2ª convocatoria: promediaba
-        // los criterios a peso igual —ignorando la ponderación del art. 4.3.a— y
-        // no veía las actividades de recuperación. El informe de la IA acababa
-        // citando una nota que no coincidía con el acta.
-        const nueva = notaRA(ra.id, cesByRa[ra.id] || [], acts, ng, PRAC, EXAM, asigsIA, 2,
-          (raId, ceId, calculada) => {
-            const suelta = ord2[`${raId}|${ceId}`]
-            if (suelta == null) return calculada
-            return calculada == null ? suelta : Math.max(calculada, suelta)
-          })
-        if (nueva !== null) raNota = nueva
-      }
-      if (raNota !== null && raNota !== undefined) {
-        notasPairs.push(`${ra.id}:${raNota.toFixed(1)}`)
-      }
-
-      // Nota mínima de examen por RA: min(nota) entre actividades examen del RA/CE
-      const examNotas = acts.filter(a => {
-        if (a.tipo !== 'examen') return false
-        if (String(a.ra_id) === String(ra.id)) return true
-        // Si va por CEs, incluir exámenes que toquen CEs de ESTE RA (clave RA|CE)
-        return (cesByRa[ra.id] || []).some(ce => actCubreCe(a, ra.id, ce.id))
-      }).map(a => ng[a.id]).filter(n => n != null)
-      if (examNotas.length) {
-        const minEx = Math.min(...examNotas)
-        notasPairs.push(`${ra.id}_EX:${minEx.toFixed(1)}`)
-      }
+      const n = st.porRA[ra.id]?.nota
+      if (n === null || n === undefined) return
+      notasPairs.push(`${ra.id}:${n.toFixed(1)}`)
+      if (minExam == null) return
+      const ex = notaExamenDecisiva(ra.id, cesByRa[ra.id] || [], ctx.actividades, ng, ctx.asigs, conv)
+      if (ex !== null) notasPairs.push(`${ra.id}_EX:${ex.toFixed(1)}`)
     })
 
     // Rellenar campo notas y mostrar recordatorio de criterio
@@ -766,9 +846,10 @@ async function iaInformeAutoNotas(pref = 'i') {
     if (campoNotas) campoNotas.value = notasPairs.join(',')
     const hint = document.getElementById(pref === 'i' ? 'ia-i-notas-hint' : 'ia-p-hint')
     if (hint) {
-      hint.textContent = minExam != null
-        ? `Criterio: APTO exige todos los RA >=5 y exámenes >=${minExam}.`
-        : 'Criterio: APTO exige todos los RA >=5 (la media no compensa un RA suspenso).'
+      hint.textContent = 'Para superar el módulo hacen falta TODOS los RA alcanzados' +
+        (minExam != null ? `, con los exámenes en ${minExam} o más` : '') +
+        ' (Orden 201/2024, art. 2.3): la media no compensa un RA suspenso.' +
+        (conv === 2 ? ' Notas de la 2ª convocatoria.' : '')
     }
     const notasEl = document.getElementById(`ia-${pref}-notas`)
     if (notasEl) {

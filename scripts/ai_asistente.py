@@ -368,6 +368,20 @@ class IAAsistente:
         bloque_sup = "\n".join(_bloque_ra(ra, n) for ra, n in superados) or "  (ninguno)"
         bloque_pen = "\n".join(_bloque_ra(ra, n) for ra, n in pendientes) or "  (ninguno)"
 
+        # Los RA que todavía no se han trabajado. Sin esto, un informe de
+        # trimestre daba a entender que el módulo estaba entero y que lo no
+        # citado estaba suspenso.
+        sin_evaluar = [ra for ra in ra_texto if ra not in notas_ra]
+        bloque_sin = ""
+        if sin_evaluar:
+            filas = [f"  {ra} — sin calificar todavía" +
+                     (f": {ra_texto.get(ra, '')}" if ra_texto.get(ra) else "")
+                     for ra in sin_evaluar]
+            bloque_sin = ("\n\n            RESULTADOS DE APRENDIZAJE QUE AÚN NO SE HAN TRABAJADO\n"
+                          + "\n".join(filas) +
+                          "\n            (El módulo está en curso: no digas que están suspensos ni "
+                          "que le faltan; di que se verán más adelante.)")
+
         ev_str = ""
         if evidencias:
             filas = [f"  · {e.get('descripcion','(actividad)')}: {e.get('nota')}/10"
@@ -376,6 +390,9 @@ class IAAsistente:
             ev_str = "\n\nCalificaciones de las actividades del alumno/a:\n" + "\n".join(filas)
 
         obs_str = f"\n\nObservaciones del profesor/a:\n{observaciones}" if observaciones else ""
+        nota_txt = "sin calificación todavía" if nota_final is None else f"{nota_final:.2f}/10"
+        if sin_evaluar and nota_final is not None:
+            nota_txt += " (parcial: solo con lo evaluado hasta ahora)"
 
         user = textwrap.dedent(f"""\
             Alumno/a: {alumno}
@@ -387,9 +404,9 @@ class IAAsistente:
 {bloque_sup}
 
             RESULTADOS DE APRENDIZAJE NO SUPERADOS
-{bloque_pen}
+{bloque_pen}{bloque_sin}
 
-            Nota final del módulo: {nota_final:.2f}/10 · Resultado: {resultado}{ev_str}{obs_str}
+            Nota final del módulo: {nota_txt} · Resultado: {resultado}{ev_str}{obs_str}
 
             Redacta el informe con esta estructura, sin numerarla ni poner títulos:
 
@@ -746,7 +763,11 @@ def _contexto_didactico(mod, notas: dict[str, float], detalle: list[dict] | None
 # Códigos que impiden seguir (falta información o los datos son inválidos) frente a
 # los que solo advierten. Antes solo salían los primeros y algún aviso normativo se
 # quedaba dentro de Python sin llegar nunca al profesorado.
-CODIGOS_BLOQUEANTES = {"RA_NO_EVALUADO", "PONDERACION_CERO", "NOTA_INVALIDA"}
+#
+# Que falten RA por evaluar NO es un error: en diciembre o en marzo faltan casi
+# todos, y el informe de trimestre es justo el que más se pide. Se avisa y se
+# redacta el informe con lo que hay, diciendo qué queda por trabajar.
+CODIGOS_BLOQUEANTES = {"PONDERACION_CERO", "NOTA_INVALIDA"}
 
 
 def _emitir_alertas(estado: dict):
@@ -871,6 +892,37 @@ def _parse_json_list(raw: str | None) -> list[dict]:
         return []
 
 
+def _parse_notas_ra(raw: str | None) -> dict[str, dict[str, float]]:
+    """{ alumno_id: { "RA1": 7.0, … } } tal y como lo calcula el motor del renderer.
+
+    Aquí no se pueden replicar los pesos de cada actividad, la escala de cada
+    instrumento, los RA cerrados en una sesión anterior ni las pruebas de la 2ª
+    convocatoria: la aplicación manda las notas por RA ya hechas y este script
+    solo las interpreta.
+    """
+    if not raw:
+        return {}
+    try:
+        data = json.loads(raw)
+    except Exception:
+        return {}
+    if not isinstance(data, dict):
+        return {}
+    salida: dict[str, dict[str, float]] = {}
+    for aid, filas in data.items():
+        if not isinstance(filas, dict):
+            continue
+        limpias = {}
+        for ra_id, nota in filas.items():
+            try:
+                limpias[str(ra_id)] = float(nota)
+            except (TypeError, ValueError):
+                continue
+        if limpias:
+            salida[str(aid)] = limpias
+    return salida
+
+
 def _norm_ponds(ras: list[dict]) -> dict[str, float]:
     """Devuelve ponderaciones normalizadas por RA.
 
@@ -993,7 +1045,7 @@ def _calc_informe_estado(mod, notas: dict[str, float], min_exam: float | None, p
 
     if sin_nota:
         resultado = "PENDIENTE"
-        alerta = ("RA_NO_EVALUADO", f"Faltan notas para el RA: {', '.join(sin_nota)}.")
+        alerta = ("RA_NO_EVALUADO", f"Módulo aún en curso: sin calificar todavía {', '.join(sin_nota)}.")
     else:
         resultado = "APTO" if (nota_final is not None and nota_final >= 5 and not pendientes) else "NO APTO"
         alerta = None
@@ -1156,7 +1208,8 @@ def _cmd_plan(args: list[str]):
 def _cmd_grupo(args: list[str]):
     """Radiografía del grupo: los números se calculan aquí, la IA solo interpreta."""
     opts = _parse_opts(args, ["--modulo", "--proveedor", "--alumnos-json",
-                              "--notas-grid-json", "--actividades-json"])
+                              "--notas-grid-json", "--actividades-json",
+                              "--notas-ra-json"])
     mod = _cargar_modulo(opts.get("--modulo", "iso_data"))
     alumnos = _parse_json_list(opts.get("--alumnos-json"))
     grid    = _parse_json_list(opts.get("--notas-grid-json"))
@@ -1177,7 +1230,9 @@ def _cmd_grupo(args: list[str]):
         except (TypeError, ValueError):
             return None
 
-    # Notas por alumno y RA
+    # Notas por alumno y RA. Las manda calculadas la aplicación; solo si no
+    # llegan (versión antigua) se recurre a la media de las notas crudas.
+    notas_ra_app = _parse_notas_ra(opts.get("--notas-ra-json"))
     por_alumno_ra: dict[Any, dict[str, list[float]]] = {}
     por_actividad: dict[Any, list[float]] = {}
     for fila in grid:
@@ -1185,9 +1240,18 @@ def _cmd_grupo(args: list[str]):
         if n is None:
             continue
         act = act_por_id.get(fila.get("actividad_id")) or {}
-        por_actividad.setdefault(fila.get("actividad_id"), []).append(n)
+        # Cada instrumento tiene su escala: un 7 sobre 20 no es un aprobado.
+        try:
+            nota_max = float(act.get("nota_max") or 10) or 10
+        except (TypeError, ValueError):
+            nota_max = 10
+        por_actividad.setdefault(fila.get("actividad_id"), []).append(n * 10 / nota_max)
+        if notas_ra_app:
+            continue
         for ra in _ras_de_actividad(act):
             por_alumno_ra.setdefault(fila.get("alumno_id"), {}).setdefault(ra, []).append(n)
+    for aid, filas in notas_ra_app.items():
+        por_alumno_ra[aid] = {ra_id: [nota] for ra_id, nota in filas.items()}
 
     def _media(xs):
         return round(sum(xs) / len(xs), 2) if xs else None
@@ -1276,7 +1340,8 @@ def _cmd_examen(args: list[str]):
 
 
 def _cmd_generar_todo(args: list[str]):
-    opts      = _parse_opts(args, ["--modulo", "--salida", "--proveedor", "--alumnos-json", "--notas-grid-json", "--actividades-json"])
+    opts      = _parse_opts(args, ["--modulo", "--salida", "--proveedor", "--alumnos-json",
+                                   "--notas-grid-json", "--actividades-json", "--notas-ra-json"])
     mod_name  = opts.get("--modulo", "iso_data")
     mod       = _cargar_modulo(mod_name)
     abrev     = mod.MODULO['abrev'].lower()
@@ -1312,6 +1377,8 @@ def _cmd_generar_todo(args: list[str]):
     actividades = [a for a in _parse_json_list(opts.get("--actividades-json"))
                    if not _es_de_recuperacion(a)]
 
+    notas_ra = _parse_notas_ra(opts.get("--notas-ra-json"))
+
     if alumnos:
         print(f"\n🧾 Generando informes individuales…")
         for alumno in alumnos:
@@ -1341,6 +1408,10 @@ def _cmd_generar_todo(args: list[str]):
                     den = sum(p for _, p in vals) or len(vals)
                     num = sum(n * p for n, p in vals)
                     notas[ra_id] = num / den if den else 0.0
+                # Si la aplicación ha mandado las notas por RA calculadas con su
+                # motor, mandan ellas: son las que figuran en Evaluaciones.
+                if str(alumno.get("id")) in notas_ra:
+                    notas = dict(notas_ra[str(alumno.get("id"))])
                 setattr(mod, "_faltas_porcentaje", None)
                 setattr(mod, "_ras_llave", [])
                 st = _calc_informe_estado(mod, notas, None, None)

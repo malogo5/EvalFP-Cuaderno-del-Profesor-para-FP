@@ -121,4 +121,18 @@ describe('El superado parcial cuenta como superado (art. 18.4)', () => {
     expect(motor).toContain('superadoParaPromocion')
     expect(motor).toContain("const superado = resultado === 'SUPERADO'")
   })
+
+  it('el asistente de IA no se calcula sus propias notas por RA', () => {
+    // Octavo y noveno motor: el informe individual se construía las notas a
+    // mano —sin ver las pruebas de la 2ª convocatoria ni los RA cerrados— y la
+    // radiografía del grupo se las calculaba en Python con una media aritmética
+    // de las notas crudas, sin peso ni escala de instrumento.
+    const ia = leer('renderer/js/modules/ia.js')
+    expect(ia, 'el informe de la IA no usa el motor').toContain('contextoModulo(')
+    expect(ia, 'el informe de la IA no usa el motor').toContain('estadoModulo(')
+    expect(ia, 'el grupo no manda sus notas calculadas').toContain('opts.notasRaJson')
+
+    const py = leer('scripts/ai_asistente.py')
+    expect(py, 'Python no acepta las notas por RA de la aplicación').toContain('--notas-ra-json')
+  })
 })

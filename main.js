@@ -497,7 +497,7 @@ ipcMain.handle('system:pythonStatus', event => {
 })
 
 // ── IPC: IA + Apuntes ─────────────────────────────────────────────────────────
-ipcMain.on('gen-ia', conRespuestaDeError('gen-ia-reply', (event, { comando, modulo, ra, n, alumno, notas, proveedor, consent, anonimizar, minExam, ponderaciones, faltasPorcentaje, rasLlave, alumnosJson, notasGridJson, actividadesJson, detalleJson, semanas, tipo, duracion }) => {
+ipcMain.on('gen-ia', conRespuestaDeError('gen-ia-reply', (event, { comando, modulo, ra, n, alumno, notas, proveedor, consent, anonimizar, minExam, ponderaciones, faltasPorcentaje, rasLlave, alumnosJson, notasGridJson, actividadesJson, notasRaJson, detalleJson, semanas, tipo, duracion }) => {
   assertTrustedSender(event)
   if (!['rubrica', 'actividad', 'informe', 'plan', 'grupo', 'examen', 'todo'].includes(comando)) throw new Error('Comando IA no permitido')
   if (typeof modulo !== 'string' || !getModulesData().modules[modulo]) throw new Error('Módulo IA no válido')
@@ -539,6 +539,10 @@ ipcMain.on('gen-ia', conRespuestaDeError('gen-ia-reply', (event, { comando, modu
   if (conDatosGrupo && alumnosJson != null && String(alumnosJson).trim() !== '') args.push('--alumnos-json', String(alumnosJson).trim())
   if (conDatosGrupo && notasGridJson != null && String(notasGridJson).trim() !== '') args.push('--notas-grid-json', String(notasGridJson).trim())
   if (conDatosGrupo && actividadesJson != null && String(actividadesJson).trim() !== '') args.push('--actividades-json', String(actividadesJson).trim())
+  // Notas por RA ya calculadas con el motor único del renderer: Python no puede
+  // replicar la ponderación por actividad, la escala del instrumento ni los RA
+  // cerrados, así que se las damos hechas.
+  if (conDatosGrupo && notasRaJson != null && String(notasRaJson).trim() !== '') args.push('--notas-ra-json', String(notasRaJson).trim())
   if (proveedor) args.push('--proveedor', proveedor)
   if (comando === 'todo') args.push('--salida', salida)
   runPython(event, 'ai_asistente.py', args, 'gen-ia-reply')

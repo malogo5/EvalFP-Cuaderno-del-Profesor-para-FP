@@ -151,18 +151,29 @@ function notaRA(raId, raCeList, acts, notasAl, pesoPrac, pesoExam, asigs, conv, 
  * evaluación diferente» del art. 21.5, y si con él se llega al mínimo, el mínimo
  * está alcanzado. Solo si no hay prueba de recuperación se mira la del curso.
  */
+function examenesQueDeciden(raId, raCeList, acts, notasAl, asigs, conv) {
+  const raActs = (acts || []).filter(a => actividadDeRa(a, raId, raCeList, asigs))
+  const examenes = raActs.filter(a => a.tipo === 'examen' && notasAl?.[a.id] != null)
+  const ordinarios = examenes.filter(a => convocatoriaDe(a) === 1)
+  if (Number(conv) < 2 || !conv) return ordinarios
+  const recuperacion = examenes.filter(a => convocatoriaDe(a) === 2)
+  return recuperacion.length ? recuperacion : ordinarios
+}
+
+/**
+ * La peor nota de examen que cuenta para el mínimo, en escala 0-10.
+ * `null` si el RA no tiene ningún examen calificado.
+ */
+function notaExamenDecisiva(raId, raCeList, acts, notasAl, asigs, conv) {
+  const exs = examenesQueDeciden(raId, raCeList, acts, notasAl, asigs, conv)
+  if (!exs.length) return null
+  return Math.min(...exs.map(a => notaEnEscala10(notasAl[a.id], a.nota_max)))
+}
+
 function raMinExamKO(raId, raCeList, acts, notasAl, minExam, asigs, conv) {
   if (minExam == null) return false
-  const raActs = (acts || []).filter(a => actividadDeRa(a, raId, raCeList, asigs))
-  const bajoMinimo = a => notaEnEscala10(notasAl[a.id], a.nota_max) < minExam
-  const examenes = raActs.filter(a => a.tipo === 'examen' && notasAl?.[a.id] != null)
-  if (!examenes.length) return false
-
-  const ordinarios = examenes.filter(a => convocatoriaDe(a) === 1)
-  if (Number(conv) < 2 || !conv) return ordinarios.some(bajoMinimo)
-
-  const recuperacion = examenes.filter(a => convocatoriaDe(a) === 2)
-  return recuperacion.length ? recuperacion.some(bajoMinimo) : ordinarios.some(bajoMinimo)
+  const peor = notaExamenDecisiva(raId, raCeList, acts, notasAl, asigs, conv)
+  return peor !== null && peor < minExam
 }
 
 /**
@@ -364,6 +375,6 @@ if (typeof module !== 'undefined' && module.exports) {
     notaEnEscala10, mediaActividades, pesosPorTipo, notaCE, notaRA,
     raMinExamKO, actaEntera, contextoModulo, estadoModulo, etiquetaResultado,
     moduloConFaseEmpresa, calificacionCualitativa, moduloEsAmbito,
-    convocatoriaDe, actividadesDeConvocatoria,
+    convocatoriaDe, actividadesDeConvocatoria, notaExamenDecisiva,
   }
 }
