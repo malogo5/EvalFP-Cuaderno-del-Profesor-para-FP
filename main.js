@@ -136,11 +136,50 @@ function getAppInfo() {
     version: app.getVersion(),
     license: pkg.license || 'GPL-3.0-or-later',
     copyright: pkg.build?.copyright || '',
-    releaseNotes: [
-      'Instalador y documentación base incluidos en el paquete final.',
-      'Modal "Acerca de" con versión y licencia visibles dentro de la app.',
-      'Autoapertura del aviso una sola vez por versión nueva.',
-    ],
+    releaseNotes: _novedadesDelChangelog(app.getVersion()),
+  }
+}
+
+/**
+ * Novedades de la versión actual, leídas del CHANGELOG.
+ *
+ * Estaban escritas a mano aquí y se quedaron cinco versiones atrás: el «Acerca
+ * de» de la 3.9.0 seguía presumiendo del instalador de la 3.3.1. Una lista que
+ * hay que acordarse de actualizar es una lista que se queda vieja.
+ */
+function _novedadesDelChangelog(version) {
+  const porDefecto = ['Consulta CHANGELOG.md para el detalle de esta versión.']
+  try {
+    const rutas = [
+      path.join(__dirname, 'CHANGELOG.md'),
+      path.join(process.resourcesPath || '', 'CHANGELOG.md'),
+    ]
+    const ruta = rutas.find(r => r && fs.existsSync(r))
+    if (!ruta) return porDefecto
+
+    const texto = fs.readFileSync(ruta, 'utf8')
+    const desde = texto.indexOf(`## [${version}]`)
+    if (desde === -1) return porDefecto
+    const resto = texto.slice(desde)
+    const hasta = resto.indexOf('\n## [', 1)
+    const bloque = hasta === -1 ? resto : resto.slice(0, hasta)
+
+    // Los puntos de la lista, sin el marcado de negritas ni los enlaces
+    const notas = []
+    for (const linea of bloque.split('\n')) {
+      const m = linea.match(/^-\s+(.*)$/)
+      if (!m) continue
+      const limpia = m[1]
+        .replace(/\*\*(.*?)\*\*/g, '$1')
+        .replace(/`([^`]*)`/g, '$1')
+        .replace(/\s+/g, ' ')
+        .trim()
+      if (limpia) notas.push(limpia.length > 180 ? limpia.slice(0, 177) + '…' : limpia)
+      if (notas.length >= 8) break
+    }
+    return notas.length ? notas : porDefecto
+  } catch {
+    return porDefecto
   }
 }
 

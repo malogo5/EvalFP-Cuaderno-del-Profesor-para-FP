@@ -249,3 +249,61 @@ promediaban los criterios de la 2ª convocatoria a peso igual, ignorando la
 ponderación del art. 4.3.a, y ninguno veía las actividades de recuperación: el
 último era el informe de la IA, que citaba una nota que no coincidía con el acta.
 `motor-unico.test.js` falla ahora si alguien vuelve a promediar criterios a mano.
+
+
+---
+
+## Segunda tanda · lo que salió al probar los estados raros
+
+## V-10 · La renuncia a convocatoria era imposible de registrar — **CORREGIDO**
+
+**Categoría:** Error confirmado · **Gravedad: Alta** · **Pantalla:** Alumnos
+
+Poner a alguien en **Renuncia** devolvía «Error: Ha ocurrido un error. Inténtalo
+de nuevo» y el estado volvía atrás. La baja sí funcionaba.
+
+El mismo dato estaba escrito en tres sitios: el desplegable de la interfaz, el
+validador del renderer y `preload.js`. Al añadir el estado «Renuncia» se
+actualizaron los dos primeros y **no el tercero**, que seguía comprobando contra
+`['Activo','Pendiente','Baja']` y cortaba el guardado con «estado inválido». La
+renuncia del art. 11 —que en actas figura como RC, art. 25.9— no se podía usar.
+
+Corregido, y con un test que compara las tres listas: si una se queda atrás,
+falla. El mensaje real solo se pudo leer gracias al registro en consola que se
+añadió esta misma mañana; antes se perdía en un «ha ocurrido un error».
+
+## V-11 · La aplicación pedía tipografías a Google en cada arranque — **CORREGIDO**
+
+**Categoría:** Error confirmado · **Gravedad: Media** · **Pantalla:** todas
+
+La hoja de estilos empezaba con un `@import` a `fonts.googleapis.com`. Dos
+problemas a la vez:
+
+1. **No funcionaba.** La propia CSP de la aplicación lo bloqueaba —«violates the
+   following Content Security Policy directive: style-src 'self'»— así que las
+   tipografías nunca llegaban y se veía la de respaldo, dejando dos errores en la
+   consola en cada arranque.
+2. **Contradecía lo que el cuaderno promete.** «Sin cuenta, sin nube y sin
+   conexión: tus datos no salen del ordenador» — y arrancaba llamando a un
+   servidor de Google.
+
+Sustituido por la pila tipográfica del sistema. La consola queda **sin un solo
+aviso**.
+
+## V-12 · Las novedades del «Acerca de» se quedaron cinco versiones atrás — **CORREGIDO**
+
+**Categoría:** Error confirmado · **Gravedad: Baja** · **Pantalla:** Acerca de
+
+El modal de la 3.9.0 seguía presumiendo del instalador y del propio modal, que
+son novedades de la 3.3.1: la lista estaba escrita a mano en `main.js`. Ahora se
+lee del CHANGELOG, que es lo único que se actualiza siempre.
+
+---
+
+### Comprobado y correcto
+
+- **Baja a mitad de curso**: conserva las notas, sale separada del alumnado activo
+  y con «Matrícula anulada · sin evaluación», sin acta (art. 7.1).
+- **Renuncia**: figura como **RC · renuncia a convocatoria**, sin calificación.
+- **Archivar y restaurar un módulo**: ISO volvió con sus seis alumnos y sus notas.
+- **Numeración del alumnado importado**: correlativa, 1 a 6.

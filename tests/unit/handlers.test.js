@@ -153,3 +153,22 @@ describe('Zonas de arrastre de la ventana', () => {
     expect(sinEximir, `zonas de arrastre que se tragarán los clics: ${sinEximir.join(', ')}`).toEqual([])
   })
 })
+
+describe('Estados del alumnado', () => {
+  it('los cuatro estados coinciden en las tres capas', () => {
+    // La renuncia a convocatoria (art. 11) se ofrecía en la interfaz, la base la
+    // aceptaba… y preload.js la rechazaba con «estado inválido». Tres listas del
+    // mismo dato en tres archivos: si una se queda atrás, el fallo es invisible
+    // hasta que alguien intenta usarla.
+    const ESPERADOS = ['Activo', 'Pendiente', 'Renuncia', 'Baja']
+    const capas = {
+      'preload.js': leer('preload.js'),
+      'renderer/js/utils/validators.js': leer('renderer/js/utils/validators.js'),
+      'renderer/js/modules/alumnos.js': leer('renderer/js/modules/alumnos.js'),
+    }
+    for (const [archivo, src] of Object.entries(capas)) {
+      const faltan = ESPERADOS.filter(e => !src.includes(`'${e}'`))
+      expect(faltan, `${archivo} no conoce el estado ${faltan.join(', ')}`).toEqual([])
+    }
+  })
+})

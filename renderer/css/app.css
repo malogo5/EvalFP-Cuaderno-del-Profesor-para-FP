@@ -1,5 +1,11 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Domine:wght@500;600;700&family=Work+Sans:wght@400;500;600;700;800&display=swap');
+/* Sin tipografías de Google.
+   Este @import pedía Domine y Work Sans a fonts.googleapis.com en cada arranque.
+   La propia CSP de la aplicación lo bloqueaba —«violates style-src 'self'»—, así
+   que nunca llegaban: se veía la tipografía de respaldo y quedaba un error en la
+   consola. Además contradice lo que promete el cuaderno: sin nube y sin conexión.
+   Se usa la pila del sistema, que en macOS y Windows da un resultado equivalente
+   sin salir del ordenador. */
 
 :root {
   /* ── Superficies (papel cálido) ── */
@@ -71,7 +77,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{
   height:100%;overflow:hidden;
-  font-family:'Work Sans',-apple-system,'Segoe UI',sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI Variable Text','Segoe UI',system-ui,sans-serif;
   background:var(--bg);color:var(--text);font-size:13px;
   -webkit-font-smoothing:antialiased;
 }
@@ -108,13 +114,13 @@ html,body{
   width:38px;height:38px;border-radius:11px;flex-shrink:0;
   background:var(--grad);
   display:flex;align-items:center;justify-content:center;
-  font-family:'Domine',serif;
+  font-family:ui-serif,'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
   font-size:18px;font-weight:700;color:#fff;letter-spacing:-1px;
   box-shadow:0 4px 16px rgba(201,104,45,.45);
 }
 .logo-text{}
 .logo-mark{
-  font-family:'Domine',serif;
+  font-family:ui-serif,'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
   font-size:17px;font-weight:600;letter-spacing:-.2px;color:var(--sb-logo-color);
   line-height:1;
 }
@@ -157,7 +163,7 @@ html,body{
 .mod-dd-item:hover{background:var(--sb-dd-item-hover)}
 .mod-dd-item.sel{background:var(--sb-dd-item-sel)}
 .mod-dd-abrev{
-  font-family:'Domine',serif;
+  font-family:ui-serif,'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
   font-size:11px;font-weight:700;color:var(--sb-dd-abrev);
   min-width:36px;letter-spacing:-.3px;
 }
@@ -219,7 +225,7 @@ html,body{
   gap:12px;-webkit-app-region:drag;
 }
 .topbar-title-wrap{flex:1;display:flex;align-items:center;gap:10px}
-#topbar-title{font-family:'Domine',serif;font-size:16px;font-weight:600;color:var(--text);letter-spacing:-.1px}
+#topbar-title{font-family:ui-serif,'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;font-size:16px;font-weight:600;color:var(--text);letter-spacing:-.1px}
 .topbar-sub{
   font-size:11.5px;color:var(--text3);font-weight:500;
   padding:4px 10px;border-radius:999px;
@@ -403,7 +409,7 @@ td.sticky-col:hover{background:rgba(201,104,45,.03)}
   content:'';position:absolute;top:0;left:0;right:0;height:3px;
   background:var(--grad);
 }
-.kpi-val{font-family:'Domine',serif;font-size:32px;font-weight:600;color:var(--accent);letter-spacing:-1px;line-height:1}
+.kpi-val{font-family:ui-serif,'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;font-size:32px;font-weight:600;color:var(--accent);letter-spacing:-1px;line-height:1}
 .kpi-label{font-size:10.5px;color:var(--text2);margin-top:7px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
 
 /* ══════════════════════════════════════
@@ -432,7 +438,7 @@ td.sticky-col:hover{background:rgba(201,104,45,.03)}
 }
 .mod-card.active-mod::before{opacity:1}
 .mod-card-abrev{
-  font-family:'Domine',serif;
+  font-family:ui-serif,'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
   font-size:27px;font-weight:600;letter-spacing:-1px;margin-bottom:6px;
   background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
 }
@@ -460,7 +466,7 @@ dialog[open]{display:block}
   border:1.5px solid var(--border);
   box-shadow:0 24px 80px rgba(42,35,28,.22),0 4px 20px rgba(201,104,45,.10);
 }
-.modal-title{font-family:'Domine',serif;font-size:17px;font-weight:600;margin-bottom:20px;color:var(--text);letter-spacing:-.1px}
+.modal-title{font-family:ui-serif,'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;font-size:17px;font-weight:600;margin-bottom:20px;color:var(--text);letter-spacing:-.1px}
 .modal-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:24px}
 
 /* ══════════════════════════════════════
@@ -534,13 +540,13 @@ dialog[open]{display:block}
   display:inline-flex;align-items:center;justify-content:center;
   width:72px;height:72px;border-radius:22px;
   background:var(--grad);
-  font-family:'Domine',serif;
+  font-family:ui-serif,'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
   font-size:32px;font-weight:700;color:#fff;letter-spacing:-1px;
   box-shadow:0 14px 44px rgba(201,104,45,.34), 0 2px 0 rgba(255,255,255,.35) inset;
   margin:0 auto 24px;
 }
 .welcome h1{
-  font-family:'Domine',serif;
+  font-family:ui-serif,'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
   font-size:38px;font-weight:600;letter-spacing:-.5px;margin-bottom:10px;
   color:var(--text);
 }
@@ -778,7 +784,7 @@ dialog, dialog *{-webkit-app-region:no-drag}
 }
 .cat-card-abrev{
   font-size:15px;font-weight:800;color:var(--accent);
-  font-family:'Domine',serif;margin-bottom:4px;
+  font-family:ui-serif,'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;margin-bottom:4px;
 }
 .cat-card-nombre{font-size:11.5px;font-weight:600;color:var(--text);line-height:1.35;margin-bottom:8px}
 .cat-card-meta{font-size:10.5px;color:var(--text3);display:flex;gap:6px;flex-wrap:wrap}

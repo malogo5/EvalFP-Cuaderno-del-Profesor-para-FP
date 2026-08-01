@@ -18,7 +18,14 @@ function _validateAlumno(a) {
   if (!a.id && !_isPositiveInt(a.modulo_id)) throw new Error('modulo_id inválido')
   if (a.apellidos !== null && a.apellidos !== undefined && !_isStr(a.apellidos, 100)) throw new Error('apellidos muy largo')
   if (a.nombre !== null && a.nombre !== undefined && !_isStr(a.nombre, 100)) throw new Error('nombre muy largo')
-  if (a.estado !== null && a.estado !== undefined && !['Activo','Pendiente','Baja'].includes(a.estado)) throw new Error('estado inválido')
+  // «Renuncia» es la renuncia a convocatoria del art. 11 de la Orden 201/2024,
+  // que en actas figura como «RC» (art. 25.9). Faltaba en esta lista, así que el
+  // puente rechazaba el estado y la renuncia no se podía registrar: la interfaz
+  // lo ofrecía, la base lo aceptaba y aquí se caía con «estado inválido».
+  if (a.estado !== null && a.estado !== undefined &&
+      !['Activo', 'Pendiente', 'Renuncia', 'Baja'].includes(a.estado)) {
+    throw new Error('estado inválido')
+  }
   if (a.email !== null && a.email !== undefined && !_isStr(a.email, 200)) throw new Error('email muy largo')
   if (a.nia !== null && a.nia !== undefined && !_isStr(a.nia, 20)) throw new Error('NIA muy largo')
 }
