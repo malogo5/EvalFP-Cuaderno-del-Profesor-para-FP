@@ -189,6 +189,16 @@ html,body{
   color:var(--sb-footer-color);letter-spacing:.04em;
   border-top:1px solid var(--sb-footer-border);
 }
+/* La barra lateral entera es zona de arrastre de la ventana, y eso se traga los
+   clics de lo que haya encima: el botón «Acerca de» del pie no respondía, igual
+   que en su día los ciclos del catálogo. En vez de ir anulándolo elemento a
+   elemento —que es como se llegó al fallo—, se exime a TODO lo que se pulsa. */
+.sidebar button,
+.sidebar input,
+.sidebar select,
+.sidebar textarea,
+.sidebar a,
+.sidebar [onclick]{-webkit-app-region:no-drag}
 
 /* ══════════════════════════════════════
    MAIN + TOPBAR

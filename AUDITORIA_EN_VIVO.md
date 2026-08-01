@@ -172,6 +172,7 @@ exactamente lo que produce el V-3.
 | V-6 | RA sin nota bloqueados en la 2ª convocatoria | **Crítica** | Corregida |
 | V-7 | Boletín desde Evaluaciones con el módulo equivocado | Alta | Corregida |
 | V-8 | Sin «marcar todos» en los criterios de una actividad | Media | Corregida |
+| V-9 | El botón «Acerca de» no respondía al clic | Baja | Corregida |
 
 **Lo que confirma esta segunda vuelta.** La auditoría de código encontró errores de
 cálculo; esta encuentra otra familia distinta: **la aplicación calcula bien lo que
@@ -206,3 +207,20 @@ alta desde cero. Los módulos de prueba llevan los grupos AUD-1A y AUD-2A.*
 
 **Nota.** V-1 necesita **reiniciar EvalFP** una vez: la migración de la base la
 hace el proceso principal al abrir, no basta con recargar la ventana.
+
+
+## V-9 · El botón «Acerca de» no respondía — **CORREGIDO**
+
+**Categoría:** Error confirmado · **Gravedad: Baja**
+**Pantalla:** barra lateral, pie
+
+La barra lateral entera lleva `-webkit-app-region: drag` para poder mover la
+ventana arrastrándola, y esa zona **se traga los clics** de lo que tenga encima.
+Los `.nav-item` lo anulaban uno a uno; el pie de la barra, no, así que el botón
+«Acerca de» no hacía nada.
+
+Es exactamente el mismo fallo que dejó sin respuesta los ciclos del catálogo en
+la auditoría de julio. Corregido en la raíz: se exime del arrastre **todo lo que
+se pulsa** dentro de la barra —botones, campos, enlaces y cualquier elemento con
+`onclick`—, en vez de ir anulándolo elemento a elemento, que es como se llega a
+este fallo una y otra vez.
