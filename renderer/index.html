@@ -47,7 +47,7 @@
     <div class="nav-item" data-sec="ajustes" onclick="go(this)"><span class="icon">⚙️</span>Ajustes</div>
   </div>
   <div class="sidebar-footer" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-    <span>v<span id="app-version">3.4.0</span> · FP CLM</span>
+    <span>v<span id="app-version">3.7.1</span> · FP CLM</span>
     <button class="btn btn-ghost btn-sm" style="padding:4px 8px;font-size:10px" onclick="openAbout()">Acerca de</button>
   </div>
 </nav>
@@ -123,9 +123,11 @@
               <th class="th-editable">Nombre</th>
               <th class="th-editable">Email</th>
               <th class="th-editable" style="width:96px" title="Horas de falta. Por encima del 25 % de las horas del módulo se pierde el derecho a la evaluación continua (Orden 201/2024, art. 3.3)">Faltas (h)</th>
+              <th style="width:112px" title="Fase de formación en empresa u organismo equiparado (Orden 201/2024, art. 12 y 21)">Empresa</th>
+              <th style="width:140px" title="Convocatorias ordinarias consumidas (art. 8.2) y si arrastra el módulo de un curso anterior (art. 19)">Convoc. · pend.</th>
               <th>Estado</th><th style="width:60px"></th>
             </tr></thead>
-            <tbody id="alumnos-tbody"><tr><td colspan="7" style="color:var(--text2);text-align:center;padding:20px">Selecciona un módulo para gestionar alumnado.</td></tr></tbody>
+            <tbody id="alumnos-tbody"><tr><td colspan="9" style="color:var(--text2);text-align:center;padding:20px">Selecciona un módulo para gestionar alumnado.</td></tr></tbody>
 
           </table>
         </div>
@@ -347,6 +349,20 @@
             <input type="checkbox" id="ia-c-anonimizar" checked style="margin-top:2px"/>
             <span>Referirse al alumno/a por su número de lista, no por su nombre.</span>
           </label>
+          <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer;margin-top:7px">
+            <input type="checkbox" id="ia-c-recorte" checked style="margin-top:2px"/>
+            <span><b>Recortar la cabecera de la hoja antes de enviarla.</b>
+              El alumnado escribe su nombre arriba: referirse a él por su número no anonimiza la
+              imagen. Se recorta solo la copia que se envía; las fotos que se te devuelven marcadas
+              siguen siendo las originales completas.</span>
+          </label>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:7px;padding-left:24px">
+            <span style="font-size:11px;color:var(--text3)">Franja superior a recortar</span>
+            <input type="number" id="ia-c-recorte-pct" min="5" max="40" step="5" value="15"
+              style="width:56px;font-size:11px;padding:2px 5px;border-radius:5px;border:1px solid var(--border2);
+                     background:var(--bg);color:var(--text);text-align:center"/>
+            <span style="font-size:11px;color:var(--text3)">% de la altura</span>
+          </div>
         </div>
         <div style="margin-top:12px;padding:12px 14px;border:1px dashed var(--border2);border-radius:10px">
           <div style="font-size:12px;font-weight:700;margin-bottom:8px">Toda la clase de una vez</div>
@@ -465,6 +481,14 @@
           <button class="btn btn-ghost btn-sm" onclick="crearCopiaSeguridad()">🛟 Crear copia ahora</button>
           <button class="btn btn-ghost btn-sm" onclick="window.api.openBackups()">📂 Abrir carpeta de copias</button>
         </div>
+      </div>
+      <div class="card">
+        <div class="card-title">🗄 Módulos archivados</div>
+        <p style="font-size:12px;color:var(--text2);margin:0 0 12px">
+          Al quitar un módulo del cuaderno no se borra nada: se archiva con su alumnado y sus notas,
+          porque un curso calificado es un documento de evaluación. Aquí puedes recuperarlo.
+        </p>
+        <div id="archivados-info" style="font-size:12px;color:var(--text2)">Cargando…</div>
       </div>
       <div style="display:flex;gap:10px;align-items:center">
         <button class="btn btn-success" onclick="saveAjustes()">💾 Guardar</button>
@@ -615,7 +639,7 @@
       <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
         <div>
           <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:3px">Versión</div>
-          <div id="about-version" style="font-size:15px;font-weight:700;color:var(--text)">3.4.0</div>
+          <div id="about-version" style="font-size:15px;font-weight:700;color:var(--text)">3.7.1</div>
         </div>
         <div>
           <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:3px">Licencia</div>

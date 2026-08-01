@@ -1,4 +1,6 @@
 let _faltas = {}   // { alumnoId: horas } del módulo activo
+let _fases  = {}   // { alumnoId: 'pendiente'|'superada'|'no_superada'|'exenta' }
+let _matri  = {}   // { alumnoId: {convocatorias, pendiente} }
 
 async function loadAlumnos() {
   const mid = document.getElementById('alumnos-mod-sel').value
@@ -13,16 +15,80 @@ async function loadAlumnos() {
       if (k.startsWith(pref) && String(v).trim() !== '') _faltas[Number(k.slice(pref.length))] = parseFloat(v)
     }
   } catch { /* sin faltas registradas */ }
+  // Estado de la fase de formación en empresa (Orden 201/2024, art. 12)
+  _fases = {}
+  try {
+    const filas = await window.api.getFaseEmpresa(parseInt(mid))
+    filas.forEach(f => { _fases[Number(f.alumno_id)] = f.estado })
+  } catch { /* base antigua sin la tabla */ }
+  // Convocatorias gastadas y módulos que se arrastran de otro curso
+  _matri = {}
+  try {
+    const filas = await window.api.getMatriculas(parseInt(mid))
+    filas.forEach(f => { _matri[Number(f.alumno_id)] = { convocatorias: f.convocatorias, pendiente: f.pendiente } })
+  } catch { /* base antigua sin la tabla */ }
   renderAlumnosTable()
+}
+
+/** Máximo de convocatorias ordinarias: 4 en grado D, 2 en grado E (art. 8.2). */
+function _maxConvocatorias(mid) {
+  const data = _getModData(mid)
+  const nivel = String(data?.modulo?.ciclo_nivel || '').toUpperCase()
+  return nivel === 'CE' ? 2 : 4
+}
+
+async function updateMatricula(alumnoId, campo, valor) {
+  const mid = parseInt(document.getElementById('alumnos-mod-sel').value)
+  if (!mid) return
+  const actual = _matri[alumnoId] || { convocatorias: 0, pendiente: 0 }
+  const nuevo = { ...actual, [campo]: campo === 'pendiente' ? (valor ? 1 : 0) : (parseInt(valor, 10) || 0) }
+  const tope = _maxConvocatorias(mid)
+  if (campo === 'convocatorias' && nuevo.convocatorias > tope) {
+    alert(`En esta enseñanza el máximo son ${tope} convocatorias ordinarias (Orden 201/2024, art. 8.2).\n` +
+          'Agotadas, hace falta una convocatoria extraordinaria concedida por la dirección (art. 9).')
+  }
+  try {
+    await window.api.setMatricula({ alumnoId, ...nuevo })
+    _matri[alumnoId] = nuevo
+    showSaved()
+    renderAlumnosTable()
+  } catch (e) {
+    alert('No se ha podido guardar: ' + (e && e.message ? e.message : e))
+  }
+}
+
+/** ¿El módulo activo tiene fase de formación en empresa? */
+function _moduloTieneFase(mid) {
+  const data = _getModData(mid)
+  return moduloConFaseEmpresa(data?.modulo)
+}
+
+/** Estado de la fase de empresa de un alumno. */
+async function updateFaseEmpresa(alumnoId, estado) {
+  const mid = parseInt(document.getElementById('alumnos-mod-sel').value)
+  if (!mid) return
+  let motivo = null
+  if (estado === 'exenta') {
+    motivo = prompt('Exención de la fase de empresa (art. 22): ¿en qué se basa?\n' +
+                    'Por ejemplo: experiencia laboral acreditada de un año.', '')
+    if (motivo === null) { renderAlumnosTable(); return }
+  }
+  try {
+    await window.api.setFaseEmpresa({ alumnoId, estado, motivo })
+    _fases[alumnoId] = estado
+    showSaved()
+    renderAlumnosTable()
+  } catch (e) {
+    alert('No se ha podido guardar: ' + (e && e.message ? e.message : e))
+  }
 }
 
 function renderAlumnosTable() {
   const tbody = document.getElementById('alumnos-tbody')
-  const mod = _modulos.find(m => m.id == document.getElementById('alumnos-mod-sel').value)
   if (!_alumnos.length) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="7" style="padding:0">
+        <td colspan="9" style="padding:0">
           <div class="empty-state" style="margin:0">
             <div style="font-weight:700;color:var(--text);margin-bottom:6px">Todavía no hay alumnado en este módulo</div>
             <div style="margin-bottom:12px">Importa una lista o añade el primer alumno para empezar a trabajar.</div>
@@ -43,10 +109,13 @@ function renderAlumnosTable() {
       <td><input value="${esc(a.nombre||'')}" onblur="updateAlumno(${a.id},'nombre',this.value)"/></td>
       <td><input value="${esc(a.email||'')}" onblur="updateAlumno(${a.id},'email',this.value)"/></td>
       <td>${_celdaFaltas(a)}</td>
+      <td>${_celdaFase(a)}</td>
+      <td>${_celdaMatricula(a)}</td>
       <td>
         <select onchange="updateAlumno(${a.id},'estado',this.value)">
           <option ${a.estado==='Activo'?'selected':''}>Activo</option>
           <option ${a.estado==='Pendiente'?'selected':''}>Pendiente</option>
+          <option ${a.estado==='Renuncia'?'selected':''}>Renuncia</option>
           <option ${a.estado==='Baja'?'selected':''}>Baja</option>
         </select>
       </td>
@@ -59,7 +128,57 @@ function renderAlumnosTable() {
     ? _alumnos.filter(a => _porcentajeFalta(mid, a.id) > 25).length : 0
   document.getElementById('alumnos-footer').textContent =
     `${_alumnos.length} alumnos/as · ${activos} activos · ${_alumnos.length - activos} fuera de activo` +
-    (enRiesgo ? ` · ⚠ ${enRiesgo} por debajo del 75 % de asistencia` : '')
+    (enRiesgo ? ` · ⚠ ${enRiesgo} por debajo del 75 % de asistencia` : '') +
+    (_moduloTieneFase(mid)
+      ? ` · fase de empresa: ${_alumnos.filter(a => ['superada', 'exenta'].includes(_fases[a.id])).length} resuelta(s)`
+      : '')
+}
+
+/**
+ * Celda de la fase de formación en empresa. Solo tiene sentido en los módulos
+ * que la tienen: en el resto se deja en blanco para no ensuciar la tabla.
+ */
+function _celdaFase(a) {
+  const mid = parseInt(document.getElementById('alumnos-mod-sel').value)
+  if (!_moduloTieneFase(mid)) return '<span style="color:var(--text3);font-size:11px">—</span>'
+  const est = _fases[a.id] || 'pendiente'
+  const opciones = [
+    ['pendiente',   'Pendiente'],
+    ['superada',    'Superada'],
+    ['no_superada', 'No superada'],
+    ['exenta',      'Exenta'],
+  ].map(([v, t]) => `<option value="${v}"${est === v ? ' selected' : ''}>${t}</option>`).join('')
+  const color = est === 'superada' || est === 'exenta' ? 'var(--green)'
+    : est === 'no_superada' ? 'var(--red)' : 'var(--text2)'
+  return `<select onchange="updateFaseEmpresa(${a.id},this.value)"
+      title="Fase de formación en empresa. Con todo lo del centro alcanzado y esta fase pendiente, el módulo queda «superado parcial» (Orden 201/2024, art. 12)."
+      style="width:104px;font-size:11px;color:${color}">${opciones}</select>`
+}
+
+/**
+ * Convocatorias gastadas y arrastre del módulo de otro curso.
+ * El recuento lo lleva la secretaría del centro, pero tenerlo a la vista evita
+ * evaluar a quien ya no tiene convocatorias (art. 8.2) y recordar quién viene con
+ * el módulo pendiente, que se evalúa en las sesiones de este curso (art. 19).
+ */
+function _celdaMatricula(a) {
+  const mid  = parseInt(document.getElementById('alumnos-mod-sel').value)
+  const m    = _matri[a.id] || { convocatorias: 0, pendiente: 0 }
+  const tope = _maxConvocatorias(mid)
+  const agotadas = m.convocatorias >= tope
+  return `<div style="display:flex;align-items:center;gap:5px;white-space:nowrap">
+    <input type="number" min="0" max="9" value="${m.convocatorias || 0}"
+      title="Convocatorias ordinarias ya consumidas. Máximo ${tope} en esta enseñanza (art. 8.2). La renuncia y la anulación no cuentan."
+      style="width:44px;${agotadas ? 'color:var(--red);font-weight:700' : ''}"
+      onblur="updateMatricula(${a.id},'convocatorias',this.value)"/>
+    <span style="font-size:10px;color:${agotadas ? 'var(--red)' : 'var(--text3)'}">/${tope}${agotadas ? ' ⚠' : ''}</span>
+    <label title="Arrastra este módulo de un curso anterior: se evalúa en las sesiones ordinarias del curso en el que está matriculado (art. 19)"
+           style="display:inline-flex;align-items:center;gap:3px;font-size:10px;color:var(--text3);cursor:pointer">
+      <input type="checkbox" ${m.pendiente ? 'checked' : ''}
+        onchange="updateMatricula(${a.id},'pendiente',this.checked)"
+        style="accent-color:var(--accent);width:12px;height:12px"/>pend.
+    </label>
+  </div>`
 }
 
 /** Porcentaje de horas faltadas sobre las horas del módulo. */
@@ -118,7 +237,9 @@ function updateAlumno(id, field, val) {
           newVal = val
           break
         case 'estado':
-          if (!['Activo', 'Pendiente', 'Baja'].includes(val)) { alert('Estado inválido'); return }
+          // «Renuncia» es la renuncia a convocatoria del art. 11 de la Orden
+          // 201/2024, que en actas se refleja como «RC» (art. 25.9).
+          if (!['Activo', 'Pendiente', 'Renuncia', 'Baja'].includes(val)) { alert('Estado inválido'); return }
           newVal = val
           break
         default:

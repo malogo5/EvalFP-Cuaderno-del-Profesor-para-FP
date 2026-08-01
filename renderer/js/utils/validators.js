@@ -115,7 +115,7 @@ const validators = {
     if (!validators.email(email)) return false
     if (!validators.phone(telefono)) return false
     // Estados válidos de la app
-    if (estado && !['Activo', 'Pendiente', 'Baja'].includes(estado)) return false
+    if (estado && !['Activo', 'Pendiente', 'Renuncia', 'Baja'].includes(estado)) return false
     if (!validators.description(observaciones)) return false
     return true
   },
@@ -152,6 +152,10 @@ const validators = {
    * Mensaje de error amigable (oculta detalles técnicos)
    */
   sanitizeErrorMessage: (error, context = '') => {
+    // El contexto se recibía y se tiraba: la persona veía «Error de base de
+    // datos» y en la consola no quedaba ni de qué operación venía.
+    if (context) console.error(`[${context}]`, error)
+    else console.error(error)
     const msg = (error?.message || String(error)).toLowerCase()
     if (msg.includes('sql') || msg.includes('database')) return 'Error de base de datos. Inténtalo de nuevo.'
     if (msg.includes('permission') || msg.includes('eacces')) return 'Sin permisos para realizar esta operación.'

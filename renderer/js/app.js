@@ -2,11 +2,17 @@
 // ═══════════════════════════════════════════════════════════════
 // Estado global
 // ═══════════════════════════════════════════════════════════════
+// OJO: estas variables son el estado compartido entre todos los scripts del
+// renderer y otros archivos las REASIGNAN (alumnos.js hace `_alumnos = …`).
+// Tienen que seguir siendo `let`: con `const`, la asignación desde otro archivo
+// lanza «Assignment to constant variable» y la pantalla se queda en blanco.
+// No aceptes aquí el arreglo automático de prefer-const.
 let _modulos = []       // módulos activos del profesor
 let _curMod  = null     // módulo activo seleccionado
 let _alumnos = []
 let _actividades = []
 let _notasGrid = {}     // {alumno_id: {act_id: nota}}
+let _evidencias = {}    // {`alumnoId|actId`: evidencia} — archivo que respalda la nota
 let _appInfo = null
 
 const SECS = ['inicio','modulos','programacion','alumnos','notas','evaluaciones','dashboard','ia','ajustes']
@@ -15,10 +21,10 @@ const TITLES = {inicio:'Inicio',modulos:'Módulos',programacion:'Programación d
 
 let _modsDisponibles = []
 let _modData = null
-let _updateTimers = {}
+const _updateTimers = {}
 const IA_TABS = ['rubrica','actividad','informe','plan','grupo','examen','corregir','apuntes','todo']
-let _raPondTimers = {}
-let _pesoTimers = {}
+const _raPondTimers = {}
+const _pesoTimers = {}
 let _utRasState = null
 let _toastTimer = null
 let _toastEl = null
@@ -142,14 +148,15 @@ function registerWindowHandlers() {
     actDragStart, actDragOver, actDragLeave, actDragEnd, actDrop,
     ceKey, actCubreCe, actividadDeRa, rasDeActividad, cesDisponiblesActividad, rasPorEvaluacion,
     cesEvaluadosDeRa, contextoModulo, estadoModulo, notaRA, notaCE, actaEntera,
-    loadAlumnos, renderAlumnosTable, updateAlumno, updateFaltas, addAlumno, importAlumnos, confirmImportAlumnos, removeAlumno,
+    etiquetaResultado, moduloConFaseEmpresa, calificacionCualitativa, moduloEsAmbito,
+    loadAlumnos, renderAlumnosTable, updateAlumno, updateFaltas, updateFaseEmpresa, updateMatricula, addAlumno, importAlumnos, confirmImportAlumnos, removeAlumno,
     loadNotas, renderNotasGrid, onNotaChange, colorNota, exportNotasPDF, toggleRecMode,
-    loadEvaluaciones, setEvalTab, cerrarSesionEvaluacion, toggleEvalCard, toggleEvalCard2, toggleOrd2ShowAll, saveMinExam,
+    loadEvaluaciones, setEvalTab, cerrarSesionEvaluacion, reabrirRa, toggleEvalCard, toggleEvalCard2, toggleOrd2ShowAll, saveMinExam,
     loadDashboard, genBoletin, togglePardonCe, saveRec2Nota, setRecSort, toggleRecCard, setOrd1Sort, toggleOrd1Card,
     initIaSection, iaTab, termAppend, runIA, runApuntes,
     iaInformeLoadAlumnos, iaInformeAutoNotas,
     openAbout, closeAbout, loadAppInfo,
-    loadAjustes, saveAjustes, setTheme,
+    loadAjustes, saveAjustes, setTheme, pintarModulosArchivados, restaurarModulo,
     v, esc, showSaved, showToast, evalLabel,
   })
 }

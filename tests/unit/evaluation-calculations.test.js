@@ -12,7 +12,8 @@ function loadEvaluationCalculations() {
   vm.runInNewContext(
     `${ceKeys}\n${motor}\nmodule.exports = { _mediaActs: mediaActividades, ` +
     `_calcNotaRA: notaRA, _calcNotaCE: notaCE, _raMinExamKO: raMinExamKO, ` +
-    `_actaEntera: actaEntera, ceKey, notaEnEscala10, contextoModulo, estadoModulo }`,
+    `_actaEntera: actaEntera, ceKey, notaEnEscala10, contextoModulo, estadoModulo, ` +
+    `etiquetaResultado, moduloConFaseEmpresa }`,
     context)
   return context.module.exports
 }
@@ -152,6 +153,52 @@ describe('Un solo veredicto para el mismo alumno', () => {
     expect(st.pendientes).toEqual(['RA2'])
     expect(st.superado).toBe(false)
     expect(st.acta).toBe(4)               // art. 25.5: sin todos los RA, máximo 4
+  })
+
+  // Orden 201/2024, art. 12: superado, «superado parcial» a falta de la fase de
+  // formación en empresa, y no superado. El art. 18.4 dice que SP cuenta como
+  // superado para promocionar, y el 25.6 que conserva su calificación.
+  describe('los tres estados de evaluación del módulo', () => {
+    const conFase = calc.contextoModulo({
+      ras: [{ id: 'RA1', pond: 100 }],
+      cesByRa: { RA1: [{ id: 'CR1' }] },
+      asignaciones: [{ ut: 'UT1', ra: 'RA1', ces: ['CR1'] }],
+      actividades: [{ id: 1, ut_id: 'UT1', ra_id: 'RA1', tipo: 'practica', peso: 100, ces: '["RA1|CR1"]' }],
+      minExam: null,
+      tieneFaseEmpresa: true,
+    })
+
+    it('con la fase de empresa pendiente el módulo queda «superado parcial»', () => {
+      const st = calc.estadoModulo(conFase, { 1: 7 }, { faseEmpresa: 'pendiente' })
+      expect(st.resultado).toBe('SUPERADO_PARCIAL')
+      expect(calc.etiquetaResultado(st.resultado)).toBe('APTO/A · SP')
+      expect(st.acta).toBe(7)                    // conserva su calificación (art. 25.6)
+      expect(st.superadoParaPromocion).toBe(true) // art. 18.4
+      expect(st.superado).toBe(false)
+    })
+
+    it('con la fase superada o exenta el módulo está superado', () => {
+      expect(calc.estadoModulo(conFase, { 1: 7 }, { faseEmpresa: 'superada' }).resultado).toBe('SUPERADO')
+      expect(calc.estadoModulo(conFase, { 1: 7 }, { faseEmpresa: 'exenta' }).resultado).toBe('SUPERADO')
+    })
+
+    it('con la fase no superada el módulo no está superado y el acta se topa en 4', () => {
+      const st = calc.estadoModulo(conFase, { 1: 7 }, { faseEmpresa: 'no_superada' })
+      expect(st.resultado).toBe('NO_SUPERADO')
+      expect(st.acta).toBe(4)
+      expect(st.superadoParaPromocion).toBe(false)
+    })
+
+    it('suspender en el centro manda sobre la fase de empresa', () => {
+      const st = calc.estadoModulo(conFase, { 1: 3 }, { faseEmpresa: 'superada' })
+      expect(st.resultado).toBe('NO_SUPERADO')
+    })
+
+    it('detecta la fase de empresa por las horas del catálogo', () => {
+      expect(calc.moduloConFaseEmpresa({ total_horas: 338, horas_aula: 200 })).toBe(true)
+      expect(calc.moduloConFaseEmpresa({ total_horas: 186 })).toBe(false)
+      expect(calc.moduloConFaseEmpresa({ total_horas: 338, horas_aula: 200, fase_empresa: false })).toBe(false)
+    })
   })
 
   it('un RA sin calificar deja el módulo pendiente y no cuenta como cero', () => {

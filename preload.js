@@ -91,6 +91,14 @@ contextBridge.exposeInMainWorld('api', {
   },
 
   // ── Ponderaciones RA ──────────────────────────────────────────────────────────
+  getModulosArchivados: () => ipcRenderer.invoke('db:getModulosArchivados'),
+  restaurarModulo:      id => ipcRenderer.invoke('db:restaurarModulo', id),
+  getMatriculas:       mid => ipcRenderer.invoke('db:getMatriculas', mid),
+  setMatricula:        p   => ipcRenderer.invoke('db:setMatricula', p),
+  getEvidencias:       mid => ipcRenderer.invoke('db:getEvidencias', mid),
+  addEvidencia:        p   => ipcRenderer.invoke('db:addEvidencia', p),
+  getFaseEmpresa:      mid => ipcRenderer.invoke('db:getFaseEmpresa', mid),
+  setFaseEmpresa:      p   => ipcRenderer.invoke('db:setFaseEmpresa', p),
   getRasSuperados:     mid => ipcRenderer.invoke('db:getRasSuperados', mid),
   cerrarEvaluacionRAs: p   => ipcRenderer.invoke('db:cerrarEvaluacionRAs', p),
   reabrirRaSuperado:   p   => ipcRenderer.invoke('db:reabrirRaSuperado', p),
@@ -132,6 +140,7 @@ contextBridge.exposeInMainWorld('api', {
   genApuntes: opts  => ipcRenderer.send('gen-apuntes', opts),
   onApuntes:  cb    => ipcRenderer.on('gen-apuntes-reply', (_, d) => cb(d)),
   openOutput: ()    => ipcRenderer.send('open-output'),
+  abrirEvidencia: ruta => ipcRenderer.invoke('evidencia:abrir', ruta),
   // Abre la carpeta unificada "Material IA" (rubricas/actividades/informes/apuntes)
   openMaterial: ()  => ipcRenderer.send('open-material'),
 

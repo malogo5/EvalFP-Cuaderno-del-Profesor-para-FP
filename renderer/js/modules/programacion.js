@@ -27,15 +27,13 @@ async function loadProgramacion() {
   const raInstr    = data.ra_instrumentos || {}
   // Cargar actividades desde BD (tienen los pesos reales editados por el profesor)
   const actividades = (await window.api.getActividades(parseInt(mid))) || data.actividades || []
-  // Criterios guardados con el id suelto ("CR1") → clave RA|CE, de una vez
-  await _migrarCesActividades(parseInt(mid), actividades, data)
 
   // Cargar overrides de ponderación de RAs y mezclar con los defaults del JSON
   const raPondOverrides = {}
   try {
     const rows = await window.api.getRaPonderaciones(parseInt(mid))
     rows.forEach(r => { raPondOverrides[r.ra_id] = r.pond })
-  } catch(e) { /* sin overrides — usar ponderaciones por defecto del JSON */ }
+  } catch { /* sin overrides — usar ponderaciones por defecto del JSON */ }
   // Aplicar overrides al raMap
   ras.forEach(ra => {
     if (raPondOverrides[ra.id] !== undefined) ra.pond = raPondOverrides[ra.id]
@@ -173,7 +171,7 @@ async function loadProgramacion() {
             : 'background:rgba(74,144,217,.15);color:var(--accent2)'
           const actId = act.id || ''
           h += `<tr draggable="${actId?'true':'false'}" data-actid="${actId}" data-fromeval="${ev}"
-            ondragstart="actDragStart(event)" ondragend="actDragEnd(event)"
+            ondragstart="actDragStart(event)" ondragend="actDragEnd()"
             style="cursor:${actId?'grab':'default'}">
             <td style="text-align:center;color:var(--text2);font-size:16px;padding:0 4px;line-height:1" title="Arrastrar a otra evaluación">⠿</td>
             <td>${actId
@@ -188,7 +186,7 @@ async function loadProgramacion() {
             <td style="text-align:center">
               ${actId ? `<input class="peso-cell" type="number" min="0" max="100" step="1"
                 value="${act.peso}" data-actid="${actId}"
-                oninput="_refreshPesoTotal(this,[])"
+                oninput="_refreshPesoTotal(this)"
                 onchange="updateActividadPeso(this)"
                 title="Peso (%)"/>` : `<span style="font-weight:700;color:var(--accent)">${act.peso}%</span>`}
             </td>
@@ -314,9 +312,13 @@ async function loadProgramacion() {
           i==='practica'?'Práctica':i==='examen'?'Examen':i==='proyecto'?'Proyecto':
           i==='informe'?'Informe':i==='presentacion'?'Presentación':i
         ).join('+')
+         // El instrumento se calculaba pero no se pintaba: sin él la tarjeta no
+         // decía CON QUÉ se evalúa cada RA, que es justo lo que hay que revisar
+         // al programar (un RA sin instrumento no se puede calificar).
          h += `<div style="display:flex;gap:8px;padding:4px 0;border-top:1px solid var(--border);align-items:baseline">
            <span style="font-weight:700;color:var(--accent2);min-width:34px">${esc(raId)}</span>
            <span style="font-size:11px;color:var(--text2);flex:1;line-height:1.3">${esc(ra.nombre||'')}</span>
+           <span style="font-size:10px;color:${instrStr ? 'var(--text2)' : 'var(--warn)'}" title="${instrStr ? 'Instrumentos de evaluación' : 'Ningún instrumento evalúa este RA'}">${esc(instrStr || 'sin instrumento')}</span>
            <span class="badge badge-accent">${ra.pond||0}%</span>
          </div>`
       }
@@ -518,7 +520,6 @@ async function loadProgramacion() {
     })
     for (const a of asigsSorted) {
       const ut = utMap[a.ut] || {}
-      const ra = raMap[a.ra] || {}
       const ceList = (ces[a.ra] || []).filter(ce => a.ces.includes(ce.id))
        h += `<tr>
          <td style="font-weight:700;color:var(--accent2);vertical-align:top;padding-top:8px">${esc(a.ut)}</td>
@@ -680,7 +681,7 @@ async function updateActividadPeso(el) {
 
       await window.api.saveActividad(act)
       showSaved()
-      _refreshPesoTotal(el, acts)
+      _refreshPesoTotal(el)
     } catch(e) {
       alert('Error guardando actividad: ' + validators.sanitizeErrorMessage(e, 'updateActividadPeso'))
       console.error(e)
@@ -791,7 +792,7 @@ function actDragLeave(event) {
   event.currentTarget.style.outline = ''
 }
 
-function actDragEnd(event) {
+function actDragEnd() {
   // Limpiar todos los bordes si el drag termina fuera de cualquier zona
   document.querySelectorAll('[id^="eval-section-"]').forEach(el => {
     el.style.outline = ''
@@ -803,7 +804,7 @@ async function actDrop(event, toEval) {
   const div = event.currentTarget
   div.style.outline = ''
   let payload
-  try { payload = JSON.parse(event.dataTransfer.getData('text/plain')) } catch(e) { return }
+  try { payload = JSON.parse(event.dataTransfer.getData('text/plain')) } catch { return }
   const { actId, fromEval } = payload
   if (parseInt(fromEval) === toEval) return
   const mid = parseInt(document.getElementById('prog-mod-sel')?.value || document.getElementById('eval-mod-sel')?.value || 0)
@@ -818,10 +819,48 @@ async function actDrop(event, toEval) {
   } catch(e) { console.error('actDrop:', e) }
 }
 
+/**
+ * Cambia el número de evaluaciones del módulo y reparte unidades, RA y
+ * actividades. Antes lo hacía sin preguntar: con el curso empezado, mover una
+ * actividad de trimestre cambia el boletín de la evaluación, así que ahora se
+ * enseña primero el reparto que va a quedar.
+ */
 async function setEvalCount(mid, count) {
   const newCount  = parseInt(count)
   const data      = _getModData(mid)
   if (!data) return
+
+  const actsPrev = await window.api.getActividades(parseInt(mid))
+  const utsPrev  = data.uts || []
+  const anterior = data.modulo?.eval_count || [...new Set(utsPrev.map(u => u.eval || 1))].length || 3
+  if (newCount === anterior) return
+
+  // Simular el reparto para poder contarlo antes de tocar nada
+  const simulaUt = (() => {
+    const orden = utsPrev.slice().sort((a, b) => (a.eval||1)-(b.eval||1) || (a.orden||0)-(b.orden||0))
+    const porEval = Math.ceil(orden.length / newCount) || 1
+    return orden.filter((u, i) => (u.eval || 1) !== Math.min(Math.floor(i / porEval) + 1, newCount)).length
+  })()
+  const simulaAct = (() => {
+    const orden = actsPrev.slice().sort((a, b) => (a.eval||1)-(b.eval||1) || (a.orden||0)-(b.orden||0))
+    const porEval = Math.ceil(orden.length / newCount) || 1
+    return orden.filter((a, i) => (a.eval || 1) !== Math.min(Math.floor(i / porEval) + 1, newCount)).length
+  })()
+
+  const conNotas = (() => {
+    try { return actsPrev.filter(a => a.peso > 0).length } catch { return 0 }
+  })()
+  if (!confirm(
+    `Vas a pasar de ${anterior} a ${newCount} evaluaciones.\n\n` +
+    `Se repartirán de nuevo, por orden:\n` +
+    `  · ${simulaUt} unidad(es) de trabajo cambian de evaluación\n` +
+    `  · ${simulaAct} actividad(es) cambian de evaluación\n` +
+    `  · los RA siguen a sus unidades\n\n` +
+    (conNotas ? 'Si ya has puesto notas, sus actividades pueden acabar en otro trimestre y los boletines por evaluación cambiarán.\n\n' : '') +
+    '¿Continuar?')) {
+    loadProgramacion()   // devolver el desplegable a su valor
+    return
+  }
   data.modulo     = data.modulo || {}
   data.modulo.eval_count = newCount
 
@@ -841,7 +880,7 @@ async function setEvalCount(mid, count) {
 
   // ── Redistribuir Actividades (en BD) ─────────────────────────
   // Siempre redistribuye proporcionalmente por eval+orden: ninguna actividad se pierde
-  const acts = await window.api.getActividades(parseInt(mid))
+  const acts = actsPrev
   if (acts.length) {
     const sorted = acts.slice().sort((a,b) => (a.eval||1)-(b.eval||1) || (a.orden||0)-(b.orden||0))
     const perEval = Math.ceil(sorted.length / newCount)
@@ -895,7 +934,7 @@ async function deleteActividadRow(actId) {
   loadProgramacion()
 }
 
-function _refreshPesoTotal(changedInput, acts) {
+function _refreshPesoTotal(changedInput) {
   // Recalcular en tiempo real la suma de pesos por evaluación leyendo los inputs del DOM
   // (así refleja cambios no guardados aún en otros inputs)
   const table  = changedInput.closest('table')
@@ -916,31 +955,6 @@ function _refreshPesoTotal(changedInput, acts) {
 // ═══════════════════════════════════════════════════════════════
 // EDICIÓN DE UTs — añadir / quitar / asignar RA+CE
 // ═══════════════════════════════════════════════════════════════
-
-/**
- * Pasa los criterios de las actividades a la clave RA|CE.
- * "CR1" a secas no dice nada: cada RA numera sus criterios desde uno, así que un
- * id suelto hacía que una práctica de RA5 contase también en RA1. Se traduce una
- * sola vez y queda guardado.
- */
-async function _migrarCesActividades(mid, acts, data) {
-  const asigs    = data?.asignaciones || []
-  const cesPorRa = data?.ces || {}
-  if (!acts?.length || !Object.keys(cesPorRa).length) return 0
-  let migradas = 0
-  for (const act of acts) {
-    const nuevo = migrarCesActividad(act, asigs, cesPorRa)
-    if (!nuevo) continue
-    try {
-      await window.api.saveActividad({ ...act, ces: nuevo })
-      act.ces = JSON.stringify(nuevo)
-      migradas++
-    } catch (e) {
-      console.error('No se pudieron migrar los criterios de la actividad', act.id, e)
-    }
-  }
-  return migradas
-}
 
 /** ¿Dos repartos de RA por evaluación dicen lo mismo? */
 function _mismoEvalRas(a, b, evalCount) {
@@ -1347,6 +1361,11 @@ async function rellenarCesDesdeUts(mid) {
   loadProgramacion()
 }
 
+/**
+ * Reparte el peso de prácticas y exámenes en TODAS las evaluaciones del módulo.
+ * Es la acción más destructiva de la pantalla —pisa cualquier peso afinado a
+ * mano y no hay deshacer—, así que dice antes exactamente qué va a cambiar.
+ */
 async function applyModuloPesos() {
   const mid = parseInt(
     document.getElementById('prog-mod-sel')?.value ||
@@ -1355,7 +1374,36 @@ async function applyModuloPesos() {
   if (!mid) return
   const pesoPrac = parseFloat(document.getElementById('mod-peso-prac')?.value) || 30
   const pesoExam = parseFloat(document.getElementById('mod-peso-exam')?.value) || 70
+  if (Math.abs(pesoPrac + pesoExam - 100) > 0.1) {
+    alert(`Prácticas y exámenes suman ${pesoPrac + pesoExam} %, no 100. Ajústalo antes de aplicar.`)
+    return
+  }
   const acts = await window.api.getActividades(mid)
+  if (!acts.length) { alert('Este módulo no tiene actividades.'); return }
+
+  // Qué pesos cambian de verdad, para poder enseñarlo antes de tocar nada
+  const evsPrev = [...new Set(acts.map(a => a.eval))].sort()
+  const cambios = []
+  for (const ev of evsPrev) {
+    const evActs = acts.filter(a => a.eval === ev)
+    const nP = evActs.filter(a => a.tipo === 'practica').length
+    const nE = evActs.filter(a => a.tipo === 'examen').length
+    for (const a of evActs) {
+      const nuevo = a.tipo === 'practica'
+        ? (nP ? Math.round(pesoPrac / nP * 10) / 10 : 0)
+        : (nE ? Math.round(pesoExam / nE * 10) / 10 : 0)
+      if (Math.abs((a.peso || 0) - nuevo) > 0.05) {
+        cambios.push(`  · ${evalLabel(ev)} · ${a.descripcion || a.instrumento}: ${a.peso || 0}% → ${nuevo}%`)
+      }
+    }
+  }
+  if (!cambios.length) { showToast('Los pesos ya son esos, no hay nada que cambiar'); return }
+  const muestra = cambios.slice(0, 12).join('\n') +
+    (cambios.length > 12 ? `\n  … y ${cambios.length - 12} más` : '')
+  if (!confirm(
+    `Se van a reescribir ${cambios.length} peso(s) en las ${evsPrev.length} evaluaciones ` +
+    `del módulo, repartiendo ${pesoPrac} % entre las prácticas y ${pesoExam} % entre los exámenes:\n\n` +
+    `${muestra}\n\nEsto pisa cualquier peso que hayas ajustado a mano y no se puede deshacer.\n\n¿Aplicar?`)) return
   const evs  = [...new Set(acts.map(a => a.eval))].sort()
   for (const ev of evs) {
     const evActs   = acts.filter(a => a.eval === ev)
@@ -1370,6 +1418,6 @@ async function applyModuloPesos() {
       await window.api.saveActividad(a)
     }
   }
-  showSaved()
+  showToast(`${cambios.length} peso${cambios.length > 1 ? 's' : ''} actualizado${cambios.length > 1 ? 's' : ''}`)
   loadProgramacion()
 }

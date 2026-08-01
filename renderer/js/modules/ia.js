@@ -94,7 +94,7 @@ function _updateIaRas(modSelId) {
       ? JSON.parse(mod.data_json)
       : mod.data_json
     ras = data?.ras || []
-  } catch (_) { /* data_json puede ser null en módulos sin datos normativos */ }
+  } catch { /* data_json puede ser null en módulos sin datos normativos */ }
 
   if (!ras.length) {
     raEl.innerHTML = '<option value="">Sin RAs</option>'
@@ -284,7 +284,7 @@ function _isValidNotasClientFormat(text) {
 function _extractMetaFromMod(mod) {
   try {
     return typeof mod?.data_json === 'string' ? JSON.parse(mod.data_json) : (mod?.data_json || {})
-  } catch (_) {
+  } catch {
     return {}
   }
 }
@@ -324,7 +324,7 @@ async function _extractFaltasPorcentaje(mod, alumnoId) {
     }
     const cfgKey = `faltas_${mod?.id}`
     if (cfgAll?.[cfgKey] != null && String(cfgAll[cfgKey]).trim() !== '') return String(cfgAll[cfgKey]).trim()
-  } catch (_) { /* sin registro de faltas */ }
+  } catch { /* sin registro de faltas */ }
   const raw = data?.faltas_porcentaje ?? data?.faltasPorcentaje ?? data?.absentismo ?? ''
   return raw != null ? String(raw).trim() : ''
 }
@@ -339,12 +339,6 @@ function _iaAlertTypeForText(text) {
   const encontrados = _codigosEnTexto(text)
   if (!encontrados.length) return null
   return encontrados.some(c => c.tipo === 'error') ? 'error' : 'warning'
-}
-
-function _iaAlertTypeForCode(code) {
-  if (code === 'RA_SUSPENDIDO') return 'warning'
-  if (code === 'RA_NO_EVALUADO' || code === 'NOTA_INVALIDA' || code === 'PONDERACION_CERO' || code === 'ERROR_RED') return 'error'
-  return null
 }
 
 function termAppend(id, d) {
@@ -500,7 +494,7 @@ async function runIA(cmd) {
         opts.alumnosJson = JSON.stringify(alumnos)
         opts.notasGridJson = JSON.stringify(await window.api.getNotasGrid(mod.id))
         opts.actividadesJson = JSON.stringify(await window.api.getActividades(mod.id))
-      } catch (_) { /* sin exportación de datos auxiliares */ }
+      } catch { /* sin exportación de datos auxiliares */ }
     }
   }
 
@@ -628,7 +622,7 @@ async function _detalleActividadesAlumno(mod, nombreAlumno) {
       }
     }).filter(d => d.nota != null && d.ra_id)
     return detalle.length ? JSON.stringify(detalle) : null
-  } catch (_) {
+  } catch {
     return null   // informe y plan funcionan igual sin el detalle
   }
 }
@@ -655,7 +649,7 @@ async function iaInformeLoadAlumnos(pref = 'i') {
         `<option value="${esc(a.apellidos||'')}${a.apellidos&&a.nombre?', ':''}${esc(a.nombre||'')}" data-id="${a.id}">`+
         `${esc(a.apellidos||'')}${a.apellidos&&a.nombre?', ':''}${esc(a.nombre||'')}</option>`
       ).join('')
-  } catch(_) { /* sin alumnos */ }
+  } catch { /* sin alumnos */ }
   const campo = document.getElementById(`ia-${pref}-notas`)
   if (campo) campo.value = ''
 }
@@ -677,8 +671,6 @@ async function iaInformeAutoNotas(pref = 'i') {
     // Obtener notas y actividades
     const notasArr = await window.api.getNotasGrid(mod.id)
     const acts     = await window.api.getActividades(mod.id)
-    // Criterios de las actividades con el id suelto → clave RA|CE (ver ce-keys.js)
-    await _migrarCesActividades(mod.id, acts, modData)
     const alumnos  = await window.api.getAlumnos(mod.id)
     const alumno   = alumnos.find(a =>
       `${a.apellidos||''}${a.apellidos&&a.nombre?', ':''}${a.nombre||''}` === alumnoName
@@ -712,7 +704,7 @@ async function iaInformeAutoNotas(pref = 'i') {
     const minExam = minRaw != null && String(minRaw).trim() !== '' ? parseFloat(minRaw) : null
 
     // Overrides de ponderación por RA (si existen)
-    let raPondOverrides = {}
+    const raPondOverrides = {}
     try {
       const rows = await window.api.getRaPonderaciones(mod.id)
       rows.forEach(r => { raPondOverrides[r.ra_id] = r.pond })
@@ -779,7 +771,7 @@ async function iaInformeAutoNotas(pref = 'i') {
       const pondPairs = ras.map(ra => `${ra.id}:${(raPondOverrides[ra.id] !== undefined ? raPondOverrides[ra.id] : (ra.pond || 0))}`)
       notasEl.dataset.ponderaciones = pondPairs.join(',')
     }
-  } catch(_) { /* sin notas disponibles */ }
+  } catch { /* sin notas disponibles */ }
 }
 
 /** Añade una línea con clase CSS específica al terminal de apuntes */
@@ -804,6 +796,7 @@ function _termLine(termId, text, cls) {
 
 let _fotosExamen = []
 let _notaPropuesta = null
+let _correccionRuta = null   // carpeta con el documento de la última corrección
 
 /** Carga RAs, alumnado y actividades del módulo elegido en la pestaña. */
 async function iaCorregirLoad() {
@@ -818,7 +811,7 @@ async function iaCorregirLoad() {
   try {
     const data = typeof mod.data_json === 'string' ? JSON.parse(mod.data_json) : mod.data_json
     ras = data?.ras || []
-  } catch (_) { /* módulo sin datos normativos */ }
+  } catch { /* módulo sin datos normativos */ }
   if (selRa) {
     selRa.innerHTML = ras.length
       ? ras.map(r => `<option value="${esc(r.id)}">${esc(r.id)}: ${esc(r.nombre)}</option>`).join('')
@@ -838,7 +831,7 @@ async function iaCorregirLoad() {
         `<option value="${a.id}">${esc(a.descripcion || '')}${a.ra_id ? ' · ' + esc(a.ra_id) : ''}</option>`
       ).join('')
     }
-  } catch (_) { /* módulo sin alumnado todavía */ }
+  } catch { /* módulo sin alumnado todavía */ }
 }
 
 /** Diálogo nativo para elegir las páginas del examen. */
@@ -883,6 +876,9 @@ async function runCorreccion() {
     imagenes: _fotosExamen,
     proveedor: v('ia-c-prov'),
     anonimizar: document.getElementById('ia-c-anonimizar')?.checked === true,
+    // Recorte de la cabecera manuscrita antes de enviar la foto (privacidad)
+    recorteCabecera: document.getElementById('ia-c-recorte')?.checked === true
+      ? (parseInt(document.getElementById('ia-c-recorte-pct')?.value, 10) || 15) : 0,
     enunciado: v('ia-c-enunciado'),
   })
   void aid
@@ -893,6 +889,10 @@ window.api.onCorreccion(d => {
   const term = document.getElementById('ia-corregir-term')
   if (!term) return
   const texto = d && typeof d.text === 'string' ? d.text : ''
+  // Ruta del documento de corrección, para poder enlazarlo a la nota (art. 2.4)
+  const ruta = texto.match(/Guardado en:\s*(.+)/)
+  if (ruta) _correccionRuta = ruta[1].trim()
+
   const marca = texto.match(/NOTA_PROPUESTA:([\d.,]+)/)
   if (marca) {
     _notaPropuesta = parseFloat(String(marca[1]).replace(',', '.'))
@@ -921,8 +921,22 @@ async function iaGuardarNotaPropuesta() {
   if (_notaPropuesta == null || isNaN(_notaPropuesta)) { alert('Todavía no hay ninguna nota propuesta.'); return }
   try {
     await window.api.saveNota(aid, actId, Math.round(_notaPropuesta * 100) / 100)
+    // La corrección queda enlazada a la nota: el art. 2.4 de la Orden 201/2024
+    // reconoce el derecho a acceder a las pruebas y documentos de evaluación, y
+    // sin este vínculo el documento se quedaba suelto en una carpeta.
+    if (_correccionRuta) {
+      try {
+        await window.api.addEvidencia({
+          alumnoId: aid, actividadId: actId, tipo: 'correccion',
+          ruta: _correccionRuta,
+          descripcion: 'Corrección desde foto',
+        })
+      } catch (e) { console.error('No se pudo registrar la evidencia:', e) }
+    }
     if (aviso) {
-      aviso.textContent = '✓ Guardada. Revísala en Notas.'
+      aviso.textContent = _correccionRuta
+        ? '✓ Guardada con su corrección adjunta. Revísala en Notas.'
+        : '✓ Guardada. Revísala en Notas.'
       setTimeout(() => { aviso.textContent = '' }, 6000)
     }
   } catch (e) {
@@ -1069,6 +1083,9 @@ function _lanzarCorreccion(i) {
     imagenes: g.rutas,
     proveedor: v('ia-c-prov'),
     anonimizar: document.getElementById('ia-c-anonimizar')?.checked === true,
+    // Recorte de la cabecera manuscrita antes de enviar la foto (privacidad)
+    recorteCabecera: document.getElementById('ia-c-recorte')?.checked === true
+      ? (parseInt(document.getElementById('ia-c-recorte-pct')?.value, 10) || 15) : 0,
     enunciado: v('ia-c-enunciado'),
     ajustes: v('ia-c-ajustes'),
   })

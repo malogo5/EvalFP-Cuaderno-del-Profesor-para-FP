@@ -255,11 +255,32 @@ describe.skipIf(!sqliteDisponible)('Config', () => {
 
 // ── Tests: Integridad referencial ──────────────────────────────────────────────
 describe.skipIf(!sqliteDisponible)('Integridad referencial (CASCADE)', () => {
-  it('eliminar módulo borra también sus alumnos en cascada', () => {
-    const mid = db.addModulo({ ...MODULO_FIXTURE, key: `MOD_CAS_${Date.now()}` })
+  // Quitar un módulo lo ARCHIVA: un curso calificado es un documento de
+  // evaluación y no debe perderse con un clic. El borrado real sigue estando,
+  // pero hay que pedirlo expresamente.
+  it('quitar un módulo lo archiva y conserva su alumnado', () => {
+    const mid = db.addModulo({ ...MODULO_FIXTURE, key: `MOD_ARCH_${Date.now()}` })
     db.saveAlumno(ALUMNO_FIXTURE(mid))
     db.deleteModulo(mid)
-    // getAlumnos de un módulo eliminado debe devolver array vacío
+
+    expect(db.getModulos().some(m => m.id === mid)).toBe(false)          // fuera de la lista
+    expect(db.getModulosArchivados().some(m => m.id === mid)).toBe(true) // pero recuperable
+    expect(db.getAlumnos(mid).length).toBe(1)                            // sin perder nada
+  })
+
+  it('recuperar un módulo archivado lo devuelve al cuaderno', () => {
+    const mid = db.addModulo({ ...MODULO_FIXTURE, key: `MOD_REST_${Date.now()}` })
+    db.deleteModulo(mid)
+    db.restaurarModulo(mid)
+    expect(db.getModulos().some(m => m.id === mid)).toBe(true)
+    expect(db.getModulosArchivados().some(m => m.id === mid)).toBe(false)
+  })
+
+  it('el borrado definitivo sí arrastra a sus alumnos en cascada', () => {
+    const mid = db.addModulo({ ...MODULO_FIXTURE, key: `MOD_CAS_${Date.now()}` })
+    db.saveAlumno(ALUMNO_FIXTURE(mid))
+    db.deleteModulo(mid, { definitivo: true })
     expect(db.getAlumnos(mid).length).toBe(0)
+    expect(db.getModulosArchivados().some(m => m.id === mid)).toBe(false)
   })
 })

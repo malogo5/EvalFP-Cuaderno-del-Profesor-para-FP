@@ -137,8 +137,46 @@ function getDb() {
   if (legacy) _importarJsonLegacy(legacy)
 
   _migrarCalificacionesCE()
+  _migrarCesDeActividades()
 
   return _db
+}
+
+/**
+ * Pasa los criterios de las actividades a la clave RA|CE, para todos los módulos
+ * y de una vez al arrancar.
+ *
+ * Antes lo hacía cada pantalla al cargarse: una migración de datos disparada por
+ * la interfaz es difícil de auditar —no se sabe cuándo corrió ni sobre qué— y
+ * dependía de que el profesorado visitara la sección adecuada.
+ */
+function _migrarCesDeActividades() {
+  let migradas = 0
+  try {
+    const ceKeys = require('./renderer/js/utils/ce-keys.js')
+    const modulos = _db.prepare('SELECT id, data_json FROM modulos').all()
+    const upd = _db.prepare('UPDATE actividades SET ces=? WHERE id=?')
+
+    _db.exec('BEGIN')
+    for (const m of modulos) {
+      let data = null
+      try { data = JSON.parse(m.data_json || 'null') } catch { data = null }
+      if (!data || !data.ces) continue
+      const acts = _db.prepare('SELECT id, ut_id, ra_id, ces FROM actividades WHERE modulo_id=?').all(m.id)
+      for (const act of acts) {
+        const nuevo = ceKeys.migrarCesActividad(act, data.asignaciones || [], data.ces)
+        if (!nuevo) continue
+        upd.run(JSON.stringify(nuevo), act.id)
+        migradas++
+      }
+    }
+    _db.exec('COMMIT')
+    if (migradas) console.log(`[db] Criterios de ${migradas} actividad(es) migrados a la clave RA|CE.`)
+  } catch (e) {
+    try { _db.exec('ROLLBACK') } catch { /* sin transacción activa */ }
+    console.error('[db] No se pudieron migrar los criterios de las actividades:', e.message)
+  }
+  return migradas
 }
 
 /**
@@ -287,6 +325,49 @@ function _initSchema() {
       FOREIGN KEY (alumno_id) REFERENCES alumnos(id) ON DELETE CASCADE
     );
 
+    -- Matrícula del alumnado en el módulo: convocatorias ya gastadas y si arrastra
+    -- el módulo de un curso anterior.
+    --   · art. 8.2 — máximo 4 convocatorias ordinarias en grado D, 2 en grado E
+    --   · art. 11.4 — la renuncia no cuenta; art. 7.4 — la anulación tampoco
+    --   · art. 19 — el alumnado con módulos pendientes se evalúa en las sesiones
+    --     ordinarias del curso en el que está matriculado
+    CREATE TABLE IF NOT EXISTS matricula (
+      alumno_id     INTEGER PRIMARY KEY,
+      convocatorias INTEGER NOT NULL DEFAULT 0,
+      pendiente     INTEGER NOT NULL DEFAULT 0,   -- arrastra el módulo de otro curso
+      observaciones TEXT,
+      FOREIGN KEY (alumno_id) REFERENCES alumnos(id) ON DELETE CASCADE
+    );
+
+    -- Evidencias de evaluación: dónde está el documento que respalda una nota.
+    -- El art. 2.4 de la Orden 201/2024 reconoce al alumnado el derecho a acceder
+    -- «a las pruebas y documentos de las evaluaciones que se le realicen», así que
+    -- desde la calificación hay que poder llegar al archivo.
+    CREATE TABLE IF NOT EXISTS evidencias (
+      id           INTEGER PRIMARY KEY AUTOINCREMENT,
+      alumno_id    INTEGER NOT NULL,
+      actividad_id INTEGER,
+      tipo         TEXT,          -- correccion | examen | trabajo | otro
+      ruta         TEXT NOT NULL,
+      descripcion  TEXT,
+      fecha        TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (alumno_id)    REFERENCES alumnos(id)     ON DELETE CASCADE,
+      FOREIGN KEY (actividad_id) REFERENCES actividades(id) ON DELETE SET NULL
+    );
+
+    -- Fase de formación en empresa u organismo equiparado, por alumno.
+    -- La Orden 201/2024 (art. 12) define tres estados de evaluación del módulo:
+    -- «superado», «superado parcial» —a falta de esta fase— y «no superado»;
+    -- el art. 25.4 obliga a reflejar SP en las actas, y el 18.4 dice que a
+    -- efectos de promoción cuenta como superado.
+    CREATE TABLE IF NOT EXISTS fase_empresa (
+      alumno_id INTEGER PRIMARY KEY,
+      estado    TEXT NOT NULL DEFAULT 'pendiente',   -- pendiente|superada|no_superada|exenta
+      motivo    TEXT,
+      fecha     TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (alumno_id) REFERENCES alumnos(id) ON DELETE CASCADE
+    );
+
     -- RA que el equipo docente ha dado por superados en una sesión de evaluación.
     -- «Un resultado de aprendizaje superado no se puede volver a evaluar»
     -- (Orden 201/2024 de CLM, art. 4.3.f): sin este registro, una actividad
@@ -316,6 +397,13 @@ function _initSchema() {
 const getModulos = () =>
   getDb().prepare('SELECT * FROM modulos WHERE activo=1 ORDER BY abrev').all()
 
+/** Módulos archivados, para poder recuperarlos. */
+const getModulosArchivados = () =>
+  getDb().prepare('SELECT * FROM modulos WHERE activo=0 ORDER BY abrev').all()
+
+const restaurarModulo = id =>
+  getDb().prepare('UPDATE modulos SET activo=1 WHERE id=?').run(Number(id))
+
 function addModulo({ key, abrev, nombre, ciclo, curso, anno, grupo, horas, decreto, actividades, data }) {
   const db = getDb()
   const r = db.prepare(`
@@ -342,14 +430,69 @@ function addModulo({ key, abrev, nombre, ciclo, curso, anno, grupo, horas, decre
  * hay que limpiarla a mano porque `config` es una tabla de clave-valor sin
  * relación (antes quedaban ahí el mínimo de examen y avisos huérfanos).
  */
-function deleteModulo(id) {
+function deleteModulo(id, { definitivo = false } = {}) {
   const db = getDb()
   const mid = Number(id)
+  // Por defecto se archiva: un módulo con notas es un documento de evaluación y
+  // borrarlo de verdad no debería ser un clic. `getModulos` solo devuelve los
+  // activos, así que desaparece de la interfaz igualmente.
+  if (!definitivo) {
+    db.prepare('UPDATE modulos SET activo=0 WHERE id=?').run(mid)
+    return { changes: 1, archivado: true }
+  }
   db.prepare('DELETE FROM modulos WHERE id=?').run(mid)
   for (const pref of ['minexam_', 'faltas_', 'recmigra_avisado_', 'rec2notas_', 'pardones_']) {
     db.prepare('DELETE FROM config WHERE key=?').run(`${pref}${mid}`)
   }
   return { changes: 1 }
+}
+
+// ── Matrícula: convocatorias gastadas y módulos pendientes ───────────────────
+const getMatriculas = moduloId => getDb().prepare(`
+  SELECT m.alumno_id, m.convocatorias, m.pendiente, m.observaciones
+  FROM matricula m JOIN alumnos a ON a.id = m.alumno_id
+  WHERE a.modulo_id = ?
+`).all(moduloId)
+
+function setMatricula({ alumnoId, convocatorias = 0, pendiente = 0, observaciones = null }) {
+  const c = Math.max(0, parseInt(convocatorias, 10) || 0)
+  getDb().prepare(`INSERT INTO matricula (alumno_id, convocatorias, pendiente, observaciones)
+    VALUES (?,?,?,?)
+    ON CONFLICT (alumno_id) DO UPDATE SET convocatorias=excluded.convocatorias,
+      pendiente=excluded.pendiente, observaciones=excluded.observaciones`)
+    .run(alumnoId, c, pendiente ? 1 : 0, observaciones)
+  return { alumnoId, convocatorias: c, pendiente: pendiente ? 1 : 0 }
+}
+
+// ── Evidencias de evaluación ─────────────────────────────────────────────────
+const getEvidencias = moduloId => getDb().prepare(`
+  SELECT e.id, e.alumno_id, e.actividad_id, e.tipo, e.ruta, e.descripcion, e.fecha
+  FROM evidencias e JOIN alumnos a ON a.id = e.alumno_id
+  WHERE a.modulo_id = ? ORDER BY e.fecha DESC
+`).all(moduloId)
+
+function addEvidencia({ alumnoId, actividadId = null, tipo = 'correccion', ruta, descripcion = null }) {
+  if (!ruta) throw new Error('La evidencia necesita una ruta de archivo')
+  return Number(getDb().prepare(`INSERT INTO evidencias
+    (alumno_id, actividad_id, tipo, ruta, descripcion) VALUES (?,?,?,?,?)`)
+    .run(alumnoId, actividadId, tipo, ruta, descripcion).lastInsertRowid)
+}
+
+// ── Fase de formación en empresa ─────────────────────────────────────────────
+const getFaseEmpresa = moduloId => getDb().prepare(`
+  SELECT f.alumno_id, f.estado, f.motivo, f.fecha
+  FROM fase_empresa f JOIN alumnos a ON a.id = f.alumno_id
+  WHERE a.modulo_id = ?
+`).all(moduloId)
+
+function setFaseEmpresa({ alumnoId, estado, motivo = null }) {
+  const validos = ['pendiente', 'superada', 'no_superada', 'exenta']
+  if (!validos.includes(estado)) throw new Error(`Estado de fase en empresa no válido: ${estado}`)
+  getDb().prepare(`INSERT INTO fase_empresa (alumno_id, estado, motivo, fecha)
+    VALUES (?,?,?,datetime('now'))
+    ON CONFLICT (alumno_id) DO UPDATE SET estado=excluded.estado,
+      motivo=excluded.motivo, fecha=excluded.fecha`).run(alumnoId, estado, motivo)
+  return { alumnoId, estado, motivo }
 }
 
 // ── RA superados y cerrados en una sesión de evaluación ──────────────────────
@@ -557,12 +700,15 @@ const deleteConfig = key => getDb().prepare('DELETE FROM config WHERE key=?').ru
 const getAllConfig = ()  => Object.fromEntries(getDb().prepare('SELECT key,value FROM config').all().map(r=>[r.key,r.value]))
 
 module.exports = {
-  getModulos, addModulo, deleteModulo, setModuloDataJson,
+  getModulos, getModulosArchivados, restaurarModulo, addModulo, deleteModulo, setModuloDataJson,
   getAlumnos, saveAlumno, deleteAlumno,
   getActividades, saveActividad, deleteActividad,
   getNotasGrid, saveNota, saveNotaRec, closeDb, backupTo,
   getRaPonderaciones, setRaPonderacion,
   getCalificacionesCE, setCalificacionCE,
   getRasSuperados, cerrarEvaluacionRAs, reabrirRaSuperado,
+  getFaseEmpresa, setFaseEmpresa,
+  getEvidencias, addEvidencia,
+  getMatriculas, setMatricula,
   getConfig, setConfig, deleteConfig, getAllConfig,
 }

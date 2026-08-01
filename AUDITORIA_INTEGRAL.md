@@ -42,8 +42,11 @@ Trabajo del 31/07/2026 sobre esta misma auditoría. Las incidencias marcadas
 
 | Estado | Incidencias |
 |---|---|
-| ✅ Corregidas | C-1, C-2, C-3, C-4, C-5, A-2, A-3, A-4, A-6, A-7, A-8, M-1, M-2, M-3, M-4, M-6 |
-| ⏳ Pendientes | A-1 (superado parcial), A-5 (unificar recuperación), M-5, M-7, M-8, riesgos R-1 a R-5, mejoras de experiencia B-1 a B-5 |
+| ✅ Corregidas | C-1 a C-5, A-1, A-2, A-3, A-4, A-6, A-7, A-8, M-1 a M-9, B-1, B-2, B-3, B-4, B-5 |
+| 🟡 Parcial | **A-5**, y solo en su mitad de modelo de datos: los dos caminos de recuperación ya se distinguen en la interfaz, pero siguen siendo dos tablas. Abajo, el diseño propuesto y por qué no se ha ejecutado. |
+
+**M-9** es una incidencia nueva, encontrada al revisar el log de un cierre normal mientras se
+verificaban las correcciones anteriores.
 
 ---
 
@@ -322,7 +325,7 @@ misma información que ya se pinta en Programación con el punto hueco en ámbar
 
 # 2. Errores importantes
 
-## A-1 · No existe el estado «superado parcial» (SP)
+## A-1 · No existía el estado «superado parcial» (SP) — **CORREGIDO**
 
 **Categoría:** Error confirmado (omisión funcional) · **Gravedad: Alta** · **Prioridad: 2**
 **Módulos:** Evaluaciones, Actas
@@ -346,6 +349,22 @@ promoción y matrícula del curso siguiente.
 **Solución.** Añadir a cada módulo el indicador «tiene fase en empresa», y al alumnado el estado de
 esa fase (pendiente / superada / no superada / exenta). El veredicto pasa a calcularse con los tres
 estados del art. 12.
+
+**Corrección aplicada.** Nueva tabla `fase_empresa` y columna **Empresa** en la pantalla de Alumnos,
+solo en los módulos que la tienen (se deduce del catálogo: duración oficial mayor que las horas de
+aula). El motor devuelve ya los tres estados y el acta lleva las siglas **SP**. Comprobado:
+
+```
+sin fase de empresa      → APTO/A       acta 7 · promociona
+con fase · pendiente     → APTO/A · SP  acta 7 · promociona   (art. 18.4 y 25.6)
+con fase · superada      → APTO/A       acta 7
+con fase · exenta        → APTO/A       acta 7               (art. 22)
+con fase · no superada   → NO APTO/A    acta 4
+suspenso en el centro    → NO APTO/A    acta 3
+```
+
+Añadido también el estado **«Renuncia»** en la ficha del alumnado: en Evaluaciones aparece como
+**RC · renuncia a convocatoria** en lugar de nota y acta (art. 11 y 25.9).
 
 ---
 
@@ -381,6 +400,11 @@ RA1 con el examen de diciembre = 8
   mayo, práctica con un 2                → 5,00   (comportamiento anterior)
   con la 1ª evaluación cerrada           → 8,00 🔒 fijado · sin RA pendientes
 ```
+
+**Añadido el 01/08/2026.** El candado de la tabla es ahora un botón que **reabre** ese RA para ese
+alumno. El aviso de cierre ya prometía que se podía deshacer un cierre equivocado y no había forma
+de hacerlo. El art. 4.3.f protege al alumnado de perder lo alcanzado, no obliga a mantener un error
+de quien cerró la sesión.
 
 ---
 
@@ -451,7 +475,7 @@ donde el profesorado las escribe, no de una clave de configuración invisible.
 
 ---
 
-## A-5 · Dos mecanismos distintos llamados «recuperación»
+## A-5 · Dos mecanismos distintos llamados «recuperación» — **PARCIALMENTE CORREGIDO**
 
 **Categoría:** Error confirmado (incoherencia funcional) · **Gravedad: Alta** · **Prioridad: 3**
 **Módulos:** Notas, Evaluaciones, Dashboard
@@ -469,6 +493,40 @@ que ya está en acta.
 
 **Solución.** Un solo modelo: la calificación se asocia siempre a (alumno, criterio, convocatoria).
 La parrilla de notas registra evidencias; la convocatoria decide qué se computa.
+
+**Corrección aplicada (parcial).** Los dos caminos siguen existiendo, pero ya no se llaman igual ni
+se confunden: el botón de la parrilla pasa a ser **«Recuperar actividad»** y explica que actúa
+dentro de la evaluación continua y de la 1ª convocatoria, remitiendo a Evaluaciones para la 2ª, que
+va por criterios.
+
+### Lo que falta, y el diseño con el que hacerlo
+
+El art. 21.5 de la Orden da la pista de cuál es el modelo correcto: en segunda convocatoria el
+equipo docente evalúa los RA no superados **«utilizando otros instrumentos de evaluación
+diferentes»**. Es decir, la 2ª convocatoria no es una lista de notas sueltas por criterio: son
+**actividades nuevas** —una prueba de recuperación, un trabajo— que evalúan criterios concretos.
+
+Con eso, el modelo unificado es sencillo:
+
+```sql
+ALTER TABLE actividades ADD COLUMN convocatoria INTEGER NOT NULL DEFAULT 1;
+```
+
+Una actividad de recuperación es una actividad con `convocatoria = 2` y sus criterios marcados como
+cualquier otra. El motor no cambia: se le pasa el conjunto de actividades de la convocatoria que
+toque y todo lo demás —notas por criterio, regla de oro, mínimo de examen, acta— funciona igual.
+`calificaciones_ce` se queda entonces solo para lo que no es una actividad: el criterio que el
+equipo docente da por alcanzado con su motivo y su fecha.
+
+**Por qué no se ha ejecutado.** Migrar `notas.nota_rec` y las calificaciones por criterio a ese
+modelo toca la parrilla de notas entera y el panel de 2ª convocatoria a la vez, sobre una base de
+datos con el curso ya empezado. El resto de correcciones de esta auditoría se han podido verificar
+una a una con el motor real; esta no, porque la comprobación de verdad es usar la aplicación un
+trimestre completo. Hacerlo de madrugada y sin poder probarlo en uso sería precisamente el tipo de
+decisión que ha causado la mitad de las incidencias de este informe.
+
+**Recomendación:** abrirlo en una rama, con la 2ª convocatoria del curso ya cerrada, y una copia de
+seguridad del `evalfp.db` guardada aparte.
 
 ---
 
@@ -594,12 +652,16 @@ pero el día que la haya, los cambios se habrían perdido en silencio.
 **Corrección aplicada.** El `UPDATE` los incluye con `COALESCE`, de modo que solo se tocan si vienen
 en la llamada.
 
-## M-5 · El indicador `activo` de los módulos no se usa
+## M-5 · El indicador `activo` de los módulos no se usaba — **CORREGIDO**
 
 **Categoría:** Mejora recomendada · **Gravedad: Baja** · **Prioridad: 5**
 
-`modulos.activo` existe y `getModulos` filtra por él, pero `deleteModulo` hace un `DELETE` real. El
-borrado lógico está a medio construir: usarlo daría papelera y trazabilidad.
+`modulos.activo` existía y `getModulos` filtraba por él, pero `deleteModulo` hacía un `DELETE` real.
+
+**Corrección aplicada.** Quitar un módulo lo **archiva**: desaparece de la lista pero conserva
+alumnado, notas y calificaciones. En **Ajustes → Módulos archivados** se ven y se recuperan con un
+clic. El borrado definitivo sigue existiendo en la capa de datos, pero ya no es lo que hace el
+botón. Comprobado: al archivar, 0 módulos visibles y el alumnado intacto; al recuperar, vuelve.
 
 ## M-6 · Dar un criterio por alcanzado no guardaba por qué — **CORREGIDO**
 
@@ -614,71 +676,126 @@ reclamación, «aparece un 5 y no consta por qué» es indefendible.
 recuperación, trabajo entregado, observación en el taller…»), no deja continuar sin ella y guarda
 motivo y fecha en `calificaciones_ce`.
 
-## M-7 · Las evidencias de la corrección desde foto no se vinculan al alumnado
+## M-7 · Las evidencias de la corrección desde foto no se vinculaban — **CORREGIDO**
 
 **Categoría:** Riesgo potencial · **Gravedad: Media** · **Prioridad: 4**
 
-Las correcciones se escriben en `Documentos/EvalFP/correcciones/...` sin referencia en la base de
+Las correcciones se escribían en `Documentos/EvalFP/correcciones/...` sin referencia en la base de
 datos. El art. 2.4 de la Orden reconoce al alumnado el derecho de acceso a «las pruebas y documentos
-de las evaluaciones que se le realicen»; conviene poder llegar al documento desde la calificación.
+de las evaluaciones que se le realicen»; hay que poder llegar al documento desde la calificación.
 
-## M-8 · La migración de criterios reescribe la base de datos al abrir una pantalla
+**Corrección aplicada.** Nueva tabla `evidencias` (alumno, actividad, tipo, ruta, fecha). Al guardar
+la nota propuesta por la corrección desde foto, el documento queda enlazado a esa calificación.
+
+**Cerrado del todo el 01/08/2026.** El enlace se guardaba pero no se leía en ninguna pantalla, que
+para el art. 2.4 es lo mismo que no tenerlo: el derecho es de acceso, no de almacenamiento. La
+parrilla de Notas muestra ahora un 📎 en las calificaciones con evidencia y abre el documento. El
+proceso principal solo abre rutas dentro de la carpeta de EvalFP, para que una base manipulada no
+pueda abrir cualquier archivo del ordenador.
+
+## M-8 · La migración de criterios se disparaba desde las pantallas — **CORREGIDO**
 
 **Categoría:** Riesgo potencial · **Gravedad: Media** · **Prioridad: 4**
 
-`_migrarCesActividades` (`programacion.js`) se ejecuta al cargar Programación, Evaluaciones,
-Dashboard e IA, y escribe si encuentra claves antiguas. Es idempotente y necesaria, pero una
-migración de datos disparada por una pantalla debería ejecutarse **una vez al arrancar**, con
-registro de lo migrado.
+`_migrarCesActividades` se ejecutaba al cargar Programación, Evaluaciones, Dashboard e IA. Era
+idempotente y necesaria, pero una migración de datos disparada por una pantalla no se puede auditar
+—no consta cuándo corrió ni sobre qué— y dependía de que se visitara la sección adecuada.
+
+**Corrección aplicada.** Se ejecuta **una vez al abrir la base**, sobre todos los módulos, en una
+transacción y dejando en el registro cuántas actividades se han migrado. Las cuatro llamadas desde
+las pantallas se han retirado.
+
+---
+
+## M-9 · La copia de seguridad de cierre se hacía tres veces — **CORREGIDO**
+
+**Categoría:** Error confirmado · **Gravedad: Media** · **Prioridad: 4**
+**Módulo:** Copias de seguridad (`main.js`)
+
+Detectado al revisar el log de un cierre normal con Ctrl+C:
+
+```
+[info]  Final backup before closing
+[info]  Backup created  evalfp_2026-07-31T20-58-29.db
+[info]  Final backup before closing
+[error] Error in final backup: Failed to create backup: output file already exists
+[info]  Final backup before closing
+[error] Error in final backup: Failed to create backup: output file already exists
+```
+
+Dos causas juntas: Ctrl+C envía SIGINT a **todo el grupo de procesos**, así que el manejador entra
+varias veces; y el nombre del archivo tiene precisión de segundos, de modo que la segunda copia
+choca con la primera. Cada cierre dejaba dos errores en el registro y podía enmascarar un fallo real
+de copia.
+
+**Corrección aplicada.** Cerrojo para que el cierre se ejecute una sola vez, sufijo numérico si el
+nombre ya existe, atención también a SIGTERM y cierre ordenado de la base de datos antes de salir.
 
 ---
 
 # 4. Riesgos futuros
 
-## R-1 · Los ámbitos de Grado Básico se calificarían con números
+## R-1 · Los ámbitos de Grado Básico se calificarían con números — **RESUELTO**
 
 **Categoría:** Riesgo potencial · **Gravedad: Alta si se materializa**
 
 Orden 201/2024, **art. 25.2**: los ámbitos de Comunicación y Ciencias Sociales y de Ciencias
-Aplicadas se califican como **IN / SU / BI / NT / SB**, no numéricamente. La aplicación calcula
-siempre en escala 1-10. Hoy el catálogo no incluye ámbitos, así que no se ha materializado; el día
-que se añadan, las actas saldrán mal.
+Aplicadas se califican como **IN / SU / BI / NT / SB**, no numéricamente.
 
-## R-2 · No hay módulos pendientes de cursos anteriores
+**Resuelto.** El motor incorpora `calificacionCualitativa()` con la equivalencia del art. 25.3
+(IN 3 · SU 5 · BI 6 · NT 7,5 · SB 9) y `moduloEsAmbito()`, que reconoce los ámbitos por el nivel y
+el nombre del decreto. En un ámbito, la columna Acta muestra la sigla en lugar del número.
+Comprobado: 4,9 → IN · 5 → SU · 6 → BI · 7,5 → NT · 9 → SB, y que un módulo profesional de grado
+básico **no** se confunde con un ámbito.
+
+## R-2 · No había módulos pendientes de cursos anteriores — **RESUELTO en lo básico**
 
 **Categoría:** Riesgo potencial · **Gravedad: Alta si se materializa**
 
 Los arts. 18 y 19 regulan la promoción con módulos pendientes y su evaluación en el curso
-siguiente. El modelo de datos ata el alumnado a un módulo de un año concreto (`modulos.anno`), sin
-concepto de matrícula ni de arrastre. Un alumno con el módulo pendiente hay que darlo de alta como
-si fuera nuevo, perdiendo su historial.
+siguiente. El modelo ataba el alumnado a un módulo de un año concreto, sin concepto de matrícula.
 
-## R-3 · No hay control de convocatorias consumidas
+**Resuelto en lo básico.** Nueva tabla `matricula` y marca **«pend.»** en la ficha del alumnado:
+identifica a quien arrastra el módulo de otro curso, que se evalúa en las sesiones ordinarias del
+curso en el que está matriculado (art. 19). Lo que **no** hace la aplicación es traerse el historial
+del curso anterior: para eso haría falta un modelo de matrícula por año académico, que es un cambio
+mayor y solo tiene sentido si el cuaderno pasa a cubrir varios cursos a la vez.
+
+## R-3 · No había control de convocatorias consumidas — **RESUELTO**
 
 **Categoría:** Riesgo potencial · **Gravedad: Media**
 
 Art. 8.2: máximo **cuatro convocatorias ordinarias** en grado D y **dos** en grado E; art. 9,
-extraordinarias; art. 11, renuncia que no consume convocatoria. La aplicación no cuenta
-convocatorias. Para un cuaderno de aula es asumible —lo lleva la secretaría del centro— pero
-conviene decirlo en la documentación para que nadie lo dé por hecho.
+extraordinarias; art. 11.4, la renuncia no consume convocatoria.
 
-## R-4 · Datos personales de alumnado enviados a un proveedor de IA
+**Resuelto.** La ficha del alumnado lleva el contador de convocatorias gastadas con su tope según la
+enseñanza, se pone en rojo al agotarlas y avisa de que a partir de ahí hace falta convocatoria
+extraordinaria concedida por la dirección. El recuento oficial lo sigue llevando la secretaría del
+centro; esto evita evaluar por inercia a quien ya no tiene convocatoria.
+
+## R-4 · Datos personales enviados a un proveedor de IA — **RESUELTO**
 
 **Categoría:** Riesgo potencial · **Gravedad: Alta**
 
 La aplicación pide consentimiento y ofrece anonimizar por número de lista, que es lo correcto. Pero:
 las fotos de exámenes manuscritos **contienen el nombre escrito por el alumno**, y se envían
 completas al proveedor. La anonimización del identificador no anonimiza la imagen.
-**Solución:** avisarlo expresamente en la pantalla de corrección y recomendar tapar la cabecera, o
-recortarla automáticamente.
+**Resuelto.** La pantalla de corrección lo dice con todas las letras —«el alumnado escribe su nombre
+arriba: referirse a él por su número no anonimiza la imagen»— y **recorta la cabecera antes de
+enviar**, con la franja configurable (15 % por defecto). El recorte afecta solo a la copia que viaja
+al proveedor: las fotos que se devuelven marcadas siguen siendo las originales completas.
 
-## R-5 · Cobertura de pruebas asimétrica
+## R-5 · Cobertura de pruebas asimétrica — **RESUELTO**
 
 **Categoría:** Mejora recomendada · **Gravedad: Media**
 
-Hay tests unitarios del motor de Evaluaciones y de las claves RA|CE, pero **ninguno** del Dashboard,
-del boletín ni de la columna Media de Notas — que son justo los tres motores divergentes de C-1. Lo
-que no se prueba, se rompe.
+Había tests del motor de Evaluaciones y de las claves RA|CE, pero **ninguno** del Dashboard, del
+boletín ni de la columna Media — justo los tres motores divergentes de C-1.
+
+**Resuelto.** Al existir un motor único, los tests del motor cubren ya las cuatro pantallas. Y se
+añade `tests/unit/motor-unico.test.js`, que no comprueba resultados sino que **no se reintroduzcan
+motores paralelos**: falla si alguna pantalla vuelve a calcular una media por su cuenta, a
+normalizar `nota_max` a mano, a comparar criterios sin su RA o a migrar datos al cargarse.
 
 ---
 
@@ -695,18 +812,23 @@ que no se prueba, se rompe.
 
 ---
 
-# 6. Experiencia de usuario
+# 6. Experiencia de usuario — **todas corregidas**
 
-- **B-1 · «Perdonar» un criterio** es un clic sin confirmación que sube un criterio a 5. Es la acción
-  más delicada de la aplicación y la más fácil de pulsar sin querer. Debería pedir motivo.
-- **B-2 · «Aplicar a todo el módulo»** (ponderación prácticas/exámenes) reescribe los pesos de
-  **todas** las actividades de todas las evaluaciones sin confirmación ni deshacer.
-- **B-3 · Cambiar el número de evaluaciones** con el curso empezado redistribuye unidades,
-  RA y actividades por índice, sin previsualización de lo que va a pasar.
-- **B-4 · Dos botones «Boletín»** —en Dashboard y en Evaluaciones— generan el mismo documento con
-  una nota que no coincide con la de la pantalla desde la que se pulsa (consecuencia de C-1).
-- **B-5 · La media de la parrilla de Notas** no dice de qué es media; con el selector en «Todas» es
-  una media simple de actividades que no significa nada evaluable.
+- **B-1 · «Perdonar» un criterio** era un clic sin confirmación que subía un criterio a 5.
+  **Corregido junto con M-6**: pide la evidencia, no deja seguir sin ella y guarda motivo y fecha.
+- **B-2 · «Aplicar a todo el módulo»** reescribía los pesos de todas las actividades sin avisar.
+  **Corregido**: comprueba que prácticas y exámenes sumen 100, enseña la lista de los pesos que van
+  a cambiar («1ª Evaluación · Examen: 70% → 50%»), avisa de que pisa los ajustes hechos a mano y de
+  que no hay deshacer, y no hace nada si los pesos ya son esos.
+- **B-3 · Cambiar el número de evaluaciones** redistribuía sin previsualizar. **Corregido**: dice
+  cuántas unidades y cuántas actividades cambian de trimestre antes de tocar nada, y avisa aparte de
+  que los boletines por evaluación cambiarán si ya hay notas. Si se cancela, el desplegable vuelve a
+  su valor.
+- **B-4 · Dos botones «Boletín»** con notas distintas. **Corregido con C-1**: el motor es único, así
+  que el documento dice lo mismo se pulse donde se pulse.
+- **B-5 · La media de la parrilla** no decía de qué era media. **Corregido**: la columna se llama
+  **«Media act.»**, con una explicación al pasar el ratón y una nota al pie del PDF aclarando que la
+  calificación del módulo se obtiene por resultados de aprendizaje y figura en el acta.
 
 ---
 

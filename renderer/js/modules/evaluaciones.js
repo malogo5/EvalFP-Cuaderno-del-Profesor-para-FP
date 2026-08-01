@@ -54,6 +54,26 @@ async function cerrarSesionEvaluacion(mid, ev) {
   }
 }
 
+/**
+ * Reabrir un RA que se fijó al cerrar una evaluación. El art. 4.3.f impide que un
+ * RA superado vuelva a evaluarse, pero eso protege al alumnado de perder lo ya
+ * alcanzado, no consagra un error de quien lo cerró: si la nota se fijó por
+ * equivocación hay que poder deshacerlo, y que el motor vuelva a calcular.
+ */
+async function reabrirRa(mid, alumnoId, raId) {
+  if (!confirm(
+    `Se va a reabrir ${raId} para este alumno o alumna.\n\n` +
+    'Dejará de estar fijado y volverá a calcularse con las notas que haya en cada momento, ' +
+    'así que puede bajar.\n\n¿Reabrirlo?')) return
+  try {
+    await window.api.reabrirRaSuperado({ alumnoId: parseInt(alumnoId), raId: String(raId) })
+    showToast(`${raId} reabierto`)
+    loadEvaluaciones()
+  } catch (e) {
+    alert('No se ha podido reabrir: ' + (e && e.message ? e.message : e))
+  }
+}
+
 /** H3 — guardar mínimo de examen del módulo y recargar. */
 async function saveMinExam(mid, val) {
   const v = String(val).trim()
@@ -111,8 +131,6 @@ async function loadEvaluaciones() {
   })
 
   const modData   = _getModData(mid)
-  // Criterios de las actividades con el id suelto → clave RA|CE (ver ce-keys.js)
-  await _migrarCesActividades(parseInt(mid), actividades, modData)
   const evalCount = modData?.modulo?.eval_count || [...new Set(actividades.map(a => a.eval))].length || 3
   const evals     = Array.from({ length: evalCount }, (_, i) => i + 1)
   const rasBase   = modData?.ras          || []
@@ -139,7 +157,7 @@ async function loadEvaluaciones() {
   const EXAM  = totP > 0 ? sumPE / totP : 0.70
 
   // ── RAs con ponderaciones guardadas ──────────────────────────
-  let raPondOverrides = {}
+  const raPondOverrides = {}
   try {
     const rows = await window.api.getRaPonderaciones(parseInt(mid))
     rows.forEach(r => { raPondOverrides[r.ra_id] = r.pond })
@@ -149,6 +167,22 @@ async function loadEvaluaciones() {
     ...ra,
     pond: raPondOverrides[ra.id] !== undefined ? raPondOverrides[ra.id] : (ra.pond || 0)
   }))
+  // Fase de formación en empresa por alumno (Orden 201/2024, art. 12)
+  const fasesAlumno = {}
+  try {
+    const filas = await window.api.getFaseEmpresa(parseInt(mid))
+    filas.forEach(f => { fasesAlumno[Number(f.alumno_id)] = f.estado })
+  } catch { /* base antigua sin la tabla */ }
+  const tieneFaseEmpresa = moduloConFaseEmpresa(modData?.modulo)
+  // Los ámbitos de grado básico se califican IN/SU/BI/NT/SB (art. 25.2)
+  const esAmbito = moduloEsAmbito(modData?.modulo)
+  const actaTexto = st => {
+    if (st.acta == null) return '—'
+    if (!esAmbito) return `${st.acta}${st.resultado === 'SUPERADO_PARCIAL' ? ' SP' : ''}`
+    const c = calificacionCualitativa(st.media)
+    return c ? `${c.sigla}${st.resultado === 'SUPERADO_PARCIAL' ? ' SP' : ''}` : '—'
+  }
+
   // RA ya cerrados como superados en una sesión de evaluación anterior: no
   // pueden volver a bajar (Orden 201/2024, art. 4.3.f).
   const rasCerrados = {}   // { alumnoId: { raId: nota } }
@@ -163,7 +197,7 @@ async function loadEvaluaciones() {
 
   // Contexto del motor único de calificación (js/core/calificacion.js). Todas las
   // notas de esta pantalla, del Dashboard y del boletín salen de ahí.
-  const ctxBase = { ras, cesByRa, asignaciones: asigsMod, actividades, minExam }
+  const ctxBase = { ras, cesByRa, asignaciones: asigsMod, actividades, minExam, tieneFaseEmpresa }
   const ctxCalculo = contextoModulo(ctxBase)
   const ctxDe = alumnoId => contextoModulo({ ...ctxBase, rasSuperados: rasCerrados[alumnoId] || null })
   // Un RA está en juego si alguna actividad lo califica: por ra_id, por criterios
@@ -196,14 +230,15 @@ async function loadEvaluaciones() {
    * los calificados). Antes contaban como 0 y arrastraban la media.
    */
   function estadoAlumno(alumnoId) {
-    return estadoModulo(ctxDe(alumnoId), ng[alumnoId])
+    return estadoModulo(ctxDe(alumnoId), ng[alumnoId], { faseEmpresa: fasesAlumno[alumnoId] })
   }
 
   function nombreAl(al) {
     return `${al.apellidos || ''}${al.apellidos && al.nombre ? ', ' : ''}${al.nombre || ''}`
   }
 
-  const bajaBadge = `<span style="background:var(--bg3);color:var(--text3);padding:1px 7px;border-radius:8px;font-size:10px;font-weight:700;border:1px solid var(--border2)">BAJA</span>`
+  const badgeEstado = est => `<span style="background:var(--bg3);color:var(--text3);padding:1px 7px;border-radius:8px;font-size:10px;font-weight:700;border:1px solid var(--border2)">${est === 'Renuncia' ? 'RC' : 'BAJA'}</span>`
+  const bajaBadge = badgeEstado('Baja')
 
   // Marca de recuperación sobre una celda de RA (H6)
   function recMark(alumnoId, raId) {
@@ -471,23 +506,44 @@ async function loadEvaluaciones() {
       const nFCls  = nFinal === null ? '' : st.superado ? 'nota-apto' : nFinal >= 4 ? 'nota-riesgo' : 'nota-noapto'
 
       // H1 — veredicto normativo
+      // Los tres estados del art. 12: superado, superado parcial y no superado
       let apto, aptoSty, motivo = ''
       if (esBaja)               { apto = '—';          aptoSty = 'color:var(--text3)' }
-      else if (nFinal === null) { apto = '—';          aptoSty = 'color:var(--text3)' }
-      else if (!st.completo)    { apto = 'PENDIENTE';  aptoSty = 'color:var(--amber, #c99a3d)'; motivo = `Sin nota: ${st.sinNota.join(', ')}` }
-      else if (st.superado)     { apto = 'APTO/A';     aptoSty = 'color:var(--green)' }
-      else                      { apto = 'NO APTO/A';  aptoSty = 'color:var(--red)'; motivo = st.pendientes.length ? `RA pendientes: ${st.pendientes.join(', ')}` : '' }
+      else {
+        apto = etiquetaResultado(st.resultado)
+        aptoSty = st.resultado === 'SUPERADO' ? 'color:var(--green)'
+          : st.resultado === 'SUPERADO_PARCIAL' ? 'color:var(--accent2)'
+          : st.resultado === 'NO_SUPERADO' ? 'color:var(--red)'
+          : st.resultado === 'PENDIENTE' ? 'color:var(--amber, #c99a3d)' : 'color:var(--text3)'
+        if (st.resultado === 'PENDIENTE') motivo = `Sin nota: ${st.sinNota.join(', ')}`
+        else if (st.resultado === 'SUPERADO_PARCIAL') {
+          motivo = 'Superado parcial: alcanzado todo lo del centro, falta la fase de formación en empresa ' +
+                   '(Orden 201/2024, art. 12). A efectos de promoción cuenta como superado.'
+        } else if (st.resultado === 'NO_SUPERADO' && st.pendientes.length) {
+          motivo = `RA pendientes: ${st.pendientes.join(', ')}`
+        } else if (st.resultado === 'NO_SUPERADO' && st.centroOk) {
+          motivo = 'La fase de formación en empresa consta como no superada.'
+        }
+      }
 
-      // H8 — acta
-      const acta = (esBaja || nFinal === null || !st.completo) ? '—' : _actaEntera(nFinal, st.superado)
-      const actaCls = acta === '—' ? '' : acta >= 5 ? 'nota-apto' : 'nota-noapto'
+      // H8 — acta, con las siglas SP cuando falta la fase de empresa (art. 25.4)
+      const acta = (esBaja || nFinal === null || !st.completo) ? '—' : actaTexto(st)
+      const actaCls = acta === '—' ? '' : (st.acta >= 5 ? 'nota-apto' : 'nota-noapto')
 
       const raCells = rasActivos.map(ra => {
-        const { nota: n, minKO } = st.porRA[ra.id]
+        const { nota: n, minKO, congelado } = st.porRA[ra.id]
         const txt = n !== null ? n.toFixed(1) : '—'
         const cls = n === null ? '' : (n >= 5 && !minKO) ? 'nota-apto' : n >= 4 ? 'nota-riesgo' : 'nota-noapto'
         const warn = minKO && n !== null && n >= 5 ? `<span title="Examen bajo mínimo (${minExam})" style="color:var(--red);font-size:9px;font-weight:700">⚠</span>` : ''
-        return `<td class="nc" style="font-size:12px;font-weight:600"><span class="${cls}">${txt}</span>${recMark(al.id, ra.id)}${warn}</td>`
+        // Un RA fijado al cerrar la evaluación (art. 4.3.f) se marca con el candado
+        // y se puede reabrir desde aquí: el aviso de cierre lo promete y hasta ahora
+        // no había ninguna manera de deshacerlo.
+        const lock = congelado && !esBaja
+          ? `<span onclick="event.stopPropagation();reabrirRa(${mid},${al.id},'${String(ra.id).replace(/'/g, "\\'")}')"
+                   title="RA fijado al cerrar una evaluación. Pulsa para reabrirlo."
+                   style="cursor:pointer;font-size:10px;margin-left:2px">🔒</span>`
+          : ''
+        return `<td class="nc" style="font-size:12px;font-weight:600"><span class="${cls}">${txt}</span>${lock}${recMark(al.id, ra.id)}${warn}</td>`
       }).join('')
 
       const raBlocks = rasActivos.map(ra => {
@@ -523,11 +579,17 @@ async function loadEvaluaciones() {
       // Anulada la matrícula no hay evaluación en ninguna convocatoria (Orden
       // 201/2024, art. 7.1): se ve la fila, con sus notas de trabajo, pero sin
       // calificación final, sin acta y sin veredicto.
+      const esRenuncia = al.estado === 'Renuncia'
       const celdasFinales = esBaja
-        ? `<td class="nc" colspan="3" style="font-size:11px;color:var(--text3);font-style:italic"
-               title="Orden 201/2024, art. 7.1: la anulación de matrícula supone no ser evaluado en ninguna convocatoria del curso">
-             Matrícula anulada · sin evaluación
-           </td>`
+        ? (esRenuncia
+          ? `<td class="nc" colspan="3" style="font-size:11px;color:var(--text3);font-style:italic"
+                 title="Orden 201/2024, art. 11 y 25.9: la renuncia a convocatoria se refleja en actas como «RC» y no consume convocatoria">
+               RC · renuncia a convocatoria
+             </td>`
+          : `<td class="nc" colspan="3" style="font-size:11px;color:var(--text3);font-style:italic"
+                 title="Orden 201/2024, art. 7.1: la anulación de matrícula supone no ser evaluado en ninguna convocatoria del curso">
+               Matrícula anulada · sin evaluación
+             </td>`)
         : `<td class="nc" style="font-weight:700;font-size:14px"><span class="${nFCls}">${nFTxt}</span></td>
            <td class="nc" style="font-weight:700;font-size:14px"><span class="${actaCls}">${acta}</span></td>
            <td style="text-align:center;font-weight:700;font-size:11px;${aptoSty}" ${motivo ? `title="${esc(motivo)}"` : ''}>${apto}${motivo ? ' *' : ''}</td>`
@@ -537,7 +599,7 @@ async function loadEvaluaciones() {
             onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background=''">
           <td>
             <span id="eval-chev-${al.id}" style="font-size:10px;color:var(--text3);margin-right:8px;display:inline-block">▶</span>
-            ${esc(nombreAl(al))} ${esBaja ? bajaBadge : ''}
+            ${esc(nombreAl(al))} ${esBaja ? badgeEstado(al.estado) : ''}
           </td>
           ${raCells}
           ${celdasFinales}
@@ -566,7 +628,7 @@ async function loadEvaluaciones() {
             <th>Alumno/a</th>
             ${raHeaders}
             <th class="nc" style="min-width:70px">Nota Final</th>
-            <th class="nc" style="min-width:52px" title="Calificación de acta: entero (≥0,5 al alza); 1-4 si el módulo no está superado">Acta</th>
+            <th class="nc" style="min-width:52px" title="Calificación de acta. En los módulos, número entero de 1 a 10 (art. 25.4), con tope de 4 si no se alcanzan todos los RA (art. 25.5). En los ámbitos de grado básico, IN/SU/BI/NT/SB (art. 25.2).">Acta</th>
             <th class="nc" style="min-width:90px">Resultado</th>
             <th style="width:110px"></th>
           </tr></thead>
@@ -653,6 +715,7 @@ async function loadEvaluaciones() {
     function estadoOrd2(alumnoId) {
       const detalle = {}
       const st = estadoModulo(ctxDe(alumnoId), ng[alumnoId], {
+        faseEmpresa: fasesAlumno[alumnoId],
         notaRAOverride: ra => {
           const r = raNotaOrd2(alumnoId, ra)
           detalle[ra.id] = r
@@ -707,11 +770,15 @@ async function loadEvaluaciones() {
       let apto, aptoSty, motivo = ''
       if (nF2 === null)        { apto = '—';         aptoSty = 'color:var(--text3)' }
       else if (!st2.completo)  { apto = 'PENDIENTE'; aptoSty = 'color:var(--amber, #c99a3d)'; motivo = `Sin nota: ${st2.sinNota.join(', ')}` }
+      else if (st2.resultado === 'SUPERADO_PARCIAL') {
+        apto = etiquetaResultado(st2.resultado); aptoSty = 'color:var(--accent2)'
+        motivo = 'Superado parcial: falta la fase de formación en empresa (art. 12).'
+      }
       else if (st2.superado)   { apto = 'APTO/A';    aptoSty = 'color:var(--green)' }
       else                     { apto = 'NO APTO/A'; aptoSty = 'color:var(--red)'; motivo = st2.pendientes.length ? `RA pendientes: ${st2.pendientes.join(', ')}` : '' }
 
-      const acta = (nF2 === null || !st2.completo) ? '—' : _actaEntera(nF2, st2.superado)
-      const actaCls = acta === '—' ? '' : acta >= 5 ? 'nota-apto' : 'nota-noapto'
+      const acta = (nF2 === null || !st2.completo) ? '—' : actaTexto(st2)
+      const actaCls = acta === '—' ? '' : (st2.acta >= 5 ? 'nota-apto' : 'nota-noapto')
 
       const changed = nFOrig !== null && nF2 !== null && Math.abs(nF2 - nFOrig) > 0.05
       const changeEl = changed ? `<div style="font-size:9px;color:var(--text3)">1ª: ${nFOrig.toFixed(1)}</div>` : ''
@@ -868,7 +935,7 @@ async function loadEvaluaciones() {
           <th>Alumno/a</th>
           ${raHeaders}
           <th class="nc" style="min-width:90px">Nota Final 2ª</th>
-          <th class="nc" style="min-width:52px" title="Calificación de acta: entero (≥0,5 al alza); 1-4 si el módulo no está superado">Acta</th>
+          <th class="nc" style="min-width:52px" title="Calificación de acta. En los módulos, número entero de 1 a 10 (art. 25.4), con tope de 4 si no se alcanzan todos los RA (art. 25.5). En los ámbitos de grado básico, IN/SU/BI/NT/SB (art. 25.2).">Acta</th>
           <th class="nc" style="min-width:90px">Resultado</th>
         </tr></thead>
         <tbody>${rows}</tbody>

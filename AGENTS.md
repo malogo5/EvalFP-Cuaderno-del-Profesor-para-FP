@@ -7,7 +7,7 @@ Aplicación de escritorio Electron para que el profesorado de Formación Profesi
 ## Stack
 
 - **App**: Electron (`main.js`, `preload.js`, `db.js`) + `renderer/` (frontend)
-- **Generación de materiales**: scripts Python en `scripts/` (`build_apuntes.py`, `build_template.py`, `ai_asistente.py`)
+- **Generación de materiales**: scripts Python en `scripts/` (`build_apuntes.py`, `ai_asistente.py`, `corregir_examen.py`)
 - **Config del profesor/módulos**: `scripts/teacher_config.py`, `scripts/modules/*_data.py`
 - **Build**: `electron-builder` (ver `build-mac.sh`, `entitlements.mac.plist`)
 

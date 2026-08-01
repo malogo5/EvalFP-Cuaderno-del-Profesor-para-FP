@@ -97,11 +97,27 @@ export default [
     },
     rules: {
       'no-undef':       'off',   // Cross-file globals en arquitectura multi-script
-      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      // `vars: 'local'` es deliberado. En estos archivos las funciones de nivel
+      // superior son globals que index.html invoca desde onclick: darlas por
+      // «no usadas» generaba 111 avisos falsos, y entre tanto ruido se coló
+      // código realmente muerto sin que nadie lo viera. Lo que de verdad no usa
+      // nadie lo detecta tests/unit/handlers.test.js, que sí mira el HTML.
+      'no-unused-vars': ['warn', { vars: 'local', args: 'after-used', argsIgnorePattern: '^_' }],
       'no-console':     'off',
       'no-var':         'warn',
       'prefer-const':   'warn',
     },
+  },
+
+  // ── Estado compartido del renderer ────────────────────────────────────
+  // app.js declara las variables que el resto de scripts reasignan. ESLint solo
+  // ve este archivo, así que da por «nunca reasignadas» variables que sí lo son
+  // desde alumnos.js o notas.js; aplicar su arreglo automático las convierte en
+  // const y la app revienta con «Assignment to constant variable». La coherencia
+  // la vigila tests/unit/handlers.test.js, que sí mira todos los archivos.
+  {
+    files: ['renderer/js/app.js'],
+    rules: { 'prefer-const': 'off' },
   },
 
   // ── Utils del renderer (module.exports condicional) ───────────────────

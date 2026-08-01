@@ -1,8 +1,11 @@
 # EvalFP — Dependencias Python
 # Instalar con: pip install -r requirements.txt
 
-# ── Obligatoria ───────────────────────────────────────────────────────────────
-openpyxl>=3.1.0          # Generación del libro Excel
+# El cuaderno funciona sin Python. Estas dependencias son solo para el Asistente
+# IA y la corrección de exámenes desde foto.
+#
+# openpyxl ya no aparece: generaba el libro Excel de la versión anterior, que
+# desapareció al pasar la aplicación a Electron y base de datos.
 
 # ── Asistente IA ─────────────────────────────────────────────────────────────
 # Se incluyen ambos SDKs para que el proveedor elegido en la aplicación funcione

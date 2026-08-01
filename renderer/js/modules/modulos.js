@@ -113,7 +113,11 @@ function renderModRasPanel(mod) {
 }
 
 async function delModulo(id) {
-  if (!confirm('¿Eliminar este módulo? Se borrarán también los alumnos y notas asociados.')) return
+  // Se archiva, no se borra: las notas de un curso son un documento de
+  // evaluación. Queda fuera de la lista pero se puede recuperar.
+  if (!confirm('¿Quitar este módulo del cuaderno?\n\n' +
+               'Se archiva con su alumnado y sus notas: desaparece de la lista pero no se pierde nada, ' +
+               'y se puede recuperar desde Ajustes.')) return
   await window.api.deleteModulo(id)
   if (_curMod?.id === id) _curMod = null
   await renderModulos()

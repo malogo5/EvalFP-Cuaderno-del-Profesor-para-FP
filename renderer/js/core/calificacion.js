@@ -135,7 +135,7 @@ function actaEntera(media, superado) {
  * @param {?Object}  d.rasSuperados { raId: nota } de los RA cerrados como
  *                                  superados en una sesión anterior
  */
-function contextoModulo({ ras, cesByRa, asignaciones, actividades, minExam, rasSuperados }) {
+function contextoModulo({ ras, cesByRa, asignaciones, actividades, minExam, rasSuperados, tieneFaseEmpresa }) {
   const acts = actividades || []
   const { PRAC, EXAM } = pesosPorTipo(acts)
   const rasBase = ras || []
@@ -146,6 +146,7 @@ function contextoModulo({ ras, cesByRa, asignaciones, actividades, minExam, rasS
     actividades: acts,
     minExam: minExam == null ? null : minExam,
     rasSuperados: rasSuperados || null,
+    tieneFaseEmpresa: !!tieneFaseEmpresa,
     PRAC, EXAM,
     // Un RA está en juego si alguna actividad lo califica, por ra_id, por
     // criterios marcados o por sus unidades de trabajo.
@@ -204,14 +205,98 @@ function estadoModulo(ctx, notasAl, opts) {
     : conNota.reduce((s, x) => s + x.nota, 0) / conNota.length
 
   const completo = sinNota.length === 0
-  const superado = completo && !pendientes.length && media !== null && media >= 5
-  return { porRA, media, pendientes, sinNota, completo, superado, acta: actaEntera(media, superado) }
+  // Lo que se ha alcanzado en el centro educativo
+  const centroOk = completo && !pendientes.length && media !== null && media >= 5
+
+  // Tres estados, los del art. 12 de la Orden 201/2024. «Superado parcial» es el
+  // del alumnado que ha alcanzado todo lo del centro y le falta la fase de
+  // formación en empresa; cuenta como superado a efectos de promoción (art. 18.4)
+  // y conserva su calificación cuando complete la fase (art. 25.6).
+  const fase = o.faseEmpresa || 'pendiente'
+  const faseOk = !ctx.tieneFaseEmpresa || fase === 'superada' || fase === 'exenta'
+  let resultado
+  if (media === null)       resultado = 'SIN_EVALUAR'
+  else if (!completo)       resultado = 'PENDIENTE'
+  else if (!centroOk)       resultado = 'NO_SUPERADO'
+  else if (!faseOk)         resultado = fase === 'no_superada' ? 'NO_SUPERADO' : 'SUPERADO_PARCIAL'
+  else                      resultado = 'SUPERADO'
+
+  const superado = resultado === 'SUPERADO'
+  // El «superado parcial» ya tiene su calificación: es la que conservará cuando
+  // supere la fase de empresa, así que el tope de 4 del art. 25.5 no le aplica.
+  const acta = actaEntera(media, superado || resultado === 'SUPERADO_PARCIAL')
+
+  return {
+    porRA, media, pendientes, sinNota, completo, superado, acta,
+    resultado,
+    centroOk,
+    // A efectos de promoción, SP cuenta como superado (art. 18.4)
+    superadoParaPromocion: resultado === 'SUPERADO' || resultado === 'SUPERADO_PARCIAL',
+  }
+}
+
+/**
+ * Calificación cualitativa de los ámbitos de grado básico.
+ *
+ * Orden 201/2024, art. 25.2: los ámbitos de Comunicación y Ciencias Sociales y
+ * de Ciencias Aplicadas **no se califican con números**, sino con Insuficiente,
+ * Suficiente, Bien, Notable o Sobresaliente. El art. 25.3 fija la equivalencia
+ * al pasar de cualitativo a cuantitativo: IN 3 · SU 5 · BI 6 · NT 7,5 · SB 9,
+ * y este reparto es su lectura inversa.
+ */
+function calificacionCualitativa(nota) {
+  if (nota === null || nota === undefined) return null
+  if (nota < 5)   return { sigla: 'IN', texto: 'Insuficiente', equivalente: 3 }
+  if (nota < 6)   return { sigla: 'SU', texto: 'Suficiente',   equivalente: 5 }
+  if (nota < 7.5) return { sigla: 'BI', texto: 'Bien',         equivalente: 6 }
+  if (nota < 9)   return { sigla: 'NT', texto: 'Notable',      equivalente: 7.5 }
+  return { sigla: 'SB', texto: 'Sobresaliente', equivalente: 9 }
+}
+
+/**
+ * ¿Este módulo es un ámbito de grado básico? Se marca en la programación; si no,
+ * se deduce del nombre, que en los decretos es siempre «Ámbito de …».
+ */
+function moduloEsAmbito(modulo) {
+  if (!modulo) return false
+  if (modulo.ambito === true || modulo.ambito === false) return modulo.ambito
+  const nivel = String(modulo.ciclo_nivel || '').toUpperCase()
+  if (nivel !== 'CFGB') return false
+  const nombre = String(modulo.nombre || '').toLowerCase()
+  return nombre.startsWith('ámbito') || nombre.startsWith('ambito') ||
+         /ciencias aplicadas|comunicación y ciencias sociales|comunicacion y ciencias sociales/.test(nombre)
+}
+
+/**
+ * ¿Este módulo tiene fase de formación en empresa?
+ * Se deduce del catálogo: si la duración oficial es mayor que las horas de aula,
+ * la diferencia son horas de empresa. El profesorado puede forzarlo en la
+ * programación con `modulo.fase_empresa`.
+ */
+function moduloConFaseEmpresa(modulo) {
+  if (!modulo) return false
+  if (modulo.fase_empresa === true || modulo.fase_empresa === false) return modulo.fase_empresa
+  const total = parseInt(modulo.total_horas, 10) || 0
+  const aula  = parseInt(modulo.horas_aula, 10) || 0
+  return aula > 0 && total > aula
+}
+
+/** Etiqueta corta de acta para cada estado (art. 12 y 25.4). */
+function etiquetaResultado(resultado) {
+  switch (resultado) {
+    case 'SUPERADO':          return 'APTO/A'
+    case 'SUPERADO_PARCIAL':  return 'APTO/A · SP'
+    case 'NO_SUPERADO':       return 'NO APTO/A'
+    case 'PENDIENTE':         return 'PENDIENTE'
+    default:                  return '—'
+  }
 }
 
 // Exportado también para los tests (en el navegador `module` no existe)
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     notaEnEscala10, mediaActividades, pesosPorTipo, notaCE, notaRA,
-    raMinExamKO, actaEntera, contextoModulo, estadoModulo,
+    raMinExamKO, actaEntera, contextoModulo, estadoModulo, etiquetaResultado,
+    moduloConFaseEmpresa, calificacionCualitativa, moduloEsAmbito,
   }
 }

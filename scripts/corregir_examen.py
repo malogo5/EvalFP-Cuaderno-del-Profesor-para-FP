@@ -28,6 +28,7 @@ from __future__ import annotations
 import base64
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -51,18 +52,39 @@ MAX_BYTES_IMG = 5 * 1024 * 1024
 
 # ─── Preprocesado ────────────────────────────────────────────────────────────
 
-def _preprocesar(rutas: list[str], destino: Path) -> list[str]:
+def _recortar_cabecera(ruta: str, destino: Path, porcentaje: int) -> str:
+    """Corta la franja superior de la foto, donde va el nombre escrito a mano.
+
+    Anonimizar el identificador no anonimiza la imagen: en la hoja está el nombre
+    del alumno de su puño y letra. Esto recorta solo la copia que se envía al
+    proveedor de IA; la entrega sigue usando la foto original completa.
+    """
+    magick = shutil.which("magick") or shutil.which("convert")
+    if not magick:
+        return ruta
+    out = destino / f"sincabecera_{Path(ruta).name}"
+    try:
+        subprocess.run(
+            [magick, ruta, "-gravity", "north", "-chop", f"0x{porcentaje}%", str(out)],
+            check=True, capture_output=True, timeout=120)
+        return str(out) if out.exists() else ruta
+    except Exception:
+        return ruta
+
+
+def _preprocesar(rutas: list[str], destino: Path, recorte: int = 0) -> list[str]:
     """Gris, contraste y enfoque: solo para leer. La entrega usa el original."""
     destino.mkdir(parents=True, exist_ok=True)
     salidas = []
     for i, r in enumerate(rutas, 1):
+        origen = _recortar_cabecera(r, destino, recorte) if recorte > 0 else r
         out = destino / f"lectura_{i:02d}.jpg"
         try:
-            subprocess.run([sys.executable, str(PREPROCESAR), r, str(out)],
+            subprocess.run([sys.executable, str(PREPROCESAR), origen, str(out)],
                            check=True, capture_output=True, timeout=120)
-            salidas.append(str(out) if out.exists() else r)
+            salidas.append(str(out) if out.exists() else origen)
         except Exception:
-            salidas.append(r)          # sin ImageMagick se lee el original
+            salidas.append(origen)     # sin ImageMagick se lee el original
     return salidas
 
 
@@ -298,7 +320,7 @@ def _anotar(datos: dict, originales: list[str], salida: Path, alumno: str, mod) 
 
 def main(args: list[str]):
     opts = _parse_opts(args, ["--modulo", "--ra", "--alumno", "--numero", "--imagenes",
-                              "--salida", "--proveedor", "--anonimizar", "--baremo",
+                              "--salida", "--proveedor", "--anonimizar", "--baremo", "--recorte-cabecera",
                               "--enunciado", "--ajustes"])
     mod = _cargar_modulo(opts.get("--modulo", "iso_data"))
     ra_id = opts.get("--ra", mod.RAS[0]["id"])
@@ -328,7 +350,13 @@ def main(args: list[str]):
     ia = IAAsistente(proveedor=opts.get("--proveedor", "auto"))
 
     with tempfile.TemporaryDirectory(prefix="evalfp-lectura-") as tmp:
-        legibles = _preprocesar(rutas, Path(tmp))
+        # Recorte de la cabecera para no enviar el nombre manuscrito (privacidad)
+        try:
+            recorte = int(opts.get("--recorte-cabecera") or 0)
+        except ValueError:
+            recorte = 0
+        recorte = max(0, min(40, recorte))
+        legibles = _preprocesar(rutas, Path(tmp), recorte)
         print(f"Leyendo {len(legibles)} página(s) de {alumno}…", flush=True)
         bruto = _llamar_vision(
             ia, SYSTEM,

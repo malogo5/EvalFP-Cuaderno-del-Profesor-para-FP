@@ -1,8 +1,13 @@
 // NOTAS
 // ═══════════════════════════════════════════════════════════════
 
-// H6 — Modo recuperación: las notas de recuperación se guardan en una columna
-// aparte (nota_rec) sin sobrescribir la original, para conservar trazabilidad.
+// H6 — Recuperar una ACTIVIDAD dentro de la evaluación continua: la nota nueva
+// se guarda en una columna aparte (nota_rec) sin borrar la original.
+//
+// Ojo con no confundir los dos caminos, que antes se llamaban igual:
+//   · aquí se recupera una ACTIVIDAD y afecta a la 1ª convocatoria;
+//   · en Evaluaciones → 2ª Ordinaria se recupera por CRITERIO y afecta a la
+//     segunda convocatoria, que es la que decide titulación.
 let _recMode  = false
 let _notasRec = {}   // { alumnoId: { actividadId: nota_rec } }
 
@@ -42,7 +47,7 @@ async function exportNotasPDF() {
   if (!acts.length || !alumnos.length) { alert('Sin datos que exportar.'); return }
 
   const titulo = `${mod?.abrev || 'Módulo'} — Registro de Notas${ev ? ' · Evaluación '+ev : ''}`
-  const thead = `<tr><th>Alumno/a</th>${acts.map(a=>`<th>${esc(a.instrumento)}<br/><small>${esc(a.ut_id||'EV'+a.eval)}</small></th>`).join('')}<th>Media</th></tr>`
+  const thead = `<tr><th>Alumno/a</th>${acts.map(a=>`<th>${esc(a.instrumento)}<br/><small>${esc(a.ut_id||'EV'+a.eval)}</small></th>`).join('')}<th>Media act.</th></tr>`
   const tbody = alumnos.map(al => {
     // H6: exportar la nota efectiva; las recuperadas se marcan con *
     const efMap = _notasEf(al.id)
@@ -73,6 +78,7 @@ async function exportNotasPDF() {
     <body>
     <h2>${esc(titulo)}</h2>
     <p style="color:#6b7280;font-size:11px">Generado: ${new Date().toLocaleDateString('es-ES')} · ${alumnos.length} alumnos/as · ${acts.length} actividades</p>
+    <p style="color:#6b7280;font-size:10px">La columna «Media act.» es la media ponderada de las actividades calificadas. La calificación del módulo se obtiene por resultados de aprendizaje y figura en el acta.</p>
     <table><thead>${thead}</thead><tbody>${tbody}</tbody></table>
     </body></html>`
 
@@ -100,6 +106,19 @@ async function loadNotas() {
 
   _alumnos = await window.api.getAlumnos(mid)
   _actividades = await window.api.getActividades(mid)
+  // Evidencias: los archivos que respaldan una nota (correcciones desde foto).
+  // Se guardaban desde el asistente y no las leía nadie, así que la nota no
+  // llevaba a su prueba. El art. 2.4 de la Orden 201/2024 reconoce el derecho a
+  // acceder a los documentos de la evaluación: hay que poder enseñarlos.
+  _evidencias = {}
+  try {
+    const evs = await window.api.getEvidencias(parseInt(mid))
+    evs.forEach(e => {
+      if (e.actividad_id == null) return
+      const k = `${e.alumno_id}|${e.actividad_id}`
+      if (!_evidencias[k]) _evidencias[k] = e   // la más reciente: vienen ordenadas por fecha
+    })
+  } catch { /* base antigua sin la tabla evidencias */ }
   const notasArr = await window.api.getNotasGrid(mid)
   _notasGrid = {}
   _notasRec  = {}
@@ -135,7 +154,8 @@ function renderNotasGrid() {
       <div style="font-size:10px;max-width:56px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(a.instrumento)}</div>
       <div style="font-size:9px;color:var(--text2)">${esc(a.ut_id||'EV'+a.eval)}</div>
     </th>`).join('')}
-    <th style="min-width:58px;text-align:center">Media</th>
+    <th style="min-width:74px;text-align:center"
+        title="Media de las actividades calificadas, ponderada por su peso. NO es la nota del módulo: esa se calcula por resultados de aprendizaje y está en Evaluaciones.">Media act.</th>
   </tr>`
 
   const tbody = alumnos.map(al => {
@@ -159,11 +179,17 @@ function renderNotasGrid() {
       const nota = _notasGrid[al.id]?.[act.id] ?? ''
       const rec  = _notasRec[al.id]?.[act.id]
       const cls = nota==='' ? '' : nota>=5 ? 'nota-apto' : nota>=4 ? 'nota-riesgo' : 'nota-noapto'
+      const evid = _evidencias[`${al.id}|${act.id}`]
+      const clip = evid
+        ? `<span onclick="abrirEvidencia('${String(evid.ruta).replace(/'/g, "\\'")}')"
+                 title="Ver la evidencia de esta nota (${esc(evid.descripcion || evid.tipo || 'archivo')})"
+                 style="cursor:pointer;font-size:9px;margin-left:2px">📎</span>`
+        : ''
       return `<td style="text-align:center">
         <input class="nota-cell ${cls}" type="number" min="0" max="${act.nota_max ?? 10}" step="0.1"
           value="${nota}" data-aid="${al.id}" data-actid="${act.id}" data-max="${act.nota_max ?? 10}"
           onchange="onNotaChange(this)" oninput="colorNota(this)"/>
-        ${rec != null ? `<div style="font-size:8px;color:var(--accent);font-weight:700" title="Nota de recuperación (efectiva)">rec: ${rec}</div>` : ''}
+        ${rec != null ? `<div style="font-size:8px;color:var(--accent);font-weight:700" title="Nota de recuperación (efectiva)">rec: ${rec}</div>` : ''}${clip}
       </td>`
     }).join('')
     // Media ponderada por tipo cuando hay EV concreta; simple en vista "Todas"
@@ -185,16 +211,25 @@ function renderNotasGrid() {
              border:1px solid ${_recMode ? 'var(--accent)' : 'var(--border2)'};
              background:${_recMode ? 'rgba(201,104,45,.12)' : 'var(--bg3)'};
              color:${_recMode ? 'var(--accent)' : 'var(--text2)'};font-weight:${_recMode ? '700' : '400'}">
-      ${_recMode ? '✎ Modo recuperación ACTIVO' : '✎ Modo recuperación'}
+      ${_recMode ? '✎ Recuperar actividad · ACTIVO' : '✎ Recuperar actividad'}
     </button>
     <span style="font-size:10.5px;color:var(--text3)">
       ${_recMode
-        ? 'Introduce la nota de recuperación sin perder la original (vacío = sin recuperación). La nota efectiva es la de recuperación.'
-        : 'Las celdas con "rec:" tienen recuperación registrada; esa es la nota efectiva.'}
+        ? 'Vuelves a calificar una actividad concreta dentro de la evaluación continua: la nota nueva sustituye a la anterior en la 1ª convocatoria y la original se conserva. Vacío = sin recuperación.'
+        : 'Las celdas con «rec:» se han vuelto a calificar; esa es la nota que cuenta. Esto recupera ACTIVIDADES dentro de la 1ª convocatoria — la 2ª convocatoria se hace por criterios, en Evaluaciones.'}
     </span>
   </div>`
 
   wrap.innerHTML = recBar + `<div class="notas-grid"><table><thead>${thead}</thead><tbody>${tbody}</tbody></table></div>`
+}
+
+/** Abrir el archivo que respalda una nota. */
+async function abrirEvidencia(ruta) {
+  try {
+    await window.api.abrirEvidencia(ruta)
+  } catch (e) {
+    alert('No se ha podido abrir la evidencia: ' + (e && e.message ? e.message : e))
+  }
 }
 
 async function onNotaChange(el) {

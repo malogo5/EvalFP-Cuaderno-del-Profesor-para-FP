@@ -163,16 +163,25 @@ function setupBackups() {
       }
     })
     
-    // También ejecutar backup al cierre (graceful shutdown)
-    process.on('SIGINT', async () => {
-      logger.logEvent('GRACEFUL_SHUTDOWN', { message: 'Final backup before closing' })
+    // Backup al cerrar. Ctrl+C en la terminal manda SIGINT a todo el grupo de
+    // procesos, así que la señal llega varias veces: sin este cerrojo se
+    // intentaban tres copias seguidas y las dos últimas fallaban con «output
+    // file already exists», dejando errores en el log en cada cierre.
+    let cerrando = false
+    const backupYSalir = async señal => {
+      if (cerrando) return
+      cerrando = true
+      logger.logEvent('GRACEFUL_SHUTDOWN', { message: 'Final backup before closing', señal })
       try {
         await performBackup()
       } catch (e) {
         logger.logError('Error in final backup', e)
       }
+      try { db.closeDb() } catch { /* ya estaba cerrada */ }
       process.exit(0)
-    })
+    }
+    process.on('SIGINT',  () => backupYSalir('SIGINT'))
+    process.on('SIGTERM', () => backupYSalir('SIGTERM'))
     
     logger.info('Automatic backups initialized', { schedule: 'daily at 2 AM' })
   } catch (e) {
@@ -182,8 +191,14 @@ function setupBackups() {
 
 async function performBackup() {
   try {
+    // Con precisión de segundos, dos copias seguidas chocan de nombre. Si el
+    // archivo ya existe se añade un sufijo en vez de fallar.
     const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-')
-    const dest = path.join(backupsDir(), `evalfp_${timestamp}.db`)
+    let dest = path.join(backupsDir(), `evalfp_${timestamp}.db`)
+    let n = 1
+    while (fs.existsSync(dest)) {
+      dest = path.join(backupsDir(), `evalfp_${timestamp}_${++n}.db`)
+    }
 
     db.backupTo(dest)
     logger.info('Backup created', { filename: path.basename(dest) })
@@ -331,6 +346,15 @@ ipcMain.handle('db:getModuloData', (_, key) => {
   return data
 })
 
+ipcMain.handle('db:getMatriculas', (_, mid) => db.getMatriculas(mid))
+ipcMain.handle('db:setMatricula', (_, payload) => db.setMatricula(payload))
+
+ipcMain.handle('db:getEvidencias', (_, mid) => db.getEvidencias(mid))
+ipcMain.handle('db:addEvidencia', (_, payload) => db.addEvidencia(payload))
+
+ipcMain.handle('db:getFaseEmpresa', (_, mid) => db.getFaseEmpresa(mid))
+ipcMain.handle('db:setFaseEmpresa', (_, payload) => db.setFaseEmpresa(payload))
+
 ipcMain.handle('db:getRasSuperados', (_, mid) => db.getRasSuperados(mid))
 ipcMain.handle('db:cerrarEvaluacionRAs', (_, { mid, evaluacion, filas }) =>
   db.cerrarEvaluacionRAs(mid, evaluacion, filas))
@@ -341,6 +365,8 @@ ipcMain.handle('db:setCalificacionCE', (_, payload) => db.setCalificacionCE(payl
 
 ipcMain.handle('db:addModulo', (_, payload) => db.addModulo(payload))
 ipcMain.handle('db:deleteModulo', (_, id) => db.deleteModulo(id))
+ipcMain.handle('db:getModulosArchivados', () => db.getModulosArchivados())
+ipcMain.handle('db:restaurarModulo', (_, id) => db.restaurarModulo(id))
 
 // ── IPC: API Keys (Secure Storage with Fallback) ────────────────────────────
 ipcMain.handle('api:saveKeys', async (event, keys) => {
@@ -522,7 +548,7 @@ ipcMain.handle('examen:agrupar', (event, { imagenes, modo, paginas }) => {
 })
 
 ipcMain.on('gen-correccion', conRespuestaDeError('gen-correccion-reply', (event, { modulo, ra, alumno, numero, imagenes, proveedor,
-                                       anonimizar, baremo, enunciado, ajustes }) => {
+                                       anonimizar, baremo, enunciado, ajustes, recorteCabecera }) => {
   assertTrustedSender(event)
   if (typeof modulo !== 'string' || !getModulesData().modules[modulo]) throw new Error('Módulo no válido')
   if (!PROVIDERS.has(proveedor || 'auto')) throw new Error('Proveedor IA no válido')
@@ -544,6 +570,9 @@ ipcMain.on('gen-correccion', conRespuestaDeError('gen-correccion-reply', (event,
   if (enunciado) args.push('--enunciado', String(enunciado).slice(0, 4000))
   if (ajustes)   args.push('--ajustes', String(ajustes).slice(0, 1200))
   if (proveedor) args.push('--proveedor', proveedor)
+  // Recorte de la franja superior: el nombre manuscrito no debe salir del equipo
+  const pct = parseInt(recorteCabecera, 10)
+  if (isFinite(pct) && pct > 0) args.push('--recorte-cabecera', String(Math.min(40, pct)))
   runPython(event, 'corregir_examen.py', args, 'gen-correccion-reply')
 }))
 
@@ -577,6 +606,23 @@ ipcMain.on('backup:open', () => {
 })
 
 ipcMain.on('open-output', () => shell.openPath(outputDir()))
+
+/**
+ * Abrir el archivo de una evidencia (la corrección de un examen, por ejemplo).
+ * Solo dentro de la carpeta de salida de la aplicación: la ruta viene de la base
+ * de datos, y una base manipulada no debe poder abrir cualquier archivo del
+ * ordenador.
+ */
+ipcMain.handle('evidencia:abrir', async (_, ruta) => {
+  const destino = path.resolve(String(ruta || ''))
+  const raiz = path.resolve(outputDir())
+  if (destino !== raiz && !destino.startsWith(raiz + path.sep)) {
+    throw new Error('La evidencia está fuera de la carpeta de EvalFP')
+  }
+  if (!fs.existsSync(destino)) throw new Error('El archivo ya no existe')
+  await shell.openPath(destino)
+  return true
+})
 ipcMain.on('open-material', () => {
   fs.mkdirSync(materialDir(), { recursive: true })
   shell.openPath(materialDir())

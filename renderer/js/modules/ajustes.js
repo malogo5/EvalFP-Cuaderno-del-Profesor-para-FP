@@ -36,6 +36,37 @@ async function loadAjustes() {
     btn.classList.toggle('active', (btn.dataset.themeId || '') === activeTheme)
   })
   pintarCopiasSeguridad()
+  pintarModulosArchivados()
+}
+
+/** Módulos archivados, con su botón para devolverlos al cuaderno. */
+async function pintarModulosArchivados() {
+  const caja = document.getElementById('archivados-info')
+  if (!caja) return
+  try {
+    const mods = await window.api.getModulosArchivados()
+    if (!mods.length) { caja.textContent = 'No hay ningún módulo archivado.'; return }
+    caja.innerHTML = mods.map(m => `
+      <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--border)">
+        <b style="color:var(--accent2)">${esc(m.abrev)}</b>
+        <span style="flex:1">${esc(m.nombre)}</span>
+        <span style="color:var(--text3);font-size:11px">${esc([m.curso, m.grupo, m.anno].filter(Boolean).join(' · '))}</span>
+        <button class="btn btn-ghost btn-sm" onclick="restaurarModulo(${m.id})">↩ Recuperar</button>
+      </div>`).join('')
+  } catch (e) {
+    caja.textContent = 'No se ha podido leer la lista: ' + (e && e.message ? e.message : e)
+  }
+}
+
+async function restaurarModulo(id) {
+  try {
+    await window.api.restaurarModulo(id)
+    _modulos = await window.api.getModulos()
+    showToast('Módulo recuperado')
+    pintarModulosArchivados()
+  } catch (e) {
+    alert('No se ha podido recuperar: ' + (e && e.message ? e.message : e))
+  }
 }
 
 /** Muestra cuántas copias de seguridad hay y de cuándo es la última. */

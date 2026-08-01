@@ -32,23 +32,27 @@ Dock sigue apuntando a la copia anterior aunque la hayas sustituido.
 El mismo `.exe` sirve para cualquier Windows 11: puedes copiarlo a otro equipo sin repetir
 nada.
 
-## Python: solo para la IA y el Excel
+## Python: solo para la IA
 
 El cuaderno entero —módulos, alumnado, notas, evaluaciones, actas, boletines— funciona sin
-instalar nada más. Pero el **Asistente IA**, la **corrección de exámenes desde foto** y la
-exportación a Excel usan scripts de Python que la aplicación llama por debajo, y Python no
-viene dentro del instalador.
+instalar nada más. Pero el **Asistente IA** y la **corrección de exámenes desde foto** usan
+scripts de Python que la aplicación llama por debajo, y Python no viene dentro del
+instalador.
 
 Si vas a usarlos, instala **Python 3.10 o superior** (en Windows, desde python.org marcando
 *Add python.exe to PATH*) y luego, en una terminal:
 
 ```
-pip install openpyxl anthropic openai
+pip install anthropic openai
 ```
 
-`openpyxl` es para el libro de Excel; `anthropic` y `openai` son los dos proveedores de IA
-—con instalar el que vayas a usar es suficiente—. La lista completa está en
-`requirements.txt`, dentro de la carpeta `resources` de la aplicación instalada.
+`anthropic` y `openai` son los dos proveedores de IA: con instalar el que vayas a usar es
+suficiente. La lista completa está en `requirements.txt`, dentro de la carpeta `resources`
+de la aplicación instalada.
+
+Para recortar la cabecera de las fotos antes de enviarlas hace falta además **ImageMagick**
+(`brew install imagemagick` en macOS). Sin él, la corrección funciona igual pero envía la
+hoja entera.
 
 ## Las claves de IA
 
@@ -96,20 +100,37 @@ Para restaurar: cierra la aplicación, sustituye `evalfp.db` por la copia que qu
 
 ## Cómo se trabaja un curso
 
-1. **Módulos → ＋ Añadir módulo.** Elige el ciclo en el menú de la izquierda y el módulo en
-   las tarjetas. Llega con sus RA, sus criterios literales del decreto, sus unidades de
-   trabajo y unas actividades de partida. Ponle el grupo si das el mismo módulo a dos clases.
+1. **Módulos → ＋ Añadir módulo.** Elige el ciclo en el menú de la izquierda —cada uno indica
+   cuántos módulos trae— y el módulo en las tarjetas. Llega con sus RA, sus criterios
+   literales del decreto, sus unidades de trabajo y unas actividades de partida. Ponle el
+   grupo si das el mismo módulo a dos clases.
 2. **Alumnos.** Pega la lista de clase entera de una vez, un nombre por línea; separa solo
-   apellidos y nombre. Quien cause baja se marca como tal y deja de contar en las medias,
-   pero no desaparece.
+   apellidos y nombre. Además de los datos de contacto, cada persona tiene aquí:
+   - **Faltas (h)**, con el porcentaje sobre las horas del módulo y aviso en rojo al pasar del
+     25 %, que es donde se pierde el derecho a la evaluación continua. En grado básico no
+     aplica y así se indica.
+   - **Empresa**, solo en los módulos con fase en empresa: pendiente, superada, no superada o
+     exenta. Es lo que decide si el módulo queda «superado parcial».
+   - **Convocatorias gastadas** con su tope, y la marca **«pend.»** para quien arrastra el
+     módulo de un curso anterior.
+   - **Estado**: Activo, Pendiente, **Renuncia** (aparece como RC en las actas) o Baja.
 3. **Programación.** Es la base de la que come todo lo demás: reparte las unidades por
-   evaluación, ajusta horas y ponderaciones, y decide **qué criterios evalúa cada actividad**
-   con el botón de CE. Los avisos en ámbar (`⚠ suma 130%`) señalan lo que no cuadra.
-4. **Notas.** La parrilla de siempre. Se guarda al salir de cada celda.
-5. **Evaluaciones.** Resultado por evaluación, 1ª y 2ª ordinaria, y la columna de acta con el
-   redondeo normativo. Rige la **regla de oro**: para superar el módulo hacen falta *todos*
-   los RA con 5 o más; la media no compensa un RA suspenso.
-6. **Dashboard.** Vista de clase y boletines individuales en PDF.
+   evaluación, ajusta horas y ponderaciones —de cada RA y, si quieres, **de cada criterio**—,
+   marca los RA necesarios para la fase de empresa y decide **qué criterios evalúa cada
+   actividad**. La columna RA te dice qué resultado califica cada actividad, y en la ficha de
+   cada RA un punto verde señala los criterios que alguien evalúa y uno hueco los que no.
+   El botón **«Rellenar criterios desde las UT»** hace el trabajo grueso de una vez.
+4. **Notas.** La parrilla de siempre; se guarda al salir de cada celda. El botón **«Recuperar
+   actividad»** permite volver a calificar una actividad sin borrar la nota anterior: eso es
+   recuperación dentro de la 1ª convocatoria. La columna «Media act.» es la media de las
+   actividades, no la calificación del módulo.
+5. **Evaluaciones.** Resultado por evaluación, 1ª y 2ª convocatoria, y la columna de acta.
+   Rige la **regla de oro**: para superar el módulo hacen falta *todos* los RA con 5 o más; la
+   media no compensa un RA suspenso. Al terminar cada trimestre, **«Cerrar evaluación»** deja
+   fijados los RA ya alcanzados para que una actividad posterior no los baje.
+   La 2ª convocatoria se trabaja por criterios: pones la nota de recuperación de cada uno, o
+   lo das por alcanzado indicando con qué evidencia.
+6. **Dashboard.** Vista de clase y boletines individuales en PDF, con la misma nota que el acta.
 7. **Asistente IA** (opcional). Rúbricas, actividades, informes de alumno, planes de
    recuperación, radiografía del grupo, pruebas escritas con solucionario, apuntes y
    corrección de exámenes desde foto.
@@ -123,6 +144,17 @@ verifiques antes de enviar nada. Una nota la pone una persona.
 
 Antes de enviar nada a un proveedor de IA, la aplicación pide consentimiento y ofrece
 **anonimizar**: el alumnado viaja como «Alumno_03», no con su nombre.
+
+En la corrección desde foto hay además un **recorte de cabecera**: la franja superior de la
+hoja —donde va el nombre, el DNI o el número de expediente— se corta antes de enviar la
+imagen, así que el proveedor recibe las respuestas sin los datos personales. Viene activado
+con un 15 % de recorte; súbelo si tus plantillas tienen la cabecera más alta.
+
+## Si borras un módulo sin querer
+
+Borrar un módulo lo **archiva**: desaparece de la lista pero conserva alumnado, notas y
+programación, y puedes restaurarlo. El borrado definitivo, que sí arrastra todo lo demás, es
+una segunda confirmación aparte. Ante la duda, archiva.
 
 ## Buenas prácticas
 

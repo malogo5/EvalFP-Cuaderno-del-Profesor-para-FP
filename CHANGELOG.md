@@ -1,9 +1,53 @@
 # Changelog
 
-## [3.4.0] - 2026-07-31
+## [3.7.1] - 2026-08-01
 
-Correcciones de la auditoría integral (`AUDITORIA_INTEGRAL.md`). Dieciséis incidencias cerradas,
-cuatro de ellas críticas.
+Limpieza de cierre: fuera lo que ya no usa nadie, y avisos de ESLint que vuelven a significar algo.
+
+### Fixed
+- **Las evidencias se guardaban y no las leía nadie.** La corrección desde foto archivaba el
+  documento y la nota no llevaba a él. La parrilla de Notas muestra ahora un 📎 en las
+  calificaciones con evidencia, que abre el archivo: es lo que hace falta para atender el
+  art. 2.4 (derecho a acceder a los documentos de la evaluación). Se abre solo si está dentro de
+  la carpeta de EvalFP.
+- **Un RA fijado ya se puede reabrir.** El aviso de «Cerrar evaluación» prometía que podías
+  reabrir uno concreto si te equivocabas, y no había ninguna forma de hacerlo: el candado de la
+  tabla es ahora un botón, con confirmación.
+- **La tarjeta de distribución de RA por evaluación enseña el instrumento.** Se calculaba y se
+  tiraba, así que la vista no decía **con qué** se evalúa cada RA. Los que no tienen ninguno
+  salen marcados en ámbar.
+- **Los errores dejan rastro en la consola.** `sanitizeErrorMessage` recibía el contexto de la
+  operación y lo descartaba: la persona veía «Error de base de datos» y no quedaba registrado ni
+  de dónde venía.
+- **111 avisos falsos de `no-unused-vars` fuera.** Las funciones del renderer se llaman desde los
+  `onclick` del HTML, que ESLint no mira; entre tanto ruido llevaba tiempo escondida una función
+  que no usaba nadie. Con `vars: 'local'` el lint queda a **0 avisos** y lo que de verdad sobra lo
+  detecta `tests/unit/handlers.test.js`.
+- **`prefer-const --fix` podía dejar la aplicación en blanco.** Convirtió `let _alumnos` en
+  `const` porque en `app.js` nadie la reasigna… pero `alumnos.js` sí, y una asignación a `const`
+  lanza excepción. Revertido, desactivado en ese archivo y cubierto con un test.
+
+### Added
+- **`tests/unit/handlers.test.js`**: comprueba las tres costuras que ninguna herramienta ve en una
+  arquitectura multi-script — que todo `onclick` apunte a una función que existe, que ninguna
+  función global se quede sin usar, que ninguna `const` se reasigne desde otro archivo y que todo
+  `window.api.x()` esté expuesto en `preload.js`.
+
+### Removed
+- **La herencia de la versión en Excel**: `scripts/build_template.py` (3.600 líneas), `src/`,
+  `apuntes/`, `ia_output/` y `tools/ai_toolkit`. Nada de eso lo usaba la aplicación desde que
+  pasó a Electron. Sigue en el historial de git.
+- **Documentación que contradecía a la aplicación**: `docs/refactor/` (un juego paralelo de
+  documentos congelado en «3.0 Beta»), `docs/dev-notes/`, `docs/version_2.md`,
+  `MODULOS_PERDIDOS.md` (un problema ya resuelto) e `INFORME_VERSIONES.md` (una limpieza ya hecha).
+- **`openpyxl` de `requirements.txt`**: era para el libro de Excel, que ya no existe.
+
+## [3.7.0] - 2026-07-31
+
+Cierre de la auditoría integral (`AUDITORIA_INTEGRAL.md`): **30 incidencias resueltas** —cinco
+críticas, siete altas, nueve menores, las cinco de experiencia de uso y los cuatro riesgos que se
+podían abordar— y una parcial, A-5, documentada con su diseño. Incluye cambios en el esquema de la
+base de datos, que se migran solos al abrir.
 
 ### Fixed
 - **Un solo motor de calificación** (`renderer/js/core/calificacion.js`). Cada pantalla calculaba
@@ -34,10 +78,51 @@ cuatro de ellas críticas.
   cuentan ya el mismo grupo.
 - **La marca de recuperación aparece en los exámenes de varias unidades.**
 - **`saveActividad` guarda también instrumento y tipo.**
+- **La copia de seguridad de cierre se hacía tres veces y dos fallaban.** Ctrl+C manda la señal a
+  todo el grupo de procesos, y el nombre del archivo solo llegaba al segundo: cada cierre dejaba dos
+  errores en el log. Ahora se hace una sola vez, con nombre único, y se cierra la base ordenadamente.
+- **Los tres estados de evaluación del art. 12**: superado, **superado parcial** —a falta de la fase
+  de formación en empresa— y no superado. El alumnado que ha alcanzado todo lo del centro y le falta
+  la empresa constaba como NO APTO, cuando normativamente es SP: cuenta como superado para promocionar
+  (art. 18.4) y conserva su calificación al completar la fase (art. 25.6). El acta lo refleja con las
+  siglas SP.
+- **Renuncia a convocatoria.** Nuevo estado del alumnado que en Evaluaciones aparece como «RC» en vez
+  de nota y acta (art. 11 y 25.9).
+- **Quitar un módulo lo archiva, no lo borra.** Un curso calificado es un documento de evaluación:
+  ahora se recupera desde **Ajustes → Módulos archivados**.
+- **Las correcciones desde foto quedan enlazadas a la nota** (nueva tabla `evidencias`), para poder
+  llegar al documento desde la calificación, como pide el art. 2.4.
+- **Los dos caminos de recuperación dejan de llamarse igual**: el de la parrilla pasa a ser
+  «Recuperar actividad» y explica que actúa en la 1ª convocatoria; la 2ª va por criterios, en
+  Evaluaciones.
+- **Las acciones que pisan trabajo hecho avisan antes.** «Aplicar a todo el módulo» enseña la lista
+  de pesos que va a reescribir; cambiar el número de evaluaciones dice cuántas unidades y actividades
+  cambian de trimestre. Ninguna de las dos tiene deshacer, así que ahora se ven venir.
+- **La columna «Media» de la parrilla pasa a llamarse «Media act.»** y explica que es la media de las
+  actividades, no la calificación del módulo, que sale de los resultados de aprendizaje.
+- **La migración de criterios se hace una vez al abrir la base**, no cada vez que se entra en una
+  pantalla: una migración de datos tiene que poder auditarse.
+- **La corrección desde foto ya no envía el nombre manuscrito.** Referirse al alumnado por su número
+  de lista no anonimiza la imagen: el nombre va escrito arriba de la hoja. Ahora se recorta la
+  cabecera antes de enviarla —franja configurable, 15 % por defecto— y se dice claramente en la
+  pantalla. Las fotos que se devuelven marcadas siguen siendo las originales completas.
+- **Los ámbitos de grado básico se califican IN/SU/BI/NT/SB**, no con números (art. 25.2), con la
+  equivalencia del art. 25.3.
+- **Convocatorias consumidas y módulos pendientes** en la ficha del alumnado: contador con su tope
+  según la enseñanza —cuatro en grado D, dos en grado E (art. 8.2)— y marca de quien arrastra el
+  módulo de un curso anterior (art. 19).
 
 ### Added
 - **`AUDITORIA_INTEGRAL.md`**: auditoría contra la Orden 201/2024 de Castilla-La Mancha, el
   RD 659/2023 y la LOFP, con las incidencias clasificadas, la evidencia de cada una y lo que queda.
+- **Fase de formación en empresa** por alumno (pendiente / superada / no superada / exenta), en la
+  pantalla de Alumnos y solo en los módulos que la tienen.
+- **Faltas de asistencia** por alumno, con el porcentaje sobre las horas del módulo y el aviso del
+  75 % (art. 3.3), que no se aplica en grado básico (art. 3.4).
+- **Cierre de sesión de evaluación**: fija los RA alcanzados con su nota y su fecha.
+- **`tests/unit/motor-unico.test.js`**: pruebas que no comprueban resultados sino que no vuelvan a
+  aparecer motores de cálculo paralelos, medias propias por pantalla, criterios comparados sin su RA
+  ni migraciones de datos disparadas al cargar una vista.
 
 ## [3.3.2] - 2026-07-31
 

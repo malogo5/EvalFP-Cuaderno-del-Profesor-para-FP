@@ -6,9 +6,9 @@
 // IDs de CE se repiten entre RAs y una clave simple provoca colisiones.
 let _pardones  = {}          // { alumnoId(number): Set<"RA|CE"> }
 let _recSort   = 'pendientes' // 'pendientes' | 'nombre' | 'aprobados'
-let _recOpenSet  = new Set() // alumnoIds con tarjeta expandida (2ª Ordinaria)
+const _recOpenSet  = new Set() // alumnoIds con tarjeta expandida (2ª Ordinaria)
 let _ord1Sort    = 'nombre'  // 'nombre' | 'aptos' | 'noAptos'
-let _ord1OpenSet = new Set() // alumnoIds con tarjeta expandida (1ª Ordinaria)
+const _ord1OpenSet = new Set() // alumnoIds con tarjeta expandida (1ª Ordinaria)
 let _rec2Notas  = {}         // { alumnoId: { "RA|CE": nota } } — calificaciones 2ª Ordinaria por CE
 let _rec2Timer  = null
 
@@ -149,8 +149,6 @@ async function loadDashboard() {
 
   // Datos del módulo
   const modData   = _getModData(mid)
-  // Criterios de las actividades con el id suelto → clave RA|CE (ver ce-keys.js)
-  await _migrarCesActividades(parseInt(mid), allActividades, modData)
   const evalCount = modData?.modulo?.eval_count || 3
   const evals     = Array.from({length: evalCount}, (_, i) => i + 1)
   const actividades = allActividades.filter(a => evals.includes(a.eval))
@@ -188,10 +186,19 @@ async function loadDashboard() {
   // Esta pantalla tenía su propio cálculo: la nota de RA salía de la media
   // ponderada de las actividades, ignorando los criterios, y la nota final era la
   // media simple de todas las notas. Daba 7,25 donde Evaluaciones daba 6,25.
+  // Fase de formación en empresa por alumno (Orden 201/2024, art. 12)
+  const fasesDash = {}
+  try {
+    const filas = await window.api.getFaseEmpresa(parseInt(mid))
+    filas.forEach(f => { fasesDash[Number(f.alumno_id)] = f.estado })
+  } catch { /* base antigua sin la tabla */ }
+
   const ctxCalculo = contextoModulo({
     ras, cesByRa: cesDict, asignaciones: asigs, actividades, minExam,
+    tieneFaseEmpresa: moduloConFaseEmpresa(modData?.modulo),
   })
-  const estadoDe = alumnoId => estadoModulo(ctxCalculo, ng[alumnoId])
+  const estadoDe = alumnoId =>
+    estadoModulo(ctxCalculo, ng[alumnoId], { faseEmpresa: fasesDash[alumnoId] })
 
   function computeRaNotas(alumnoId) {
     const st = estadoDe(alumnoId)
@@ -284,7 +291,8 @@ async function loadDashboard() {
   // no basta con que la media sea ≥5.
   const resumen = alumnos.map(al => {
     const st = estadoDe(al.id)
-    return { ...al, media: st.media, rasPend: st.pendientes, superado: st.superado, acta: st.acta }
+    return { ...al, media: st.media, rasPend: st.pendientes, superado: st.superado,
+             acta: st.acta, resultado: st.resultado }
   })
 
   const conNota = resumen.filter(a => a.media !== null)
@@ -302,7 +310,7 @@ async function loadDashboard() {
   </div>`
 
   // ── Ordenar resumen para 1ª Ordinaria ─────────────────────────
-  let resumenSorted = resumen.slice()
+  const resumenSorted = resumen.slice()
   if (_ord1Sort === 'noAptos') {
     resumenSorted.sort((a, b) => {
       const va = a.media === null ? 1 : !a.superado ? 0 : 2
@@ -324,8 +332,10 @@ async function loadDashboard() {
     const cls = m===null?'':a.superado?'sem-green':m>=4?'sem-amber':'sem-red'
     const nota = m===null ? '—' : m.toFixed(1)
     const notaCls = m===null?'':a.superado?'nota-apto':m>=4?'nota-riesgo':'nota-noapto'
-    const apto = m===null ? '—' : a.superado ? 'APTO/A' : 'NO APTO/A'
-    const aptoCls = m===null?'color:var(--text3)':a.superado?'color:var(--green)':'color:var(--red)'
+    const apto = m===null ? '—' : etiquetaResultado(a.resultado)
+    const aptoCls = m===null ? 'color:var(--text3)'
+      : a.resultado === 'SUPERADO' ? 'color:var(--green)'
+      : a.resultado === 'SUPERADO_PARCIAL' ? 'color:var(--accent2)' : 'color:var(--red)'
     const motivo = m!==null && !a.superado && m>=5 && a.rasPend.length
       ? ` title="Media ≥5 pero RA pendientes: ${esc(a.rasPend.join(', '))} (la media no compensa un RA suspenso)"` : ''
     return `<tr${motivo}>
@@ -454,7 +464,7 @@ async function loadDashboard() {
   </div>`
 
   // ── 2ª Ordinaria: alumnos con CEs suspendidos ──────────────────
-  let conRecuperacion = alumnos
+  const conRecuperacion = alumnos
     .map(al => {
       const failingCes = computeFailingCes(al.id)
       if (!failingCes.length) return null
@@ -857,10 +867,16 @@ async function genBoletin(alumnoId) {
   const cfgBol   = await window.api.getAllConfig()
   const minRawB  = cfgBol[`minexam_${mid}`]
   const minExamB = minRawB != null && String(minRawB).trim() !== '' ? parseFloat(minRawB) : null
+  let faseAlumnoBol = null
+  try {
+    const filas = await window.api.getFaseEmpresa(parseInt(mid))
+    faseAlumnoBol = filas.find(f => Number(f.alumno_id) === alumnoId)?.estado || null
+  } catch { /* base antigua sin la tabla */ }
   const ctxBol   = contextoModulo({
     ras, cesByRa: cesDict, asignaciones: asigs, actividades, minExam: minExamB,
+    tieneFaseEmpresa: moduloConFaseEmpresa(modData?.modulo),
   })
-  const stBol = estadoModulo(ctxBol, miNotas)
+  const stBol = estadoModulo(ctxBol, miNotas, { faseEmpresa: faseAlumnoBol })
 
   // 2ª convocatoria: el boletín tiene que reflejarla. Antes se quedaba en la 1ª y
   // a quien había superado el módulo en la segunda le seguía diciendo que estaba
@@ -900,8 +916,9 @@ async function genBoletin(alumnoId) {
   // H1 — regla de oro: superar el módulo exige todos los RA calificados ≥5
   const rasPendBol  = ras.filter(ra => stBol.pendientes.includes(ra.id))
   const superadoBol = stBol.superado
-  const clFinal = notaFinal == null ? 'sin' : superadoBol ? 'ok' : 'ko'
-  const lblFinal = notaFinal == null ? '–' : superadoBol ? 'APTO/A' : 'NO APTO/A'
+  const clFinal = notaFinal == null ? 'sin'
+    : (stBol.resultado === 'SUPERADO' || stBol.resultado === 'SUPERADO_PARCIAL') ? 'ok' : 'ko'
+  const lblFinal = notaFinal == null ? '–' : etiquetaResultado(stBol.resultado)
   const avisoRegla = notaFinal != null && !superadoBol && notaFinal >= 5 && rasPendBol.length
     ? `<div style="font-size:9px;color:#721c24;padding:4px 12px">Media ≥5 pero con RA pendientes (${e(rasPendBol.map(r => r.id).join(', '))}): la media no compensa un RA suspenso.</div>`
     : ''
@@ -911,7 +928,7 @@ async function genBoletin(alumnoId) {
     <div class="conv-hdr ord1">
       <span class="conv-num">1ª Ordinaria</span>
       <span class="conv-nota ${clFinal}">${notaFinal != null ? notaFinal.toFixed(2) : '—'}</span>
-      ${actaBol != null ? `<span style="font-size:10px;color:#555">acta: <b>${actaBol}</b></span>` : ''}
+      ${actaBol != null ? `<span style="font-size:10px;color:#555">acta: <b>${actaBol}${stBol.resultado === 'SUPERADO_PARCIAL' ? ' SP' : ''}</b></span>` : ''}
       <span class="${clFinal==='ok'?'b-ok':clFinal==='ko'?'b-ko':'b-sin'}" style="font-size:11px">${lblFinal}</span>
     </div>
     ${avisoRegla}
