@@ -316,7 +316,10 @@ async function loadProgramacion() {
         const cesAct = actCesLista(act)
         const utIdSafe = (act.ut_id || '').replace(/'/g, "\\'")
         const raIdSafe = (act.ra_id || '').replace(/'/g, "\\'")
-        const cesStr = JSON.stringify(cesAct.map(c => c.clave)).replace(/"/g, '&quot;')
+        // actCesLista() devuelve las claves ya como cadenas "RA1|CR1": tratarlas
+        // como objetos dejaba el modal sin marcar ningún criterio y guardarlo
+        // borraba los que ya tenía.
+        const cesStr = JSON.stringify(cesAct).replace(/"/g, '&quot;')
         h += `<tr>
           <td><input class="nota-cell" type="text" value="${esc(act.descripcion)}"
                 data-actid="${act.id}" data-field="descripcion"

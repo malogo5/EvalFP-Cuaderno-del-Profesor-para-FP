@@ -279,10 +279,11 @@ async function loadEvaluaciones() {
 
   const tabBar = `<div style="display:flex;gap:2px;flex-wrap:wrap;align-items:center;background:var(--bg3);border-radius:10px;
                               padding:3px;margin-bottom:16px;border:1px solid var(--border)">
-    ${evals.map(ev => {
-      const lbl = ev === 1 ? '1ª Evaluación' : ev === 2 ? '2ª Evaluación' : '3ª Evaluación'
-      return `<div class="eval-tab${_evalTab === `ev${ev}` ? ' on' : ''}" data-etab="ev${ev}" onclick="setEvalTab('ev${ev}')">${lbl}</div>`
-    }).join('')}
+    ${evals.map(ev =>
+      // evalLabel() en vez de la lista escrita a mano: esa etiquetaba como «3ª»
+      // cualquier evaluación a partir de la tercera.
+      `<div class="eval-tab${_evalTab === `ev${ev}` ? ' on' : ''}" data-etab="ev${ev}" onclick="setEvalTab('ev${ev}')">${evalLabel(ev)}</div>`
+    ).join('')}
     <div class="eval-tab${_evalTab === 'ord1' ? ' on' : ''}" data-etab="ord1" onclick="setEvalTab('ord1')">1ª Ordinaria</div>
     <div class="eval-tab${_evalTab === 'ord2' ? ' on' : ''}" data-etab="ord2" onclick="setEvalTab('ord2')">2ª Ordinaria</div>
     ${minExamCtl}
@@ -351,6 +352,10 @@ async function loadEvaluaciones() {
         <td>${esc(nombreAl(al))} ${esBaja ? bajaBadge : ''}</td>
         <td class="nc" style="font-weight:700"><span class="${bolCls}">${bolTxt}</span></td>
         <td style="font-size:11px">${pendTxt}</td>
+        <td style="text-align:center">
+          <button class="btn btn-ghost btn-sm" onclick="genBoletin(${al.id},${ev})"
+            title="Boletín de esta evaluación, con la situación acumulada del módulo">📄 PDF</button>
+        </td>
       </tr>`
     }).join('')
 
@@ -392,7 +397,7 @@ async function loadEvaluaciones() {
         <span style="font-size:11px;color:var(--text3)">media reponderada de los RA trabajados hasta ahora (${rasVistos.map(r => r.id).join(', ')}) · el boletín NO sustituye al registro de RA pendientes</span>
       </div>
       <div style="overflow-x:auto"><table class="ev-tbl" style="width:100%">
-        <thead><tr><th>Alumno/a</th><th class="nc" style="min-width:70px">Boletín</th><th>RA pendientes (acumulado)</th></tr></thead>
+        <thead><tr><th>Alumno/a</th><th class="nc" style="min-width:70px">Boletín</th><th>RA pendientes (acumulado)</th><th style="width:80px"></th></tr></thead>
         <tbody>${bolRows}</tbody>
       </table></div>
     </div>`
@@ -480,15 +485,18 @@ async function loadEvaluaciones() {
     const estados = {}
     alumnos.forEach(al => { estados[al.id] = estadoAlumno(al.id) })
 
-    const aptos    = alumnos.filter(al => estados[al.id].superado).length
-    const noAptos  = alumnos.filter(al => estados[al.id].completo && !estados[al.id].superado).length
+    // «Superado parcial» cuenta como superado (art. 18.4): quien ha alcanzado
+    // todos los RA y solo le falta la fase en empresa no puede figurar entre
+    // los que no superan, cuando su propia fila dice APTO/A · SP.
+    const aptos    = alumnos.filter(al => estados[al.id].superadoParaPromocion).length
+    const noAptos  = alumnos.filter(al => estados[al.id].completo && !estados[al.id].superadoParaPromocion).length
     const pendEval = alumnos.filter(al => !estados[al.id].completo && estados[al.id].media !== null).length
     const medias   = alumnos.map(al => estados[al.id].media).filter(n => n !== null)
     const media    = medias.length ? (medias.reduce((s, n) => s + n, 0) / medias.length).toFixed(1) : '—'
 
     const kpis = `<div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
       <div style="flex:1;min-width:75px;background:var(--bg3);border-radius:10px;padding:10px 14px;border:1px solid var(--border)"><div style="font-size:20px;font-weight:700">${alumnos.length}</div><div style="font-size:10px;color:var(--text2)">Activos</div></div>
-      <div style="flex:1;min-width:75px;background:var(--bg3);border-radius:10px;padding:10px 14px;border:1px solid var(--border)"><div style="font-size:20px;font-weight:700;color:var(--green)">${aptos}</div><div style="font-size:10px;color:var(--text2)">Superan (todos los RA ≥5)</div></div>
+      <div style="flex:1;min-width:75px;background:var(--bg3);border-radius:10px;padding:10px 14px;border:1px solid var(--border)"><div style="font-size:20px;font-weight:700;color:var(--green)">${aptos}</div><div style="font-size:10px;color:var(--text2)">Superan (incluye SP)</div></div>
       <div style="flex:1;min-width:75px;background:var(--bg3);border-radius:10px;padding:10px 14px;border:1px solid var(--border)"><div style="font-size:20px;font-weight:700;color:var(--red)">${noAptos}</div><div style="font-size:10px;color:var(--text2)">No superan</div></div>
       <div style="flex:1;min-width:75px;background:var(--bg3);border-radius:10px;padding:10px 14px;border:1px solid var(--border)"><div style="font-size:20px;font-weight:700;color:var(--amber, #c99a3d)">${pendEval}</div><div style="font-size:10px;color:var(--text2)">Sin evaluar del todo</div></div>
       <div style="flex:1;min-width:75px;background:var(--bg3);border-radius:10px;padding:10px 14px;border:1px solid var(--border)"><div style="font-size:20px;font-weight:700">${media}</div><div style="font-size:10px;color:var(--text2)">Media</div></div>
@@ -503,7 +511,7 @@ async function loadEvaluaciones() {
       const st = esBaja ? estadoAlumno(al.id) : estados[al.id]
       const nFinal = st.media
       const nFTxt  = nFinal !== null ? nFinal.toFixed(1) : '—'
-      const nFCls  = nFinal === null ? '' : st.superado ? 'nota-apto' : nFinal >= 4 ? 'nota-riesgo' : 'nota-noapto'
+      const nFCls  = nFinal === null ? '' : st.superadoParaPromocion ? 'nota-apto' : nFinal >= 4 ? 'nota-riesgo' : 'nota-noapto'
 
       // H1 — veredicto normativo
       // Los tres estados del art. 12: superado, superado parcial y no superado
@@ -760,15 +768,15 @@ async function loadEvaluaciones() {
     const estados2 = {}
     alumnos.forEach(al => { estados2[al.id] = estadoOrd2(al.id) })
     // Todos los indicadores se refieren al MISMO grupo: quien concurre a la 2ª.
-    const aptosRec   = conRec.filter(al => estados2[al.id].superado).length
-    const noAptosRec = conRec.filter(al => estados2[al.id].completo && !estados2[al.id].superado).length
+    const aptosRec   = conRec.filter(al => estados2[al.id].superadoParaPromocion).length
+    const noAptosRec = conRec.filter(al => estados2[al.id].completo && !estados2[al.id].superadoParaPromocion).length
     const notasRec   = conRec.map(al => estados2[al.id].media).filter(n => n !== null)
     const mediaRec   = notasRec.length ? (notasRec.reduce((s, n) => s + n, 0) / notasRec.length).toFixed(1) : '—'
 
     const kpis = `<div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
       <div style="flex:1;min-width:75px;background:var(--bg3);border-radius:10px;padding:10px 14px;border:1px solid var(--border)"><div style="font-size:20px;font-weight:700">${alumnos.length}</div><div style="font-size:10px;color:var(--text2)">Alumnos</div></div>
       <div style="flex:1;min-width:75px;background:var(--bg3);border-radius:10px;padding:10px 14px;border:1px solid var(--border)"><div style="font-size:20px;font-weight:700;color:var(--red)">${conRec.length}</div><div style="font-size:10px;color:var(--text2)">Con recuperación</div></div>
-      <div style="flex:1;min-width:75px;background:var(--bg3);border-radius:10px;padding:10px 14px;border:1px solid var(--border)"><div style="font-size:20px;font-weight:700;color:var(--green)">${aptosRec}</div><div style="font-size:10px;color:var(--text2)">Superan 2ª (todos RA ≥5)</div></div>
+      <div style="flex:1;min-width:75px;background:var(--bg3);border-radius:10px;padding:10px 14px;border:1px solid var(--border)"><div style="font-size:20px;font-weight:700;color:var(--green)">${aptosRec}</div><div style="font-size:10px;color:var(--text2)">Superan 2ª (incluye SP)</div></div>
       <div style="flex:1;min-width:75px;background:var(--bg3);border-radius:10px;padding:10px 14px;border:1px solid var(--border)"><div style="font-size:20px;font-weight:700;color:var(--red)">${noAptosRec}</div><div style="font-size:10px;color:var(--text2)">No superan 2ª</div></div>
       <div style="flex:1;min-width:75px;background:var(--bg3);border-radius:10px;padding:10px 14px;border:1px solid var(--border)"><div style="font-size:20px;font-weight:700">${mediaRec}</div><div style="font-size:10px;color:var(--text2)">Media 2ª</div></div>
     </div>`

@@ -108,6 +108,57 @@ describe('A-5 · Convocatorias', () => {
     expect(st.porRA.RA1.nota).toBeCloseTo(6.5)   // (8 + 5) / 2
   })
 
+  it('quien suspende todos los RA los tiene todos recuperables en la 2ª', () => {
+    // Fallo visto en uso: alumnado con todo suspenso al que la 2ª convocatoria
+    // no le ofrecía todos los RA. Se reproduce con los datos reales de OACE
+    // (4 RA al 24/24/24/28) y un alumno con 0,9 · 0,0 · 0,0 · 0,0.
+    const rasOace = [{ id: 'RA1', pond: 24 }, { id: 'RA2', pond: 24 },
+                     { id: 'RA3', pond: 24 }, { id: 'RA4', pond: 28 }]
+    const ces = {}
+    const acts = []
+    let id = 0
+    for (const ra of rasOace) {
+      ces[ra.id] = [{ id: 'CR1' }, { id: 'CR2' }]
+      for (const ce of ['CR1', 'CR2']) {
+        acts.push({ id: ++id, tipo: 'examen', peso: 50, nota_max: 10,
+                    ces: JSON.stringify([`${ra.id}|${ce}`]), convocatoria: 1 })
+      }
+    }
+    const suspendeTodo = { 1: 0.9, 2: 0.9, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0 }
+
+    const st = M.estadoModulo(
+      M.contextoModulo({ ras: rasOace, cesByRa: ces, asignaciones: [], actividades: acts, convocatoria: 2 }),
+      suspendeTodo)
+
+    // Los cuatro pendientes, ninguno dado por superado (que es lo que los
+    // bloquearía con el candado y los dejaría fuera de la recuperación).
+    expect(st.pendientes).toEqual(['RA1', 'RA2', 'RA3', 'RA4'])
+    expect(Object.values(st.porRA).filter(v => v.nota !== null && v.nota >= 5)).toEqual([])
+  })
+
+  it('el boletín de un trimestre no cuenta lo que aún no se ha dado', () => {
+    // RA1 se trabaja en la 1ª evaluación y RA2 en la 3ª. En el boletín de
+    // diciembre, RA2 no puede figurar como «sin evaluar»: todavía no tocaba.
+    const rasB = [{ id: 'RA1', pond: 50 }, { id: 'RA2', pond: 50 }]
+    const cesB = { RA1: [{ id: 'CR1' }], RA2: [{ id: 'CR1' }] }
+    const actsB = [
+      { id: 1, tipo: 'examen', peso: 100, nota_max: 10, eval: 1, ces: '["RA1|CR1"]', convocatoria: 1 },
+      { id: 2, tipo: 'examen', peso: 100, nota_max: 10, eval: 3, ces: '["RA2|CR1"]', convocatoria: 1 },
+    ]
+    const soloUnaNota = { 1: 7 }
+
+    const hastaLa1a = M.estadoModulo(
+      M.contextoModulo({ ras: rasB, cesByRa: cesB, asignaciones: [], actividades: actsB.filter(a => a.eval <= 1) }),
+      soloUnaNota)
+    expect(hastaLa1a.media).toBeCloseTo(7)
+    expect(hastaLa1a.sinNota).toEqual([])
+
+    const cursoEntero = M.estadoModulo(
+      M.contextoModulo({ ras: rasB, cesByRa: cesB, asignaciones: [], actividades: actsB }),
+      soloUnaNota)
+    expect(cursoEntero.sinNota).toContain('RA2')
+  })
+
   it('separa las actividades por convocatoria', () => {
     expect(M.actividadesDeConvocatoria(actividades, 1).map(a => a.id)).toEqual([1, 2])
     expect(M.actividadesDeConvocatoria(actividades, 2).map(a => a.id)).toEqual([1, 2, 3])

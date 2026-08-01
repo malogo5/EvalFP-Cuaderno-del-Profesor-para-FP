@@ -208,82 +208,86 @@ async function loadDashboard() {
   }
 
   // ── Helper: CEs suspendidos de un alumno (de RAs < 5) ──────────
+  /**
+   * Criterios pendientes de un alumno en la 2ª convocatoria.
+   *
+   * El `seen` era por id suelto y CR1 existe en TODOS los RA: a quien suspendía
+   * los cuatro solo se le contaban los criterios del primero (8 en vez de 29).
+   * Es la colisión de identificadores que la auditoría cerró en el resto de
+   * pantallas; aquí seguía viva. La clave tiene que ser RA|CE.
+   */
   function computeFailingCes(alumnoId) {
-    const raNotas = computeRaNotas(alumnoId)
+    const st = estadoDe(alumnoId)
     const seen = new Set()
     const result = []
     ras.forEach(ra => {
-      const nota = raNotas[ra.id]
-      if (nota == null || nota >= 5) return
-      // Usar TODOS los CEs del RA (no solo los ligados a UTs en asigs)
-      const ceLst = cesDict[ra.id] || []
-      if (ceLst.length) {
-        ceLst.forEach(ce => {
-          if (seen.has(ce.id)) return
-          seen.add(ce.id)
-          result.push({
-            ceId: ce.id,
-            ceText: ce.texto || '',
-            raId: ra.id,
-            raNota: nota,
-            pardoned: !!_pardones[alumnoId]?.has(`${ra.id}|${ce.id}`),   // H2
-          })
+      const info = st.porRA[ra.id]
+      const nota = info ? info.nota : null
+      if (nota == null || (nota >= 5 && !info.minKO)) return
+      const ceLst = (cesDict[ra.id] || []).length
+        ? cesDict[ra.id]
+        : asigs.filter(a => a.ra === ra.id)
+            .flatMap(a => (a.ces || []).map(ceId => ({ id: ceId, texto: '' })))
+      ceLst.forEach(ce => {
+        const k = ceKey(ra.id, ce.id)
+        if (seen.has(k)) return
+        seen.add(k)
+        result.push({
+          ceId: ce.id,
+          ceText: ce.texto || '',
+          raId: ra.id,
+          raNota: nota,
+          pardoned: !!_pardones[alumnoId]?.has(k),
         })
-      } else {
-        // Fallback: CEs desde asignaciones si cesDict no tiene datos para este RA
-        asigs.filter(a => a.ra === ra.id).forEach(asig => {
-          ;(asig.ces || []).forEach(ceId => {
-            if (seen.has(ceId)) return
-            seen.add(ceId)
-            result.push({
-              ceId,
-              ceText: '',
-              raId: ra.id,
-              raNota: nota,
-              pardoned: !!_pardones[alumnoId]?.has(`${ra.id}|${ceId}`),   // H2
-            })
-          })
-        })
-      }
+      })
     })
     return result
   }
 
-  // ── Helper: nota final recalculada con calificaciones de 2ª Ordinaria ──
-  function computeRec2FinalGrade(alumnoId) {
-    const raNotasOrig = computeRaNotas(alumnoId)
-    const recRaNotas  = {}
-    ras.forEach(ra => {
-      const origNota = raNotasOrig[ra.id]
-      if (origNota === null || origNota >= 5) { recRaNotas[ra.id] = origNota; return }
-      // RA suspenso: recalcular con notas de recuperación por CE
-      const ceIds = []
-      const seen  = new Set()
-      const ceLstRec = cesDict[ra.id] || []
-      if (ceLstRec.length) {
-        ceLstRec.forEach(ce => { if (!seen.has(ce.id)) { seen.add(ce.id); ceIds.push(ce.id) } })
-      } else {
-        asigs.filter(a => a.ra === ra.id).forEach(asig =>
-          (asig.ces || []).forEach(ceId => { if (!seen.has(ceId)) { seen.add(ceId); ceIds.push(ceId) } })
-        )
-      }
-      if (!ceIds.length) { recRaNotas[ra.id] = origNota; return }
-      const ceGrades = []
-      ceIds.forEach(ceId => {
-        const k = ceKey(ra.id, ceId)   // H2: clave compuesta
-        const recNota = _rec2Notas[alumnoId]?.[k]
-        if (recNota != null) { ceGrades.push(recNota); return }
-        if (_pardones[alumnoId]?.has(k)) { ceGrades.push(5); return }
-        // Nota original del CE: media de las actividades que cubren ESE criterio
-        // de ESE RA (el id suelto se repite entre RAs)
-        const ceActs = actividades.filter(a => actCubreCe(a, ra.id, ceId))
-        const ceActGrades = ceActs.map(a => ng[alumnoId]?.[a.id]).filter(n => n != null)
-        if (ceActGrades.length) ceGrades.push(ceActGrades.reduce((s, n) => s + n, 0) / ceActGrades.length)
-      })
-      recRaNotas[ra.id] = ceGrades.length ? ceGrades.reduce((s, g) => s + g, 0) / ceGrades.length : origNota
+  /**
+   * Nota de la 2ª convocatoria de un alumno, la MISMA que calcula la pantalla de
+   * Evaluaciones.
+   *
+   * Antes esto era un motor paralelo: promediaba los criterios a peso igual,
+   * después los RA a peso igual —ignorando el 24/24/24/28 de la programación— y
+   * no veía las actividades de recuperación. Resultado: el Dashboard decía 0,6
+   * donde Evaluaciones decía 0,2, y 5,0 donde decía 6,0.
+   */
+  /**
+   * Nota efectiva de un criterio en la 2ª convocatoria: la mejor de las tres
+   * vías —prueba de recuperación, nota suelta por criterio, criterio dado por
+   * alcanzado—. La usan la nota, el contador de pendientes y los iconos, para
+   * que no puedan contradecirse entre sí.
+   */
+  function notaCEOrd2Dash(alumnoId, raId, ceId) {
+    const k = ceKey(raId, ceId)
+    const candidatos = []
+    const conRec = notaCE(raId, ceId, actividades, ng[alumnoId], ctxCalculo.PRAC, ctxCalculo.EXAM, 2)
+    if (conRec !== null) candidatos.push(conRec)
+    const rec = _rec2Notas[alumnoId]?.[k]
+    if (rec != null) candidatos.push(rec)
+    if (_pardones[alumnoId]?.has(k)) candidatos.push(5)
+    return candidatos.length ? Math.max(...candidatos) : null
+  }
+
+  function estadoOrd2Dash(alumnoId) {
+    const notaCEOrd2 = (raId, ceId) => notaCEOrd2Dash(alumnoId, raId, ceId)
+    return estadoModulo(ctxCalculo, ng[alumnoId], {
+      faseEmpresa: fasesDash[alumnoId],
+      notaRAOverride: (ra, n) => {
+        const minKO = raMinExamKO(ra.id, cesDict[ra.id] || [], actividades, ng[alumnoId], minExam, asigs)
+        if (n === null || (n >= 5 && !minKO)) return n
+        const nueva = notaRA(ra.id, cesDict[ra.id] || [], actividades, ng[alumnoId],
+          ctxCalculo.PRAC, ctxCalculo.EXAM, asigs, 2, notaCEOrd2)
+        return nueva === null ? n : nueva
+      },
+      minKOOverride: (ra, ko) => {
+        if (!ko) return false
+        const lst = cesEvaluadosDeRa(ra.id, cesDict[ra.id] || [], actividades)
+        if (!lst.length) return true
+        return !lst.every(ce => { const n = notaCEOrd2(ra.id, ce.id); return n != null && n >= 5 })
+      },
     })
-    const ns = Object.values(recRaNotas).filter(n => n !== null)
-    return ns.length ? ns.reduce((s, n) => s + n, 0) / ns.length : null
   }
 
   // Calcular media global por alumno
@@ -291,7 +295,11 @@ async function loadDashboard() {
   // no basta con que la media sea ≥5.
   const resumen = alumnos.map(al => {
     const st = estadoDe(al.id)
-    return { ...al, media: st.media, rasPend: st.pendientes, superado: st.superado,
+    // `superado` aquí es el del art. 18.4: el «superado parcial» —todo alcanzado
+    // en el centro, pendiente la fase en empresa— cuenta como superado. Con el
+    // estricto, esas personas salían en rojo en la vista de clase y como
+    // «NO APTO/A» en su boletín, contradiciendo a la propia pantalla.
+    return { ...al, media: st.media, rasPend: st.pendientes, superado: st.superadoParaPromocion,
              acta: st.acta, resultado: st.resultado }
   })
 
@@ -303,7 +311,7 @@ async function loadDashboard() {
 
   const kpis = `<div class="kpi-grid">
     <div class="kpi"><div class="kpi-val">${alumnos.length}</div><div class="kpi-label">Activos</div></div>
-    <div class="kpi"><div class="kpi-val" style="color:var(--green)">${aptos}</div><div class="kpi-label">Aptos (≥5)</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--green)">${aptos}</div><div class="kpi-label" title="Todos los RA alcanzados. Incluye el superado parcial: falta la fase en empresa, pero promociona (art. 18.4)">Aptos (incluye SP)</div></div>
     <div class="kpi"><div class="kpi-val" style="color:var(--red)">${noAptos}</div><div class="kpi-label">No Aptos</div></div>
     <div class="kpi"><div class="kpi-val" style="color:var(--amber)">${enRiesgo}</div><div class="kpi-label">En Riesgo</div></div>
     <div class="kpi"><div class="kpi-val">${mediaGlobal}</div><div class="kpi-label">Media Grupo</div></div>
@@ -343,7 +351,14 @@ async function loadDashboard() {
       <td style="text-align:center;font-weight:700;font-size:15px" class="${notaCls}">${nota}</td>
       <td style="text-align:center;font-weight:700;font-size:11px;${aptoCls}">${apto}</td>
       <td style="text-align:center">
-        <button class="btn btn-ghost btn-sm" onclick="genBoletin(${a.id})">📄 Boletín PDF</button>
+        <select onchange="if(this.value!==''){genBoletin(${a.id}, this.value === 'final' ? null : this.value);this.selectedIndex=0}"
+          title="Elige qué boletín generar"
+          style="border:1px solid var(--border2);border-radius:8px;padding:3px 8px;font-size:11px;
+                 color:var(--text);background:var(--bg);cursor:pointer;font-family:inherit">
+          <option value="">📄 Boletín PDF…</option>
+          ${evals.map(ev => `<option value="${ev}">${evalLabel(ev)}</option>`).join('')}
+          <option value="final">Módulo completo</option>
+        </select>
       </td>
     </tr>`
   }).join('')
@@ -375,11 +390,13 @@ async function loadDashboard() {
     const isOpen = _ord1OpenSet.has(al.id)
     const nombreAl = `${al.apellidos||''}${al.apellidos&&al.nombre?', ':''}${al.nombre||''}`
 
+    // La etiqueta sale del resultado, no de un booleano: el art. 12 tiene tres
+    // estados y «superado parcial» tiene que poder decirlo.
     const aptoBadge = m === null
       ? `<span style="background:var(--bg3);color:var(--text3);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700">—</span>`
       : isApto
-      ? `<span style="background:rgba(16,185,129,.15);color:var(--green);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700">✓ APTO/A</span>`
-      : `<span style="background:rgba(239,68,68,.1);color:var(--red);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700">✗ NO APTO/A</span>`
+      ? `<span style="background:rgba(16,185,129,.15);color:var(--green);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700">✓ ${esc(etiquetaResultado(al.resultado))}</span>`
+      : `<span style="background:rgba(239,68,68,.1);color:var(--red);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700">✗ ${esc(etiquetaResultado(al.resultado))}</span>`
 
     // Bloques de RA con CEs
     const raBlocks = ras.map(ra => {
@@ -434,8 +451,6 @@ async function loadDashboard() {
         <span style="font-size:13px;font-weight:700;flex:1">${esc(nombreAl)}</span>
         <span class="${notaCls}" style="font-weight:700;font-size:14px;margin-right:4px">${nota}</span>
         ${aptoBadge}
-        <button onclick="event.stopPropagation();genBoletin(${al.id})"
-          class="btn btn-ghost btn-sm" style="margin-left:4px">📄 Boletín</button>
       </div>
       <div id="ord1-body-${al.id}" style="display:${isOpen?'block':'none'};padding:10px 14px 12px">
         ${raBlocks || '<span style="font-size:11px;color:var(--text3)">Sin actividades calificadas.</span>'}
@@ -468,13 +483,16 @@ async function loadDashboard() {
     .map(al => {
       const failingCes = computeFailingCes(al.id)
       if (!failingCes.length) return null
-      // CE "pendiente" = no aprobado manualmente Y sin nota rec2 ≥ 5
+      // Pendiente = el criterio sigue sin acreditarse por NINGUNA de las tres
+      // vías. Mirando solo la nota suelta y el perdón, a quien recuperaba con la
+      // prueba de junio se le seguían contando sus criterios como pendientes:
+      // «14 CEs pendientes» junto a un 6,0 APTO/A.
       const pendientes = failingCes.filter(c => {
-        const rec2Nota = _rec2Notas[al.id]?.[`${c.raId}|${c.ceId}`]   // H2
-        return !c.pardoned && (rec2Nota == null || rec2Nota < 5)
+        const n = notaCEOrd2Dash(al.id, c.raId, c.ceId)
+        return n == null || n < 5
       })
-      const rec2FinalGrade = computeRec2FinalGrade(al.id)
-      return { ...al, failingCes, pendientes, rec2FinalGrade }
+      const est2 = estadoOrd2Dash(al.id)
+      return { ...al, failingCes, pendientes, est2 }
     })
     .filter(Boolean)
 
@@ -519,24 +537,29 @@ async function loadDashboard() {
         const nombreAl = `${al.apellidos || ''}${al.apellidos && al.nombre ? ', ' : ''}${al.nombre || ''}`
         const isOpen = _recOpenSet.has(al.id)
 
-        const rec2Grade    = al.rec2FinalGrade
+        // El veredicto y la nota salen del motor, no de comparar la media con 5:
+        // la regla de oro (art. 2.3) no deja que una media de 5,4 apruebe con un
+        // RA suspenso, y el «superado parcial» tiene su propia etiqueta.
+        const rec2Grade    = al.est2.media
         const rec2GradeTxt = rec2Grade !== null ? rec2Grade.toFixed(1) : null
-        const rec2IsApto   = rec2Grade !== null && rec2Grade >= 5
+        const rec2IsApto   = al.est2.superadoParaPromocion
+        const rec2Label    = etiquetaResultado(al.est2.resultado)
 
         const estadoBadge = todoPerdonado
           ? `<span style="background:rgba(16,185,129,.15);color:var(--green);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700">✓ Aprobado/a</span>`
           : `<span style="background:rgba(239,68,68,.1);color:var(--red);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700">${al.pendientes.length} CE${al.pendientes.length>1?'s':''} pendiente${al.pendientes.length>1?'s':''}</span>`
 
         const rec2Badge = rec2GradeTxt !== null
-          ? `<span style="background:${rec2IsApto?'rgba(16,185,129,.15)':'rgba(239,68,68,.1)'};color:${rec2IsApto?'var(--green)':'var(--red)'};padding:2px 8px;border-radius:10px;font-size:12px;font-weight:800;margin-left:2px">${rec2GradeTxt} — ${rec2IsApto?'APTO/A':'NO APTO/A'}</span>`
+          ? `<span style="background:${rec2IsApto?'rgba(16,185,129,.15)':'rgba(239,68,68,.1)'};color:${rec2IsApto?'var(--green)':'var(--red)'};padding:2px 8px;border-radius:10px;font-size:12px;font-weight:800;margin-left:2px">${rec2GradeTxt} — ${esc(rec2Label)}</span>`
           : ''
 
         const ceRows = al.failingCes.map(c => {
           const raIdSafe   = c.raId.replace(/'/g, "\\'")
           const ceIdSafe   = c.ceId.replace(/'/g, "\\'")
           const rec2Nota   = _rec2Notas[al.id]?.[`${c.raId}|${c.ceId}`]   // H2
-          const passedRec2 = rec2Nota != null && rec2Nota >= 5
-          const icon = passedRec2 || c.pardoned ? '✅' : rec2Nota != null ? '❌' : '⬜'
+          const efectiva   = notaCEOrd2Dash(al.id, c.raId, c.ceId)
+          const passedRec2 = efectiva != null && efectiva >= 5
+          const icon = passedRec2 ? '✅' : efectiva != null ? '❌' : '⬜'
 
           const pardonBtn = c.pardoned
             ? `<button onclick="event.stopPropagation();togglePardonCe(${mid},${al.id},'${raIdSafe}','${ceIdSafe}')"
@@ -573,6 +596,9 @@ async function loadDashboard() {
             <span style="font-size:13px;font-weight:700;flex:1">${esc(nombreAl)}</span>
             ${estadoBadge}
             ${rec2Badge}
+            <button onclick="event.stopPropagation();genBoletin(${al.id})"
+              class="btn btn-ghost btn-sm" style="margin-left:4px"
+              title="Boletín del módulo: incluye las dos convocatorias">📄 Boletín PDF</button>
           </div>
           <div id="rec-body-${al.id}" style="display:${isOpen?'block':'none'};padding:10px 14px 12px">
             ${ceRows}
@@ -597,7 +623,27 @@ async function loadDashboard() {
   document.getElementById('dash-content').innerHTML = kpis + ord1Html + rec2Html
 }
 
-async function genBoletin(alumnoId) {
+/**
+ * Boletín en PDF de un alumno o alumna.
+ *
+ * El try/catch no es decorativo: un fallo aquí dentro dejaba el botón mudo —se
+ * pulsaba y no pasaba nada— porque la excepción se perdía en la promesa. Si algo
+ * se rompe, que al menos se vea.
+ */
+async function genBoletin(alumnoId, evParcial = null) {
+  try {
+    await _genBoletin(alumnoId, evParcial ? parseInt(evParcial) : null)
+  } catch (e) {
+    console.error('genBoletin:', e)
+    alert('No se ha podido generar el boletín: ' + (e && e.message ? e.message : e))
+  }
+}
+
+/**
+ * @param {?number} evParcial  evaluación concreta (1, 2, 3) o null para el
+ *                             boletín del módulo completo.
+ */
+async function _genBoletin(alumnoId, evParcial = null) {
   // El botón Boletín existe en Dashboard Y en Evaluaciones: usar el selector activo
   const mid = document.getElementById('dash-mod-sel')?.value ||
               document.getElementById('eval-mod-sel')?.value
@@ -713,7 +759,11 @@ async function genBoletin(alumnoId) {
   const fmt   = n  => n != null ? n.toFixed(2) : '—'
   const e     = s  => (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')
   const trunc = (s, n) => s && s.length > n ? s.substring(0, n - 1) + '…' : (s || '')
-  const aptoLabel = n => n == null ? '–' : n >= 5 ? 'APTO/A' : 'NO APTO/A'
+  // Ojo: esto etiqueta MEDIAS sueltas (de una evaluación, de una actividad), no
+  // el módulo. Llamar «APTO/A» a una media ≥5 contradice la regla de oro, que
+  // exige además todos los RA alcanzados. El veredicto del módulo sale del motor,
+  // más abajo, con los tres estados del art. 12.
+  const nivelLabel = n => n == null ? '–' : n >= 5 ? 'Alcanza' : 'No alcanza'
   const aptoCls   = n => n == null ? 'sin'  : n >= 5 ? 'ok'  : 'ko'
 
   // ── CSS ───────────────────────────────────────────────────────────────
@@ -772,23 +822,19 @@ async function genBoletin(alumnoId) {
   `
 
   // ── Tabla medias por evaluación ───────────────────────────────────────
-  const evalRows = evalMedias.map(({ ev, media, numActs, numNotas }) => {
+  const evalRows = evalMedias
+    .filter(x => !evParcial || x.ev === evParcial)
+    .map(({ ev, media, numActs, numNotas }) => {
     const cl = aptoCls(media)
     return `<tr>
       <td><b>${evalLabel(ev)}</b></td>
       <td class="nc ${cl}">${fmt(media)}</td>
-      <td><span class="${cl==='ok'?'b-ok':cl==='ko'?'b-ko':'b-sin'}">${aptoLabel(media)}</span></td>
+      <td><span class="${cl==='ok'?'b-ok':cl==='ko'?'b-ko':'b-sin'}">${nivelLabel(media)}</span></td>
       <td class="sin" style="font-size:9px">${numNotas}/${numActs} act. calificadas</td>
     </tr>`
   }).join('')
 
   const cl = aptoCls(mediaGlobal)
-  const globalRow = `<tr class="global">
-    <td><b>Media global</b></td>
-    <td class="nc ${cl}" style="font-size:14px"><b>${fmt(mediaGlobal)}</b></td>
-    <td><span class="${cl==='ok'?'b-ok':cl==='ko'?'b-ko':'b-sin'}" style="font-size:10px">${aptoLabel(mediaGlobal)}</span></td>
-    <td></td>
-  </tr>`
 
   // ── Helper: bloque de una UT con sus RAs y CEs ───────────────────────
   function utBlock(ut) {
@@ -821,7 +867,7 @@ async function genBoletin(alumnoId) {
     }).join('')
 
     const notaHtml = nota != null
-      ? `Nota práctica: <b class="${uCl}">${fmt(nota)}</b> &nbsp; <span class="${uCl==='ok'?'b-ok':uCl==='ko'?'b-ko':'b-sin'}">${aptoLabel(nota)}</span>`
+      ? `Nota práctica: <b class="${uCl}">${fmt(nota)}</b> &nbsp; <span class="${uCl==='ok'?'b-ok':uCl==='ko'?'b-ko':'b-sin'}">${nivelLabel(nota)}</span>`
       : `<span class="sin">Sin calificar</span>`
 
     return `<div class="ut">
@@ -836,14 +882,14 @@ async function genBoletin(alumnoId) {
   }
 
   // ── Bloques por Evaluación (UTs + RAs + CEs agrupados) ───────────────
-  const evalBlocks = evals.map(ev => {
+  const evalBlocks = evals.filter(ev => !evParcial || ev === evParcial).map(ev => {
     const evData  = evalMedias.find(x => x.ev === ev) || {}
     const { media, numActs, numNotas } = evData
     const cl      = aptoCls(media)
     const utsEv   = uts.filter(ut => (ut.eval || 1) === ev)
 
     const evMediaHtml = media != null
-      ? `<span class="${cl==='ok'?'b-ok':cl==='ko'?'b-ko':'b-sin'}" style="font-size:10px">${fmt(media)} — ${aptoLabel(media)}</span>` +
+      ? `<span class="${cl==='ok'?'b-ok':cl==='ko'?'b-ko':'b-sin'}" style="font-size:10px">${fmt(media)} — ${nivelLabel(media)}</span>` +
         `<span style="font-size:9px;color:#acd;margin-left:6px">(${numNotas}/${numActs} act.)</span>`
       : `<span class="b-sin" style="font-size:10px">Sin calificar</span>`
 
@@ -877,6 +923,30 @@ async function genBoletin(alumnoId) {
     tieneFaseEmpresa: moduloConFaseEmpresa(modData?.modulo),
   })
   const stBol = estadoModulo(ctxBol, miNotas, { faseEmpresa: faseAlumnoBol })
+
+  // Acumulado hasta la evaluación del boletín. En un boletín de diciembre, la
+  // situación del módulo tiene que calcularse con lo evaluado HASTA diciembre:
+  // meter las actividades de mayo daría RA «pendientes» que aún no tocaban.
+  const actsHasta = evParcial
+    ? actividades.filter(a => Number(a.convocatoria) !== 2 && a.eval <= evParcial)
+    : actividades
+  const stAcum = evParcial
+    ? estadoModulo(
+        contextoModulo({ ras, cesByRa: cesDict, asignaciones: asigs, actividades: actsHasta,
+                         minExam: minExamB, tieneFaseEmpresa: moduloConFaseEmpresa(modData?.modulo) }),
+        miNotas, { faseEmpresa: faseAlumnoBol })
+    : stBol
+
+  // La fila de media global lleva el veredicto del módulo, así que se construye
+  // DESPUÉS de tener el estado: declararla antes dejaba el boletín tirando una
+  // excepción al pulsar el botón, sin más síntoma que no pasar nada.
+  const clAcum = aptoCls(stAcum.media)
+  const globalRow = `<tr class="global">
+    <td><b>${evParcial ? `Acumulado hasta la ${evParcial}ª evaluación` : 'Media global'}</b></td>
+    <td class="nc ${evParcial ? clAcum : cl}" style="font-size:14px"><b>${fmt(evParcial ? stAcum.media : mediaGlobal)}</b></td>
+    <td><span class="${(evParcial?clAcum:cl)==='ok'?'b-ok':(evParcial?clAcum:cl)==='ko'?'b-ko':'b-sin'}" style="font-size:10px">${e(etiquetaResultado((evParcial ? stAcum : stBol).resultado))}</span></td>
+    <td></td>
+  </tr>`
 
   // 2ª convocatoria: el boletín tiene que reflejarla. Antes se quedaba en la 1ª y
   // a quien había superado el módulo en la segunda le seguía diciendo que estaba
@@ -948,9 +1018,9 @@ async function genBoletin(alumnoId) {
   const ord2Resultado = stBol2 && stBol2.media != null ? `<div class="conv">
     <div class="conv-hdr ord2">
       <span class="conv-num">2ª Ordinaria · resultado</span>
-      <span class="conv-nota ${stBol2.superado ? 'ok' : 'ko'}">${stBol2.media.toFixed(2)}</span>
+      <span class="conv-nota ${stBol2.superadoParaPromocion ? 'ok' : 'ko'}">${stBol2.media.toFixed(2)}</span>
       ${stBol2.acta != null ? `<span style="font-size:10px;color:#555">acta: <b>${stBol2.acta}</b></span>` : ''}
-      <span class="${stBol2.superado ? 'b-ok' : 'b-ko'}" style="font-size:11px">${stBol2.superado ? 'APTO/A' : 'NO APTO/A'}</span>
+      <span class="${stBol2.superadoParaPromocion ? 'b-ok' : 'b-ko'}" style="font-size:11px">${etiquetaResultado(stBol2.resultado)}</span>
     </div>
     ${stBol2.pendientes.length
       ? `<div style="font-size:9px;color:#721c24;padding:4px 12px">RA pendientes tras la 2ª convocatoria: ${e(stBol2.pendientes.join(', '))}</div>`
@@ -1017,7 +1087,32 @@ async function genBoletin(alumnoId) {
     }
   }
 
-  const convBlocks = ord1Block + ord2Resultado + ord2Block
+  // En un boletín de trimestre no hay «resultado final» que dar: lo que procede
+  // es decir cómo va el módulo hasta la fecha y qué resultados de aprendizaje
+  // quedan por alcanzar, que es lo que la familia necesita saber en diciembre.
+  const rasAlcanzados = ras.filter(ra => {
+    const info = stAcum.porRA[ra.id]
+    return info && info.nota != null && info.nota >= 5 && !info.minKO
+  })
+  const acumBlock = `<div class="conv">
+    <div class="conv-hdr ord1">
+      <span class="conv-num">Situación del módulo hasta la ${evParcial}ª evaluación</span>
+      <span class="conv-nota ${aptoCls(stAcum.media)==='ok'?'ok':'ko'}">${fmt(stAcum.media)}</span>
+      <span style="font-size:10px;color:#555">${rasAlcanzados.length} de ${ras.length} RA alcanzados</span>
+    </div>
+    ${stAcum.pendientes.length
+      ? `<div style="font-size:9px;color:#721c24;padding:4px 12px">
+           Resultados de aprendizaje pendientes de alcanzar: ${e(stAcum.pendientes.join(', '))}.
+           Para superar el módulo hay que alcanzarlos todos; la media no compensa uno suspenso.</div>`
+      : '<div style="font-size:9px;color:#155724;padding:4px 12px">Todos los resultados de aprendizaje trabajados hasta ahora están alcanzados.</div>'}
+    ${stAcum.sinNota.length
+      ? `<div style="font-size:9px;color:#555;padding:0 12px 4px">Aún sin evaluar: ${e(stAcum.sinNota.join(', '))}.</div>`
+      : ''}
+    <div style="font-size:9px;color:#555;padding:0 12px 6px">
+      Calificación provisional: el módulo se califica al final del curso.</div>
+  </div>`
+
+  const convBlocks = evParcial ? acumBlock : (ord1Block + ord2Resultado + ord2Block)
 
   // ── Ensamblar HTML ────────────────────────────────────────────────────
   const nombre = `${alumno.apellidos || ''}, ${alumno.nombre || ''}`
@@ -1027,19 +1122,19 @@ async function genBoletin(alumnoId) {
   const html = `<!DOCTYPE html>
 <html lang="es"><head>
 <meta charset="UTF-8"/>
-<title>Boletín — ${e(nombre)}</title>
+<title>${evParcial ? `Boletín ${evParcial}ª ev.` : 'Boletín'} — ${e(nombre)}</title>
 <style>${css}</style>
 </head><body>
 
 <div class="hdr">
-  <h1>Boletín de Evaluación</h1>
+  <h1>${evParcial ? `Boletín · ${evParcial}ª evaluación` : 'Boletín de Evaluación'}</h1>
   <div class="mod-name">${e(mod.nombre || mod.abrev || '')}</div>
   ${modMeta ? `<div class="meta">${e(modMeta)}</div>` : ''}
   <div class="al">📋 ${e(nombre)}</div>
   <div class="meta">Generado: ${fecha}</div>
 </div>
 
-<div class="sec">Nota media por evaluación</div>
+<div class="sec">${evParcial ? `Nota de la ${evParcial}ª evaluación` : 'Nota media por evaluación'}</div>
 <table>
   <thead><tr>
     <th>Período</th>
@@ -1050,15 +1145,15 @@ async function genBoletin(alumnoId) {
   <tbody>${evalRows}${globalRow}</tbody>
 </table>
 
-<div class="sec">Detalle por Evaluación</div>
+<div class="sec">${evParcial ? 'Detalle de la evaluación' : 'Detalle por Evaluación'}</div>
 ${evalBlocks}
 
-<div class="sec">Resultado Final</div>
+<div class="sec">${evParcial ? 'Situación hasta la fecha' : 'Resultado Final'}</div>
 ${convBlocks}
 
 <div class="ftr">EvalFP · ${fecha} · ${e(mod.abrev || '')} — ${e(nombre)}</div>
 
 </body></html>`
 
-  await window.api.exportBoletin(html, nombre)
+  await window.api.exportBoletin(html, evParcial ? `${nombre} (${evParcial}a evaluacion)` : nombre)
 }

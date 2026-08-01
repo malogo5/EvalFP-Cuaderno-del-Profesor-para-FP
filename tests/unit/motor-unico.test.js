@@ -76,3 +76,37 @@ describe('Criterios de evaluación identificados por RA y CE', () => {
     }
   })
 })
+
+describe('El superado parcial cuenta como superado (art. 18.4)', () => {
+  it('los indicadores de cabecera cuentan también el SP', () => {
+    // Visto en uso: la cabecera decía «Superan 0 · No superan 5» mientras dos
+    // filas de esa misma tabla ponían APTO/A · SP. Quien ha alcanzado todos los
+    // RA y solo tiene pendiente la fase en empresa promociona (art. 18.4).
+    const ev = leer('renderer/js/modules/evaluaciones.js')
+    expect(ev, '1ª convocatoria').toContain('estados[al.id].superadoParaPromocion')
+    expect(ev, '2ª convocatoria').toContain('estados2[al.id].superadoParaPromocion')
+
+    const dash = leer('renderer/js/modules/dashboard.js')
+    expect(dash, 'vista de clase').toContain('superado: st.superadoParaPromocion')
+  })
+
+  it('nadie decide la etiqueta del acta con un booleano', () => {
+    // El art. 12 tiene TRES estados. Un ternario APTO/NO APTO no puede
+    // representarlos: el «superado parcial» acaba saliendo como NO APTO/A, que
+    // es justo lo que pasaba en la línea de 2ª convocatoria del boletín.
+    for (const archivo of ['renderer/js/modules/evaluaciones.js',
+                           'renderer/js/modules/dashboard.js']) {
+      expect(leer(archivo), `${archivo} decide APTO/NO APTO con un booleano`)
+        .not.toMatch(/\?\s*'APTO\/A'\s*:\s*'NO APTO\/A'/)
+    }
+  })
+
+  it('el motor sigue exponiendo los dos conceptos por separado', () => {
+    // `superado` (art. 2.3, todo alcanzado incluida la empresa) y
+    // `superadoParaPromocion` (art. 18.4, el SP también) no son lo mismo: el
+    // acta necesita distinguirlos.
+    const motor = leer('renderer/js/core/calificacion.js')
+    expect(motor).toContain('superadoParaPromocion')
+    expect(motor).toContain("const superado = resultado === 'SUPERADO'")
+  })
+})
