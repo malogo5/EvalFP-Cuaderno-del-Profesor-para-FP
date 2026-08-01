@@ -140,6 +140,7 @@ function registerWindowHandlers() {
     renderModRasPanel, delModulo, openAddModulo, confirmAddModulo, closeModal,
     selectCatCiclo, filterCatalogo, selectCatCard,
     loadProgramacion, updateRaPond, updateCePeso, _refreshRaPondTotal, updateActividadPeso, updateActividadDesc,
+    addActividadRecuperacion,
     setEvalCount, addActividad, deleteActividadRow, _refreshPesoTotal, _getModData, _saveModData,
     updateRaLlave, saveUtField, addUt, deleteUt, openUtRasModal, _refreshUtHoras, _toggleRaSection, saveUtRas,
     closeUtRasModal, applyModuloPesos, updateActividadUT, rellenarCesDesdeUts,

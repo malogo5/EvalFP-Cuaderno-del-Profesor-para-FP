@@ -127,11 +127,21 @@ Para restaurar: cierra la aplicación, sustituye `evalfp.db` por la copia que qu
 5. **Evaluaciones.** Resultado por evaluación, 1ª y 2ª convocatoria, y la columna de acta.
    Rige la **regla de oro**: para superar el módulo hacen falta *todos* los RA con 5 o más; la
    media no compensa un RA suspenso. Al terminar cada trimestre, **«Cerrar evaluación»** deja
-   fijados los RA ya alcanzados para que una actividad posterior no los baje.
-   La 2ª convocatoria se trabaja por criterios: pones la nota de recuperación de cada uno, o
-   lo das por alcanzado indicando con qué evidencia.
+   fijados los RA ya alcanzados para que una actividad posterior no los baje; si te equivocas,
+   el candado 🔒 de la tabla los reabre.
 6. **Dashboard.** Vista de clase y boletines individuales en PDF, con la misma nota que el acta.
-7. **Asistente IA** (opcional). Rúbricas, actividades, informes de alumno, planes de
+7. **La 2ª convocatoria** se prepara como cualquier otra evaluación, no como un caso aparte:
+   - En **Programación**, al final, tienes **🔁 Recuperación · 2ª convocatoria**. Das de alta ahí
+     la prueba o el trabajo de recuperación y le marcas **qué criterios recupera** —los del
+     módulo entero, no los de una unidad—.
+   - En **Notas**, el desplegable de evaluación tiene la opción **«Recuperación · 2ª conv.»**:
+     ahí la calificas. Esa nota no toca la 1ª convocatoria, que ya está en acta.
+   - En **Evaluaciones**, la pestaña de la 2ª la recoge sola: cada criterio vale **la mejor de
+     sus dos notas**, la del curso y la de la recuperación, y el resto —regla de oro, mínimo de
+     examen, acta— funciona igual que en la primera.
+   - Si un criterio lo das por alcanzado sin prueba escrita, sigue estando el botón de siempre,
+     que te pide con qué evidencia y lo deja registrado con la fecha.
+8. **Asistente IA** (opcional). Rúbricas, actividades, informes de alumno, planes de
    recuperación, radiografía del grupo, pruebas escritas con solucionario, apuntes y
    corrección de exámenes desde foto.
 

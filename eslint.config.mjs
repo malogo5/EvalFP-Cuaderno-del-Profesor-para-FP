@@ -52,11 +52,11 @@ export default [
   },
 
   // ── Ficheros de configuración en ESM que se ejecutan en Node ──────────
-  // vitest.config.js lee process.versions para decidir si hace falta el flag
+  // vitest.config.mjs lee process.versions para decidir si hace falta el flag
   // --experimental-sqlite: sin este bloque, ESLint no conoce los globals de Node
   // y `process` sale como no definido (el CI se caía justo aquí).
   {
-    files: ['vitest.config.js', 'eslint.config.mjs'],
+    files: ['vitest.config.mjs', 'eslint.config.mjs'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType:  'module',

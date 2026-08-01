@@ -656,15 +656,33 @@ async function loadEvaluaciones() {
     // criterio (CR1, CR2…) se repite en todos los RA del módulo.
 
     // ── Nota efectiva de un CE en 2ª ordinaria ─────────────────
-    // Prioridad: perdón → nota recuperación → nota original si >=5 → pendiente
+    //
+    // A-5: hay tres formas de acreditar un criterio en la segunda convocatoria y
+    // ninguna puede empeorar a las otras, así que vale la mejor de las tres:
+    //   · la actividad de recuperación (el «instrumento diferente» del art. 21.5),
+    //     que el motor ya mezcla con la nota del curso en `_calcNotaCE(…, 2)`;
+    //   · la nota suelta por criterio que se teclea en este panel;
+    //   · el criterio que el equipo docente da por alcanzado, que vale un 5.
     function ceNotaOrd2(alumnoId, raId, ceId) {
       const k = ceKey(raId, ceId)
-      if (_pardones[alumnoId]?.has(k)) return { nota: 5, fuente: 'pardon' }
+      // Nota del curso combinada con la de la actividad de recuperación
+      const conRec = _calcNotaCE(raId, ceId, actividades, ng[alumnoId], PRAC, EXAM, 2)
+      const soloOrd = _calcNotaCE(raId, ceId, actividades, ng[alumnoId], PRAC, EXAM, 1)
+
+      const candidatos = []
+      if (conRec !== null) candidatos.push({ nota: conRec, fuente: conRec === soloOrd ? 'orig' : 'actividad' })
       const rec = _rec2Notas[alumnoId]?.[k]
-      if (rec != null) return { nota: rec, fuente: 'rec' }
-      const orig = _calcNotaCE(raId, ceId, actividades, ng[alumnoId], PRAC, EXAM)
-      if (orig !== null && orig >= 5) return { nota: orig, fuente: 'orig_ok' }
-      return { nota: orig, fuente: 'pendiente' }
+      if (rec != null) candidatos.push({ nota: rec, fuente: 'rec' })
+      if (_pardones[alumnoId]?.has(k)) candidatos.push({ nota: 5, fuente: 'pardon' })
+
+      if (!candidatos.length) return { nota: null, fuente: 'pendiente' }
+      const mejor = candidatos.reduce((a, b) => (b.nota > a.nota ? b : a))
+      if (mejor.fuente === 'orig') {
+        return mejor.nota >= 5
+          ? { nota: mejor.nota, fuente: 'orig_ok' }
+          : { nota: mejor.nota, fuente: 'pendiente' }
+      }
+      return mejor
     }
 
     // ── Criterios que se promedian, iguales en las dos convocatorias ──
@@ -684,9 +702,13 @@ async function loadEvaluaciones() {
       const ceLst = cesDeRa(ra)
       if (!ceLst.length) return { nota: orig, fuente: 'orig_fail', orig }
 
-      const grades = ceLst.map(ce => ceNotaOrd2(alumnoId, ra.id, ce.id).nota).filter(n => n != null)
-      if (!grades.length) return { nota: orig, fuente: 'pendiente', orig }
-      return { nota: grades.reduce((s, n) => s + n, 0) / grades.length, fuente: 'rec', orig }
+      // A-5: la nota del RA en la segunda convocatoria la calcula el MISMO motor
+      // que la de la primera, con las mismas ponderaciones por criterio. Antes se
+      // promediaba aquí a mano y a peso igual: dos convocatorias, dos fórmulas.
+      const nota = _calcNotaRA(ra.id, cesByRa[ra.id] || [], actividades, ng[alumnoId],
+        PRAC, EXAM, asigsMod, 2, (raId, ceId) => ceNotaOrd2(alumnoId, raId, ceId).nota)
+      if (nota === null) return { nota: orig, fuente: 'pendiente', orig }
+      return { nota, fuente: 'rec', orig }
     }
 
     /**

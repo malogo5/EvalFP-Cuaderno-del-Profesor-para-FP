@@ -69,11 +69,41 @@ function _pesoTotal(ces) {
   return total
 }
 
-/** Nota de un criterio de evaluación dentro de su RA. */
-function notaCE(raId, ceId, acts, notasAl, pesoPrac, pesoExam) {
-  const ceActs = acts.filter(a => actCubreCe(a, raId, ceId))
+/**
+ * Convocatoria de una actividad. Todo lo anterior a la columna `convocatoria`
+ * —y cualquier actividad que no la traiga— es de la primera.
+ */
+function convocatoriaDe(act) {
+  const c = Number(act?.convocatoria)
+  return isFinite(c) && c >= 2 ? 2 : 1
+}
+
+/** Actividades que cuentan en una convocatoria: la 2ª ve también las de la 1ª. */
+function actividadesDeConvocatoria(acts, conv) {
+  const c = Number(conv) >= 2 ? 2 : 1
+  return (acts || []).filter(a => convocatoriaDe(a) <= c)
+}
+
+/**
+ * Nota de un criterio de evaluación dentro de su RA.
+ *
+ * En segunda convocatoria el criterio puede tener dos notas: la del curso y la
+ * de la actividad de recuperación, que el art. 21.5 exige que sea un instrumento
+ * distinto. Vale la mejor de las dos: recuperar no puede empeorar lo que ya se
+ * había alcanzado (art. 4.3.f).
+ */
+function notaCE(raId, ceId, acts, notasAl, pesoPrac, pesoExam, conv) {
+  const ceActs = (acts || []).filter(a => actCubreCe(a, raId, ceId))
   if (!ceActs.length) return null
-  return mediaActividades(ceActs, notasAl, pesoPrac, pesoExam)
+  const ordinaria = ceActs.filter(a => convocatoriaDe(a) === 1)
+  const nOrd = ordinaria.length ? mediaActividades(ordinaria, notasAl, pesoPrac, pesoExam) : null
+  if (Number(conv) < 2 || !conv) return nOrd
+
+  const recuperacion = ceActs.filter(a => convocatoriaDe(a) === 2)
+  const nRec = recuperacion.length ? mediaActividades(recuperacion, notasAl, pesoPrac, pesoExam) : null
+  if (nRec === null) return nOrd
+  if (nOrd === null) return nRec
+  return Math.max(nOrd, nRec)
 }
 
 /**
@@ -81,15 +111,20 @@ function notaCE(raId, ceId, acts, notasAl, pesoPrac, pesoExam) {
  * Si hay criterios evaluados, es la media de sus notas —esa es la evaluación por
  * criterios que pide la norma—. Si no hay ninguno, caen las actividades del RA.
  */
-function notaRA(raId, raCeList, acts, notasAl, pesoPrac, pesoExam, asigs) {
+function notaRA(raId, raCeList, acts, notasAl, pesoPrac, pesoExam, asigs, conv, notaCEFn) {
   const evaluados = cesEvaluadosDeRa(raId, raCeList, acts)
   if (evaluados.length) {
     // Cada criterio puede llevar su propio peso dentro del RA, como exige el
     // art. 4.3.a de la Orden 201/2024. Sin peso declarado, todos valen igual.
     let sumaN = 0, sumaP = 0, cuenta = 0, simple = 0
     for (const ce of evaluados) {
-      const g = notaCE(raId, ce.id, acts, notasAl, pesoPrac, pesoExam)
-      if (g === null) continue
+      const calculada = notaCE(raId, ce.id, acts, notasAl, pesoPrac, pesoExam, conv)
+      // La 2ª convocatoria puede aportar por criterio algo que no es una
+      // actividad: el criterio que el equipo docente da por alcanzado. Entra por
+      // aquí, no por una media aparte, para que las dos convocatorias usen el
+      // mismo cálculo y respeten igual la ponderación de cada criterio.
+      const g = notaCEFn ? notaCEFn(raId, ce.id, calculada) : calculada
+      if (g === null || g === undefined) continue
       const p = Number(ce.peso)
       if (isFinite(p) && p > 0) { sumaN += g * p; sumaP += p }
       simple += g; cuenta++
@@ -97,19 +132,37 @@ function notaRA(raId, raCeList, acts, notasAl, pesoPrac, pesoExam, asigs) {
     if (!cuenta) return null
     return sumaP > 0 && sumaP === _pesoTotal(evaluados) ? sumaN / sumaP : simple / cuenta
   }
-  const raActs = acts.filter(a => actividadDeRa(a, raId, raCeList, asigs))
+  const raActs = (acts || []).filter(a => actividadDeRa(a, raId, raCeList, asigs))
   if (!raActs.length) return null
-  return mediaActividades(raActs, notasAl, pesoPrac, pesoExam)
+  const ordinaria = raActs.filter(a => convocatoriaDe(a) === 1)
+  const nOrd = ordinaria.length ? mediaActividades(ordinaria, notasAl, pesoPrac, pesoExam) : null
+  if (Number(conv) < 2 || !conv) return nOrd
+  const recuperacion = raActs.filter(a => convocatoriaDe(a) === 2)
+  const nRec = recuperacion.length ? mediaActividades(recuperacion, notasAl, pesoPrac, pesoExam) : null
+  if (nRec === null) return nOrd
+  if (nOrd === null) return nRec
+  return Math.max(nOrd, nRec)
 }
 
-/** ¿Algún examen del RA por debajo del mínimo exigido en la programación? */
-function raMinExamKO(raId, raCeList, acts, notasAl, minExam, asigs) {
+/**
+ * ¿Algún examen del RA por debajo del mínimo exigido en la programación?
+ *
+ * En segunda convocatoria manda el examen de recuperación: es el «instrumento de
+ * evaluación diferente» del art. 21.5, y si con él se llega al mínimo, el mínimo
+ * está alcanzado. Solo si no hay prueba de recuperación se mira la del curso.
+ */
+function raMinExamKO(raId, raCeList, acts, notasAl, minExam, asigs, conv) {
   if (minExam == null) return false
-  const raActs = acts.filter(a => actividadDeRa(a, raId, raCeList, asigs))
-  return raActs.some(a =>
-    a.tipo === 'examen' &&
-    notasAl?.[a.id] != null &&
-    notaEnEscala10(notasAl[a.id], a.nota_max) < minExam)
+  const raActs = (acts || []).filter(a => actividadDeRa(a, raId, raCeList, asigs))
+  const bajoMinimo = a => notaEnEscala10(notasAl[a.id], a.nota_max) < minExam
+  const examenes = raActs.filter(a => a.tipo === 'examen' && notasAl?.[a.id] != null)
+  if (!examenes.length) return false
+
+  const ordinarios = examenes.filter(a => convocatoriaDe(a) === 1)
+  if (Number(conv) < 2 || !conv) return ordinarios.some(bajoMinimo)
+
+  const recuperacion = examenes.filter(a => convocatoriaDe(a) === 2)
+  return recuperacion.length ? recuperacion.some(bajoMinimo) : ordinarios.some(bajoMinimo)
 }
 
 /**
@@ -135,15 +188,20 @@ function actaEntera(media, superado) {
  * @param {?Object}  d.rasSuperados { raId: nota } de los RA cerrados como
  *                                  superados en una sesión anterior
  */
-function contextoModulo({ ras, cesByRa, asignaciones, actividades, minExam, rasSuperados, tieneFaseEmpresa }) {
-  const acts = actividades || []
-  const { PRAC, EXAM } = pesosPorTipo(acts)
+function contextoModulo({ ras, cesByRa, asignaciones, actividades, minExam, rasSuperados,
+                          tieneFaseEmpresa, convocatoria }) {
+  const conv = Number(convocatoria) >= 2 ? 2 : 1
+  // En la 1ª convocatoria las actividades de recuperación de junio no existen
+  // todavía: no pueden entrar en la nota que va al acta de la 1ª.
+  const acts = actividadesDeConvocatoria(actividades, conv)
+  const { PRAC, EXAM } = pesosPorTipo(acts.filter(a => convocatoriaDe(a) === 1))
   const rasBase = ras || []
   return {
     ras: rasBase,
     cesByRa: cesByRa || {},
     asigs: asignaciones || [],
     actividades: acts,
+    convocatoria: conv,
     minExam: minExam == null ? null : minExam,
     rasSuperados: rasSuperados || null,
     tieneFaseEmpresa: !!tieneFaseEmpresa,
@@ -169,6 +227,8 @@ function contextoModulo({ ras, cesByRa, asignaciones, actividades, minExam, rasS
  * @param {Object} [opts]
  * @param {Function} [opts.notaRAOverride]  (ra, notaOriginal) → nota  (2ª convocatoria)
  * @param {Function} [opts.minKOOverride]   (ra, minKOOriginal) → bool (2ª convocatoria)
+ * @param {Function} [opts.notaCEOverride]  (raId, ceId, notaCalculada) → nota
+ *                                          (criterios dados por alcanzados)
  */
 function estadoModulo(ctx, notasAl, opts) {
   const o = opts || {}
@@ -176,8 +236,9 @@ function estadoModulo(ctx, notasAl, opts) {
 
   ctx.rasActivos.forEach(ra => {
     const ceLst = ctx.cesByRa[ra.id] || []
-    let n = notaRA(ra.id, ceLst, ctx.actividades, notasAl, ctx.PRAC, ctx.EXAM, ctx.asigs)
-    let minKO = raMinExamKO(ra.id, ceLst, ctx.actividades, notasAl, ctx.minExam, ctx.asigs)
+    let n = notaRA(ra.id, ceLst, ctx.actividades, notasAl, ctx.PRAC, ctx.EXAM, ctx.asigs,
+                   ctx.convocatoria, o.notaCEOverride)
+    let minKO = raMinExamKO(ra.id, ceLst, ctx.actividades, notasAl, ctx.minExam, ctx.asigs, ctx.convocatoria)
     if (o.notaRAOverride) n = o.notaRAOverride(ra, n)
     if (o.minKOOverride)  minKO = o.minKOOverride(ra, minKO)
 
@@ -298,5 +359,6 @@ if (typeof module !== 'undefined' && module.exports) {
     notaEnEscala10, mediaActividades, pesosPorTipo, notaCE, notaRA,
     raMinExamKO, actaEntera, contextoModulo, estadoModulo, etiquetaResultado,
     moduloConFaseEmpresa, calificacionCualitativa, moduloEsAmbito,
+    convocatoriaDe, actividadesDeConvocatoria,
   }
 }

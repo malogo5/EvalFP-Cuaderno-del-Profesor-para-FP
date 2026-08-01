@@ -1,11 +1,11 @@
 # EvalFP — Cuaderno del Profesor para FP
 
 [![Licencia: GPL-3.0-or-later](https://img.shields.io/badge/Licencia-GPL--3.0--or--later-blue.svg)](LICENSE)
-[![Versión](https://img.shields.io/badge/versión-3.0.0-orange.svg)](CHANGELOG.md)
+[![Versión](https://img.shields.io/badge/versión-3.8.0-orange.svg)](CHANGELOG.md)
 
 EvalFP es una aplicación de escritorio Electron para profesorado de Formación Profesional en España. Gestiona programación didáctica, alumnado, notas, evaluaciones, informes y materiales de apoyo en una base de datos SQLite local, sin backend remoto.
 
-**Versión actual:** 3.0.0 · Consulta el [CHANGELOG](CHANGELOG.md) y la [ruta del proyecto](docs/refactor/03_ROADMAP.md) para el historial y la evolución.
+**Versión actual:** 3.8.0 · El historial está en el [CHANGELOG](CHANGELOG.md) y lo que viene, en el [ROADMAP](ROADMAP.md).
 
 ## Lo esencial
 
@@ -67,8 +67,9 @@ npm run build:win
 
 - [docs/guia_desarrollo.md](docs/guia_desarrollo.md)
 - [docs/decisiones_arquitectura.md](docs/decisiones_arquitectura.md)
-- [docs/version_2.md](docs/version_2.md)
 - [docs/casos_uso.md](docs/casos_uso.md)
+- [INSTALACION_Y_USO.md](INSTALACION_Y_USO.md) — cómo se usa el cuaderno, para profesorado.
+- [AUDITORIA_INTEGRAL.md](AUDITORIA_INTEGRAL.md) — auditoría contra la Orden 201/2024 de CLM.
 - [tests/e2e/AUDITORIA_CURSO.md](tests/e2e/AUDITORIA_CURSO.md) — auditoría completa de usuario sobre la app real.
 
 ## Licencia

@@ -22,17 +22,16 @@ historial de git, en los commits anteriores a la 3.7.0.
 | Catálogo CLM | 91 módulos · 12 ciclos · 4.444 CE literales del DOCM |
 | Motor de calificación | Único, en `renderer/js/core/calificacion.js` |
 | Normativa | Orden 201/2024, con la modificación de la Orden 55/2026 |
-| Auditoría integral | 30 incidencias resueltas · 1 abierta (A-5) |
+| Auditoría integral | Cerrada · 31 de 31 incidencias resueltas |
 | Pruebas | Unitarias con Vitest · extremo a extremo con Playwright |
 | Distribución | DMG (arm64 + x64) e instalador NSIS para Windows 11 |
 
 ## Lo siguiente
 
-1. **A-5 · Unificar el modelo de recuperación.** Hoy conviven tres mecanismos: `nota_rec` en
-   las actividades, las notas por criterio de la 2ª convocatoria y los criterios dados por
-   alcanzados. El diseño propuesto —una columna `convocatoria` en `actividades`, apoyada en
-   el art. 21.5— está descrito en [AUDITORIA_INTEGRAL.md](AUDITORIA_INTEGRAL.md). Es el
-   único punto de la auditoría que sigue abierto.
+1. **Probarlo en una 2ª convocatoria de verdad.** El modelo de convocatorias (A-5) está
+   implementado y cubierto con pruebas, pero la comprobación que no da ninguna máquina es
+   usarlo con un grupo real en junio. Antes de esa sesión, guarda aparte una copia del
+   `evalfp.db`.
 2. **Retirar la migración heredada.** `db.js` todavía convierte al arrancar los datos en JSON
    de la etapa anterior. Cuando se empaquete la 1.0 pública, ese camino sobra.
 3. **Firmar los instaladores.** Sin certificado, macOS y Windows siguen avisando de

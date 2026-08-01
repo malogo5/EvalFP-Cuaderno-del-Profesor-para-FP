@@ -881,23 +881,33 @@ async function genBoletin(alumnoId) {
   // 2ª convocatoria: el boletín tiene que reflejarla. Antes se quedaba en la 1ª y
   // a quien había superado el módulo en la segunda le seguía diciendo que estaba
   // suspenso, porque estas calificaciones vivían solo en la pantalla de la 2ª.
-  const { PRAC: pB, EXAM: eB } = pesosPorTipo(actividades)
+  const { PRAC: pB, EXAM: eB } = pesosPorTipo(actividades.filter(a => Number(a.convocatoria) !== 2))
+  // A-5 · La nota de un criterio en la 2ª convocatoria es la mejor de las tres
+  // vías posibles, igual que en la pantalla de Evaluaciones: actividad de
+  // recuperación, nota suelta por criterio o criterio dado por alcanzado.
   const notaCEOrd2 = (raId, ceId) => {
     const k = `${raId}|${ceId}`
-    if (_pardones[alumnoId]?.has(k)) return 5
+    const candidatos = []
+    const conRec = notaCE(raId, ceId, actividades, miNotas, pB, eB, 2)
+    if (conRec !== null) candidatos.push(conRec)
     const rec = _rec2Notas[alumnoId]?.[k]
-    if (rec != null) return rec
-    return notaCE(raId, ceId, actividades, miNotas, pB, eB)
+    if (rec != null) candidatos.push(rec)
+    if (_pardones[alumnoId]?.has(k)) candidatos.push(5)
+    return candidatos.length ? Math.max(...candidatos) : null
   }
+  const actsRecuperacion = actividades.filter(a => Number(a.convocatoria) === 2)
   const hayOrd2 = Object.keys(_rec2Notas[alumnoId] || {}).length > 0 ||
-                  (_pardones[alumnoId] ? _pardones[alumnoId].size > 0 : false)
+                  (_pardones[alumnoId] ? _pardones[alumnoId].size > 0 : false) ||
+                  actsRecuperacion.some(a => miNotas[a.id] != null)
   const stBol2 = !hayOrd2 ? null : estadoModulo(ctxBol, miNotas, {
     notaRAOverride: (ra, n) => {
       const minKO = raMinExamKO(ra.id, cesDict[ra.id] || [], actividades, miNotas, minExamB, asigs)
       if (n === null || (n >= 5 && !minKO)) return n
-      const lst = cesEvaluadosDeRa(ra.id, cesDict[ra.id] || [], actividades)
-      const g = lst.map(ce => notaCEOrd2(ra.id, ce.id)).filter(x => x != null)
-      return g.length ? g.reduce((s, x) => s + x, 0) / g.length : n
+      // El mismo motor y las mismas ponderaciones por criterio que en la 1ª: la
+      // media a mano de antes ignoraba el peso de cada criterio.
+      const nueva = notaRA(ra.id, cesDict[ra.id] || [], actividades, miNotas, pB, eB, asigs, 2,
+        (raId, ceId) => notaCEOrd2(raId, ceId))
+      return nueva === null ? n : nueva
     },
     minKOOverride: (ra, ko) => {
       if (!ko) return false

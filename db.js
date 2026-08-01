@@ -126,6 +126,20 @@ function getDb() {
     _db.exec(`ALTER TABLE actividades ADD COLUMN ces TEXT DEFAULT '[]'`)
   }
 
+  // A-5 · Convocatoria a la que pertenece cada actividad.
+  //
+  // El art. 21.5 de la Orden 201/2024 dice que en segunda convocatoria los RA no
+  // superados se evalúan «utilizando otros instrumentos de evaluación diferentes».
+  // O sea: la 2ª convocatoria no es una lista de notas sueltas por criterio, son
+  // ACTIVIDADES nuevas. Con esta columna, una prueba de recuperación es una
+  // actividad como cualquier otra y el motor no necesita un camino aparte.
+  //
+  // Todo lo que ya existe es de la 1ª convocatoria: DEFAULT 1 y ninguna fila que
+  // tocar.
+  if (!colsAct.some(c => c.name === 'convocatoria')) {
+    _db.exec('ALTER TABLE actividades ADD COLUMN convocatoria INTEGER NOT NULL DEFAULT 1')
+  }
+
   // Notas fuera de escala que hubiera dejado alguna versión anterior: la
   // validación estaba solo en la interfaz y por IPC se podía colar un 99.
   const fuera = _db.prepare(
@@ -284,6 +298,9 @@ function _initSchema() {
       nota_max    REAL DEFAULT 10,
       eval        INTEGER DEFAULT 1,
       orden       INTEGER DEFAULT 0,
+      -- 1 = actividad del curso · 2 = prueba de recuperación de la 2ª
+      -- convocatoria (Orden 201/2024, art. 21.5)
+      convocatoria INTEGER NOT NULL DEFAULT 1,
       FOREIGN KEY (modulo_id) REFERENCES modulos(id) ON DELETE CASCADE
     );
 
@@ -596,25 +613,37 @@ function saveAlumno(a) {
 const deleteAlumno = id => getDb().prepare('DELETE FROM alumnos WHERE id=?').run(id)
 
 // ── Actividades ────────────────────────────────────────────────────────────────
-const getActividades = moduloId =>
-  getDb().prepare('SELECT * FROM actividades WHERE modulo_id=? ORDER BY eval,orden').all(moduloId)
+/**
+ * Actividades del módulo. Sin filtro devuelve las dos convocatorias, porque las
+ * pantallas necesitan verlo todo junto; `convocatoria` acota cuando hace falta
+ * (la parrilla de la 1ª no debe enseñar la prueba de recuperación de junio).
+ */
+const getActividades = (moduloId, convocatoria = null) =>
+  convocatoria == null
+    ? getDb().prepare('SELECT * FROM actividades WHERE modulo_id=? ORDER BY convocatoria,eval,orden').all(moduloId)
+    : getDb().prepare('SELECT * FROM actividades WHERE modulo_id=? AND convocatoria=? ORDER BY eval,orden')
+        .all(moduloId, Number(convocatoria))
 
 function saveActividad(a) {
   const db = getDb()
   // `ces` llega como array desde el modal de criterios; se persiste como JSON
   const cesJson = Array.isArray(a.ces) ? JSON.stringify(a.ces) : (a.ces ?? '[]')
+  // COALESCE en convocatoria: quien no la manda (todas las pantallas antiguas)
+  // no debe cambiar de convocatoria una actividad por guardar su descripción.
+  const conv = a.convocatoria == null ? null : Number(a.convocatoria)
   if (a.id) {
     db.prepare(`UPDATE actividades SET descripcion=?,instrumento=COALESCE(?,instrumento),
-        tipo=COALESCE(?,tipo),peso=?,nota_max=?,eval=?,ut_id=?,ra_id=?,ces=?,orden=? WHERE id=?`)
+        tipo=COALESCE(?,tipo),peso=?,nota_max=?,eval=?,ut_id=?,ra_id=?,ces=?,orden=?,
+        convocatoria=COALESCE(?,convocatoria) WHERE id=?`)
       .run(a.descripcion, a.instrumento ?? null, a.tipo ?? null, a.peso, a.nota_max,
-           a.eval??1, a.ut_id??null, a.ra_id??null, cesJson, a.orden??0, a.id)
+           a.eval??1, a.ut_id??null, a.ra_id??null, cesJson, a.orden??0, conv, a.id)
     return a.id
   }
   return Number(db.prepare(`INSERT INTO actividades
-    (modulo_id,ut_id,ra_id,descripcion,instrumento,tipo,peso,nota_max,eval,orden,ces)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?)`)
+    (modulo_id,ut_id,ra_id,descripcion,instrumento,tipo,peso,nota_max,eval,orden,ces,convocatoria)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`)
     .run(a.modulo_id,a.ut_id,a.ra_id,a.descripcion,a.instrumento,
-         a.tipo,a.peso,a.nota_max,a.eval,a.orden,cesJson).lastInsertRowid)
+         a.tipo,a.peso,a.nota_max,a.eval,a.orden,cesJson, conv ?? 1).lastInsertRowid)
 }
 
 // ── Notas ──────────────────────────────────────────────────────────────────────

@@ -284,3 +284,53 @@ describe.skipIf(!sqliteDisponible)('Integridad referencial (CASCADE)', () => {
     expect(db.getModulosArchivados().some(m => m.id === mid)).toBe(false)
   })
 })
+
+// ── Tests: convocatorias (A-5) ────────────────────────────────────────────────
+describe.skipIf(!sqliteDisponible)('Convocatoria de las actividades', () => {
+  it('una actividad nace en la 1ª convocatoria si no se dice otra cosa', () => {
+    const mid = db.addModulo({ ...MODULO_FIXTURE, key: `MOD_CV1_${Date.now()}` })
+    const id = db.saveActividad({
+      modulo_id: mid, ut_id: 'UT1', ra_id: 'RA1', descripcion: 'Práctica',
+      instrumento: 'Práctica', tipo: 'practica', peso: 50, nota_max: 10, eval: 1, orden: 0,
+    })
+    const act = db.getActividades(mid).find(a => a.id === id)
+    expect(act.convocatoria).toBe(1)
+  })
+
+  it('guarda y devuelve las actividades de recuperación de la 2ª', () => {
+    const mid = db.addModulo({ ...MODULO_FIXTURE, key: `MOD_CV2_${Date.now()}` })
+    db.saveActividad({
+      modulo_id: mid, ut_id: 'UT1', ra_id: 'RA1', descripcion: 'Examen de curso',
+      instrumento: 'Examen', tipo: 'examen', peso: 100, nota_max: 10, eval: 1, orden: 0,
+    })
+    db.saveActividad({
+      modulo_id: mid, ut_id: null, ra_id: null, descripcion: 'Prueba de recuperación',
+      instrumento: 'Examen', tipo: 'examen', peso: 0, nota_max: 10, eval: 1, orden: 1,
+      convocatoria: 2,
+    })
+
+    expect(db.getActividades(mid).length).toBe(2)              // sin filtro, las dos
+    expect(db.getActividades(mid, 1).length).toBe(1)           // la del curso
+    const rec = db.getActividades(mid, 2)
+    expect(rec.length).toBe(1)
+    expect(rec[0].descripcion).toBe('Prueba de recuperación')
+  })
+
+  it('editar una actividad no la cambia de convocatoria sin querer', () => {
+    // Todas las pantallas antiguas guardan sin mandar `convocatoria`. Si eso
+    // devolviera la prueba de junio a la 1ª convocatoria, su nota entraría en un
+    // acta ya cerrada.
+    const mid = db.addModulo({ ...MODULO_FIXTURE, key: `MOD_CV3_${Date.now()}` })
+    const id = db.saveActividad({
+      modulo_id: mid, ut_id: null, ra_id: null, descripcion: 'Recuperación',
+      instrumento: 'Examen', tipo: 'examen', peso: 0, nota_max: 10, eval: 1, orden: 0,
+      convocatoria: 2,
+    })
+    const act = db.getActividades(mid).find(a => a.id === id)
+    db.saveActividad({ ...act, convocatoria: undefined, descripcion: 'Recuperación (junio)' })
+
+    const despues = db.getActividades(mid).find(a => a.id === id)
+    expect(despues.descripcion).toBe('Recuperación (junio)')
+    expect(despues.convocatoria).toBe(2)
+  })
+})

@@ -124,8 +124,13 @@ async function loadProgramacion() {
         <button onclick="applyModuloPesos()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer">Aplicar a todo el módulo</button>
       </div>`
 
+    // A-5 · Las actividades de recuperación de la 2ª convocatoria van en su propia
+    // sección: si se mezclaran con las del trimestre falsearían la suma del 100 %
+    // y entrarían en la nota de la 1ª convocatoria, que ya está en acta.
+    const actsRecuperacion = actividades.filter(a => Number(a.convocatoria) === 2)
+
     for (const ev of evals) {
-      const acts = actividades.filter(a => a.eval === ev).sort((a,b) => {
+      const acts = actividades.filter(a => a.eval === ev && Number(a.convocatoria) !== 2).sort((a,b) => {
         if (a.tipo !== b.tipo) return a.tipo === 'practica' ? -1 : 1
         return (a.orden||0) - (b.orden||0)
       })
@@ -282,6 +287,71 @@ async function loadProgramacion() {
         </div>
       </div>`
     }
+
+    // ── Recuperación · 2ª convocatoria ──────────────────────────
+    // El art. 21.5 pide evaluar los RA no superados «utilizando otros instrumentos
+    // de evaluación diferentes»: aquí se dan de alta esos instrumentos. Se
+    // califican en Notas y la nota entra sola en la 2ª convocatoria, por los
+    // criterios que se les marquen.
+    const btnRec = 'border:none;border-radius:7px;padding:4px 12px;font-size:11.5px;font-weight:700;cursor:pointer'
+    h += `<div style="margin-top:18px" id="eval-section-rec">
+      <div style="font-size:12px;font-weight:700;color:var(--ice);background:var(--navy3);padding:7px 14px;border-radius:6px;margin-bottom:6px;display:flex;gap:12px;align-items:center">
+        <span>🔁 Recuperación · 2ª convocatoria</span>
+        <span style="font-size:11px;font-weight:400;color:var(--text2)">
+          No cuenta en la 1ª convocatoria ni en las evaluaciones parciales</span>
+      </div>`
+    if (actsRecuperacion.length) {
+      h += `<table class="prog-table">
+        <thead><tr>
+          <th>Actividad de recuperación</th>
+          <th style="width:88px;text-align:center">Instrumento</th>
+          <th class="th-editable" style="width:72px;text-align:center">Nota máx</th>
+          <th style="width:62px;text-align:center" title="Criterios que recupera">CEs</th>
+          <th style="width:30px"></th>
+        </tr></thead><tbody>`
+      for (const act of actsRecuperacion) {
+        const badge = act.tipo === 'examen'
+          ? 'background:rgba(224,160,58,.2);color:var(--amber)'
+          : 'background:rgba(74,144,217,.15);color:var(--accent2)'
+        const cesAct = actCesLista(act)
+        const utIdSafe = (act.ut_id || '').replace(/'/g, "\\'")
+        const raIdSafe = (act.ra_id || '').replace(/'/g, "\\'")
+        const cesStr = JSON.stringify(cesAct.map(c => c.clave)).replace(/"/g, '&quot;')
+        h += `<tr>
+          <td><input class="nota-cell" type="text" value="${esc(act.descripcion)}"
+                data-actid="${act.id}" data-field="descripcion"
+                style="width:100%;text-align:left;font-size:12px"
+                onchange="updateActividadDesc(this)"/></td>
+          <td style="text-align:center"><span style="font-size:11px;padding:2px 7px;border-radius:8px;${badge}">${esc(act.instrumento)}</span></td>
+          <td style="text-align:center"><input class="peso-cell" type="number" min="0" max="10" step="0.5"
+                value="${act.nota_max}" data-actid="${act.id}" data-field="nota_max"
+                onchange="updateActividadPeso(this)" title="Nota máxima"/></td>
+          <td style="text-align:center">
+            <button onclick="openActCesModal(${act.id},${mid},'${utIdSafe}','${raIdSafe}',this.dataset.ces,2)"
+              data-ces="${cesStr}" title="Criterios que recupera esta actividad"
+              style="background:transparent;color:${cesAct.length ? 'var(--green)' : 'var(--amber)'};border:1px solid ${cesAct.length ? 'var(--green)' : 'var(--amber)'};border-radius:6px;padding:2px 7px;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap">
+              ${cesAct.length || '⚠ 0'}
+            </button></td>
+          <td style="text-align:center">
+            <button onclick="deleteActividadRow(${act.id})" title="Eliminar" aria-label="Eliminar actividad de recuperación"
+              style="background:transparent;color:#ef4444;border:1px solid rgba(239,68,68,.3);border-radius:6px;padding:2px 6px;font-size:11px;cursor:pointer;line-height:1">✕</button></td>
+        </tr>`
+      }
+      h += `</tbody></table>`
+    } else {
+      h += `<div class="empty-state" style="margin:0 0 8px">
+        <div style="font-weight:700;color:var(--text);margin-bottom:6px">Sin actividades de recuperación</div>
+        <div style="margin-bottom:10px">Cuando prepares la prueba de la 2ª convocatoria, dala de alta aquí
+          y márcale los criterios que recupera. Su nota entra sola en la 2ª convocatoria.</div>
+      </div>`
+    }
+    h += `<div style="display:flex;gap:8px;padding:8px 2px 2px">
+        <button onclick="addActividadRecuperacion(${mid},'examen')"
+          style="${btnRec}background:rgba(224,160,58,.12);color:var(--amber)">+ Prueba de recuperación</button>
+        <button onclick="addActividadRecuperacion(${mid},'practica')"
+          style="${btnRec}background:rgba(74,144,217,.12);color:var(--accent2)">+ Trabajo de recuperación</button>
+      </div>
+    </div>`
     h += `</div>`
   }
 
@@ -914,6 +984,30 @@ async function addActividad(mid, ev, tipo) {
   loadProgramacion()
 }
 
+/**
+ * Alta de una actividad de la 2ª convocatoria (art. 21.5).
+ *
+ * Peso 0 a propósito: no compite con las actividades del curso por el 100 % de
+ * una evaluación. En la 2ª convocatoria lo que hace es acreditar criterios, y la
+ * nota de cada criterio es la mejor entre la del curso y la de la recuperación.
+ */
+async function addActividadRecuperacion(mid, tipo) {
+  const instrumento = tipo === 'examen' ? 'Examen' : 'Práctica'
+  const allActs = await window.api.getActividades(parseInt(mid))
+  const recs = allActs.filter(a => Number(a.convocatoria) === 2)
+  const maxOrden = allActs.reduce((m, a) => Math.max(m, a.orden || 0), 0)
+  const desc = recs.length
+    ? `${instrumento} de recuperación ${recs.length + 1}`
+    : `${instrumento} de recuperación — 2ª convocatoria`
+  await window.api.saveActividad({
+    modulo_id: parseInt(mid), ut_id: null, ra_id: null,
+    descripcion: desc, instrumento, tipo,
+    peso: 0, nota_max: 10, eval: 1, orden: maxOrden + 1, convocatoria: 2,
+  })
+  showSaved()
+  loadProgramacion()
+}
+
 async function deleteActividadRow(actId) {
   // Borrar una actividad se lleva por delante sus calificaciones (cascada en la
   // base de datos). Hay que decirlo ANTES, no después: es irreversible salvo
@@ -1230,7 +1324,7 @@ function closeActUtsModal() {
 // ═══════════════════════════════════════════════════════════════
 let _actCesState = null
 
-function openActCesModal(actId, mid, utId, raId, currentCesEncoded) {
+function openActCesModal(actId, mid, utId, raId, currentCesEncoded, convocatoria) {
   const data = _getModData(mid)
   if (!data) return
   _actCesState = { actId, mid }
@@ -1238,13 +1332,23 @@ function openActCesModal(actId, mid, utId, raId, currentCesEncoded) {
   let selCes = []
   try { selCes = JSON.parse(currentCesEncoded || '[]') } catch { /* ces inválido */ }
 
-  document.getElementById('act-ces-title').textContent = `${utId || raId} — Criterios de evaluación`
+  const esRecuperacion = Number(convocatoria) === 2
+  document.getElementById('act-ces-title').textContent = esRecuperacion
+    ? 'Recuperación — criterios que acredita'
+    : `${utId || raId} — Criterios de evaluación`
 
   // CEs disponibles: los que cubren las UT de esta actividad (una o varias, caso
   // examen), agrupados por RA. Sin UT, los del RA de la actividad.
-  const grupos = cesDisponiblesActividad(
-    { ut_id: utId, ra_id: raId }, data.asignaciones || [], data.ces || {}
-  )
+  //
+  // Una prueba de recuperación no cuelga de ninguna unidad de trabajo: recupera
+  // lo que haga falta, así que se ofrece el módulo entero.
+  const grupos = esRecuperacion
+    ? (data.ras || [])
+        .map(ra => ({ raId: ra.id, ces: (data.ces || {})[ra.id] || [] }))
+        .filter(g => g.ces.length)
+    : cesDisponiblesActividad(
+        { ut_id: utId, ra_id: raId }, data.asignaciones || [], data.ces || {}
+      )
 
   if (!grupos.length) {
     document.getElementById('act-ces-body').innerHTML =
@@ -1319,6 +1423,9 @@ async function rellenarCesDesdeUts(mid) {
 
   const candidatas = [], yaTenian = [], sinUt = []
   for (const act of acts) {
+    // Las pruebas de recuperación no cuelgan de ninguna UT: sus criterios los
+    // elige el profesorado a mano, según lo que cada alumno tenga pendiente.
+    if (Number(act.convocatoria) === 2) continue
     const grupos = cesDisponiblesActividad(act, asigs, cesPorRa)
     if (!grupos.length) { sinUt.push(act); continue }
     const tiene = grupos.some(g => g.ces.some(ce => actCubreCe(act, g.raId, ce.id)))

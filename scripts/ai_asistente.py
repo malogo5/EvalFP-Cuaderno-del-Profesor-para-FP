@@ -781,6 +781,18 @@ def _agrupar_ces_por_ra(mod) -> dict[str, list[str]]:
     return ces_por_ra
 
 
+def _es_de_recuperacion(act: dict | None) -> bool:
+    """¿Es una actividad de la 2ª convocatoria? (Orden 201/2024, art. 21.5)
+
+    Los informes y las estadísticas hablan del curso: meter en ellos la prueba de
+    recuperación de junio mezclaría dos convocatorias distintas en la misma media.
+    """
+    try:
+        return int((act or {}).get("convocatoria") or 1) == 2
+    except (TypeError, ValueError):
+        return False
+
+
 def _ras_de_actividad(act: dict | None) -> list[str]:
     """RA que califica una actividad.
 
@@ -1148,7 +1160,8 @@ def _cmd_grupo(args: list[str]):
     mod = _cargar_modulo(opts.get("--modulo", "iso_data"))
     alumnos = _parse_json_list(opts.get("--alumnos-json"))
     grid    = _parse_json_list(opts.get("--notas-grid-json"))
-    acts    = _parse_json_list(opts.get("--actividades-json"))
+    acts    = [a for a in _parse_json_list(opts.get("--actividades-json"))
+               if not _es_de_recuperacion(a)]
     if not alumnos or not grid or not acts:
         _emit_ia_code("SIN_DATOS",
                       "Faltan datos del grupo. Necesito alumnado, actividades y notas guardadas.")
@@ -1296,7 +1309,8 @@ def _cmd_generar_todo(args: list[str]):
 
     alumnos = _parse_json_list(opts.get("--alumnos-json"))
     notas_grid = _parse_json_list(opts.get("--notas-grid-json"))
-    actividades = _parse_json_list(opts.get("--actividades-json"))
+    actividades = [a for a in _parse_json_list(opts.get("--actividades-json"))
+                   if not _es_de_recuperacion(a)]
 
     if alumnos:
         print(f"\n🧾 Generando informes individuales…")

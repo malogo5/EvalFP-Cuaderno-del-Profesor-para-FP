@@ -42,8 +42,8 @@ Trabajo del 31/07/2026 sobre esta misma auditoría. Las incidencias marcadas
 
 | Estado | Incidencias |
 |---|---|
-| ✅ Corregidas | C-1 a C-5, A-1, A-2, A-3, A-4, A-6, A-7, A-8, M-1 a M-9, B-1, B-2, B-3, B-4, B-5 |
-| 🟡 Parcial | **A-5**, y solo en su mitad de modelo de datos: los dos caminos de recuperación ya se distinguen en la interfaz, pero siguen siendo dos tablas. Abajo, el diseño propuesto y por qué no se ha ejecutado. |
+| ✅ Corregidas | **Todas: 31 de 31.** C-1 a C-5, A-1 a A-8, M-1 a M-9, B-1 a B-5 y los riesgos R-1 a R-5 |
+| 🟡 Parcial | Ninguna. **A-5**, el último punto abierto, se cerró el 01/08/2026 con el modelo de convocatorias descrito en su apartado. |
 
 **M-9** es una incidencia nueva, encontrada al revisar el log de un cierre normal mientras se
 verificaban las correcciones anteriores.
@@ -475,7 +475,7 @@ donde el profesorado las escribe, no de una clave de configuración invisible.
 
 ---
 
-## A-5 · Dos mecanismos distintos llamados «recuperación» — **PARCIALMENTE CORREGIDO**
+## A-5 · Dos mecanismos distintos llamados «recuperación» — **CORREGIDO**
 
 **Categoría:** Error confirmado (incoherencia funcional) · **Gravedad: Alta** · **Prioridad: 3**
 **Módulos:** Notas, Evaluaciones, Dashboard
@@ -518,15 +518,58 @@ toque y todo lo demás —notas por criterio, regla de oro, mínimo de examen, a
 `calificaciones_ce` se queda entonces solo para lo que no es una actividad: el criterio que el
 equipo docente da por alcanzado con su motivo y su fecha.
 
-**Por qué no se ha ejecutado.** Migrar `notas.nota_rec` y las calificaciones por criterio a ese
-modelo toca la parrilla de notas entera y el panel de 2ª convocatoria a la vez, sobre una base de
-datos con el curso ya empezado. El resto de correcciones de esta auditoría se han podido verificar
-una a una con el motor real; esta no, porque la comprobación de verdad es usar la aplicación un
-trimestre completo. Hacerlo de madrugada y sin poder probarlo en uso sería precisamente el tipo de
-decisión que ha causado la mitad de las incidencias de este informe.
+### Corrección aplicada · 01/08/2026
 
-**Recomendación:** abrirlo en una rama, con la 2ª convocatoria del curso ya cerrada, y una copia de
-seguridad del `evalfp.db` guardada aparte.
+Ejecutado el diseño de arriba, y algo más de lo previsto: al unificar el modelo de datos apareció
+que las dos convocatorias tampoco compartían **fórmula**.
+
+**1. Modelo de datos.** `actividades.convocatoria` (1 = curso, 2 = recuperación), con `DEFAULT 1`
+y migración automática. Comprobado sobre una base creada con el esquema anterior:
+
+```
+base antigua, 2 actividades, sin la columna
+  → ALTER TABLE … ADD COLUMN convocatoria INTEGER NOT NULL DEFAULT 1
+  → las 2 actividades siguen en la 1ª convocatoria · nada que revisar
+```
+
+**2. Interfaz.** Programación tiene una sección propia, *🔁 Recuperación · 2ª convocatoria*, donde
+se dan de alta las pruebas y se les marcan los criterios que recuperan —los del módulo entero, no
+los de una unidad de trabajo, porque una recuperación no cuelga de ninguna—. Se califican en Notas,
+en su propia vista del desplegable de evaluación. No aparecen en «Todas» ni en ningún trimestre.
+
+**3. Cálculo.** La nota de un criterio en la 2ª convocatoria es la **mejor** de las tres vías
+posibles: la actividad de recuperación, la nota suelta por criterio (el camino anterior, que se
+mantiene por los datos ya introducidos) y el criterio dado por alcanzado. Recuperar no puede
+empeorar lo ya conseguido, que es el art. 4.3.f otra vez.
+
+**4. Lo que apareció por el camino.** La 2ª convocatoria promediaba los criterios **a peso igual**
+mientras la 1ª respetaba la ponderación del art. 4.3.a. Con CR1 al 80 % y CR2 al 20 %:
+
+```
+CR1 = 8 (80 % del RA) · CR2 = 3 en el curso (20 %), recuperado con un 7
+
+  1ª convocatoria, ponderada como manda el art. 4.3.a   → 7,00   (8×0,8 + 3×0,2)
+  2ª convocatoria, a peso igual como se hacía antes     → 7,50   ((8 + 7) / 2)
+  2ª convocatoria, ahora con el mismo motor que la 1ª   → 7,80   (8×0,8 + 7×0,2)
+```
+
+La ponderación que el profesorado declara en la programación se aplicaba en junio y se ignoraba en
+la segunda convocatoria. El 7,50 no salía de ninguna regla: salía de que ese panel tenía su propia
+media.
+
+**5. El mínimo de examen.** Lo levanta la prueba de recuperación, que es el «instrumento de
+evaluación diferente» del art. 21.5; si no hay prueba, sigue bloqueando:
+
+```
+examen del curso = 3 · mínimo = 5
+  1ª convocatoria      → minKO
+  2ª con recuperación 7 → limpio
+  2ª sin presentarse    → minKO   ← no se levanta solo por pasar de convocatoria
+```
+
+Cubierto por `tests/unit/convocatorias.test.js` (8 pruebas) y tres más en `db.test.js`. La
+verificación que falta sigue siendo la única que no da una máquina: usarlo en una 2ª convocatoria
+real. Antes de esa sesión, conviene tener guardada aparte una copia del `evalfp.db`.
 
 ---
 

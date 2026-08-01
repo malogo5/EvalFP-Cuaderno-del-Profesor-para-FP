@@ -1,5 +1,47 @@
 # Changelog
 
+## [3.8.0] - 2026-08-01
+
+**A-5 · Un solo modelo de recuperación.** Era el último punto abierto de la auditoría integral:
+la aplicación llamaba «recuperación» a dos cosas distintas y las calculaba de dos maneras
+distintas. Con esto, la auditoría queda **cerrada por completo: 31 de 31**.
+
+### Changed
+- **La 2ª convocatoria se prepara con actividades, no con notas sueltas.** El art. 21.5 de la
+  Orden 201/2024 dice que los RA no superados se evalúan «utilizando otros instrumentos de
+  evaluación diferentes»: una prueba de recuperación es una actividad, no una lista de números.
+  Programación tiene ahora una sección **🔁 Recuperación · 2ª convocatoria** donde se dan de alta
+  esas pruebas y se les marcan los criterios que recuperan; se califican en Notas, en su propia
+  vista, y la 2ª convocatoria las recoge sola. Nueva columna `actividades.convocatoria`, que se
+  migra sola: todo lo existente es de la 1ª.
+- **Las dos convocatorias usan por fin la misma fórmula.** La nota del RA en la 2ª se promediaba
+  aparte, a peso igual, mientras la 1ª respetaba la ponderación por criterio del art. 4.3.a. Un
+  módulo con CR1 al 80 % y CR2 al 20 % daba 7,50 en junio y 7,80 en septiembre con las mismas
+  notas. Ahora las dos salen del mismo motor.
+- **Un criterio vale la mejor de sus notas.** Entre la del curso, la de la actividad de
+  recuperación y el criterio dado por alcanzado, manda la más alta: recuperar no puede empeorar
+  lo ya conseguido (art. 4.3.f). Comprobado con un 2 en la recuperación de un criterio que ya
+  estaba aprobado con un 8 — se queda en 8.
+- **El mínimo de examen lo levanta la prueba de recuperación**, que es el instrumento nuevo del
+  art. 21.5. Si no hay prueba, sigue bloqueando: no se levanta por dejar pasar el tiempo.
+- **La prueba de junio no entra en la 1ª convocatoria.** Ni en la parrilla, ni en las medias de
+  cada trimestre, ni en la nota que ya está en acta. Tampoco en los informes de la IA, que
+  hablan del curso.
+
+### Added
+- **`tests/unit/convocatorias.test.js`**: las ocho reglas de A-5, incluida la que fija que una
+  base de datos sin la columna calcula exactamente igual que antes.
+- Tres pruebas más en `db.test.js`: el valor por defecto, el filtro por convocatoria y que
+  editar la descripción de una prueba de recuperación no la devuelva a la 1ª convocatoria.
+
+### Removed
+- **1,4 GB de instaladores viejos** en `dist/` (3.0.0 y 3.3.1) y las carpetas intermedias de
+  electron-builder.
+
+### Fixed
+- `vitest.config.js` pasa a `.mjs`: usaba sintaxis ESM en un archivo que Vite cargaba como
+  CommonJS y avisaba en cada ejecución de los tests.
+
 ## [3.7.1] - 2026-08-01
 
 Limpieza de cierre: fuera lo que ya no usa nadie, y avisos de ESLint que vuelven a significar algo.

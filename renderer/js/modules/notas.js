@@ -37,16 +37,34 @@ function _calcMediaPonderada(acts, notasAl, decimals = 2) {
   return m === null ? '—' : m.toFixed(decimals)
 }
 
+/**
+ * Qué se está viendo en la parrilla: la evaluación elegida y sus actividades.
+ *
+ * A-5 · «Todas» y cada trimestre enseñan solo la 1ª convocatoria; la prueba de
+ * la 2ª tiene su propia opción. Mezclarlas metería la nota de junio en la media
+ * de un trimestre que ya está en el boletín.
+ */
+function _vistaNotas() {
+  const evRaw = document.getElementById('notas-ev-sel')?.value ?? '0'
+  const esRecuperacion = evRaw === 'R'
+  const ev = esRecuperacion ? 0 : parseInt(evRaw)
+  const deLa2a = a => Number(a.convocatoria) === 2
+  const acts = esRecuperacion
+    ? _actividades.filter(deLa2a)
+    : _actividades.filter(a => !deLa2a(a) && (!ev || a.eval === ev))
+  return { ev, acts, esRecuperacion }
+}
+
 async function exportNotasPDF() {
   const mid = document.getElementById('notas-mod-sel').value
   if (!mid) { alert('Selecciona un módulo primero.'); return }
   const mod = _modulos.find(m => m.id == mid)
-  const ev = parseInt(document.getElementById('notas-ev-sel').value)
-  const acts = ev ? _actividades.filter(a => a.eval === ev) : _actividades
+  const { ev, acts, esRecuperacion } = _vistaNotas()
   const alumnos = _alumnos.filter(a => a.estado === 'Activo')
   if (!acts.length || !alumnos.length) { alert('Sin datos que exportar.'); return }
 
-  const titulo = `${mod?.abrev || 'Módulo'} — Registro de Notas${ev ? ' · Evaluación '+ev : ''}`
+  const titulo = `${mod?.abrev || 'Módulo'} — Registro de Notas` +
+    (esRecuperacion ? ' · Recuperación (2ª convocatoria)' : ev ? ' · Evaluación ' + ev : '')
   const thead = `<tr><th>Alumno/a</th>${acts.map(a=>`<th>${esc(a.instrumento)}<br/><small>${esc(a.ut_id||'EV'+a.eval)}</small></th>`).join('')}<th>Media act.</th></tr>`
   const tbody = alumnos.map(al => {
     // H6: exportar la nota efectiva; las recuperadas se marcan con *
@@ -101,8 +119,11 @@ async function loadNotas() {
   evSel.innerHTML = '<option value="0">Todas</option>' +
     Array.from({length: evalCount}, (_, i) =>
       `<option value="${i+1}"${prevEv == i+1 ? ' selected' : ''}>EV ${i+1}</option>`
-    ).join('')
-  if (parseInt(evSel.value) > evalCount) evSel.value = '0'
+    ).join('') +
+    // A-5: las actividades de la 2ª convocatoria se califican aquí, pero aparte:
+    // no pertenecen a ningún trimestre y no cuentan en la nota de la 1ª.
+    `<option value="R"${prevEv === 'R' ? ' selected' : ''}>Recuperación · 2ª conv.</option>`
+  if (evSel.value !== 'R' && parseInt(evSel.value) > evalCount) evSel.value = '0'
 
   _alumnos = await window.api.getAlumnos(mid)
   _actividades = await window.api.getActividades(mid)
@@ -131,8 +152,7 @@ async function loadNotas() {
 }
 
 function renderNotasGrid() {
-  const ev = parseInt(document.getElementById('notas-ev-sel').value)
-  const acts = ev ? _actividades.filter(a => a.eval === ev) : _actividades
+  const { ev, acts, esRecuperacion } = _vistaNotas()
   const alumnos = _alumnos.filter(a => a.estado === 'Activo')
   const wrap = document.getElementById('notas-grid-wrap')
   if (!acts.length || !alumnos.length) {
@@ -205,6 +225,20 @@ function renderNotasGrid() {
     </tr>`
   }).join('')
 
+  // En la vista de 2ª convocatoria no cabe el modo «recuperar actividad»: aquí no
+  // se vuelve a calificar nada del curso, se califican pruebas nuevas.
+  if (esRecuperacion) {
+    const avisoRec = `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px 14px;
+        background:rgba(224,160,58,.10);border:1px solid rgba(224,160,58,.35);border-radius:9px">
+      <span style="font-size:11.5px;font-weight:700;color:var(--amber);white-space:nowrap">🔁 2ª convocatoria</span>
+      <span style="font-size:10.5px;color:var(--text2)">
+        Pruebas de recuperación, con los criterios que les marcaste en Programación. Su nota no toca
+        la 1ª convocatoria: en la 2ª, cada criterio vale la mejor de las dos notas.</span>
+    </div>`
+    wrap.innerHTML = avisoRec + `<div class="notas-grid"><table><thead>${thead}</thead><tbody>${tbody}</tbody></table></div>`
+    return
+  }
+
   const recBar = `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
     <button onclick="toggleRecMode()"
       style="font-size:11px;padding:4px 12px;border-radius:7px;cursor:pointer;white-space:nowrap;
@@ -234,8 +268,7 @@ async function abrirEvidencia(ruta) {
 
 async function onNotaChange(el) {
   function updateMediaFila(aid) {
-  const ev = parseInt(document.getElementById('notas-ev-sel').value)
-  const acts = ev ? _actividades.filter(a => a.eval === ev) : _actividades
+  const { ev, acts } = _vistaNotas()
 
   // Media ponderada por tipo cuando hay EV concreta; simple en vista "Todas"
   // H6: siempre sobre la nota efectiva (rec ?? original)
