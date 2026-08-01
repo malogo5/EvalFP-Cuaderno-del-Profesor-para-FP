@@ -1,5 +1,47 @@
 # Changelog
 
+## [3.9.0] - 2026-08-01
+
+Segunda auditoría, esta vez **usando la aplicación**: dos módulos dados de alta desde cero,
+alumnado importado, programación, notas y documentos. Encontró ocho incidencias que la revisión
+de código no podía ver, dos de ellas críticas. Están todas cerradas y el informe es
+`AUDITORIA_EN_VIVO.md`.
+
+### Fixed
+- **Un módulo se puede dar de alta para varios grupos.** `modulos.key` era única, así que al
+  intentar añadir el mismo módulo para una segunda clase saltaba «UNIQUE constraint failed». Pasa a
+  **UNIQUE(key, grupo)**, con migración de las bases existentes —tabla recreada según el
+  procedimiento de SQLite, con `foreign_key_check` antes de confirmar—. La tarjeta del catálogo ya
+  no está muerta: dice «✓ Ya lo tienes» y al añadir pide el grupo.
+- **Las actividades de partida ya no llegan rotas.** Los exámenes que traía cada módulo tenían el
+  **70 % del peso y ningún criterio asignado**, así que se podía calificar el examen de una
+  evaluación entera y que no moviera la calificación del módulo, mientras la parrilla sí mostraba
+  su nota. Comprobado en la aplicación: práctica 4, práctica 4, examen **10** → el módulo daba
+  **4,0** y «Media act.» decía 6,00. Ahora cada actividad nace con sus criterios, el examen cuelga
+  de las unidades de su evaluación y **cada evaluación suma 100 %** (antes 130 % y 160 %).
+- **`addModulo` guardaba las actividades sin la columna `ces`**, así que perdía los criterios al dar
+  de alta el módulo.
+- **En 2º curso hay dos evaluaciones parciales, no tres.** El catálogo lo tenía a medias: AD, AF y
+  GA con dos; DAM, ASIR, IO, DAW, SA y SMR con tres. Los 35 módulos de 2º pasan a dos, con sus
+  unidades y su mapa de RA recolocados.
+- **Quien no tiene ninguna nota ya no aparece con los RA bloqueados** en la 2ª convocatoria. El
+  candado del art. 4.3.f se pintaba también cuando el RA estaba *sin evaluar*, de modo que a quien
+  no se presentó a nada en junio no se le podía recuperar nada.
+- **El boletín pedido desde Evaluaciones buscaba al alumnado en el módulo del Dashboard** y
+  respondía «Alumno/a no encontrado en este módulo».
+- **El campo de convocatorias consumidas era más estrecho que su propio dígito**: no se leía y el
+  clic caía en la flecha del contador, que subía el valor y disparaba el aviso del art. 8.2. Pasa a
+  ser un desplegable.
+- **Al dar de alta un módulo, el detalle de RA y criterios mostraba el módulo anterior.**
+
+### Added
+- **«Todos» y «ninguno» por RA** al marcar los criterios de una actividad. Un examen de dos unidades
+  son 27 criterios y había que marcarlos uno a uno; dejarlo a medias es lo que produce el fallo de
+  arriba.
+- **«Rellenar criterios desde las UT» arregla también los exámenes sin unidad**, asignándoles las de
+  su evaluación. Antes los dejaba fuera —«no tienen UT asignada y se quedan igual»— justo cuando
+  eran los que más falta hacía.
+
 ## [3.8.0] - 2026-08-01
 
 **A-5 · Un solo modelo de recuperación.** Era el último punto abierto de la auditoría integral:

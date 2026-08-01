@@ -102,8 +102,10 @@ Para restaurar: cierra la aplicación, sustituye `evalfp.db` por la copia que qu
 
 1. **Módulos → ＋ Añadir módulo.** Elige el ciclo en el menú de la izquierda —cada uno indica
    cuántos módulos trae— y el módulo en las tarjetas. Llega con sus RA, sus criterios
-   literales del decreto, sus unidades de trabajo y unas actividades de partida. Ponle el
-   grupo si das el mismo módulo a dos clases.
+   literales del decreto, sus unidades de trabajo y unas actividades de partida ya
+   repartidas: las prácticas se llevan el 30 % de cada evaluación y el examen el 70 %, y
+   todas traen marcados los criterios de su unidad. Si das el mismo módulo a dos clases,
+   añádelo dos veces poniéndole a cada una su **grupo**.
 2. **Alumnos.** Pega la lista de clase entera de una vez, un nombre por línea; separa solo
    apellidos y nombre. Además de los datos de contacto, cada persona tiene aquí:
    - **Faltas (h)**, con el porcentaje sobre las horas del módulo y aviso en rojo al pasar del
@@ -119,7 +121,13 @@ Para restaurar: cierra la aplicación, sustituye `evalfp.db` por la copia que qu
    marca los RA necesarios para la fase de empresa y decide **qué criterios evalúa cada
    actividad**. La columna RA te dice qué resultado califica cada actividad, y en la ficha de
    cada RA un punto verde señala los criterios que alguien evalúa y uno hueco los que no.
-   El botón **«Rellenar criterios desde las UT»** hace el trabajo grueso de una vez.
+   El botón **«Rellenar criterios desde las UT»** hace el trabajo grueso de una vez, incluidos
+   los exámenes sin unidad asignada, y dentro del cuadro de criterios tienes «todos» y «ninguno»
+   por cada RA.
+
+   Un aviso que conviene entender: **una actividad sin criterios marcados no cuenta para
+   ningún RA**, por mucho peso que tenga. Si ves un instrumento con la casilla de criterios en
+   ámbar, su nota no está entrando en la calificación del módulo.
 4. **Notas.** La parrilla de siempre; se guarda al salir de cada celda. El botón **«Recuperar
    actividad»** permite volver a calificar una actividad sin borrar la nota anterior: eso es
    recuperación dentro de la 1ª convocatoria. La columna «Media act.» es la media de las

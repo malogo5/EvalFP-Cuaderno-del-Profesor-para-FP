@@ -1438,11 +1438,30 @@ async function rellenarCesDesdeUts(mid) {
   const cesPorRa = data.ces || {}
   const acts = await window.api.getActividades(parseInt(mid))
 
+  // Un examen sin UT no cubre ningún criterio, así que su nota no entra en
+  // ningún RA por mucho que se califique. Antes se quedaba fuera de este arreglo
+  // («no tiene UT asignada y se queda igual») justo cuando era el que más falta
+  // hacía: se le asignan las unidades de su propia evaluación.
+  const utsPorEval = {}
+  for (const ut of (data.uts || [])) {
+    const ev = Number(ut.eval || 1)
+    if (!utsPorEval[ev]) utsPorEval[ev] = []
+    utsPorEval[ev].push(ut.id)
+  }
+  const utAsignada = []
+
   const candidatas = [], yaTenian = [], sinUt = []
-  for (const act of acts) {
+  for (let act of acts) {
     // Las pruebas de recuperación no cuelgan de ninguna UT: sus criterios los
     // elige el profesorado a mano, según lo que cada alumno tenga pendiente.
     if (Number(act.convocatoria) === 2) continue
+    if (!String(act.ut_id || '').trim() && !String(act.ra_id || '').trim()) {
+      const utsEv = utsPorEval[Number(act.eval || 1)] || []
+      if (utsEv.length) {
+        act = { ...act, ut_id: utsEv.join(',') }
+        utAsignada.push(act)
+      }
+    }
     const grupos = cesDisponiblesActividad(act, asigs, cesPorRa)
     if (!grupos.length) { sinUt.push(act); continue }
     const tiene = grupos.some(g => g.ces.some(ce => actCubreCe(act, g.raId, ce.id)))
@@ -1463,6 +1482,7 @@ async function rellenarCesDesdeUts(mid) {
     .map(c => `  · ${c.act.descripcion || c.act.instrumento}  →  ${c.claves.length} criterios`)
     .join('\n')
   const avisos = [
+    utAsignada.length ? `A ${utAsignada.length} actividad(es) sin unidad se les asignan las de su evaluación.` : '',
     yaTenian.length ? `${yaTenian.length} actividad(es) ya tienen criterios y no se tocan.` : '',
     sinUt.length ? `${sinUt.length} no tienen UT asignada y se quedan igual.` : '',
   ].filter(Boolean).join('\n')
@@ -1475,6 +1495,7 @@ async function rellenarCesDesdeUts(mid) {
   let hechas = 0
   for (const c of candidatas) {
     try {
+      // c.act ya lleva la ut_id que se le haya asignado arriba
       await window.api.saveActividad({ ...c.act, ces: c.claves })
       hechas++
     } catch (e) {

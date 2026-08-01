@@ -15,7 +15,26 @@ sys.path.insert(0, ROOT)
 
 def export_module(name):
     mod = importlib.import_module(f"modules.{name}")
-    m   = mod.MODULO
+    m   = dict(mod.MODULO)
+
+    # ── Evaluaciones parciales del módulo ───────────────────────────────────
+    #
+    # En 2º curso solo hay DOS evaluaciones parciales: el tercer trimestre se
+    # dedica a la formación en centros de trabajo. El catálogo lo tenía a medias
+    # —AD, AF y GA con dos; DAM, ASIR, IO, DAW, SA y SMR con tres—, así que la
+    # aplicación ofrecía una 3ª evaluación que no existe en el calendario.
+    #
+    # Las unidades que estuvieran colocadas en un tercer trimestre pasan al
+    # segundo, y lo mismo el mapa de RA por evaluación.
+    uts = [dict(u) for u in mod.UTS]
+    eval_ras = {str(k): list(v) for k, v in (getattr(mod, "EVAL_RAS", {}) or {}).items()}
+    if str(m.get("curso", "")).strip().startswith("2"):
+        m["eval_count"] = 2
+        for u in uts:
+            if int(u.get("eval", 1) or 1) > 2:
+                u["eval"] = 2
+        if "3" in eval_ras:
+            eval_ras["2"] = list(dict.fromkeys(eval_ras.get("2", []) + eval_ras.pop("3")))
 
     # ── Actividades de partida ──────────────────────────────────────────────
     #
@@ -37,7 +56,7 @@ def export_module(name):
     PESO_PRACTICAS = 30
     PESO_EXAMEN    = 70
 
-    ut_por_id = {u["id"]: u for u in mod.UTS}
+    ut_por_id = {u["id"]: u for u in uts}
 
     def _eval_de(ut_id):
         return ut_por_id.get(ut_id, {}).get("eval", 1)
@@ -72,9 +91,9 @@ def export_module(name):
         })
         orden += 1
 
-    evals_con_uts = sorted(set(u.get("eval", 1) for u in mod.UTS))
+    evals_con_uts = sorted(set(u.get("eval", 1) for u in uts))
     for ev in evals_con_uts:
-        uts_ev = [u["id"] for u in mod.UTS if u.get("eval", 1) == ev]
+        uts_ev = [u["id"] for u in uts if u.get("eval", 1) == ev]
         ces_ev, vistos = [], set()
         for ut_id in uts_ev:
             for clave in ces_por_ut.get(ut_id, []):
@@ -106,10 +125,10 @@ def export_module(name):
     return {
         "modulo":          m,
         "ras":             mod.RAS,
-        "uts":             mod.UTS,
+        "uts":             uts,
         "ces":             getattr(mod, "CES", {}),
         "asignaciones":    [{"ut": ut, "ra": ra, "ces": ces} for ut, ra, ces in mod.ASIGNACIONES],
-        "eval_ras":        getattr(mod, "EVAL_RAS", {}),
+        "eval_ras":        eval_ras,
         "ra_instrumentos": getattr(mod, "RA_INSTRUMENTOS", {}),
         "actividades":     actividades,
     }
