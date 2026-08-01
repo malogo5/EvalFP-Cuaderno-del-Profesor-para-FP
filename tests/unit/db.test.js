@@ -334,3 +334,48 @@ describe.skipIf(!sqliteDisponible)('Convocatoria de las actividades', () => {
     expect(despues.convocatoria).toBe(2)
   })
 })
+
+// ── Tests: actividades de partida (V-2 y V-3 de la auditoría en vivo) ─────────
+describe.skipIf(!sqliteDisponible)('Actividades de partida de un módulo nuevo', () => {
+  it('addModulo guarda los criterios de cada actividad', () => {
+    // Sin esto, el módulo llegaba al cuaderno con actividades que no evaluaban
+    // ningún criterio: se calificaban y no movían la nota de ningún RA.
+    const mid = db.addModulo({
+      ...MODULO_FIXTURE, key: `MOD_CES_${Date.now()}`,
+      actividades: [{
+        ut_id: 'UT1', ra_id: 'RA1', descripcion: 'Examen EV1', instrumento: 'Examen',
+        tipo: 'examen', peso: 70, nota_max: 10, eval: 1, orden: 1,
+        ces: ['RA1|CR1', 'RA1|CR2'],
+      }],
+    })
+    const act = db.getActividades(mid)[0]
+    expect(JSON.parse(act.ces)).toEqual(['RA1|CR1', 'RA1|CR2'])
+  })
+})
+
+// ── Tests: el mismo módulo para dos grupos (V-1 de la auditoría en vivo) ──────
+describe.skipIf(!sqliteDisponible)('Un módulo, varios grupos', () => {
+  it('admite el mismo módulo dos veces si el grupo cambia', () => {
+    const key = `MOD_GRP_${Date.now()}`
+    const a = db.addModulo({ ...MODULO_FIXTURE, key, grupo: '2ºA' })
+    const b = db.addModulo({ ...MODULO_FIXTURE, key, grupo: '2ºB' })
+    expect(b).not.toBe(a)
+    const suyos = db.getModulos().filter(m => m.key === key)
+    expect(suyos.map(m => m.grupo).sort()).toEqual(['2ºA', '2ºB'])
+  })
+
+  it('rechaza el duplicado exacto de módulo y grupo', () => {
+    const key = `MOD_DUP_${Date.now()}`
+    db.addModulo({ ...MODULO_FIXTURE, key, grupo: '1ºC' })
+    expect(() => db.addModulo({ ...MODULO_FIXTURE, key, grupo: '1ºC' })).toThrow()
+  })
+
+  it('el alumnado de cada grupo no se mezcla', () => {
+    const key = `MOD_SEP_${Date.now()}`
+    const a = db.addModulo({ ...MODULO_FIXTURE, key, grupo: 'A' })
+    const b = db.addModulo({ ...MODULO_FIXTURE, key, grupo: 'B' })
+    db.saveAlumno({ ...ALUMNO_FIXTURE(a), apellidos: 'De grupo A' })
+    expect(db.getAlumnos(a).length).toBe(1)
+    expect(db.getAlumnos(b).length).toBe(0)
+  })
+})

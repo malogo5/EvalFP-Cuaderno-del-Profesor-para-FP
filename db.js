@@ -140,6 +140,8 @@ function getDb() {
     _db.exec('ALTER TABLE actividades ADD COLUMN convocatoria INTEGER NOT NULL DEFAULT 1')
   }
 
+  _migrarUnicidadModulos()
+
   // Notas fuera de escala que hubiera dejado alguna versión anterior: la
   // validación estaba solo en la interfaz y por IPC se podía colar un 99.
   const fuera = _db.prepare(
@@ -154,6 +156,65 @@ function getDb() {
   _migrarCesDeActividades()
 
   return _db
+}
+
+/**
+ * Quita el UNIQUE de `modulos.key` y lo sustituye por UNIQUE(key, grupo).
+ *
+ * Dar el mismo módulo a dos grupos es lo normal en FP, pero el esquema original
+ * lo impedía: al añadirlo por segunda vez saltaba «UNIQUE constraint failed:
+ * modulos.key». SQLite no permite quitar una restricción con ALTER, así que hay
+ * que recrear la tabla — el procedimiento que documenta la propia SQLite:
+ * claves foráneas apagadas, dentro de una transacción, y comprobando la
+ * integridad antes de confirmar.
+ */
+function _migrarUnicidadModulos() {
+  let sql = ''
+  try {
+    const fila = _db.prepare(
+      "SELECT sql FROM sqlite_master WHERE type='table' AND name='modulos'").get()
+    sql = String(fila?.sql || '')
+  } catch { return }
+  // Ya migrada: el UNIQUE compuesto está presente
+  if (!sql || /UNIQUE\s*\(\s*key\s*,\s*grupo\s*\)/i.test(sql)) return
+  if (!/key\s+TEXT\s+NOT\s+NULL\s+UNIQUE/i.test(sql)) return
+
+  try {
+    _db.exec('PRAGMA foreign_keys = OFF')
+    _db.exec('BEGIN')
+    _db.exec(`
+      CREATE TABLE modulos_nuevo (
+        id         INTEGER PRIMARY KEY AUTOINCREMENT,
+        key        TEXT NOT NULL,
+        abrev      TEXT NOT NULL,
+        nombre     TEXT NOT NULL,
+        ciclo      TEXT,
+        curso      TEXT,
+        anno       TEXT,
+        grupo      TEXT DEFAULT 'Grupo A',
+        horas      INTEGER DEFAULT 0,
+        decreto    TEXT,
+        data_json  TEXT,
+        activo     INTEGER DEFAULT 1,
+        created_at TEXT DEFAULT (datetime('now')),
+        UNIQUE (key, grupo)
+      );
+      INSERT INTO modulos_nuevo
+        SELECT id,key,abrev,nombre,ciclo,curso,anno,grupo,horas,decreto,data_json,activo,created_at
+        FROM modulos;
+      DROP TABLE modulos;
+      ALTER TABLE modulos_nuevo RENAME TO modulos;
+    `)
+    const fallos = _db.prepare('PRAGMA foreign_key_check').all()
+    if (fallos.length) throw new Error(`${fallos.length} referencia(s) rota(s)`)
+    _db.exec('COMMIT')
+    console.log('[db] modulos: UNIQUE(key) → UNIQUE(key, grupo)')
+  } catch (e) {
+    try { _db.exec('ROLLBACK') } catch { /* sin transacción activa */ }
+    console.error('[db] No se pudo migrar la unicidad de modulos:', e.message)
+  } finally {
+    _db.exec('PRAGMA foreign_keys = ON')
+  }
 }
 
 /**
@@ -255,7 +316,10 @@ function _initSchema() {
     -- Los datos normativos (RAs, CEs) vienen del DOCM Castilla-La Mancha
     CREATE TABLE IF NOT EXISTS modulos (
       id         INTEGER PRIMARY KEY AUTOINCREMENT,
-      key        TEXT NOT NULL UNIQUE,
+      -- La clave del módulo NO es única por sí sola: el mismo módulo se da a
+      -- varios grupos y cada grupo es un cuaderno distinto. Lo único que no
+      -- puede repetirse es la pareja módulo+grupo (ver UNIQUE al final).
+      key        TEXT NOT NULL,
       abrev      TEXT NOT NULL,
       nombre     TEXT NOT NULL,
       ciclo      TEXT,
@@ -266,7 +330,8 @@ function _initSchema() {
       decreto    TEXT,
       data_json  TEXT,
       activo     INTEGER DEFAULT 1,
-      created_at TEXT DEFAULT (datetime('now'))
+      created_at TEXT DEFAULT (datetime('now')),
+      UNIQUE (key, grupo)
     );
 
     -- Alumnos por módulo
@@ -430,13 +495,17 @@ function addModulo({ key, abrev, nombre, ciclo, curso, anno, grupo, horas, decre
 
   const mid = Number(r.lastInsertRowid)
   if (actividades?.length) {
+    // `ces` va en el INSERT: sin ella, las actividades de partida llegaban al
+    // cuaderno sin criterios y no entraban en la nota de ningún RA — se podía
+    // calificar un examen y que no moviera la calificación del módulo.
     const s = db.prepare(`
-      INSERT INTO actividades (modulo_id,ut_id,ra_id,descripcion,instrumento,tipo,peso,nota_max,eval,orden)
-      VALUES (?,?,?,?,?,?,?,?,?,?)
+      INSERT INTO actividades (modulo_id,ut_id,ra_id,descripcion,instrumento,tipo,peso,nota_max,eval,orden,ces)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?)
     `)
     actividades.forEach(a =>
       s.run(mid, a.ut_id||null, a.ra_id||null, a.descripcion, a.instrumento,
-            a.tipo, a.peso, a.nota_max, a.eval, a.orden))
+            a.tipo, a.peso, a.nota_max, a.eval, a.orden,
+            JSON.stringify(Array.isArray(a.ces) ? a.ces : [])))
   }
   return mid
 }

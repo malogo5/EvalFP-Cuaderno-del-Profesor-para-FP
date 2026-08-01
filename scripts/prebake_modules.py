@@ -17,6 +17,37 @@ def export_module(name):
     mod = importlib.import_module(f"modules.{name}")
     m   = mod.MODULO
 
+    # ── Actividades de partida ──────────────────────────────────────────────
+    #
+    # Tres reglas, aprendidas auditando la aplicación en uso:
+    #
+    #  1. Cada actividad nace con SUS CRITERIOS marcados. Una actividad sin
+    #     criterios no entra en la nota de ningún RA: se podía calificar el
+    #     examen de una evaluación entera y que no moviera la calificación del
+    #     módulo, mientras la parrilla sí mostraba su nota.
+    #  2. El examen de cada evaluación cuelga de las UT de esa evaluación. Sin
+    #     UT ni RA, la fila decía «sin RA» y no computaba.
+    #  3. Los pesos de cada evaluación suman 100: las prácticas se reparten el
+    #     30 % y el examen se lleva el 70 %. Antes cada práctica llevaba un 30
+    #     fijo y la suma salía 130 % o 160 %, con la aplicación avisando de un
+    #     error que ella misma había creado.
+    #
+    # Todo esto es un punto de partida razonable, no una imposición: se cambia
+    # en Programación.
+    PESO_PRACTICAS = 30
+    PESO_EXAMEN    = 70
+
+    ut_por_id = {u["id"]: u for u in mod.UTS}
+
+    def _eval_de(ut_id):
+        return ut_por_id.get(ut_id, {}).get("eval", 1)
+
+    # Criterios de cada UT, con la clave compuesta RA|CE que usa el motor
+    # (el id del criterio se repite en todos los RA del módulo).
+    ces_por_ut = {}
+    for ut_id, ra_id, ces in mod.ASIGNACIONES:
+        ces_por_ut.setdefault(ut_id, []).extend(f"{ra_id}|{ce}" for ce in ces)
+
     actividades = []
     orden = 1
     # una práctica por cada par UT–RA: si una UT trabaja criterios de dos RA,
@@ -29,27 +60,48 @@ def export_module(name):
         if (ut_id, ra_id) in vistas:
             continue
         vistas.add((ut_id, ra_id))
-        ut = next((u for u in mod.UTS if u["id"] == ut_id), {})
+        ut = ut_por_id.get(ut_id, {})
         sufijo = f" ({ra_id})" if len(set(ras_por_ut.get(ut_id, []))) > 1 else ""
         actividades.append({
             "ut_id": ut_id, "ra_id": ra_id,
             "descripcion": f"Práctica {ut_id}{sufijo} — {ut.get('nombre','')}",
             "instrumento": "Práctica", "tipo": "practica",
-            "peso": 30, "nota_max": 10,
-            "eval": ut.get("eval", 1), "orden": orden
+            "peso": PESO_PRACTICAS, "nota_max": 10,
+            "eval": ut.get("eval", 1), "orden": orden,
+            "ces": [f"{ra_id}|{ce}" for ce in ces],
         })
         orden += 1
 
     evals_con_uts = sorted(set(u.get("eval", 1) for u in mod.UTS))
     for ev in evals_con_uts:
+        uts_ev = [u["id"] for u in mod.UTS if u.get("eval", 1) == ev]
+        ces_ev, vistos = [], set()
+        for ut_id in uts_ev:
+            for clave in ces_por_ut.get(ut_id, []):
+                if clave not in vistos:
+                    vistos.add(clave)
+                    ces_ev.append(clave)
         actividades.append({
-            "ut_id": None, "ra_id": None,
+            "ut_id": ",".join(uts_ev) or None, "ra_id": None,
             "descripcion": f"Examen Evaluación {ev}",
             "instrumento": "Examen", "tipo": "examen",
-            "peso": 70, "nota_max": 10,
-            "eval": ev, "orden": orden
+            "peso": PESO_EXAMEN, "nota_max": 10,
+            "eval": ev, "orden": orden,
+            "ces": ces_ev,
         })
         orden += 1
+
+    # Repartir el 30 % de las prácticas dentro de cada evaluación, cuadrando a
+    # 100 con el examen. El resto de la división se suma a la primera, para que
+    # la suma sea exacta y no 29 ni 31.
+    for ev in evals_con_uts:
+        practicas_ev = [a for a in actividades if a["eval"] == ev and a["tipo"] == "practica"]
+        if not practicas_ev:
+            continue
+        base = PESO_PRACTICAS // len(practicas_ev)
+        resto = PESO_PRACTICAS - base * len(practicas_ev)
+        for i, a in enumerate(practicas_ev):
+            a["peso"] = base + (resto if i == 0 else 0)
 
     return {
         "modulo":          m,

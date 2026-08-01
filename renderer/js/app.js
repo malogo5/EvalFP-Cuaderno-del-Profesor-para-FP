@@ -145,7 +145,7 @@ function registerWindowHandlers() {
     updateRaLlave, saveUtField, addUt, deleteUt, openUtRasModal, _refreshUtHoras, _toggleRaSection, saveUtRas,
     closeUtRasModal, applyModuloPesos, updateActividadUT, rellenarCesDesdeUts,
     openActUtsModal, saveActUts, closeActUtsModal,
-    openActCesModal, saveActCes, closeActCesModal,
+    openActCesModal, saveActCes, _marcarCesDeRa, closeActCesModal,
     actDragStart, actDragOver, actDragLeave, actDragEnd, actDrop,
     ceKey, actCubreCe, actividadDeRa, rasDeActividad, cesDisponiblesActividad, rasPorEvaluacion,
     cesEvaluadosDeRa, contextoModulo, estadoModulo, notaRA, notaCE, actaEntera,

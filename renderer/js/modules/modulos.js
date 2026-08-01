@@ -234,9 +234,14 @@ function renderCatCards() {
     const horas = m.total_horas || m.horas || ''
     const aula  = m.horas_aula && m.horas_aula !== horas ? m.horas_aula : 0
     const nRas  = m.n_ras || ''
+    // Un módulo ya dado de alta SÍ se puede volver a añadir: es lo normal cuando
+    // se da el mismo módulo a dos grupos. Antes la tarjeta quedaba muerta y el
+    // campo «Grupo / Clase» del diálogo no servía para nada.
+    const grupos = _modulos.filter(x => x.key === m.key).map(x => x.grupo).filter(Boolean)
     return `
     <div class="cat-card ${added?'already-added':''} ${sel?'selected':''}"
-         onclick="${added?'':` selectCatCard('${m.key}')`}">
+         title="${added ? esc('Ya está en el cuaderno' + (grupos.length ? ` (${grupos.join(', ')})` : '') + '. Puedes añadirlo otra vez para otro grupo.') : ''}"
+         onclick="selectCatCard('${m.key}')">
       <div class="cat-card-abrev">${esc(m.abrev)}</div>
       <div class="cat-card-nombre">${esc(m.nombre)}</div>
       <div class="cat-card-meta">
@@ -275,11 +280,25 @@ async function confirmAddModulo() {
   if (!_modData || !_catSelectedKey) return alert('Selecciona un módulo primero.')
   const key = _catSelectedKey
   // Comprobar si ya existe
-  if (_modulos.find(m => m.key === key)) {
-    return alert(`El módulo "${key.replace('_data','').toUpperCase()}" ya está añadido.\nPara cambiar el grupo, elimínalo y vuelve a añadirlo.`)
-  }
   const m = _modData.modulo
   const grupo = document.getElementById('add-mod-grupo').value.trim()
+
+  // Mismo módulo para dos grupos: se permite, pero cada uno con su grupo. Lo que
+  // no puede haber son dos cuadernos idénticos del mismo módulo y grupo, que sí
+  // sería un duplicado por error.
+  const yaEstan = _modulos.filter(x => x.key === key)
+  // La abreviatura del catálogo, no la clave interna: «CFGB_IO_OPER» no le dice
+  // nada a nadie, «OACE» sí.
+  const sigla = m.abrev || key.replace('_data', '').toUpperCase()
+  if (yaEstan.length) {
+    if (!grupo) {
+      return alert(`${sigla} ya está en el cuaderno.\n\n` +
+        'Si lo das a otro grupo, escribe el grupo o clase en el campo de abajo y vuelve a pulsar Añadir.')
+    }
+    if (yaEstan.some(x => (x.grupo || '').toLowerCase() === grupo.toLowerCase())) {
+      return alert(`Ya tienes ${sigla} con el grupo "${grupo}".\n\nUsa otro nombre de grupo.`)
+    }
+  }
   try {
     await window.api.addModulo({
       key,
@@ -296,8 +315,14 @@ async function confirmAddModulo() {
     })
     closeModal()
     _modulos = await window.api.getModulos()
-    _curMod  = _modulos.find(m => m.key === key) || _modulos[0]
+    // El recién añadido es el último con esa clave: si el módulo ya estaba para
+    // otro grupo, `find` devolvía el antiguo.
+    const nuevos = _modulos.filter(x => x.key === key)
+    _curMod = nuevos[nuevos.length - 1] || _modulos[0]
     renderModulos()
+    // Repintar también el detalle: sin esto quedaba el del módulo anterior bajo
+    // el título «RAS Y CRITERIOS DE EVALUACIÓN — <otro módulo>».
+    renderModRasPanel(_curMod)
   } catch(e) {
     alert('Error al guardar el módulo: ' + e.message)
   }

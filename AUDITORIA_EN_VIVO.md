@@ -164,14 +164,14 @@ exactamente lo que produce el V-3.
 
 | | Incidencia | Gravedad | Estado |
 |---|---|---|---|
-| V-1 | Un módulo no se puede dar de alta para dos grupos | Alta | Abierta |
-| V-2 | Ponderaciones sin cuadrar en un módulo recién creado | Alta | Abierta |
-| V-3 | Exámenes con el 70 % del peso que no evalúan nada | **Crítica** | Abierta |
-| V-4 | Campo de convocatorias ilegible e inmanejable | Media | Abierta |
-| V-5 | El detalle de Módulos va un módulo por detrás | Baja | Abierta |
+| V-1 | Un módulo no se puede dar de alta para dos grupos | Alta | Corregida |
+| V-2 | Ponderaciones sin cuadrar en un módulo recién creado | Alta | Corregida |
+| V-3 | Exámenes con el 70 % del peso que no evalúan nada | **Crítica** | Corregida |
+| V-4 | Campo de convocatorias ilegible e inmanejable | Media | Corregida |
+| V-5 | El detalle de Módulos va un módulo por detrás | Baja | Corregida |
 | V-6 | RA sin nota bloqueados en la 2ª convocatoria | **Crítica** | Corregida |
 | V-7 | Boletín desde Evaluaciones con el módulo equivocado | Alta | Corregida |
-| V-8 | Sin «marcar todos» en los criterios de una actividad | Media | Abierta |
+| V-8 | Sin «marcar todos» en los criterios de una actividad | Media | Corregida |
 
 **Lo que confirma esta segunda vuelta.** La auditoría de código encontró errores de
 cálculo; esta encuentra otra familia distinta: **la aplicación calcula bien lo que
@@ -181,3 +181,28 @@ entero calificando exámenes que no cuentan.
 
 *Auditoría realizada manejando EvalFP 3.8.0 en el equipo, con dos módulos dados de
 alta desde cero. Los módulos de prueba llevan los grupos AUD-1A y AUD-2A.*
+
+
+---
+
+## Correcciones del 01/08/2026
+
+- **V-1.** `modulos.key` era única. Migración a **UNIQUE(key, grupo)**, recreando
+  la tabla con el procedimiento de SQLite (claves foráneas apagadas, dentro de
+  transacción y con `foreign_key_check` antes de confirmar). La tarjeta del
+  catálogo pasa a decir «✓ Ya lo tienes» y se puede seleccionar; al añadir se
+  pide el grupo y se rechaza solo el duplicado exacto módulo+grupo. Comprobado
+  sobre una base con el esquema antiguo: conserva el alumnado.
+- **V-2 y V-3.** `prebake_modules.py` genera ahora cada evaluación sumando 100 %
+  —las prácticas se reparten el 30 % y el examen se lleva el 70 %—, el examen
+  cuelga de las UT de su evaluación y **ninguna actividad nace sin criterios**.
+  Verificado en los 91 módulos: 800 actividades, ninguna sin criterios y ninguna
+  evaluación fuera del 100 %. `addModulo` no guardaba la columna `ces`, así que
+  además los perdía al dar de alta el módulo.
+- **V-4.** El campo de convocatorias pasa a ser un desplegable de 0 al tope, que
+  se lee y no se puede desbordar con el ratón.
+- **V-5.** El alta repinta también el panel de RA y criterios.
+- **V-8.** Botones «todos» y «ninguno» por RA en el modal de criterios.
+
+**Nota.** V-1 necesita **reiniciar EvalFP** una vez: la migración de la base la
+hace el proceso principal al abrir, no basta con recargar la ventana.

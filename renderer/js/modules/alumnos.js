@@ -167,10 +167,12 @@ function _celdaMatricula(a) {
   const tope = _maxConvocatorias(mid)
   const agotadas = m.convocatorias >= tope
   return `<div style="display:flex;align-items:center;gap:5px;white-space:nowrap">
-    <input type="number" min="0" max="9" value="${m.convocatorias || 0}"
-      title="Convocatorias ordinarias ya consumidas. Máximo ${tope} en esta enseñanza (art. 8.2). La renuncia y la anulación no cuentan."
-      style="width:44px;${agotadas ? 'color:var(--red);font-weight:700' : ''}"
-      onblur="updateMatricula(${a.id},'convocatorias',this.value)"/>
+    <select title="Convocatorias ordinarias ya consumidas. Máximo ${tope} en esta enseñanza (art. 8.2). La renuncia y la anulación no cuentan."
+      style="width:52px;font-size:11px;text-align:center;${agotadas ? 'color:var(--red);font-weight:700' : ''}"
+      onchange="updateMatricula(${a.id},'convocatorias',this.value)">
+      ${Array.from({ length: tope + 1 }, (_, n) =>
+        `<option value="${n}"${Number(m.convocatorias || 0) === n ? ' selected' : ''}>${n}</option>`).join('')}
+    </select>
     <span style="font-size:10px;color:${agotadas ? 'var(--red)' : 'var(--text3)'}">/${tope}${agotadas ? ' ⚠' : ''}</span>
     <label title="Arrastra este módulo de un curso anterior: se evalúa en las sesiones ordinarias del curso en el que está matriculado (art. 19)"
            style="display:inline-flex;align-items:center;gap:3px;font-size:10px;color:var(--text3);cursor:pointer">

@@ -1367,12 +1367,19 @@ function openActCesModal(actId, mid, utId, raId, currentCesEncoded, convocatoria
   // Ojo: CR1 existe en todos los RA. Cada casilla guarda la clave RA|CE, de forma
   // que marcar el CR1 de RA4 no marca de rebote el CR1 de RA5.
   for (const grupo of grupos) {
-    if (grupos.length > 1) {
-      const raNombre = (data.ras || []).find(r => r.id === grupo.raId)?.nombre || ''
-      html += `<div style="font-size:10.5px;font-weight:700;color:var(--accent2);text-transform:uppercase;letter-spacing:.5px;margin:10px 0 5px">
+    const raNombre = (data.ras || []).find(r => r.id === grupo.raId)?.nombre || ''
+    // Marcar 27 criterios de uno en uno es la tarea más repetitiva de la
+    // programación, y dejarla a medias es lo que hace que una actividad no
+    // evalúe nada. Un atajo por RA evita justamente eso.
+    html += `<div style="display:flex;align-items:baseline;gap:8px;margin:10px 0 5px;flex-wrap:wrap">
+      <span style="font-size:10.5px;font-weight:700;color:var(--accent2);text-transform:uppercase;letter-spacing:.5px">
         ${esc(grupo.raId)}${raNombre ? ` <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3)">· ${esc(raNombre)}</span>` : ''}
-      </div>`
-    }
+      </span>
+      <button type="button" onclick="_marcarCesDeRa('${String(grupo.raId).replace(/'/g, "\\'")}', true)"
+        style="background:transparent;border:1px solid var(--border2);border-radius:6px;padding:1px 8px;font-size:10px;color:var(--accent);cursor:pointer">todos</button>
+      <button type="button" onclick="_marcarCesDeRa('${String(grupo.raId).replace(/'/g, "\\'")}', false)"
+        style="background:transparent;border:1px solid var(--border2);border-radius:6px;padding:1px 8px;font-size:10px;color:var(--text3);cursor:pointer">ninguno</button>
+    </div>`
     for (const ce of grupo.ces) {
       const clave = ceKey(grupo.raId, ce.id)
       const checked = selCes.includes(clave) ||
@@ -1388,6 +1395,13 @@ function openActCesModal(actId, mid, utId, raId, currentCesEncoded, convocatoria
 
   document.getElementById('act-ces-body').innerHTML = html
   document.getElementById('modal-act-ces').showModal()
+}
+
+/** Marca o desmarca de golpe los criterios de un RA en el modal abierto. */
+function _marcarCesDeRa(raId, marcar) {
+  document.querySelectorAll('.act-ce-chk').forEach(chk => {
+    if (String(chk.dataset.cekey || '').split('|')[0] === String(raId)) chk.checked = !!marcar
+  })
 }
 
 async function saveActCes() {
