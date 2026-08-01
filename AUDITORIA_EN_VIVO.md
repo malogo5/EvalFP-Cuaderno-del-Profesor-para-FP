@@ -307,3 +307,33 @@ lee del CHANGELOG, que es lo único que se actualiza siempre.
 - **Renuncia**: figura como **RC · renuncia a convocatoria**, sin calificación.
 - **Archivar y restaurar un módulo**: ISO volvió con sus seis alumnos y sus notas.
 - **Numeración del alumnado importado**: correlativa, 1 a 6.
+
+
+## V-13 · El cierre de evaluación no protegía en la pestaña del trimestre — **CORREGIDO**
+
+**Categoría:** Error confirmado · **Gravedad: Crítica**
+**Pantalla:** Evaluaciones → 1ª / 2ª / 3ª Evaluación
+
+**Qué pasa.** Con la 1ª evaluación cerrada y el aviso «🔒 2 RA fijados» a la
+vista, se baja una práctica de un 8 a un 1 y el RA de esa alumna **cae de 7,3 a
+2,8**, apareciendo además como pendiente. El botón de cierre promete literalmente
+que «una actividad posterior no podrá bajarlos».
+
+**Causa.** La congelación se aplicaba en 1ª y 2ª Ordinaria —que construyen el
+contexto con `rasSuperados`— pero las tablas de la evaluación parcial llamaban
+directamente a `notaRA` sin ese contexto. Es el error A-2 de la primera
+auditoría sobreviviendo en la pantalla donde más se mira durante el curso.
+
+**Corregido**: la nota de un RA fijado no baja en ninguna de las tablas, lleva su
+candado y deja de contarse como pendiente. Comprobado en la aplicación: tras
+bajar la nota, el RA vuelve a 7,3 🔒 y el boletín del trimestre a 7,1.
+
+## V-14 · La renuncia se etiquetaba como baja en las evaluaciones — **CORREGIDO**
+
+**Categoría:** Error confirmado · **Gravedad: Media**
+**Pantalla:** Evaluaciones → pestañas de evaluación parcial
+
+Las tablas usaban una etiqueta fija de «BAJA» para todo el alumnado no activo, así
+que quien había renunciado a la convocatoria figuraba como baja. Son dos cosas
+distintas y en el acta se reflejan distinto (RC, art. 25.9). Ahora cada fila
+muestra su estado real.

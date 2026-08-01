@@ -218,8 +218,19 @@ async function loadEvaluaciones() {
   })
 
   // ── Helpers ───────────────────────────────────────────────────
-  const notaRAde = (ra, alumnoId) =>
+  // Nota de un RA respetando el cierre de evaluación: un RA fijado no baja
+  // aunque una actividad posterior sea peor (art. 4.3.f). El aviso de «Cerrar
+  // evaluación» promete exactamente eso, y las tablas por evaluación y por RA lo
+  // ignoraban: bastaba con bajar una nota para ver caer un RA ya fijado.
+  const notaRAcruda = (ra, alumnoId) =>
     _calcNotaRA(ra.id, cesByRa[ra.id] || [], actividades, ng[alumnoId], PRAC, EXAM, asigsMod)
+
+  const notaRAde = (ra, alumnoId) => {
+    const n = notaRAcruda(ra, alumnoId)
+    const cierre = rasCerrados[alumnoId] ? rasCerrados[alumnoId][ra.id] : null
+    if (cierre == null) return n
+    return n === null || n < cierre ? cierre : n
+  }
 
   /**
    * H1/H3 — Estado completo de un alumno:
@@ -238,7 +249,10 @@ async function loadEvaluaciones() {
   }
 
   const badgeEstado = est => `<span style="background:var(--bg3);color:var(--text3);padding:1px 7px;border-radius:8px;font-size:10px;font-weight:700;border:1px solid var(--border2)">${est === 'Renuncia' ? 'RC' : 'BAJA'}</span>`
-  const bajaBadge = badgeEstado('Baja')
+  // La etiqueta tiene que decir el estado REAL de cada persona: una etiqueta fija
+  // de «Baja» presentaba como baja a quien había renunciado a la convocatoria,
+  // que es otra cosa —y en el acta figura como RC (art. 25.9)—.
+  const badgeDe = al => badgeEstado(al.estado || 'Baja')
 
   // Marca de recuperación sobre una celda de RA (H6)
   function recMark(alumnoId, raId) {
@@ -354,7 +368,7 @@ async function loadEvaluaciones() {
         : sinN.length === rasVistos.length ? '<span style="color:var(--text3)">sin notas</span>'
         : '<span style="color:var(--green)">—</span>'
       return `<tr${esBaja ? ' class="fila-baja"' : ''}>
-        <td>${esc(nombreAl(al))} ${esBaja ? bajaBadge : ''}</td>
+        <td>${esc(nombreAl(al))} ${esBaja ? badgeDe(al) : ''}</td>
         <td class="nc" style="font-weight:700"><span class="${bolCls}">${bolTxt}</span></td>
         <td style="font-size:11px">${pendTxt}</td>
         <td style="text-align:center">
@@ -416,9 +430,18 @@ async function loadEvaluaciones() {
         : acts
       const ceLstEv = ceLst.filter(ce => actsRA.some(a => actCubreCe(a, ra.id, ce.id)))
 
+      // Con el RA ya fijado manda la nota del cierre, también aquí.
+      const notaRAev = (raObj, alumnoId, ceList, acts) => {
+        const n = _calcNotaRA(raObj.id, ceList, acts, ng[alumnoId], PRAC, EXAM, asigsMod)
+        const cierre = rasCerrados[alumnoId] ? rasCerrados[alumnoId][raObj.id] : null
+        if (cierre == null) return n
+        return n === null || n < cierre ? cierre : n
+      }
       const belowFive = alumnos.filter(al => {
-        const n = _calcNotaRA(ra.id, ceLst, actsRA, ng[al.id], PRAC, EXAM, asigsMod)
-        const minKO = _raMinExamKO(ra.id, ceLst, actsRA, ng[al.id], minExam, asigsMod)
+        const n = notaRAev(ra, al.id, ceLst, actsRA)
+        const minKO = rasCerrados[al.id]?.[ra.id] != null
+          ? false
+          : _raMinExamKO(ra.id, ceLst, actsRA, ng[al.id], minExam, asigsMod)
         return n !== null && (n < 5 || minKO)
       }).length
       const alertBadge = belowFive > 0
@@ -427,9 +450,10 @@ async function loadEvaluaciones() {
 
       const rows = [...alumnos, ...alumnosBaja].map(al => {
         const esBaja = al.estado !== 'Activo'
-        const notaRA = _calcNotaRA(ra.id, ceLst, actsRA, ng[al.id], PRAC, EXAM, asigsMod)
-        const minKO  = _raMinExamKO(ra.id, ceLst, actsRA, ng[al.id], minExam, asigsMod)
-        const naTxt  = notaRA !== null ? notaRA.toFixed(1) : '—'
+        const congelado = rasCerrados[al.id]?.[ra.id] != null
+        const notaRA = notaRAev(ra, al.id, ceLst, actsRA)
+        const minKO  = congelado ? false : _raMinExamKO(ra.id, ceLst, actsRA, ng[al.id], minExam, asigsMod)
+        const naTxt  = (notaRA !== null ? notaRA.toFixed(1) : '—') + (congelado ? ' 🔒' : '')
         const naCls  = notaRA === null ? '' : (notaRA >= 5 && !minKO) ? 'nota-apto' : notaRA >= 4 ? 'nota-riesgo' : 'nota-noapto'
         const minBadge = minKO && notaRA !== null && notaRA >= 5
           ? ` <span title="Examen por debajo del mínimo (${minExam}): RA no superado aunque la media sea ≥5" style="color:var(--red);font-weight:700;font-size:10px">⚠mín</span>` : ''
@@ -440,7 +464,7 @@ async function loadEvaluaciones() {
           return `<td class="nc"><span class="${cls}" style="font-size:12px;font-weight:600">${txt}</span></td>`
         }).join('')
         return `<tr${esBaja ? ' class="fila-baja"' : ''}>
-          <td>${esc(nombreAl(al))} ${esBaja ? bajaBadge : ''}</td>
+          <td>${esc(nombreAl(al))} ${esBaja ? badgeDe(al) : ''}</td>
           ${ceCells}
           <td class="nc" style="font-weight:700;font-size:13px"><span class="${naCls}">${naTxt}</span>${recMark(al.id, ra.id)}${minBadge}</td>
         </tr>`
