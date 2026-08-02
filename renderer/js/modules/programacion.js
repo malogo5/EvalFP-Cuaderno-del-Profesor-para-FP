@@ -1096,6 +1096,13 @@ async function _saveModData(mid, data, reload) {
   // calificaban. Siguen en la parrilla con sus notas puestas, pero ya no cuentan
   // para nada: quien las metió da por hecho que sí. No se pueden borrar solas
   // —son notas—, así que al menos hay que decirlo.
+  if (r && r.cierresRetirados) {
+    // Un cierre de evaluación es un acto formal: si desaparece, hay que decirlo.
+    alert(
+      `Se ${r.cierresRetirados === 1 ? 'ha retirado 1 cierre de evaluación' : `han retirado ${r.cierresRetirados} cierres de evaluación`} ` +
+      `de resultados de aprendizaje que ya no están en la programación. Si vuelves a añadir ` +
+      `ese resultado, habrá que cerrarlo otra vez en la próxima sesión de evaluación.`)
+  }
   if (r && r.huerfanas && r.huerfanas.length) {
     const lista = r.huerfanas.slice(0, 8).map(a => `· ${a.descripcion || '(sin descripción)'} (${a.ra_id})`).join('\n')
     const mas = r.huerfanas.length > 8 ? `\n… y ${r.huerfanas.length - 8} más.` : ''

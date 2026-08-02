@@ -311,3 +311,28 @@ describe('Importar la lista de clase', () => {
     expect(filas).toEqual([])
   })
 })
+
+describe('La nota que propone la corrección desde foto', () => {
+  const ia = () => leer('renderer/js/modules/ia.js')
+
+  it('se ajusta a la escala de la actividad antes de guardarse', () => {
+    // La corrección puntúa siempre sobre 10. Guardar un 8,5 tal cual en una
+    // actividad que se califica sobre 20 lo convierte en un 4,25 sin que nadie
+    // lo haya decidido.
+    const src = ia()
+    expect(src, 'la escala tiene que viajar con la opción').toContain('data-max="${Number(a.nota_max) || 10}"')
+    const bloque = src.slice(src.indexOf('async function iaGuardarNotaPropuesta'),
+                             src.indexOf('// ── Corrección por lotes'))
+    expect(bloque).toMatch(/notaMax\s*!==\s*10/)
+    expect(bloque).toMatch(/notaMax\s*\/\s*10/)
+  })
+
+  it('en el guardado por lotes, las que fallan se dicen', () => {
+    // Se tragaba el error y el aviso solo contaba las guardadas: quien corrige
+    // veinte exámenes daba por hechas las veinte notas.
+    const bloque = ia().slice(ia().indexOf('async function iaGuardarNotasLote'))
+    expect(bloque).toMatch(/fallidas/)
+    expect(bloque, 'el error no puede quedarse solo en la consola')
+      .not.toMatch(/catch \(e\) \{ console\.error\('nota no guardada'/)
+  })
+})

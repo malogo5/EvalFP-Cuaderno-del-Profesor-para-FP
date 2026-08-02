@@ -1,5 +1,27 @@
 # Changelog
 
+## 3.13.0 · Quinta auditoría
+
+El paso del tiempo dentro de un curso, dos ventanas a la vez y la corrección desde foto. Seis
+hallazgos; el detalle, en AUDITORIA_QUINTA.md.
+
+### Ya no se pierde una nota porque la otra ventana esté guardando
+
+Si una ventana estaba escribiendo, la otra fallaba al instante con «database is locked» y la
+nota recién tecleada se perdía. Ahora espera hasta cinco segundos y reintenta sola. Además, la
+aplicación no se abre dos veces sobre los mismos datos: la segunda trae al frente la primera.
+
+### La nota de la corrección respeta la escala de la actividad
+
+La corrección puntúa sobre 10. En una actividad sobre 20, ese 8,5 se guardaba tal cual y valía
+un 4,25. Ahora se convierte, se avisa antes, y en el guardado por lotes las notas que fallan se
+dicen en vez de desaparecer con un mensaje en la consola.
+
+### Los cierres de evaluación ya no se quedan de zombis
+
+Al quitar un resultado de aprendizaje de la programación, su cierre seguía en la base: el día
+que se creara otro con el mismo identificador nacería congelado con una nota antigua.
+
 ## 3.12.0 · Cuarta auditoría
 
 Esta vez no se ha revisado el código: se ha atacado. Trece mil combinaciones al azar contra

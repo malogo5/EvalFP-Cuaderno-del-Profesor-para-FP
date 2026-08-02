@@ -55,7 +55,11 @@ function getDb() {
   const dbPath = path.join(app.getPath('userData'), 'evalfp.db')
   _apartarJsonLegacy(dbPath)
   _db = new DatabaseSync(dbPath)
-  _db.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;')
+  // `busy_timeout`: si otra ventana está escribiendo —un cierre de evaluación, una
+  // copia de seguridad—, SQLite esperaba cero y devolvía «database is locked» al
+  // instante, así que la nota que se acababa de teclear no se guardaba. Con cinco
+  // segundos de espera, reintenta él solo y el choque desaparece.
+  _db.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000;')
   _initSchema()
 
   // Migración: añade nota_rec a bases de datos creadas antes de esta versión
@@ -783,7 +787,8 @@ function setRaPonderacion(moduloId, raId, pond) {
  * arreglar solo —hay notas de por medio—, así que se devuelve para que la
  * pantalla lo diga.
  *
- * @returns {{criteriosLimpiados: number, huerfanas: Array<{id:number, descripcion:string, ra_id:string}>}}
+ * @returns {{criteriosLimpiados: number, cierresRetirados: number,
+ *            huerfanas: Array<{id:number, descripcion:string, ra_id:string}>}}
  */
 function setModuloDataJson(id, dataJson) {
   const db = getDb()
@@ -798,6 +803,28 @@ function setModuloDataJson(id, dataJson) {
 
   let criteriosLimpiados = 0
   const huerfanas = []
+
+  // Los cierres de evaluación de un RA que ya no existe no sirven para nada, y
+  // si algún día se vuelve a crear un RA con ese mismo identificador reviven:
+  // el RA nuevo nacería congelado con una nota antigua que nadie recuerda haber
+  // puesto. Se retiran, y se cuentan para poder decirlo.
+  let cierresRetirados = 0
+  if (raIds.size) {
+    const marcador = [...raIds].map(() => '?').join(',')
+    const alumnos = db.prepare('SELECT id FROM alumnos WHERE modulo_id=?').all(id).map(a => a.id)
+    if (alumnos.length) {
+      const inAl = alumnos.map(() => '?').join(',')
+      const cuantos = db.prepare(
+        `SELECT COUNT(*) AS n FROM ra_superados WHERE alumno_id IN (${inAl}) AND ra_id NOT IN (${marcador})`
+      ).get(...alumnos, ...raIds)
+      cierresRetirados = cuantos ? cuantos.n : 0
+      if (cierresRetirados) {
+        db.prepare(
+          `DELETE FROM ra_superados WHERE alumno_id IN (${inAl}) AND ra_id NOT IN (${marcador})`
+        ).run(...alumnos, ...raIds)
+      }
+    }
+  }
   const acts = db.prepare('SELECT id, ra_id, descripcion, ces FROM actividades WHERE modulo_id=?').all(id)
   const upd = db.prepare('UPDATE actividades SET ces=? WHERE id=?')
   for (const a of acts) {
@@ -819,7 +846,10 @@ function setModuloDataJson(id, dataJson) {
   if (criteriosLimpiados) {
     console.log(`[db] ${criteriosLimpiados} criterio(s) que ya no existen, quitados de las actividades.`)
   }
-  return { criteriosLimpiados, huerfanas }
+  if (cierresRetirados) {
+    console.log(`[db] ${cierresRetirados} cierre(s) de evaluación de resultados que ya no existen, retirados.`)
+  }
+  return { criteriosLimpiados, huerfanas, cierresRetirados }
 }
 
 const deleteActividad = id => getDb().prepare('DELETE FROM actividades WHERE id=?').run(id)

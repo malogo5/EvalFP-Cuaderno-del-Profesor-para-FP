@@ -552,3 +552,80 @@ describe.skipIf(!sqliteDisponible)('Entradas que llegan del teclado', () => {
     }
   })
 })
+
+describe.skipIf(!sqliteDisponible)('Cierres de evaluación', () => {
+  function moduloCerrado(sufijo) {
+    const id = db.addModulo({
+      ...MODULO_FIXTURE, key: `MOD_CIERRE_${sufijo}`,
+      data: {
+        modulo: { eval_count: 3 }, uts: [{ id: 'UT1', nombre: 'U', eval: 1, horas: 10 }],
+        ras: [{ id: 'RA1', nombre: 'R1', pond: 50 }, { id: 'RA2', nombre: 'R2', pond: 50 }],
+        ces: { RA1: [{ id: 'CR1' }], RA2: [{ id: 'CR1' }] },
+        asignaciones: [], eval_ras: {}, ra_instrumentos: {},
+      },
+      actividades: [],
+    })
+    const alu = db.saveAlumno({ ...ALUMNO_FIXTURE(id) })
+    return { id, alu }
+  }
+
+  it('un cierre posterior no puede bajar la nota ya registrada', () => {
+    // Art. 4.3.f: lo alcanzado, alcanzado está.
+    const { id, alu } = moduloCerrado(`BAJA_${Date.now()}`)
+    db.cerrarEvaluacionRAs(id, 1, [{ alumnoId: alu, raId: 'RA1', nota: 8 }])
+    db.cerrarEvaluacionRAs(id, 2, [{ alumnoId: alu, raId: 'RA1', nota: 6 }])
+    const guardado = db.getRasSuperados(id).find(r => r.alumno_id === alu && r.ra_id === 'RA1')
+    expect(guardado.nota).toBe(8)
+  })
+
+  it('quitar un RA de la programación retira su cierre', () => {
+    // Si no, el día que alguien cree otro RA con ese identificador, nacería
+    // congelado con una nota antigua que nadie recuerda haber puesto.
+    const { id, alu } = moduloCerrado(`ZOMBI_${Date.now()}`)
+    db.cerrarEvaluacionRAs(id, 1, [{ alumnoId: alu, raId: 'RA2', nota: 7 }])
+    expect(db.getRasSuperados(id).filter(r => r.ra_id === 'RA2').length).toBe(1)
+
+    const mod = db.getModulos().find(m => m.id === id)
+    const data = JSON.parse(mod.data_json)
+    data.ras = data.ras.filter(r => r.id !== 'RA2')
+    delete data.ces.RA2
+    const r = db.setModuloDataJson(id, data)
+
+    expect(r.cierresRetirados).toBe(1)
+    expect(db.getRasSuperados(id).filter(x => x.ra_id === 'RA2').length).toBe(0)
+    expect(db.getRasSuperados(id).filter(x => x.ra_id === 'RA1').length).toBe(0)
+  })
+
+  it('los cierres sin nota o de un RA que no existe se ignoran', () => {
+    const { id, alu } = moduloCerrado(`VACIO_${Date.now()}`)
+    const n = db.cerrarEvaluacionRAs(id, 1, [
+      { alumnoId: alu, raId: 'RA1', nota: null },
+      { alumnoId: alu, raId: null, nota: 7 },
+      { alumnoId: null, raId: 'RA1', nota: 7 },
+    ])
+    expect(n).toBe(0)
+    expect(db.getRasSuperados(id).length).toBe(0)
+  })
+})
+
+describe.skipIf(!sqliteDisponible)('Dos ventanas a la vez', () => {
+  it('la base espera a la otra ventana en vez de rendirse', () => {
+    // Sin espera configurada, si otra ventana tenía una escritura en curso
+    // —un cierre de evaluación, una copia— la nota que se acababa de teclear
+    // fallaba al instante con «database is locked» y se perdía.
+    const espera = db.leerBusyTimeout ? db.leerBusyTimeout() : null
+    const fuente = fs.readFileSync(path.resolve('db.js'), 'utf8')
+    expect(fuente, 'falta PRAGMA busy_timeout').toMatch(/busy_timeout\s*=\s*[1-9]\d{3,}/)
+    if (espera !== null) expect(espera).toBeGreaterThanOrEqual(1000)
+  })
+})
+
+describe('Una sola ventana', () => {
+  it('la aplicación no se abre dos veces sobre los mismos datos', () => {
+    // Cada instancia lleva sus datos en memoria: la segunda guardaría encima de
+    // lo que hubiera cambiado la primera.
+    const main = fs.readFileSync(path.resolve('main.js'), 'utf8')
+    expect(main).toContain('requestSingleInstanceLock')
+    expect(main).toContain("'second-instance'")
+  })
+})

@@ -166,6 +166,9 @@ const validators = {
       return 'No se ha podido guardar: el disco está lleno o falla al escribir. ' +
              'Libera espacio antes de seguir poniendo notas.'
     }
+    if (msg.includes('database is locked') || msg.includes('sqlite_busy')) {
+      return 'Hay otra ventana de EvalFP guardando en este momento. Espera unos segundos y vuelve a intentarlo.'
+    }
     if (msg.includes('readonly') || msg.includes('read-only') || msg.includes('erofs')) {
       return 'La base de datos está protegida contra escritura y no se puede guardar nada.'
     }

@@ -312,6 +312,27 @@ function createWindow() {
   win.loadFile(path.join(__dirname, 'renderer', 'index.html'))
 }
 
+// Una sola ventana de EvalFP a la vez.
+//
+// Dos instancias sobre la misma base ya no se corrompen —el registro de
+// escritura anticipada y la espera de cinco segundos lo evitan—, pero cada una
+// lleva sus datos en memoria: se cambia una nota en una, la otra no se entera y
+// al guardar escribe encima con lo que tenía de antes. Si ya hay una abierta, se
+// trae al frente en vez de abrir otra.
+//
+// El bloqueo va por carpeta de datos, así que las pruebas automáticas, que usan
+// la suya, no se estorban entre ellas.
+if (!app.requestSingleInstanceLock()) {
+  app.quit()
+} else {
+  app.on('second-instance', () => {
+    if (win) {
+      if (win.isMinimized()) win.restore()
+      win.focus()
+    }
+  })
+}
+
 app.whenReady().then(async () => {
   await keytarInitialization
   await migrateLegacyApiKeys()

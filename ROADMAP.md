@@ -1,6 +1,6 @@
 # Hoja de ruta de EvalFP
 
-> **Estado: 3.12.0** — aplicación de escritorio (Electron + SQLite), catálogo completo de
+> **Estado: 3.13.0** — aplicación de escritorio (Electron + SQLite), catálogo completo de
 > Castilla-La Mancha, auditoría integral cerrada y auditoría en vivo (17 incidencias)
 > también cerrada. Agosto de 2026.
 
@@ -27,6 +27,7 @@ historial de git, en los commits anteriores a la 3.7.0.
 | Auditoría en vivo | Cerrada · 17 de 17, usando la aplicación con dos módulos reales |
 | Tercera auditoría | Cerrada · 10 de 10: datos personales, carga, catálogo y accesibilidad |
 | Cuarta auditoría | Cerrada · 6 de 6, atacando: 13.000 casos al azar y entradas reales |
+| Quinta auditoría | Cerrada · 6 de 6: cierres, dos ventanas y corrección desde foto |
 | Convocatorias | 1ª y 2ª unificadas (art. 21.5): la prueba de junio es una actividad más |
 | Pruebas | Unitarias con Vitest · extremo a extremo con Playwright |
 | Distribución | DMG (arm64 + x64) e instalador NSIS para Windows 11 |

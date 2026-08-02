@@ -913,8 +913,12 @@ async function iaCorregirLoad() {
     }
     const acts = await window.api.getActividades(mod.id)
     if (selAct) {
+      // La escala viaja con la opción: la IA puntúa siempre sobre 10 y hay
+      // actividades sobre 20 o sobre 5.
       selAct.innerHTML = '<option value="">— actividad donde guardarla —</option>' + acts.map(a =>
-        `<option value="${a.id}">${esc(a.descripcion || '')}${a.ra_id ? ' · ' + esc(a.ra_id) : ''}</option>`
+        `<option value="${a.id}" data-max="${Number(a.nota_max) || 10}">` +
+        `${esc(a.descripcion || '')}${a.ra_id ? ' · ' + esc(a.ra_id) : ''}` +
+        `${Number(a.nota_max) && Number(a.nota_max) !== 10 ? ` (sobre ${Number(a.nota_max)})` : ''}</option>`
       ).join('')
     }
   } catch { /* módulo sin alumnado todavía */ }
@@ -1005,8 +1009,24 @@ async function iaGuardarNotaPropuesta() {
   if (!actId) { alert('Elige en qué actividad quieres guardar la nota.'); return }
   if (!aid)   { alert('Elige el alumno/a.'); return }
   if (_notaPropuesta == null || isNaN(_notaPropuesta)) { alert('Todavía no hay ninguna nota propuesta.'); return }
+
+  // La corrección puntúa siempre sobre 10, pero la actividad puede calificarse
+  // sobre otra cosa. Guardar el 8,5 tal cual en una actividad sobre 20 lo
+  // convierte en un 4,25 sin que nadie lo haya decidido.
+  const opcion = document.getElementById('ia-c-actividad')?.selectedOptions?.[0]
+  const notaMax = Number(opcion?.dataset?.max) || 10
+  let nota = Math.round(_notaPropuesta * 100) / 100
+  if (notaMax !== 10) {
+    const convertida = Math.round((nota * notaMax / 10) * 100) / 100
+    const sigue = confirm(
+      `La corrección puntúa sobre 10 y esta actividad se califica sobre ${notaMax}.\n\n` +
+      `Se guardará ${convertida} (equivale al ${nota} sobre 10).\n\n¿Continúo?`)
+    if (!sigue) return
+    nota = convertida
+  }
+
   try {
-    await window.api.saveNota(aid, actId, Math.round(_notaPropuesta * 100) / 100)
+    await window.api.saveNota(aid, actId, nota)
     // La corrección queda enlazada a la nota: el art. 2.4 de la Orden 201/2024
     // reconoce el derecho a acceder a las pruebas y documentos de evaluación, y
     // sin este vínculo el documento se quedaba suelto en una carpeta.
@@ -1026,7 +1046,7 @@ async function iaGuardarNotaPropuesta() {
       setTimeout(() => { aviso.textContent = '' }, 6000)
     }
   } catch (e) {
-    alert('No se ha podido guardar: ' + e.message)
+    alert('No se ha podido guardar: ' + validators.sanitizeErrorMessage(e, 'guardarNotaPropuesta'))
   }
 }
 
@@ -1257,9 +1277,17 @@ function _pintarResultadosLote() {
 }
 
 async function iaGuardarNotasLote() {
+  const sel = document.getElementById('ia-c-act-lote')
   const actId = Number(v('ia-c-act-lote'))
   if (!actId) { alert('Elige en qué actividad se guardan.'); return }
+  // Como en la corrección de uno en uno: la IA puntúa sobre 10.
+  const notaMax = Number(sel?.selectedOptions?.[0]?.dataset?.max) || 10
+  if (notaMax !== 10 && !confirm(
+    `La corrección puntúa sobre 10 y esta actividad se califica sobre ${notaMax}.\n\n` +
+    `Las notas se convertirán a esa escala. ¿Continúo?`)) return
+
   let n = 0, sinAsignar = 0
+  const fallidas = []
   for (let i = 0; i < _lote.length; i++) {
     const g = _lote[i]
     if (g.nota == null) continue
@@ -1267,15 +1295,24 @@ async function iaGuardarNotasLote() {
     if (!g.alumnoId) { sinAsignar++; continue }
     const nota = parseFloat(document.getElementById(`ia-c-nota-${i}`).value)
     if (isNaN(nota)) continue
+    const enEscala = Math.round((notaMax === 10 ? nota : nota * notaMax / 10) * 100) / 100
     try {
-      await window.api.saveNota(Number(g.alumnoId), actId, Math.round(nota * 100) / 100)
+      await window.api.saveNota(Number(g.alumnoId), actId, enEscala)
       n++
-    } catch (e) { console.error('nota no guardada', e) }
+    } catch (e) {
+      // Antes se tragaba el error y el contador solo hablaba de las guardadas:
+      // quien corrige veinte exámenes daba por hechas las veinte notas.
+      fallidas.push(`${g.alumno || 'examen ' + (i + 1)}: ${validators.sanitizeErrorMessage(e, 'notaLote')}`)
+    }
   }
   const aviso = document.getElementById('ia-c-lote-guardado')
   if (aviso) {
     aviso.textContent = `✓ ${n} nota(s) guardada(s)` +
-      (sinAsignar ? ` · ${sinAsignar} sin alumno asignado` : '')
+      (sinAsignar ? ` · ${sinAsignar} sin alumno asignado` : '') +
+      (fallidas.length ? ` · ⚠ ${fallidas.length} sin guardar` : '')
     setTimeout(() => { aviso.textContent = '' }, 8000)
+  }
+  if (fallidas.length) {
+    alert(`No se han podido guardar ${fallidas.length} nota(s):\n\n` + fallidas.slice(0, 8).join('\n'))
   }
 }
