@@ -398,3 +398,22 @@ describe('Copias de seguridad', () => {
       .toMatch(/actual && actual\.modulos === 0/)
   })
 })
+
+describe('El «Acerca de»', () => {
+  it('encuentra las novedades de la versión en el CHANGELOG', () => {
+    // Buscaba «## [3.9.0]» con corchetes, y el CHANGELOG lleva versiones
+    // escribiéndose «## 3.14.0 · Sexta auditoría». El resultado: la ventana
+    // enseñaba «consulta CHANGELOG.md» desde hacía cinco versiones.
+    const main = leer('main.js')
+    const fn = main.slice(main.indexOf('function _novedadesDelChangelog'),
+                          main.indexOf('// ── Automatic Database Backups'))
+    const context = { fs, path, __dirname: process.cwd(), process, module: { exports: {} }, console }
+    vm.runInNewContext(`${fn}\nmodule.exports = _novedadesDelChangelog`, context)
+
+    const version = JSON.parse(leer('package.json')).version
+    const notas = context.module.exports(version)
+    expect(notas.length, `sin novedades para la ${version}`).toBeGreaterThan(0)
+    expect(notas[0]).not.toMatch(/Consulta CHANGELOG/)
+    expect(context.module.exports('99.0.0')[0]).toMatch(/Consulta CHANGELOG/)
+  })
+})

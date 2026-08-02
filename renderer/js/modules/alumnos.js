@@ -415,9 +415,13 @@ async function confirmImportAlumnos() {
       imported++
     }
     renderAlumnosTable()
+    // «Omitidos por duplicado» valía para todo, también para las líneas que no
+    // traían ni apellidos ni nombre. Decir el motivo real ahorra buscar dónde
+    // está el que falta.
     const msg = skipped > 0
-      ? `Se importaron ${imported} de ${lines.length} alumnos. ${skipped} omitidos por duplicado.`
-      : `Se importaron ${imported} de ${lines.length} alumnos correctamente.`
+      ? `Se importaron ${imported} de ${lines.length} alumnos/as. ${skipped} línea(s) omitida(s): ` +
+        'ya estaban en la lista o venían sin nombre.'
+      : `Se importaron ${imported} de ${lines.length} alumnos/as correctamente.`
     alert(msg)
   } catch(e) {
     alert('Error al importar: ' + validators.sanitizeErrorMessage(e, 'confirmImportAlumnos'))

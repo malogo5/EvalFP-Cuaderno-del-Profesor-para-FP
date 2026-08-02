@@ -158,24 +158,46 @@ function _novedadesDelChangelog(version) {
     if (!ruta) return porDefecto
 
     const texto = fs.readFileSync(ruta, 'utf8')
-    const desde = texto.indexOf(`## [${version}]`)
-    if (desde === -1) return porDefecto
-    const resto = texto.slice(desde)
-    const hasta = resto.indexOf('\n## [', 1)
+
+    // El encabezado de una versión se ha escrito de las dos formas: «## [3.9.0]»
+    // y «## 3.14.0 · Sexta auditoría». Buscando solo la primera, el «Acerca de»
+    // llevaba varias versiones enseñando el texto de reserva.
+    const escapada = String(version).replace(/\./g, '\\.')
+    const cabecera = new RegExp(`^##\\s+\\[?${escapada}\\]?\\b.*$`, 'm')
+    const enc = cabecera.exec(texto)
+    if (!enc) return porDefecto
+    const resto = texto.slice(enc.index + enc[0].length)
+    const hasta = resto.search(/^##\s+/m)
     const bloque = hasta === -1 ? resto : resto.slice(0, hasta)
 
-    // Los puntos de la lista, sin el marcado de negritas ni los enlaces
+    const limpiar = t => t
+      .replace(/\*\*(.*?)\*\*/g, '$1')
+      .replace(/`([^`]*)`/g, '$1')
+      .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+      .replace(/\s+/g, ' ')
+      .trim()
+
+    // Los titulares de cada novedad («### …») y, si no los hay, los puntos de
+    // lista de toda la vida. Los encabezados de las versiones antiguas —«Fixed»,
+    // «Added»— no cuentan como novedad: no dicen nada.
+    const GENERICOS = new Set(['added', 'fixed', 'changed', 'removed', 'deprecated', 'security', 'y además'])
     const notas = []
     for (const linea of bloque.split('\n')) {
-      const m = linea.match(/^-\s+(.*)$/)
-      if (!m) continue
-      const limpia = m[1]
-        .replace(/\*\*(.*?)\*\*/g, '$1')
-        .replace(/`([^`]*)`/g, '$1')
-        .replace(/\s+/g, ' ')
-        .trim()
-      if (limpia) notas.push(limpia.length > 180 ? limpia.slice(0, 177) + '…' : limpia)
+      const t = linea.match(/^###+\s+(.*)$/)
+      if (t) {
+        const limpia = limpiar(t[1])
+        if (limpia && !GENERICOS.has(limpia.toLowerCase())) notas.push(limpia)
+      }
       if (notas.length >= 8) break
+    }
+    if (!notas.length) {
+      for (const linea of bloque.split('\n')) {
+        const m = linea.match(/^[-*]\s+(.*)$/)
+        if (!m) continue
+        const limpia = limpiar(m[1])
+        if (limpia) notas.push(limpia.length > 180 ? limpia.slice(0, 177) + '…' : limpia)
+        if (notas.length >= 8) break
+      }
     }
     return notas.length ? notas : porDefecto
   } catch {

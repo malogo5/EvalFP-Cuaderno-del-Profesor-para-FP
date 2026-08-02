@@ -14,8 +14,8 @@ async function renderModulos() {
       <div class="mod-card-abrev">${esc(m.abrev)}</div>
       <div class="mod-card-nombre">${esc(m.nombre)}</div>
       <div class="mod-card-meta">
-        ${esc(m.ciclo||'')} · ${esc(m.curso||'')} · ${esc(m.anno||'')}<br>
-        Grupo: <b>${esc(m.grupo)}</b>
+        ${esc(m.ciclo||'')} · ${esc(m.curso||'')} · ${esc(m.anno||'')}
+        ${m.grupo ? `· Grupo <b>${esc(m.grupo)}</b>` : ''}
         ${m.decreto ? `<br><span style="color:var(--accent2)">${esc(m.decreto)}</span>` : ''}
       </div>
     </div>
