@@ -136,3 +136,27 @@ describe('El superado parcial cuenta como superado (art. 18.4)', () => {
     expect(py, 'Python no acepta las notas por RA de la aplicación').toContain('--notas-ra-json')
   })
 })
+
+describe('El boletín usa las mismas cuentas que Evaluaciones', () => {
+  it('la nota de cada evaluación sale del motor, no de una media de actividades', () => {
+    // En un caso real el boletín decía 6,53 y la pantalla de Evaluaciones 6,3
+    // para el mismo alumno y la misma evaluación. El boletín promediaba las
+    // actividades por su peso, sin pasar por los criterios ni por los RA y sin
+    // mirar la escala de cada instrumento. Y el boletín es el papel que se
+    // lleva la familia.
+    const dash = leer('renderer/js/modules/dashboard.js')
+    const bloque = dash.slice(dash.indexOf('const evalMedias = evals.map'),
+                              dash.indexOf('// ── Nota por UT'))
+    expect(bloque, 'la evaluación debe calcularse con el motor').toContain('contextoModulo(')
+    expect(bloque).toContain('estadoModulo(')
+    expect(bloque, 'no puede volver a sumar pesos a mano').not.toMatch(/sumPN|sumP\s*\+=/)
+  })
+
+  it('la media global del boletín es la del módulo, no el promedio de trimestres', () => {
+    // La media del módulo es la de los RA ponderada por su peso —la que va al
+    // acta—, no el promedio de las notas de los tres trimestres.
+    const dash = leer('renderer/js/modules/dashboard.js')
+    expect(dash).not.toMatch(/fmt\(evParcial \? stAcum\.media : mediaGlobal\)/)
+    expect(dash).toMatch(/fmt\(evParcial \? stAcum\.media : stBol\.media\)/)
+  })
+})

@@ -211,7 +211,8 @@ async function loadProgramacion() {
                   return `<div style="display:flex;flex-direction:column;align-items:center;gap:3px">
                     <div style="display:flex;flex-wrap:wrap;gap:2px;justify-content:center">${chips||'<span style="font-size:11px;color:var(--text3)">—</span>'}</div>
                     <button onclick="openActUtsModal(${actId},${mid},'${(act.ut_id||'').replace(/'/g,"\\'")}')"
-                      style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:2px 8px;font-size:10px;font-weight:700;cursor:pointer;margin-top:1px">UT</button>
+                      style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:2px 8px;font-size:10px;font-weight:700;cursor:pointer;margin-top:1px"
+                      title="Elegir las unidades de trabajo que entran en este examen">Cambiar</button>
                   </div>`
                 }
                 return `<select class="nota-cell" data-actid="${actId}"

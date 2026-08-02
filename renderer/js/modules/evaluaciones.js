@@ -520,6 +520,10 @@ async function loadEvaluaciones() {
     const aptos    = alumnos.filter(al => estados[al.id].superadoParaPromocion).length
     const noAptos  = alumnos.filter(al => estados[al.id].completo && !estados[al.id].superadoParaPromocion).length
     const pendEval = alumnos.filter(al => !estados[al.id].completo && estados[al.id].media !== null).length
+    // Con 5 activos se leía «0 superan · 0 no superan · 2 sin evaluar del todo»:
+    // faltaban tres por explicar, los que no tienen ninguna nota todavía. Un
+    // recuento que no suma hace dudar del resto de la pantalla.
+    const sinNada  = alumnos.filter(al => estados[al.id].media === null).length
     const medias   = alumnos.map(al => estados[al.id].media).filter(n => n !== null)
     const media    = medias.length ? (medias.reduce((s, n) => s + n, 0) / medias.length).toFixed(1) : '—'
 
@@ -527,7 +531,8 @@ async function loadEvaluaciones() {
       <div style="flex:1;min-width:75px;background:var(--bg3);border-radius:10px;padding:10px 14px;border:1px solid var(--border)"><div style="font-size:20px;font-weight:700">${alumnos.length}</div><div style="font-size:10px;color:var(--text2)">Activos</div></div>
       <div style="flex:1;min-width:75px;background:var(--bg3);border-radius:10px;padding:10px 14px;border:1px solid var(--border)"><div style="font-size:20px;font-weight:700;color:var(--green)">${aptos}</div><div style="font-size:10px;color:var(--text2)">Superan (incluye SP)</div></div>
       <div style="flex:1;min-width:75px;background:var(--bg3);border-radius:10px;padding:10px 14px;border:1px solid var(--border)"><div style="font-size:20px;font-weight:700;color:var(--red)">${noAptos}</div><div style="font-size:10px;color:var(--text2)">No superan</div></div>
-      <div style="flex:1;min-width:75px;background:var(--bg3);border-radius:10px;padding:10px 14px;border:1px solid var(--border)"><div style="font-size:20px;font-weight:700;color:var(--amber, #c99a3d)">${pendEval}</div><div style="font-size:10px;color:var(--text2)">Sin evaluar del todo</div></div>
+      <div style="flex:1;min-width:75px;background:var(--bg3);border-radius:10px;padding:10px 14px;border:1px solid var(--border)"><div style="font-size:20px;font-weight:700;color:var(--amber, #c99a3d)">${pendEval}</div><div style="font-size:10px;color:var(--text2)">A medio evaluar</div></div>
+      <div style="flex:1;min-width:75px;background:var(--bg3);border-radius:10px;padding:10px 14px;border:1px solid var(--border)"><div style="font-size:20px;font-weight:700;color:var(--text3)">${sinNada}</div><div style="font-size:10px;color:var(--text2)">Sin ninguna nota</div></div>
       <div style="flex:1;min-width:75px;background:var(--bg3);border-radius:10px;padding:10px 14px;border:1px solid var(--border)"><div style="font-size:20px;font-weight:700">${media}</div><div style="font-size:10px;color:var(--text2)">Media</div></div>
     </div>`
 

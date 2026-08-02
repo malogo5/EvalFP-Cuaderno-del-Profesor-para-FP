@@ -690,27 +690,36 @@ async function _genBoletin(alumnoId, evParcial = null) {
     })
   } catch { /* sin overrides */ }
 
-  // ── Media ponderada por evaluación ────────────────────────────────────
+  const cfgBol   = await window.api.getAllConfig()
+  const minRawB  = cfgBol[`minexam_${mid}`]
+  const minExamB = minRawB != null && String(minRawB).trim() !== '' ? parseFloat(minRawB) : null
+  let faseAlumnoBol = null
+  try {
+    const filas = await window.api.getFaseEmpresa(parseInt(mid))
+    faseAlumnoBol = filas.find(f => Number(f.alumno_id) === alumnoId)?.estado || null
+  } catch { /* base antigua sin la tabla */ }
+
+  // ── Nota de cada evaluación ───────────────────────────────────────────
+  //
+  // Esto lo calculaba el boletín por su cuenta: una media de las actividades
+  // ponderada por su peso, sin pasar por los criterios ni por los resultados de
+  // aprendizaje y sin mirar la escala de cada instrumento. En un caso real daba
+  // 6,53 en el boletín y 6,3 en la pantalla de Evaluaciones para el mismo alumno
+  // y la misma evaluación —y el boletín es el papel que se lleva la familia—.
   const evalMedias = evals.map(ev => {
-    const actsEv = actividades.filter(a => a.eval === ev)
-    let sumP = 0, sumPN = 0
-    actsEv.forEach(a => {
-      const nota = miNotas[a.id]
-      if (nota != null) { const p = a.peso || 1; sumPN += nota * p; sumP += p }
+    const actsEv = actividades.filter(a => Number(a.convocatoria) !== 2 && a.eval === ev)
+    const ctxEv = contextoModulo({
+      ras, cesByRa: cesDict, asignaciones: asigs, actividades: actsEv,
+      minExam: minExamB, tieneFaseEmpresa: false,
     })
-    const media = sumP > 0 ? sumPN / sumP : null
+    const stEv = estadoModulo(ctxEv, miNotas)
     return {
       ev,
-      media,
+      media: stEv.media,
       numActs:  actsEv.length,
       numNotas: actsEv.filter(a => miNotas[a.id] != null).length,
     }
   })
-
-  const evalConMedia = evalMedias.filter(e => e.media != null)
-  const mediaGlobal  = evalConMedia.length
-    ? evalConMedia.reduce((s, e) => s + e.media, 0) / evalConMedia.length
-    : null
 
   // ── Nota por UT (promedio ponderado de sus actividades) ───────────────
   // Los exámenes pueden tener ut_id como lista "UT1,UT2" → contribuyen a cada UT
@@ -841,7 +850,6 @@ async function _genBoletin(alumnoId, evParcial = null) {
     </tr>`
   }).join('')
 
-  const cl = aptoCls(mediaGlobal)
 
   // ── Helper: bloque de una UT con sus RAs y CEs ───────────────────────
   function utBlock(ut) {
@@ -917,14 +925,6 @@ async function _genBoletin(alumnoId, evParcial = null) {
   // El boletín es el documento que se lleva a casa: tiene que decir exactamente
   // lo mismo que el acta. Antes calculaba la nota como media de las medias de
   // cada evaluación y salía 6,75 donde Evaluaciones decía 6,25.
-  const cfgBol   = await window.api.getAllConfig()
-  const minRawB  = cfgBol[`minexam_${mid}`]
-  const minExamB = minRawB != null && String(minRawB).trim() !== '' ? parseFloat(minRawB) : null
-  let faseAlumnoBol = null
-  try {
-    const filas = await window.api.getFaseEmpresa(parseInt(mid))
-    faseAlumnoBol = filas.find(f => Number(f.alumno_id) === alumnoId)?.estado || null
-  } catch { /* base antigua sin la tabla */ }
   const ctxBol   = contextoModulo({
     ras, cesByRa: cesDict, asignaciones: asigs, actividades, minExam: minExamB,
     tieneFaseEmpresa: moduloConFaseEmpresa(modData?.modulo),
@@ -950,8 +950,8 @@ async function _genBoletin(alumnoId, evParcial = null) {
   const clAcum = aptoCls(stAcum.media)
   const globalRow = `<tr class="global">
     <td><b>${evParcial ? `Acumulado hasta la ${evParcial}ª evaluación` : 'Media global'}</b></td>
-    <td class="nc ${evParcial ? clAcum : cl}" style="font-size:14px"><b>${fmt(evParcial ? stAcum.media : mediaGlobal)}</b></td>
-    <td><span class="${(evParcial?clAcum:cl)==='ok'?'b-ok':(evParcial?clAcum:cl)==='ko'?'b-ko':'b-sin'}" style="font-size:10px">${e(etiquetaResultado((evParcial ? stAcum : stBol).resultado))}</span></td>
+    <td class="nc ${evParcial ? clAcum : aptoCls(stBol.media)}" style="font-size:14px"><b>${fmt(evParcial ? stAcum.media : stBol.media)}</b></td>
+    <td><span class="${(evParcial?clAcum:aptoCls(stBol.media))==='ok'?'b-ok':(evParcial?clAcum:aptoCls(stBol.media))==='ko'?'b-ko':'b-sin'}" style="font-size:10px">${e(etiquetaResultado((evParcial ? stAcum : stBol).resultado))}</span></td>
     <td></td>
   </tr>`
 

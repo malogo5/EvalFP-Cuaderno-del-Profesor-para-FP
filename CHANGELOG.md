@@ -15,6 +15,13 @@ módulos, alumnos y notas, y avisa en rojo si el cuaderno está vacío habiendo 
 
 Buscaba un formato de CHANGELOG que dejó de usarse hace cinco versiones.
 
+### El boletín y la pantalla de Evaluaciones ya dicen lo mismo
+
+Mismo alumno y misma evaluación: Evaluaciones decía 6,3 y el boletín 6,53, que es el papel que
+se lleva la familia. El boletín promediaba las actividades por su peso en vez de calcular por
+criterios y resultados de aprendizaje. Ahora usa el mismo motor, y su media global es la del
+módulo —la que va al acta— y no el promedio de los tres trimestres.
+
 ### Los apellidos con tilde ya no salen rotos en el nombre del PDF
 
 `boletin_Alarc_n_Vega__Luc_a_1785516525526.pdf` era el nombre real de un boletín. Ahora se
@@ -23,7 +30,9 @@ anterior en vez de dejar una copia nueva cada vez.
 
 ### Y además
 
-La cabecera del catálogo ya no dice «Grado Superior» cuando también hay grado básico, medio y
+Los contadores de Evaluaciones ya suman: con cinco activos se leía «0 superan · 0 no superan ·
+2 sin evaluar del todo» y faltaban tres por explicar. La cabecera del catálogo ya no dice
+«Grado Superior» cuando también hay grado básico, medio y
 cursos de especialización; el grupo de cada módulo cabe en su línea; y al importar la lista de
 clase, las líneas sin nombre ya no se achacan a duplicados.
 

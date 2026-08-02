@@ -63,6 +63,39 @@ la misma tarde**. Ahora manda la fecha y regenerarlo el mismo día sustituye al 
 
 ---
 
+## Segunda tanda, recorriendo las pantallas con datos
+
+Con un módulo dado de alta, alumnado y notas puestas a mano.
+
+### A15-6 · El boletín y la pantalla de Evaluaciones no decían lo mismo — **Gravedad: Alta**
+
+Mismo alumno, misma evaluación: **Evaluaciones decía 6,3 y el boletín 6,53**. Y el boletín es
+el papel que se lleva la familia.
+
+El boletín calculaba la nota del trimestre por su cuenta —una media de las actividades
+ponderada por su peso—, sin pasar por los criterios, sin pasar por los resultados de
+aprendizaje y sin mirar la escala de cada instrumento. La octava pantalla con su propio motor,
+y la que más lejos llega.
+
+Ahora la nota de cada evaluación sale de `contextoModulo` + `estadoModulo`, como en todas las
+demás, y la media global del boletín es la del módulo —la de los RA ponderada por su peso, la
+que va al acta— en vez del promedio de los tres trimestres. Comprobado en la aplicación: el
+boletín pasó a decir 6,29 y Evaluaciones 6,3, que es el mismo número.
+
+### A15-7 · Los contadores de Evaluaciones no sumaban — **Gravedad: Media**
+
+Con cinco alumnos activos se leía «0 superan · 0 no superan · 2 sin evaluar del todo». Los
+otros tres no aparecían en ninguna parte: eran los que aún no tenían ninguna nota. Un recuento
+que no cuadra hace dudar de toda la pantalla. Ahora son «a medio evaluar» y «sin ninguna nota»,
+y la suma da los activos.
+
+### A15-8 · Un botón que parecía una etiqueta — **Gravedad: Baja**
+
+En Programación, el botón para elegir las unidades de un examen se llamaba «UT», igual que los
+chips de las unidades que tiene al lado. Ahora dice «Cambiar».
+
+---
+
 ## Lo comprobado en la aplicación
 
 - El catálogo abre los 91 módulos y da de alta ISO · 1ºA con sus 8 RA, sus criterios literales
@@ -78,6 +111,6 @@ la misma tarde**. Ahora manda la fecha y regenerarlo el mismo día sustituye al 
 
 | | |
 |---|---|
-| Hallazgos | 5 corregidos |
-| Pruebas | 147 unitarias |
-| Total en siete auditorías | 80 incidencias cerradas |
+| Hallazgos | 8 corregidos |
+| Pruebas | 149 unitarias |
+| Total en siete auditorías | 83 incidencias cerradas |
