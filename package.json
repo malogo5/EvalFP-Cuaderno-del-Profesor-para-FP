@@ -1,6 +1,6 @@
 {
   "name": "evalfp",
-  "version": "3.13.0",
+  "version": "3.14.0",
   "description": "EvalFP — Cuaderno del Profesor para FP",
   "license": "GPL-3.0-or-later",
   "main": "main.js",

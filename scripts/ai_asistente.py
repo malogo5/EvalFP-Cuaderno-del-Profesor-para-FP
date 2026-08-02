@@ -120,10 +120,7 @@ class IAAsistente:
         modelo_openai = MODELO_OPENAI_CALIDAD if calidad else MODELO_OPENAI
 
         def _emit_red_error(exc: Exception):
-            _emit_ia_code(
-                "ERROR_RED",
-                "No se ha podido conectar con el servidor de IA. Revisa tu conexión a internet o inténtalo más tarde.",
-            )
+            _emit_ia_code(*_diagnostico_de_error(exc))
 
         def _con_reintento(fn):
             """Un corte de red o un pico de latencia no deberían perder el trabajo."""
@@ -713,6 +710,39 @@ def _parse_min_exam(val: str | None) -> float | None:
     if n < 0 or n > 10:
         raise ValueError("mínimo de examen fuera de rango 0-10")
     return n
+
+
+def _diagnostico_de_error(exc: Exception) -> tuple[str, str]:
+    """Traduce el fallo de la llamada a algo que se pueda arreglar.
+
+    Todo salía como «revisa tu conexión a internet», y las dos causas más
+    probables no tienen nada que ver con la conexión: la clave mal copiada o
+    caducada, y la cuenta sin saldo. Buscar el problema en el router cuando está
+    en la clave se lleva la tarde.
+    """
+    nombre = type(exc).__name__.lower()
+    texto = str(exc).lower()
+
+    if "authentication" in nombre or "permissiondenied" in nombre or \
+       "invalid_api_key" in texto or "invalid x-api-key" in texto or \
+       "incorrect api key" in texto or "401" in texto:
+        return ("CLAVE_INVALIDA",
+                "El proveedor no acepta la clave de IA. Vuelve a copiarla en Ajustes: "
+                "puede estar mal pegada, caducada o ser de otro proveedor.")
+
+    if "insufficient_quota" in texto or "exceeded your current quota" in texto or \
+       "billing" in texto or "credit balance" in texto or "sin saldo" in texto:
+        return ("SIN_SALDO",
+                "La cuenta del proveedor de IA se ha quedado sin saldo. Recárgala en su web "
+                "y vuelve a intentarlo; el resto del cuaderno funciona igual sin IA.")
+
+    if "ratelimit" in nombre or "rate_limit" in texto or "429" in texto:
+        return ("DEMASIADAS_PETICIONES",
+                "El proveedor está limitando las peticiones. Espera un minuto y vuelve a intentarlo.")
+
+    return ("ERROR_RED",
+            "No se ha podido conectar con el servidor de IA. Revisa tu conexión a internet "
+            "o inténtalo más tarde.")
 
 
 def _emit_ia_code(code: str, msg: str, exit_code: int = 1):

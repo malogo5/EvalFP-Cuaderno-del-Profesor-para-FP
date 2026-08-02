@@ -121,6 +121,9 @@ const IA_CODIGOS = [
   ['RA_NO_EVALUADO',      'warning', 'Aún quedan resultados de aprendizaje por calificar: el informe sale con lo evaluado hasta ahora y la nota es parcial.'],
   ['PONDERACION_CERO',    'error',   'La suma de las ponderaciones de los RA es 0%. Revisa la configuración del módulo.'],
   ['NOTA_INVALIDA',       'error',   'Se ha detectado un formato o rango de nota incorrecto (debe estar entre 0 y 10).'],
+  ['CLAVE_INVALIDA',      'error',   'El proveedor no acepta la clave de IA. Vuelve a copiarla en Ajustes: puede estar mal pegada, caducada o ser de otro proveedor.'],
+  ['SIN_SALDO',           'error',   'La cuenta del proveedor de IA se ha quedado sin saldo. Recárgala en su web; el resto del cuaderno funciona igual sin IA.'],
+  ['DEMASIADAS_PETICIONES', 'warning', 'El proveedor está limitando las peticiones. Espera un minuto y vuelve a intentarlo.'],
   ['ERROR_RED',           'error',   'No se ha podido conectar con el servidor de IA. Revisa tu conexión a internet o inténtalo más tarde.'],
   ['SIN_DATOS',           'error',   'Faltan datos para generar esto. Revisa que el módulo tenga alumnado, actividades y notas.'],
   ['RESPUESTA_NO_VALIDA', 'error',   'La respuesta del modelo no ha llegado en el formato esperado. Vuelve a intentarlo.'],
@@ -490,6 +493,25 @@ async function runIA(cmd) {
     opts.proveedor = v('ia-t-prov')
     if (!opts.modulo) { alert('Selecciona un módulo.'); return }
     const mod = _modulos.find(m => m.key === opts.modulo)
+    // Esto es lo más caro que hace la aplicación: una llamada por RA, otra por
+    // unidad y otra por alumno, todas al modelo bueno. Salía con un clic y sin
+    // decir cuántas ni que se paga con el saldo de quien lo pulsa.
+    if (mod && opts.proveedor !== 'demo') {
+      const d = _getModData(mod.id) || {}
+      const nRas = (d.ras || []).length
+      const nUts = (d.uts || []).length
+      let nAlu = 0
+      try { nAlu = (await window.api.getAlumnos(mod.id)).filter(a => a.estado === 'Activo').length } catch { /* sin alumnado */ }
+      const llamadas = nRas * 2 + nUts + nAlu
+      const sigue = confirm(
+        `Se van a generar, con el modelo de más calidad:\n\n` +
+        `· rúbrica y actividades de ${nRas} resultado(s) de aprendizaje\n` +
+        `· apuntes de ${nUts} unidad(es) de trabajo\n` +
+        (nAlu ? `· informe individual de ${nAlu} alumno(s)\n` : '') +
+        `\nSon unas ${llamadas} peticiones al proveedor de IA y se pagan con el saldo de tu ` +
+        `cuenta. El proceso tarda varios minutos.\n\n¿Continúo?`)
+      if (!sigue) return
+    }
     if (mod) {
       try {
         const alumnos = (await window.api.getAlumnos(mod.id)).filter(a => a.estado === 'Activo')
