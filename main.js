@@ -652,17 +652,50 @@ ipcMain.on('gen-correccion', conRespuestaDeError('gen-correccion-reply', (event,
 // La app ya hacía copias diarias y al cerrar, pero no había forma de verlas ni
 // de recuperarlas desde la interfaz: si la base de datos se estropeaba, el
 // profesorado no llegaba a saber que existían.
+/**
+ * Qué hay dentro de una copia de seguridad.
+ *
+ * Una base vacía pesa 86 KB y una con un curso entero, 90: por el tamaño no se
+ * distinguen. Así que una copia sin nada parecía tan buena como cualquier otra,
+ * y solo se descubría al restaurarla. Abrir el fichero y contar es barato.
+ */
+function _contenidoDeCopia(ruta) {
+  let bd = null
+  try {
+    const { DatabaseSync } = require('node:sqlite')
+    bd = new DatabaseSync(ruta, { readOnly: true })
+    const cuenta = tabla => {
+      try { return bd.prepare(`SELECT COUNT(*) AS n FROM ${tabla}`).get().n } catch { return 0 }
+    }
+    return { modulos: cuenta('modulos'), alumnos: cuenta('alumnos'), notas: cuenta('notas') }
+  } catch {
+    return null       // ilegible: la interfaz lo dirá
+  } finally {
+    try { if (bd) bd.close() } catch { /* ya cerrada */ }
+  }
+}
+
 ipcMain.handle('backup:list', () => {
   const dir = backupsDir()
   fs.mkdirSync(dir, { recursive: true })
   const copias = fs.readdirSync(dir)
     .filter(f => f.startsWith('evalfp_') && f.endsWith('.db'))
     .map(f => {
-      const st = fs.statSync(path.join(dir, f))
-      return { nombre: f, fecha: st.mtime.toISOString(), bytes: st.size }
+      const ruta = path.join(dir, f)
+      const st = fs.statSync(ruta)
+      return { nombre: f, fecha: st.mtime.toISOString(), bytes: st.size, contenido: _contenidoDeCopia(ruta) }
     })
     .sort((a, b) => b.fecha.localeCompare(a.fecha))
-  return { carpeta: dir, copias }
+  // Lo que hay ahora mismo en el cuaderno, para poder compararlo con las copias.
+  let actual = null
+  try {
+    const mods = db.getModulos()
+    actual = {
+      modulos: mods.length,
+      alumnos: mods.reduce((s, m) => s + db.getAlumnos(m.id).length, 0),
+    }
+  } catch { /* base recién creada */ }
+  return { carpeta: dir, copias, actual }
 })
 
 ipcMain.handle('backup:create', async () => {

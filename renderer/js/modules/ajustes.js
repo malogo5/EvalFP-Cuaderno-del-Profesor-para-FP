@@ -74,16 +74,42 @@ async function pintarCopiasSeguridad() {
   const caja = document.getElementById('backups-info')
   if (!caja) return
   try {
-    const { carpeta, copias } = await window.api.listBackups()
+    const { carpeta, copias, actual } = await window.api.listBackups()
     if (!copias.length) {
       caja.innerHTML = `Todavía no hay ninguna copia. Se creará al cerrar la aplicación.<br>
         <span style="color:var(--text3)">Carpeta: <code>${carpeta}</code></span>`
       return
     }
-    const ultima = new Date(copias[0].fecha)
-    const kb = Math.round(copias[0].bytes / 1024)
+
+    // Qué lleva dentro cada copia. Una base vacía pesa lo mismo que una con un
+    // curso entero, así que por el tamaño no se sabe si una copia sirve: se ve
+    // al restaurarla, que es el peor momento para enterarse.
+    const resumen = c => {
+      if (!c.contenido) return '<span style="color:var(--red)">ilegible</span>'
+      const { modulos, alumnos, notas } = c.contenido
+      if (!modulos && !alumnos && !notas) return '<span style="color:var(--red)">vacía</span>'
+      return `${modulos} módulo${modulos === 1 ? '' : 's'} · ${alumnos} alumno/a${alumnos === 1 ? '' : 's'} · ${notas} nota${notas === 1 ? '' : 's'}`
+    }
+    const filas = copias.slice(0, 6).map(c =>
+      `<div style="display:flex;gap:8px;justify-content:space-between;font-size:11px;padding:1px 0">
+         <span>${new Date(c.fecha).toLocaleString('es-ES')}</span>
+         <span style="color:var(--text3)">${resumen(c)}</span>
+       </div>`).join('')
+
+    // Aviso gordo: el cuaderno está vacío pero hay copias con datos dentro.
+    const conDatos = copias.find(c => c.contenido && c.contenido.modulos > 0)
+    const alarma = (actual && actual.modulos === 0 && conDatos)
+      ? `<div style="margin:6px 0;padding:6px 8px;border:1px solid var(--red);border-radius:6px;color:var(--red)">
+           ⚠ Ahora mismo no tienes ningún módulo, pero la copia del
+           ${new Date(conDatos.fecha).toLocaleString('es-ES')} sí los tiene.
+           Cierra EvalFP y sustituye <code>evalfp.db</code> por esa copia si te falta algo.
+         </div>`
+      : ''
+
     caja.innerHTML = `<b>${copias.length}</b> copia${copias.length > 1 ? 's' : ''} guardada${copias.length > 1 ? 's' : ''} ·
-      la última, del <b>${ultima.toLocaleString('es-ES')}</b> (${kb} KB)<br>
+      la última, del <b>${new Date(copias[0].fecha).toLocaleString('es-ES')}</b><br>
+      ${alarma}
+      <div style="margin:4px 0 6px">${filas}</div>
       <span style="color:var(--text3)">Carpeta: <code>${carpeta}</code></span>`
   } catch (e) {
     caja.textContent = 'No he podido leer la carpeta de copias: ' + e.message

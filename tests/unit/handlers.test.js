@@ -381,3 +381,20 @@ describe('Lo que cuesta dinero', () => {
     expect(bloque, 'en modo demo no se cobra nada, no hay que avisar').toMatch(/!==\s*'demo'/)
   })
 })
+
+describe('Copias de seguridad', () => {
+  it('cada copia dice lo que lleva dentro', () => {
+    // Una base vacía pesa 86 KB y una con un curso entero, 90: por el tamaño no
+    // se distinguen. Una copia sin nada parecía tan buena como cualquier otra y
+    // solo se descubría al restaurarla, que es el peor momento para enterarse.
+    const main = leer('main.js')
+    expect(main).toContain('_contenidoDeCopia')
+    const bloque = main.slice(main.indexOf("ipcMain.handle('backup:list'"))
+    expect(bloque.slice(0, 800)).toMatch(/contenido: _contenidoDeCopia/)
+
+    const ajustes = leer('renderer/js/modules/ajustes.js')
+    expect(ajustes, 'la interfaz debe avisar de una copia vacía').toMatch(/vacía/)
+    expect(ajustes, 'y avisar si el cuaderno está vacío teniendo copias con datos')
+      .toMatch(/actual && actual\.modulos === 0/)
+  })
+})
