@@ -140,6 +140,7 @@ contextBridge.exposeInMainWorld('api', {
   // ── API Keys (Secure Storage) ─────────────────────────────────────────────────
   saveApiKeys: keys => ipcRenderer.invoke('api:saveKeys', keys),
   getPythonStatus: () => ipcRenderer.invoke('system:pythonStatus'),
+  getKeychainStatus: () => ipcRenderer.invoke('system:keychainStatus'),
 
   // ── IA ────────────────────────────────────────────────────────────────────────
   genIA:      opts  => ipcRenderer.send('gen-ia', opts),

@@ -452,3 +452,23 @@ describe('El nombre del archivo del boletín', () => {
     expect(f('Gil, Sara')).toBe(f('Gil, Sara'))
   })
 })
+
+describe('El llavero del sistema', () => {
+  it('la aplicación nunca guarda una clave de IA en texto plano', () => {
+    // Si el llavero no está, se niega a guardar. Es lo correcto: una clave de
+    // pago en la base de datos, en claro, no es una opción.
+    const main = leer('main.js')
+    const bloque = main.slice(main.indexOf("ipcMain.handle('api:saveKeys'"),
+                              main.indexOf("// ── IPC: Alumnos"))
+    expect(bloque).toMatch(/No se guardarán claves en texto plano/)
+    expect(bloque, 'no puede haber un camino que escriba la clave en la base')
+      .not.toMatch(/setConfig\(['"](openai|anthropic)/i)
+  })
+
+  it('y avisa al entrar en Ajustes, no al pulsar Guardar', () => {
+    const ajustes = leer('renderer/js/modules/ajustes.js')
+    expect(ajustes).toContain('getKeychainStatus')
+    expect(ajustes, 'el aviso debe decir cómo arreglarlo').toContain('electron-rebuild')
+    expect(leer('preload.js')).toContain('getKeychainStatus')
+  })
+})

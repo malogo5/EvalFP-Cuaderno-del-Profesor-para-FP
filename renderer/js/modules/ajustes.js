@@ -21,6 +21,32 @@ function _setKeyStatus(elId, hasKey) {
   el.style.color  = hasKey ? 'var(--green)' : 'var(--text3)'
 }
 
+/**
+ * Aviso cuando el llavero del sistema no está disponible.
+ *
+ * Sin él, la aplicación se niega a guardar las claves de IA —en texto plano no
+ * van a ninguna parte—, pero eso no se decía hasta que alguien escribía su clave
+ * y pulsaba Guardar. Mejor saberlo al entrar, y con la manera de arreglarlo.
+ */
+async function pintarLlavero() {
+  const caja = document.getElementById('cfg-llavero-aviso')
+  if (!caja) return
+  try {
+    const { available } = await window.api.getKeychainStatus()
+    if (available) { caja.style.display = 'none'; return }
+    caja.style.display = ''
+    caja.innerHTML = `<div style="margin:8px 0;padding:8px 10px;border:1px solid var(--amber);border-radius:8px;font-size:12px;color:var(--text2)">
+      <b>El llavero del sistema no está disponible ahora mismo.</b><br>
+      Las claves no se pueden guardar: EvalFP no las escribe nunca en texto plano. El asistente
+      seguirá funcionando en modo demo. Si esto pasa tras actualizar o reinstalar, suele
+      arreglarse recompilando el módulo del llavero:
+      <code style="display:block;margin-top:4px">npx electron-rebuild -f -w keytar</code>
+    </div>`
+  } catch {
+    caja.style.display = 'none'
+  }
+}
+
 async function loadAjustes() {
   const cfg = await window.api.getAllConfig()
   if (cfg.proveedor) document.getElementById('cfg-prov').value = cfg.proveedor
@@ -35,6 +61,7 @@ async function loadAjustes() {
   document.querySelectorAll('.sb-swatch').forEach(btn => {
     btn.classList.toggle('active', (btn.dataset.themeId || '') === activeTheme)
   })
+  pintarLlavero()
   pintarCopiasSeguridad()
   pintarModulosArchivados()
 }

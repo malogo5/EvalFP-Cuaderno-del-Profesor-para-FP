@@ -541,6 +541,19 @@ ipcMain.handle('db:setConfig',   (event, k, v) => {
   db.setConfig(k, v)
 })
 
+/**
+ * ¿Puede el sistema guardar las claves de IA en su llavero?
+ *
+ * Si el módulo nativo del llavero no carga —pasa al recompilar o al cambiar de
+ * versión de Electron—, la aplicación se niega a guardar las claves, que es lo
+ * correcto: en texto plano no van. Pero no lo decía hasta que alguien escribía
+ * su clave y pulsaba Guardar, y entonces el mensaje llegaba sin contexto.
+ */
+ipcMain.handle('system:keychainStatus', event => {
+  assertTrustedSender(event)
+  return { available: keytarSafe.isAvailable() }
+})
+
 ipcMain.handle('system:pythonStatus', event => {
   assertTrustedSender(event)
   const result = spawnSync(python(), ['--version'], { encoding: 'utf8', timeout: 5_000 })
