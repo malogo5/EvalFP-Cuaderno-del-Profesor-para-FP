@@ -197,3 +197,54 @@ describe('Criterios de una actividad: lectura repetida', () => {
     expect(ce.actCubreCe(act, 'RA1', 'CR9')).toBe(true)
   })
 })
+
+describe('Presentarse a la recuperación no puede salir caro', () => {
+  // El caso salió de lanzar miles de combinaciones al azar contra las reglas de
+  // la Orden: en algunas, la nota del RA en 2ª convocatoria era MENOR que la que
+  // el alumno ya tenía en la 1ª.
+  const ras = [{ id: 'RA1', pond: 100 }]
+  const ces = { RA1: [{ id: 'CR1' }, { id: 'CR2' }] }
+
+  function estado(acts, notas, conv) {
+    const ctx = M.contextoModulo({ ras, cesByRa: ces, asignaciones: [], actividades: acts,
+      minExam: null, rasSuperados: null, tieneFaseEmpresa: false, convocatoria: conv })
+    return M.estadoModulo(ctx, notas)
+  }
+
+  it('un criterio sin calificar durante el curso no hunde el RA en junio', () => {
+    // CR1 se trabajó y sacó un 9. CR2 quedó sin calificar. La prueba de junio se
+    // creó con «todos» los criterios marcados —lo más cómodo— y sale regular.
+    const acts = [
+      { id: 1, ra_id: 'RA1', tipo: 'practica', peso: 50, nota_max: 10, eval: 1, convocatoria: 1, ces: ['RA1|CR1'] },
+      { id: 2, ra_id: 'RA1', tipo: 'examen',   peso: 50, nota_max: 10, eval: 1, convocatoria: 1, ces: ['RA1|CR2'] },
+      { id: 3, ra_id: 'RA1', tipo: 'examen',   peso: 100, nota_max: 10, eval: 1, convocatoria: 2, ces: ['RA1|CR1', 'RA1|CR2'] },
+    ]
+    const notas = { 1: 9, 3: 4 }          // CR2 sin nota en el curso; recuperación: 4
+    const primera = estado(acts, notas, 1).porRA.RA1.nota
+    const segunda = estado(acts, notas, 2).porRA.RA1.nota
+    expect(primera).toBe(9)
+    expect(segunda, 'la recuperación no puede dejarlo peor que antes').toBeGreaterThanOrEqual(primera)
+  })
+
+  it('pero si la recuperación mejora, la nota sube', () => {
+    const acts = [
+      { id: 1, ra_id: 'RA1', tipo: 'examen', peso: 100, nota_max: 10, eval: 1, convocatoria: 1, ces: ['RA1|CR1', 'RA1|CR2'] },
+      { id: 2, ra_id: 'RA1', tipo: 'examen', peso: 100, nota_max: 10, eval: 1, convocatoria: 2, ces: ['RA1|CR1', 'RA1|CR2'] },
+    ]
+    const notas = { 1: 3, 2: 8 }
+    expect(estado(acts, notas, 1).porRA.RA1.nota).toBe(3)
+    expect(estado(acts, notas, 2).porRA.RA1.nota).toBe(8)
+  })
+
+  it('el mínimo de examen tampoco reaparece si mandaba la primera', () => {
+    const acts = [
+      { id: 1, ra_id: 'RA1', tipo: 'examen', peso: 100, nota_max: 10, eval: 1, convocatoria: 1, ces: ['RA1|CR1'] },
+      { id: 2, ra_id: 'RA1', tipo: 'examen', peso: 100, nota_max: 10, eval: 1, convocatoria: 2, ces: ['RA1|CR1'] },
+    ]
+    const ctx = M.contextoModulo({ ras, cesByRa: { RA1: [{ id: 'CR1' }] }, asignaciones: [],
+      actividades: acts, minExam: 5, rasSuperados: null, tieneFaseEmpresa: false, convocatoria: 2 })
+    const st = M.estadoModulo(ctx, { 1: 8, 2: 2 })
+    expect(st.porRA.RA1.nota).toBe(8)
+    expect(st.porRA.RA1.minKO, 'el examen bueno es el de la 1ª, no puede quedar KO').toBe(false)
+  })
+})

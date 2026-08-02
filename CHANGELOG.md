@@ -1,5 +1,35 @@
 # Changelog
 
+## 3.12.0 · Cuarta auditoría
+
+Esta vez no se ha revisado el código: se ha atacado. Trece mil combinaciones al azar contra
+las reglas de la Orden, deshacer la programación después de calificar y teclear lo que se
+teclea de verdad. Seis hallazgos, dos de ellos con efecto directo en la nota de un alumno. El
+detalle está en AUDITORIA_CUARTA.md.
+
+### Presentarse a la recuperación ya no puede salir caro
+
+La nota de un RA en 2ª convocatoria podía quedar por debajo de la que ya se tenía, si la
+prueba de junio evaluaba un criterio que durante el curso no llegó a calificarse. Bastaba con
+marcar «todos» los criterios al crear la prueba. Va contra el art. 4.3.f y ya no ocurre.
+
+### «7,5» son siete y medio
+
+La coma decimal —que es como se escribe un número en español— se perdía: la nota se guardaba
+como 7, o se borraba, según el idioma del sistema.
+
+### Las actividades que se quedan sin resultado de aprendizaje se avisan
+
+Al quitar un RA de la programación, las actividades que lo calificaban seguían en la parrilla
+con sus notas puestas, sin contar para nada y sin decirlo. Los criterios borrados, además, se
+limpian solos de las actividades.
+
+### Y además
+
+La importación de la lista de clase ya no revienta si hay una fila todavía en blanco, y admite
+listas pegadas con tabuladores o punto y coma. La base de datos defiende sus propios límites:
+ponderaciones fuera de 0-100, pesos negativos, escalas de cero y evaluaciones inexistentes.
+
 ## 3.11.0 · Tercera auditoría
 
 Diez hallazgos en los ángulos que las dos auditorías anteriores no habían tocado. El detalle

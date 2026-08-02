@@ -260,3 +260,54 @@ describe('Accesibilidad de los formularios', () => {
     expect(sin, `campos que un lector de pantalla no sabe nombrar: ${sin.join(', ')}`).toEqual([])
   })
 })
+
+describe('Importar la lista de clase', () => {
+  // El bloque se prueba tal cual está escrito: se extrae del archivo y se
+  // ejecuta con un alumnado de mentira, para que el test siga al código.
+  function importar(texto, yaMatriculados) {
+    const src = leer('renderer/js/modules/alumnos.js')
+    const ini = src.indexOf('const lines = txt.split(')
+    const fin = src.indexOf('if (isDuplicate) { skipped++; continue }', ini)
+    const bloque = src.slice(ini, fin + 40)
+    const salida = []
+    const context = {
+      txt: texto,
+      _alumnos: yaMatriculados,
+      resultado: salida,
+      console,
+    }
+    // El fragmento acaba dentro del bucle: hay que cerrarlo al reconstruirlo.
+    const cuerpo = bloque.replace(
+      'if (isDuplicate) { skipped++; continue }',
+      'if (isDuplicate) { skipped++; continue }\n      resultado.push({ apellidos, nombre })')
+    vm.runInNewContext(`${cuerpo}\n    }`, context)
+    return salida
+  }
+
+  it('acepta comas, tabuladores y punto y coma', () => {
+    // Las listas se pegan de una hoja de cálculo, de Delphos o de un correo.
+    const filas = importar('Gil Ruiz, Sara\nPérez Mora\tIván\nSoto Gil;Ana', [])
+    expect(filas).toEqual([
+      { apellidos: 'Gil Ruiz', nombre: 'Sara' },
+      { apellidos: 'Pérez Mora', nombre: 'Iván' },
+      { apellidos: 'Soto Gil', nombre: 'Ana' },
+    ])
+  })
+
+  it('no se cae si en la clase hay una fila todavía en blanco', () => {
+    // Pulsar «añadir alumno» deja una fila sin nombre. Comparar con ella para
+    // detectar duplicados reventaba la importación entera.
+    const filas = importar('Gil Ruiz, Sara', [{ apellidos: null, nombre: null }])
+    expect(filas).toEqual([{ apellidos: 'Gil Ruiz', nombre: 'Sara' }])
+  })
+
+  it('ignora las líneas vacías y las de solo espacios', () => {
+    const filas = importar('Gil Ruiz, Sara\n\n   \n  \t \nSoto Gil, Ana\n', [])
+    expect(filas.length).toBe(2)
+  })
+
+  it('salta a quien ya está, sin mirar mayúsculas ni espacios', () => {
+    const filas = importar('gil ruiz ,  SARA ', [{ apellidos: 'Gil Ruiz', nombre: 'Sara' }])
+    expect(filas).toEqual([])
+  })
+})

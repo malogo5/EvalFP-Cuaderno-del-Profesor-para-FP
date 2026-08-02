@@ -369,20 +369,23 @@ async function confirmImportAlumnos() {
 
   document.getElementById('dlg-import-alumnos').close()
   try {
-    const lines = txt.trim().split('\n').filter(Boolean)
+    const lines = txt.split(/\r?\n/).map(l => l.trim()).filter(l => l !== '')
     const maxNum = _alumnos.reduce((m, a) => Math.max(m, a.num || 0), 0)
     let imported = 0
     let skipped  = 0
     for (let i = 0; i < lines.length; i++) {
-      const parts = lines[i].split(',').map(s => s.trim())
+      // Las listas llegan pegadas de sitios distintos: de una hoja de cálculo
+      // vienen con tabulador, de Delphos con coma y a veces con punto y coma.
+      const parts = lines[i].split(/[\t;,]/).map(s => s.trim())
       const apellidos = parts[0] || ''
       const nombre = parts[1] || ''
+      if (!apellidos && !nombre) { skipped++; continue }
 
-      // Detectar duplicado: mismo apellidos+nombre ya en el módulo
-      const isDuplicate = _alumnos.some(a =>
-        a.apellidos.toLowerCase() === apellidos.toLowerCase() &&
-        a.nombre.toLowerCase()    === nombre.toLowerCase()
-      )
+      // Detectar duplicado: mismo apellidos+nombre ya en el módulo. Ojo con las
+      // filas todavía en blanco —las que se crean al pulsar «añadir»—: sus
+      // apellidos son null y comparar sin más rompía la importación entera.
+      const igual = (a, b) => String(a || '').trim().toLowerCase() === String(b || '').trim().toLowerCase()
+      const isDuplicate = _alumnos.some(a => igual(a.apellidos, apellidos) && igual(a.nombre, nombre))
       if (isDuplicate) { skipped++; continue }
 
       // Con el máximo, no con el recuento: si se ha dado de baja a alguien de

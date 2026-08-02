@@ -250,6 +250,27 @@ function estadoModulo(ctx, notasAl, opts) {
     let n = notaRA(ra.id, ceLst, ctx.actividades, notasAl, ctx.PRAC, ctx.EXAM, ctx.asigs,
                    ctx.convocatoria, o.notaCEOverride)
     let minKO = raMinExamKO(ra.id, ceLst, ctx.actividades, notasAl, ctx.minExam, ctx.asigs, ctx.convocatoria)
+
+    // «Presentarse a la recuperación no puede salir caro» (art. 4.3.f, que
+    // prohíbe volver a evaluar un RA superado). El cálculo por criterio ya se
+    // queda con la mejor nota de cada uno, pero se le escapaba un caso: si la
+    // prueba de junio evalúa un criterio que durante el curso no llegó a
+    // calificarse, ese criterio nuevo entra en la media del RA y podía hundir
+    // uno que estaba en 9. Pasaba con solo marcar «todos» los criterios al crear
+    // la prueba, que es lo más cómodo de hacer. Así que la nota de la 2ª
+    // convocatoria nunca puede quedar por debajo de la que ya había.
+    if (ctx.convocatoria >= 2) {
+      const n1 = notaRA(ra.id, ceLst, ctx.actividades, notasAl, ctx.PRAC, ctx.EXAM, ctx.asigs, 1)
+      // El «igual» importa: si las dos convocatorias dan la misma nota, la que
+      // vale es la del curso. Con un 8 en el examen de mayo y un 2 en el de
+      // junio, la nota se quedaba en 8 —bien— pero el mínimo de examen miraba
+      // el de junio y dejaba el RA sin alcanzar. Un 8 y un RA suspenso a la vez.
+      if (n1 !== null && (n === null || n1 >= n)) {
+        n = n1
+        minKO = raMinExamKO(ra.id, ceLst, ctx.actividades, notasAl, ctx.minExam, ctx.asigs, 1)
+      }
+    }
+
     if (o.notaRAOverride) n = o.notaRAOverride(ra, n)
     if (o.minKOOverride)  minKO = o.minKOOverride(ra, minKO)
 

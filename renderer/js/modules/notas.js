@@ -276,6 +276,12 @@ async function abrirEvidencia(ruta) {
   }
 }
 
+/** «7,5» → «7.5». El resto se deja tal cual para que la validación lo rechace. */
+function _conPunto(valor) {
+  const t = String(valor == null ? '' : valor).trim()
+  return t.includes(',') && !t.includes('.') ? t.replace(',', '.') : t
+}
+
 async function onNotaChange(el) {
   function updateMediaFila(aid) {
   const { ev, acts } = _vistaNotas()
@@ -308,7 +314,11 @@ async function onNotaChange(el) {
 }
   const aid = parseInt(el.dataset.aid)
   const actId = parseInt(el.dataset.actid)
-  const val = el.value.trim()
+  // Aquí se escribe «7,5», que es como se escribe un número en español. Según el
+  // idioma del sistema, el campo numérico devolvía 7 —medio punto perdido sin
+  // avisar— o directamente vacío, borrando la nota. Se normaliza antes de nada.
+  const val = _conPunto(el.value)
+  if (el.value.trim() !== val) el.value = val
   const esRec = el.dataset.rec === '1'
   const previous = esRec
     ? _notasRec[aid]?.[actId] ?? null

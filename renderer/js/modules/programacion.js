@@ -1089,9 +1089,23 @@ function _getModData(mid) {
 }
 
 async function _saveModData(mid, data, reload) {
-  await window.api.setModuloDataJson(parseInt(mid), data)
+  const r = await window.api.setModuloDataJson(parseInt(mid), data)
   _modulos = await window.api.getModulos()
   showSaved()
+  // Quitar un RA de la programación deja sin dueño a las actividades que lo
+  // calificaban. Siguen en la parrilla con sus notas puestas, pero ya no cuentan
+  // para nada: quien las metió da por hecho que sí. No se pueden borrar solas
+  // —son notas—, así que al menos hay que decirlo.
+  if (r && r.huerfanas && r.huerfanas.length) {
+    const lista = r.huerfanas.slice(0, 8).map(a => `· ${a.descripcion || '(sin descripción)'} (${a.ra_id})`).join('\n')
+    const mas = r.huerfanas.length > 8 ? `\n… y ${r.huerfanas.length - 8} más.` : ''
+    alert(
+      `Has quitado de la programación un resultado de aprendizaje que todavía califican ` +
+      `${r.huerfanas.length === 1 ? 'esta actividad' : 'estas ' + r.huerfanas.length + ' actividades'}:\n\n` +
+      lista + mas +
+      `\n\nSus notas siguen guardadas, pero ya no cuentan para ningún resultado de aprendizaje. ` +
+      `Asígnalas a otro o bórralas desde la pestaña de Programación.`)
+  }
   if (reload) loadProgramacion()
 }
 

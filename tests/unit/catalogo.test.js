@@ -104,3 +104,26 @@ describe('Catálogo de módulos de Castilla-La Mancha', () => {
     expect(faltas).toEqual([])
   })
 })
+
+describe('Reglas que dependen del tipo de enseñanza', () => {
+  it('todos los módulos tienen horas para calcular el porcentaje de faltas', () => {
+    // Sin horas, el porcentaje de absentismo sale 0 para todo el mundo y el
+    // aviso del 25 % (art. 3.3) no salta nunca, en silencio.
+    const sin = modulos.filter(([, m]) => {
+      const mo = m.modulo || {}
+      return !(mo.horas_aula || mo.total_horas || mo.horas)
+    }).map(([k]) => k)
+    expect(sin).toEqual([])
+  })
+
+  it('el nivel de enseñanza está puesto y es uno de los conocidos', () => {
+    // De él dependen dos reglas: cuántas convocatorias hay (art. 8.2, cuatro en
+    // grado D y dos en grado E) y si se puede perder la evaluación continua,
+    // que en grado básico no aplica (art. 3.4).
+    const conocidos = new Set(['CFGB', 'CFGM', 'CFGS', 'CE'])
+    const raros = modulos
+      .filter(([, m]) => !conocidos.has(String(m.modulo?.ciclo_nivel || '').toUpperCase()))
+      .map(([k, m]) => `${k}: ${m.modulo?.ciclo_nivel}`)
+    expect(raros).toEqual([])
+  })
+})

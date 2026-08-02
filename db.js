@@ -642,10 +642,27 @@ const getActividades = (moduloId, convocatoria = null) =>
     : getDb().prepare('SELECT * FROM actividades WHERE modulo_id=? AND convocatoria=? ORDER BY eval,orden')
         .all(moduloId, Number(convocatoria))
 
+/**
+ * Deja los números de una actividad dentro de lo que tiene sentido.
+ *
+ * Un peso negativo resta de la media en vez de sumar; una escala de 0 hace que
+ * cualquier nota valga infinito al pasarla a base 10; una evaluación 99 crea una
+ * columna que ninguna pantalla enseña, con notas dentro. La interfaz ya lo
+ * comprueba, pero la base tiene que ser la última línea, no la única.
+ */
+function _saneaActividad(a) {
+  const num = (v, def) => { const n = Number(v); return isFinite(n) ? n : def }
+  const peso = Math.max(0, Math.min(100, num(a.peso, 0)))
+  const notaMax = Math.max(0.1, Math.min(100, num(a.nota_max, 10)))
+  const evalNum = Math.max(1, Math.min(3, Math.round(num(a.eval, 1))))
+  return { peso, notaMax, evalNum }
+}
+
 function saveActividad(a) {
   const db = getDb()
   // `ces` llega como array desde el modal de criterios; se persiste como JSON
   const cesJson = Array.isArray(a.ces) ? JSON.stringify(a.ces) : (a.ces ?? '[]')
+  const { peso, notaMax, evalNum } = _saneaActividad(a)
   // COALESCE en convocatoria: quien no la manda (todas las pantallas antiguas)
   // no debe cambiar de convocatoria una actividad por guardar su descripción.
   const conv = a.convocatoria == null ? null : Number(a.convocatoria)
@@ -653,15 +670,15 @@ function saveActividad(a) {
     db.prepare(`UPDATE actividades SET descripcion=?,instrumento=COALESCE(?,instrumento),
         tipo=COALESCE(?,tipo),peso=?,nota_max=?,eval=?,ut_id=?,ra_id=?,ces=?,orden=?,
         convocatoria=COALESCE(?,convocatoria) WHERE id=?`)
-      .run(a.descripcion, a.instrumento ?? null, a.tipo ?? null, a.peso, a.nota_max,
-           a.eval??1, a.ut_id??null, a.ra_id??null, cesJson, a.orden??0, conv, a.id)
+      .run(a.descripcion, a.instrumento ?? null, a.tipo ?? null, peso, notaMax,
+           evalNum, a.ut_id??null, a.ra_id??null, cesJson, a.orden??0, conv, a.id)
     return a.id
   }
   return Number(db.prepare(`INSERT INTO actividades
     (modulo_id,ut_id,ra_id,descripcion,instrumento,tipo,peso,nota_max,eval,orden,ces,convocatoria)
     VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`)
     .run(a.modulo_id,a.ut_id,a.ra_id,a.descripcion,a.instrumento,
-         a.tipo,a.peso,a.nota_max,a.eval,a.orden,cesJson, conv ?? 1).lastInsertRowid)
+         a.tipo,peso,notaMax,evalNum,a.orden,cesJson, conv ?? 1).lastInsertRowid)
 }
 
 // ── Notas ──────────────────────────────────────────────────────────────────────
@@ -674,8 +691,20 @@ function getNotasGrid(moduloId) {
   `).all(moduloId)
 }
 
+/**
+ * Convierte a número lo que llegue como nota, admitiendo la coma decimal.
+ *
+ * En español se escribe «7,5». Con `parseFloat` eso valía 7: medio punto perdido
+ * y sin avisar a nadie.
+ */
+function _numeroDeNota(v) {
+  if (v === '' || v === null || v === undefined) return null
+  const t = String(v).trim()
+  return parseFloat(t.includes(',') && !t.includes('.') ? t.replace(',', '.') : t)
+}
+
 function saveNota(alumnoId, actividadId, nota) {
-  const val = nota === '' || nota === null ? null : parseFloat(nota)
+  const val = _numeroDeNota(nota)
   // La escala la valida la interfaz contra `nota_max`, pero la base es la última
   // línea: por IPC se podía guardar un 99 y arrastrarlo a todas las medias.
   if (val !== null && (isNaN(val) || val < 0 || val > 20)) {
@@ -692,7 +721,7 @@ function saveNota(alumnoId, actividadId, nota) {
 // Nota de recuperación: se guarda aparte de la nota original, sin sobreescribirla.
 // Si la actividad todavía no tiene fila en `notas`, se crea con nota=NULL.
 function saveNotaRec(alumnoId, actividadId, notaRec) {
-  const val = notaRec === '' || notaRec === null ? null : parseFloat(notaRec)
+  const val = _numeroDeNota(notaRec)
   if (val !== null && (isNaN(val) || val < 0 || val > 20)) {
     throw new Error(`Nota de recuperación fuera de rango: ${notaRec}`)
   }
@@ -727,15 +756,70 @@ const getRaPonderaciones = moduloId =>
   getDb().prepare('SELECT ra_id, pond FROM ra_ponderaciones WHERE modulo_id=?').all(moduloId)
 
 function setRaPonderacion(moduloId, raId, pond) {
+  // Una ponderación de 1000 o de «mucho» descuadra la media de todo el módulo.
+  const n = Number(pond)
+  const limpia = isFinite(n) ? Math.max(0, Math.min(100, n)) : 0
   getDb().prepare(`
     INSERT INTO ra_ponderaciones (modulo_id, ra_id, pond) VALUES (?,?,?)
     ON CONFLICT (modulo_id, ra_id) DO UPDATE SET pond=excluded.pond
-  `).run(moduloId, raId, pond)
+  `).run(moduloId, raId, limpia)
 }
 
 // ── Modulo data_json (edición UT/RA/CE) ───────────────────────────────────────
+
+/**
+ * Guarda la programación y deja las actividades en consonancia con ella.
+ *
+ * Al quitar un criterio o un RA de la programación, las actividades seguían
+ * apuntando a lo que ya no existía:
+ *
+ *  · un criterio fantasma se quedaba marcado en la actividad, invisible, y
+ *    reaparecía solo si alguien volvía a crear un criterio con ese mismo id;
+ *  · una actividad cuyo RA desaparecía se quedaba sin calificar nada, pero
+ *    seguía en la parrilla con sus notas puestas: quien las metió da por hecho
+ *    que cuentan, y no cuentan.
+ *
+ * Lo primero se limpia sin más, que no se pierde nada. Lo segundo no se puede
+ * arreglar solo —hay notas de por medio—, así que se devuelve para que la
+ * pantalla lo diga.
+ *
+ * @returns {{criteriosLimpiados: number, huerfanas: Array<{id:number, descripcion:string, ra_id:string}>}}
+ */
 function setModuloDataJson(id, dataJson) {
-  getDb().prepare('UPDATE modulos SET data_json=? WHERE id=?').run(JSON.stringify(dataJson), id)
+  const db = getDb()
+  db.prepare('UPDATE modulos SET data_json=? WHERE id=?').run(JSON.stringify(dataJson), id)
+
+  const data = dataJson && typeof dataJson === 'object' ? dataJson : {}
+  const raIds = new Set((data.ras || []).map(r => String(r.id)))
+  const validas = new Set()
+  for (const [ra, lst] of Object.entries(data.ces || {})) {
+    for (const ce of lst || []) validas.add(`${ra}|${ce.id}`)
+  }
+
+  let criteriosLimpiados = 0
+  const huerfanas = []
+  const acts = db.prepare('SELECT id, ra_id, descripcion, ces FROM actividades WHERE modulo_id=?').all(id)
+  const upd = db.prepare('UPDATE actividades SET ces=? WHERE id=?')
+  for (const a of acts) {
+    let lista = []
+    try { lista = JSON.parse(a.ces || '[]') } catch { lista = [] }
+    if (Array.isArray(lista) && lista.length) {
+      // Solo se tocan las claves compuestas RA|CE: un id suelto es de una base
+      // antigua y lo resuelve su propia migración.
+      const limpia = lista.filter(k => !String(k).includes('|') || validas.has(String(k)))
+      if (limpia.length !== lista.length) {
+        criteriosLimpiados += lista.length - limpia.length
+        upd.run(JSON.stringify(limpia), a.id)
+      }
+    }
+    if (a.ra_id && !raIds.has(String(a.ra_id))) {
+      huerfanas.push({ id: a.id, descripcion: a.descripcion, ra_id: a.ra_id })
+    }
+  }
+  if (criteriosLimpiados) {
+    console.log(`[db] ${criteriosLimpiados} criterio(s) que ya no existen, quitados de las actividades.`)
+  }
+  return { criteriosLimpiados, huerfanas }
 }
 
 const deleteActividad = id => getDb().prepare('DELETE FROM actividades WHERE id=?').run(id)

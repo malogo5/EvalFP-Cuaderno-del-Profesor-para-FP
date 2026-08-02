@@ -437,3 +437,118 @@ describe.skipIf(!sqliteDisponible)('Empezar un curso escolar nuevo', () => {
     expect(db.getAlumnos(b).length).toBe(0)
   })
 })
+
+// ── Tests: cambiar la programación con notas ya puestas (A7) ─────────────────
+describe.skipIf(!sqliteDisponible)('Editar la programación después de calificar', () => {
+  function moduloConCriterios(sufijo) {
+    const data = {
+      modulo: { eval_count: 3 },
+      uts: [{ id: 'UT1', nombre: 'U1', eval: 1, horas: 10 }],
+      ras: [{ id: 'RA1', nombre: 'R1', pond: 50 }, { id: 'RA2', nombre: 'R2', pond: 50 }],
+      ces: { RA1: [{ id: 'CR1', texto: 'a' }, { id: 'CR2', texto: 'b' }], RA2: [{ id: 'CR1', texto: 'c' }] },
+      asignaciones: [{ ut: 'UT1', ra: 'RA1', ces: ['CR1', 'CR2'] }],
+      eval_ras: {}, ra_instrumentos: {},
+    }
+    const id = db.addModulo({
+      ...MODULO_FIXTURE, key: `MOD_PROG_${sufijo}`, data,
+      actividades: [
+        { ut_id: 'UT1', ra_id: 'RA1', descripcion: 'Examen', instrumento: 'E', tipo: 'examen',
+          peso: 100, nota_max: 10, eval: 1, orden: 1, ces: ['RA1|CR1', 'RA1|CR2'] },
+        { ut_id: 'UT1', ra_id: 'RA2', descripcion: 'Trabajo', instrumento: 'T', tipo: 'practica',
+          peso: 100, nota_max: 10, eval: 1, orden: 2, ces: ['RA2|CR1'] },
+      ],
+    })
+    return { id, data }
+  }
+
+  it('quitar un criterio lo borra de las actividades que lo evaluaban', () => {
+    // Si no, queda marcado por dentro, invisible, y reaparece el día que alguien
+    // crea otro criterio con el mismo identificador.
+    const { id, data } = moduloConCriterios(`CE_${Date.now()}`)
+    data.ces.RA1 = [{ id: 'CR1', texto: 'a' }]
+    data.asignaciones[0].ces = ['CR1']
+    const r = db.setModuloDataJson(id, data)
+    expect(r.criteriosLimpiados).toBe(1)
+    const marcados = db.getActividades(id).flatMap(a => JSON.parse(a.ces || '[]'))
+    expect(marcados).not.toContain('RA1|CR2')
+    expect(marcados).toContain('RA1|CR1')
+  })
+
+  it('quitar un RA avisa de las actividades que se quedan sin dueño', () => {
+    // No se pueden borrar solas: llevan notas. Pero callarlo es peor, porque
+    // siguen en la parrilla como si contaran.
+    const { id, data } = moduloConCriterios(`RA_${Date.now()}`)
+    data.ras = data.ras.filter(r => r.id !== 'RA2')
+    delete data.ces.RA2
+    const r = db.setModuloDataJson(id, data)
+    expect(r.huerfanas.length).toBe(1)
+    expect(r.huerfanas[0].ra_id).toBe('RA2')
+    expect(r.huerfanas[0].descripcion).toBe('Trabajo')
+  })
+
+  it('no toca nada cuando la programación no ha cambiado', () => {
+    const { id, data } = moduloConCriterios(`IG_${Date.now()}`)
+    const r = db.setModuloDataJson(id, data)
+    expect(r.criteriosLimpiados).toBe(0)
+    expect(r.huerfanas).toEqual([])
+  })
+})
+
+// ── Tests: lo que se teclea de verdad (A8) ────────────────────────────────────
+describe.skipIf(!sqliteDisponible)('Entradas que llegan del teclado', () => {
+  function moduloSimple(sufijo) {
+    const id = db.addModulo({
+      ...MODULO_FIXTURE, key: `MOD_HOSTIL_${sufijo}`,
+      actividades: [{ ut_id: 'UT1', ra_id: 'RA1', descripcion: 'T', instrumento: 'P',
+        tipo: 'practica', peso: 100, nota_max: 10, eval: 1, orden: 1, ces: [] }],
+    })
+    return { id, actId: db.getActividades(id)[0].id }
+  }
+
+  it('«7,5» son siete y medio, no siete', () => {
+    // En español la coma es el separador decimal. Con parseFloat, «7,5» valía 7:
+    // medio punto perdido en silencio, y en una nota media eso se nota.
+    const { id, actId } = moduloSimple(`COMA_${Date.now()}`)
+    const alu = db.saveAlumno({ ...ALUMNO_FIXTURE(id) })
+    db.saveNota(alu, actId, '7,5')
+    const guardada = db.getNotasGrid(id).find(n => n.alumno_id === alu)?.nota
+    expect(guardada).toBe(7.5)
+  })
+
+  it('una nota imposible se rechaza, venga como venga', () => {
+    const { id, actId } = moduloSimple(`RANGO_${Date.now()}`)
+    const alu = db.saveAlumno({ ...ALUMNO_FIXTURE(id) })
+    for (const mala of [99, -5, NaN, Infinity]) {
+      expect(() => db.saveNota(alu, actId, mala), `admitió ${mala}`).toThrow()
+    }
+  })
+
+  it('la ponderación de un RA se queda entre 0 y 100', () => {
+    const { id } = moduloSimple(`POND_${Date.now()}`)
+    for (const [entra, sale] of [[1000, 100], [-20, 0], ['mucho', 0], ['35', 35]]) {
+      db.setRaPonderacion(id, 'RA1', entra)
+      const g = db.getRaPonderaciones(id).find(r => r.ra_id === 'RA1')
+      expect(g.pond, `con ${JSON.stringify(entra)}`).toBe(sale)
+    }
+  })
+
+  it('una actividad no puede tener peso negativo, escala cero ni evaluación 99', () => {
+    // Peso negativo resta de la media; escala 0 hace que cualquier nota valga
+    // infinito al pasarla a base 10; evaluación 99 esconde la columna y sus notas.
+    const { id } = moduloSimple(`ACT_${Date.now()}`)
+    const nueva = db.saveActividad({ modulo_id: id, ut_id: 'UT1', ra_id: 'RA1', descripcion: 'Rara',
+      instrumento: 'P', tipo: 'practica', peso: -50, nota_max: 0, eval: 99, orden: 1, ces: [] })
+    const a = db.getActividades(id).find(x => x.id === nueva)
+    expect(a.peso).toBeGreaterThanOrEqual(0)
+    expect(a.nota_max).toBeGreaterThan(0)
+    expect(a.eval).toBeLessThanOrEqual(3)
+  })
+
+  it('los nombres raros se guardan tal cual', () => {
+    const { id } = moduloSimple(`NOM_${Date.now()}`)
+    for (const ape of ['Ó\'Brien "El Grande"', '<script>alert(1)</script>', 'Ñ'.repeat(300)]) {
+      const alu = db.saveAlumno({ modulo_id: id, num: 1, apellidos: ape, nombre: 'X', estado: 'Activo' })
+      expect(db.getAlumnos(id).find(a => a.id === alu).apellidos).toBe(ape)
+    }
+  })
+})
