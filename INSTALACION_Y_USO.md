@@ -32,6 +32,9 @@ Dock sigue apuntando a la copia anterior aunque la hayas sustituido.
 El mismo `.exe` sirve para cualquier Windows 11: puedes copiarlo a otro equipo sin repetir
 nada.
 
+Los dos avisos, el de macOS y el de Windows, se quitan firmando los instaladores. Qué hace
+falta y cómo se compila entonces está en [FIRMA.md](FIRMA.md).
+
 ## Python: solo para la IA
 
 El cuaderno entero —módulos, alumnado, notas, evaluaciones, actas, boletines— funciona sin

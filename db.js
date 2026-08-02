@@ -16,10 +16,10 @@ let _db = null
  * `evalfp.db` (backend sin SQLite). Al volver a SQLite, `new DatabaseSync()`
  * sobre ese fichero falla con «file is not a database» y la app no arranca.
  *
- * Esta función detecta ese caso: si el fichero existe y NO empieza por la
- * cabecera «SQLite format 3», lo aparta con nombre `evalfp-json-legacy-*.json`
- * (nunca lo borra) y devuelve su contenido para reimportarlo.
- * Devuelve null si no hay nada que migrar.
+ * Aquel formato dejó de existir hace muchas versiones y su reimportación ya no
+ * se mantiene: lo que queda es la red de seguridad. Si aparece un fichero así,
+ * se aparta —nunca se borra— y se dice en claro qué ha pasado y dónde está,
+ * en vez de dejar la aplicación muerta con un error de SQLite.
  */
 function _apartarJsonLegacy(dbPath) {
   if (!fs.existsSync(dbPath)) return null
@@ -33,81 +33,27 @@ function _apartarJsonLegacy(dbPath) {
   } catch { return null }
   if (cabecera.startsWith('SQLite format 3')) return null   // BD SQLite correcta
 
-  // No es SQLite: apartar el fichero y intentar leerlo como JSON
   const respaldo = path.join(
     path.dirname(dbPath),
     `evalfp-json-legacy-${new Date().toISOString().replace(/[:.]/g, '-')}.json`
   )
-  let datos = null
-  try { datos = JSON.parse(fs.readFileSync(dbPath, 'utf8')) } catch { datos = null }
   try { fs.renameSync(dbPath, respaldo) } catch { return null }
   // Limpiar posibles ficheros WAL/SHM huérfanos del intento anterior
   for (const ext of ['-wal', '-shm']) {
     try { fs.unlinkSync(dbPath + ext) } catch { /* no existen */ }
   }
-  console.log(`[db] Fichero no-SQLite apartado en ${path.basename(respaldo)}` +
-              (datos ? ' · se reimportarán sus datos' : ' · no se pudo leer como JSON'))
-  return datos
-}
-
-/** Reimporta a SQLite los datos del backend JSON legacy. */
-function _importarJsonLegacy(d) {
-  if (!d || typeof d !== 'object') return
-  const n = v => (v === undefined ? null : v)
-  const tx = () => {
-    for (const m of d.modulos || []) {
-      _db.prepare(`INSERT OR IGNORE INTO modulos
-        (id,key,abrev,nombre,ciclo,curso,anno,grupo,horas,decreto,data_json,activo)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`)
-        .run(n(m.id), n(m.key), n(m.abrev), n(m.nombre), n(m.ciclo), n(m.curso), n(m.anno),
-             n(m.grupo) ?? 'Grupo A', n(m.horas) ?? 0, n(m.decreto),
-             typeof m.data_json === 'string' ? m.data_json : JSON.stringify(m.data_json ?? null),
-             n(m.activo) ?? 1)
-    }
-    for (const a of d.alumnos || []) {
-      _db.prepare(`INSERT OR IGNORE INTO alumnos
-        (id,modulo_id,num,apellidos,nombre,nia,fecha_nacim,email,telefono,estado,observaciones)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?)`)
-        .run(n(a.id), n(a.modulo_id), n(a.num), n(a.apellidos), n(a.nombre), n(a.nia),
-             n(a.fecha_nacim), n(a.email), n(a.telefono), n(a.estado) ?? 'Activo', n(a.observaciones))
-    }
-    for (const a of d.actividades || []) {
-      _db.prepare(`INSERT OR IGNORE INTO actividades
-        (id,modulo_id,ut_id,ra_id,descripcion,instrumento,tipo,peso,nota_max,eval,orden,ces)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`)
-        .run(n(a.id), n(a.modulo_id), n(a.ut_id), n(a.ra_id), n(a.descripcion), n(a.instrumento),
-             n(a.tipo), n(a.peso) ?? 0, n(a.nota_max) ?? 10, n(a.eval) ?? 1, n(a.orden) ?? 0,
-             typeof a.ces === 'string' ? a.ces : JSON.stringify(a.ces ?? []))
-    }
-    for (const nt of d.notas || []) {
-      _db.prepare(`INSERT OR IGNORE INTO notas
-        (id,alumno_id,actividad_id,nota,fecha,observaciones,nota_rec)
-        VALUES (?,?,?,?,?,?,?)`)
-        .run(n(nt.id), n(nt.alumno_id), n(nt.actividad_id), n(nt.nota), n(nt.fecha),
-             n(nt.observaciones), n(nt.nota_rec))
-    }
-    for (const r of d.ra_ponderaciones || []) {
-      _db.prepare('INSERT OR IGNORE INTO ra_ponderaciones (modulo_id,ra_id,pond) VALUES (?,?,?)')
-        .run(n(r.modulo_id), n(r.ra_id), n(r.pond))
-    }
-    for (const [k, v] of Object.entries(d.config || {})) {
-      _db.prepare('INSERT OR REPLACE INTO config (key,value) VALUES (?,?)').run(k, String(v))
-    }
-  }
-  try {
-    _db.exec('BEGIN'); tx(); _db.exec('COMMIT')
-    console.log(`[db] Datos legacy reimportados: ${(d.modulos||[]).length} módulos · ` +
-                `${(d.alumnos||[]).length} alumnos · ${(d.notas||[]).length} notas`)
-  } catch (e) {
-    try { _db.exec('ROLLBACK') } catch { /* sin transacción activa */ }
-    console.error('[db] No se pudieron reimportar los datos legacy:', e.message)
-  }
+  console.warn(
+    `[db] El fichero evalfp.db era de una versión muy anterior de EvalFP y no es una base ` +
+    `de datos SQLite. Se ha apartado sin tocarlo en ${path.basename(respaldo)} y se ha creado ` +
+    `una base nueva y vacía. Sus datos siguen ahí: para recuperarlos hace falta una versión ` +
+    `3.x anterior a la 3.10.0, que todavía sabía leer aquel formato.`)
+  return respaldo
 }
 
 function getDb() {
   if (_db) return _db
   const dbPath = path.join(app.getPath('userData'), 'evalfp.db')
-  const legacy = _apartarJsonLegacy(dbPath)
+  _apartarJsonLegacy(dbPath)
   _db = new DatabaseSync(dbPath)
   _db.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;')
   _initSchema()
@@ -149,8 +95,6 @@ function getDb() {
   if (fuera && fuera.n > 0) {
     console.warn(`[db] ${fuera.n} nota(s) fuera del rango 0-10; se dejan como están para no perder datos.`)
   }
-
-  if (legacy) _importarJsonLegacy(legacy)
 
   _migrarCalificacionesCE()
   _migrarCesDeActividades()

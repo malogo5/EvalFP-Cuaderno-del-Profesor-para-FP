@@ -379,3 +379,31 @@ describe.skipIf(!sqliteDisponible)('Un módulo, varios grupos', () => {
     expect(db.getAlumnos(b).length).toBe(0)
   })
 })
+
+// ── Tests: fichero heredado que no es SQLite ──────────────────────────────────
+describe.skipIf(!sqliteDisponible)('Base de datos de una versión muy anterior', () => {
+  it('aparta el fichero JSON en vez de dejar la aplicación muerta', () => {
+    // Una versión intermedia guardaba `evalfp.db` como JSON. `DatabaseSync`
+    // sobre ese fichero lanza «file is not a database» y la app no arranca.
+    // La reimportación ya no se mantiene, pero el fichero no puede perderse ni
+    // el arranque puede caerse sin explicación.
+    const dir    = path.join(os.tmpdir(), `evalfp-test-${process.pid}`)
+    const dbPath = path.join(dir, 'evalfp.db')
+
+    db.closeDb()
+    const copia = fs.existsSync(dbPath) ? fs.readFileSync(dbPath) : null
+    fs.writeFileSync(dbPath, JSON.stringify({ modulos: [], alumnos: [], notas: [] }))
+
+    expect(() => db.getModulos()).not.toThrow()
+
+    const apartados = fs.readdirSync(dir).filter(f => f.startsWith('evalfp-json-legacy-'))
+    expect(apartados.length, 'el fichero heredado tiene que conservarse').toBeGreaterThan(0)
+    const guardado = JSON.parse(fs.readFileSync(path.join(dir, apartados[0]), 'utf8'))
+    expect(guardado).toHaveProperty('modulos')
+
+    // Devolver la base de test a su sitio para el resto de la suite
+    db.closeDb()
+    apartados.forEach(f => fs.unlinkSync(path.join(dir, f)))
+    if (copia) fs.writeFileSync(dbPath, copia)
+  })
+})

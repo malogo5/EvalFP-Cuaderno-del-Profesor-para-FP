@@ -1,6 +1,6 @@
 # Hoja de ruta de EvalFP
 
-> **Estado: 3.9.0** — aplicación de escritorio (Electron + SQLite), catálogo completo de
+> **Estado: 3.10.0** — aplicación de escritorio (Electron + SQLite), catálogo completo de
 > Castilla-La Mancha, auditoría integral cerrada y auditoría en vivo (17 incidencias)
 > también cerrada. Agosto de 2026.
 
@@ -33,15 +33,13 @@ historial de git, en los commits anteriores a la 3.7.0.
 
 1. **Probarlo en una 2ª convocatoria de verdad.** El modelo de convocatorias (A-5) está
    implementado y cubierto con pruebas, pero la comprobación que no da ninguna máquina es
-   usarlo con un grupo real en junio. Antes de esa sesión, guarda aparte una copia del
-   `evalfp.db`.
-2. **Retirar la migración heredada.** `db.js` todavía convierte al arrancar los datos en JSON
-   de la etapa anterior. Cuando se empaquete la 1.0 pública, ese camino sobra.
-3. **Un icono a la altura de la interfaz.** El actual es el libro azul marino de la etapa
-   anterior y no pega con la paleta crema y naranja de la aplicación.
-4. **Firmar los instaladores.** Sin certificado, macOS y Windows siguen avisando de
-   desarrollador no identificado en cada equipo nuevo.
-5. **Los ámbitos de Grado Básico no entran en el catálogo.** Comunicación y Sociedad y
+   usarlo con un grupo real en junio. El paso a paso de esa sesión, con la copia de
+   seguridad primero, está en [GUION_2A_CONVOCATORIA.md](GUION_2A_CONVOCATORIA.md).
+2. **Firmar los instaladores.** Requiere comprar certificados: 99 USD al año en Apple —con
+   exención posible para centros educativos— y unos 200-350 € al año en Windows, donde
+   además el aviso de SmartScreen no desaparece hasta acumular descargas. El proyecto ya
+   está preparado para firmar en cuanto haya credenciales: ver [FIRMA.md](FIRMA.md).
+3. **Los ámbitos de Grado Básico no entran en el catálogo.** Comunicación y Sociedad y
    Ciencias Aplicadas los imparte profesorado de otras especialidades, no de FP, así que
    no son módulos de este cuaderno. La calificación cualitativa IN/SU/BI/NT/SB (art. 25.2)
    se queda implementada y probada por si alguna vez hace falta —se fuerza poniendo

@@ -1,6 +1,6 @@
 {
   "name": "evalfp",
-  "version": "3.9.0",
+  "version": "3.10.0",
   "description": "EvalFP — Cuaderno del Profesor para FP",
   "license": "GPL-3.0-or-later",
   "main": "main.js",
@@ -9,6 +9,7 @@
     "prebake": "node scripts/run_prebake.js",
     "build:mac": "npm run prebake && electron-builder --mac",
     "build:win": "npm run prebake && electron-builder --win",
+    "build:mac:firmado": "npm run prebake && electron-builder --mac -c.mac.notarize=true",
     "build:all": "npm run prebake && electron-builder --mac --win",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
@@ -66,7 +67,8 @@
             "x64"
           ]
         }
-      ]
+      ],
+      "notarize": false
     },
     "dmg": {
       "title": "EvalFP ${version}",

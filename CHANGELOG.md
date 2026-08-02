@@ -1,5 +1,27 @@
 # Changelog
 
+## 3.10.0
+
+### Retirada la reimportación del formato heredado
+
+`db.js` seguía sabiendo convertir a SQLite el `evalfp.db` en JSON de una versión
+intermedia, un camino que ya no usa nadie. Se van 80 líneas de importador. Lo que
+queda es la red de seguridad: si aparece un fichero de aquellos, se aparta sin
+tocarlo y se explica dónde ha quedado, en vez de dejar la aplicación muerta con
+«file is not a database». Cubierto con un test.
+
+### Preparada la firma de los instaladores
+
+`npm run build:mac:firmado` firma y notariza leyendo las credenciales del
+entorno; en Windows basta con exportar `CSC_LINK` y `CSC_KEY_PASSWORD` antes de
+compilar. Sin certificado, las compilaciones de siempre siguen igual. Qué hay que
+comprar y cuánto cuesta, en FIRMA.md.
+
+### Guion de la sesión de 2ª convocatoria
+
+GUION_2A_CONVOCATORIA.md: la lista de pasos para junio, empezando por la copia de
+seguridad, con lo que hay que comprobar antes de firmar actas.
+
 ## [3.9.0] - 2026-08-01
 
 Segunda auditoría, esta vez **usando la aplicación**: dos módulos dados de alta desde cero,
