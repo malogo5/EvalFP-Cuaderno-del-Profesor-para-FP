@@ -78,11 +78,35 @@ y se arregla recompilando ese módulo desde la carpeta del proyecto:
 npx electron-rebuild -f -w keytar
 ```
 
-Ojo al efecto secundario: recompilar toca el paquete de Electron y le invalida la firma, así
-que la vez siguiente `npm start` muere con **SIGKILL**. Se vuelve a firmar y listo:
+### Si `npm start` muere con SIGKILL
+
+Le pasa a la versión de desarrollo, no a la instalada, y casi siempre después de reinstalar
+dependencias o de recompilar el llavero. El culpable habitual **no es Electron**: es
+`keytar.node`, el módulo nativo del llavero. Su firma queda atada a la fecha de modificación
+del archivo, y si esa fecha cambia al copiarlo o recompilarlo, el kernel lo da por manipulado
+y mata el proceso entero. En el registro del sistema se ve así:
+
+```
+CODE SIGNING: rejecting invalid page ... in file ".../keytar/build/Release/keytar.node"
+(cs_mtime:1645099795.0 != mtime:1645099780.0) ... tainted:1
+```
+
+Se arregla firmándolo otra vez, que regenera la firma con la fecha actual:
+
+```
+codesign --force --sign - node_modules/keytar/build/Release/keytar.node
+```
+
+Si aun así muere, entonces sí toca el paquete de Electron:
 
 ```
 codesign --force --deep --sign - node_modules/electron/dist/Electron.app
+```
+
+Para saber cuál de los dos es, este comando lo dice en una línea:
+
+```
+log show --last 3m --predicate 'eventMessage CONTAINS "CODE SIGNING"' --info | tail -3
 ```
 
 Para leer letra manuscrita en la corrección de exámenes, Claude da bastante mejor resultado.
