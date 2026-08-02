@@ -69,6 +69,15 @@ Ajustes: verás «✓ configurada», no la clave.
 Sin claves, el asistente responde en **modo demo**: genera textos de ejemplo para que veas
 el formato, sin llamar a ningún servicio.
 
+Si en Ajustes aparece que **el llavero del sistema no está disponible**, las claves no se
+pueden guardar —EvalFP no las escribe nunca en texto plano— y el asistente se queda en modo
+demo. Suele pasar después de reinstalar las dependencias o de cambiar de versión de Electron,
+y se arregla recompilando ese módulo desde la carpeta del proyecto:
+
+```
+npx electron-rebuild -f -w keytar
+```
+
 Para leer letra manuscrita en la corrección de exámenes, Claude da bastante mejor resultado.
 
 ## Dónde viven tus datos
