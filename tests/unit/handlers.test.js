@@ -417,3 +417,38 @@ describe('El «Acerca de»', () => {
     expect(context.module.exports('99.0.0')[0]).toMatch(/Consulta CHANGELOG/)
   })
 })
+
+describe('El nombre del archivo del boletín', () => {
+  const nombrar = () => {
+    const main = leer('main.js')
+    const fn = main.slice(main.indexOf('function _nombreBoletin'),
+                          main.indexOf("ipcMain.handle('pdf:exportBoletin'"))
+    const context = { module: { exports: {} }, console, Date }
+    vm.runInNewContext(`${fn}\nmodule.exports = _nombreBoletin`, context)
+    return context.module.exports
+  }
+
+  it('respeta las tildes y las eñes', () => {
+    // «Alarcón Vega, Lucía» se archivaba como «Alarc_n_Vega__Luc_a»: media clase
+    // con el apellido roto en un documento que se entrega a las familias.
+    const f = nombrar()
+    expect(f('Alarcón Vega, Lucía')).toContain('Alarcón Vega, Lucía')
+    expect(f('Bermúdez Soto, Iván')).toContain('Bermúdez Soto, Iván')
+    expect(f('Peña Muñoz, Ángel')).toContain('Peña Muñoz, Ángel')
+  })
+
+  it('quita solo lo que un sistema de archivos no admite', () => {
+    const f = nombrar()
+    for (const malo of ['/', '\\', ':', '*', '?', '"', '<', '>', '|']) {
+      expect(f(`A${malo}B`), `dejó pasar ${malo}`).not.toContain(malo)
+    }
+  })
+
+  it('lleva la fecha, no la hora en milisegundos', () => {
+    // Con la hora exacta, cada vez que se regeneraba el mismo boletín aparecía
+    // otro archivo: cinco copias del mismo alumno en una tarde.
+    const f = nombrar()
+    expect(f('Gil, Sara')).toMatch(/_\d{4}-\d{2}-\d{2}\.pdf$/)
+    expect(f('Gil, Sara')).toBe(f('Gil, Sara'))
+  })
+})

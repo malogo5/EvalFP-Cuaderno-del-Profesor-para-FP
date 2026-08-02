@@ -49,6 +49,18 @@ detrás.
 Al importar la lista de clase, el aviso achacaba a los duplicados también las líneas que
 venían sin nombre. Ahora dice los dos motivos.
 
+## A15-5 · Los apellidos con tilde salían rotos en el nombre del PDF — **Gravedad: Media**
+
+Esto apareció mirando los boletines que ya había en el ordenador:
+`boletin_Alarc_n_Vega__Luc_a_1785516525526.pdf`. Todo lo que no fuera una letra inglesa o un
+número se sustituía por un guion bajo, así que **media clase tenía el apellido roto** en un
+documento que se entrega a las familias. Las tildes y las eñes valen perfectamente en macOS y
+en Windows; lo único que no vale es `/ \ : * ? " < > |`.
+
+Y el nombre llevaba pegada la hora en milisegundos, de modo que cada vez que se generaba el
+mismo boletín aparecía otro archivo: en esa carpeta había **cinco copias del mismo alumno de
+la misma tarde**. Ahora manda la fecha y regenerarlo el mismo día sustituye al anterior.
+
 ---
 
 ## Lo comprobado en la aplicación
@@ -66,6 +78,6 @@ venían sin nombre. Ahora dice los dos motivos.
 
 | | |
 |---|---|
-| Hallazgos | 4 corregidos |
-| Pruebas | 144 unitarias |
-| Total en siete auditorías | 79 incidencias cerradas |
+| Hallazgos | 5 corregidos |
+| Pruebas | 147 unitarias |
+| Total en siete auditorías | 80 incidencias cerradas |

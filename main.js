@@ -756,10 +756,32 @@ ipcMain.on('open-material', () => {
 })
 
 // ── IPC: PDF Boletín ──────────────────────────────────────────────────────────
+/**
+ * Nombre de archivo legible para un boletín.
+ *
+ * Antes se sustituía todo lo que no fuera a-z o 0-9 por un guion bajo, así que
+ * «Alarcón Vega, Lucía» se archivaba como «Alarc_n_Vega__Luc_a»: media clase con
+ * el apellido roto en un documento que se entrega a las familias. Las tildes y
+ * las eñes valen en macOS y en Windows; lo que no valen son / \ : * ? " < > |.
+ *
+ * Y llevaba pegada la hora en milisegundos, de modo que cada vez que se generaba
+ * el mismo boletín aparecía otro archivo: cinco copias del mismo alumno en una
+ * tarde. Ahora manda la fecha, y regenerarlo el mismo día sustituye al anterior.
+ */
+function _nombreBoletin(alumnoNombre) {
+  const hoy = new Date().toISOString().slice(0, 10)
+  const limpio = String(alumnoNombre || 'alumno')
+    .replace(/[/\\:*?"<>|]/g, '-')     // prohibidos en un nombre de archivo
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 80) || 'alumno'
+  return `boletin_${limpio}_${hoy}.pdf`
+}
+
 ipcMain.handle('pdf:exportBoletin', async (_, htmlContent, alumnoNombre) => {
   const od  = path.join(outputDir(), 'boletines')
   fs.mkdirSync(od, { recursive: true })
-  const filename = `boletin_${alumnoNombre.replace(/[^a-zA-Z0-9]/g,'_')}_${Date.now()}.pdf`
+  const filename = _nombreBoletin(alumnoNombre)
   const outPath  = path.join(od, filename)
   // Crear ventana oculta para imprimir
   // El HTML del boletín lleva datos del alumnado y se carga como data: URL. Sin

@@ -15,6 +15,12 @@ módulos, alumnos y notas, y avisa en rojo si el cuaderno está vacío habiendo 
 
 Buscaba un formato de CHANGELOG que dejó de usarse hace cinco versiones.
 
+### Los apellidos con tilde ya no salen rotos en el nombre del PDF
+
+`boletin_Alarc_n_Vega__Luc_a_1785516525526.pdf` era el nombre real de un boletín. Ahora se
+llama `boletin_Alarcón Vega, Lucía_2026-08-03.pdf`, y regenerarlo el mismo día sustituye al
+anterior en vez de dejar una copia nueva cada vez.
+
 ### Y además
 
 La cabecera del catálogo ya no dice «Grado Superior» cuando también hay grado básico, medio y
