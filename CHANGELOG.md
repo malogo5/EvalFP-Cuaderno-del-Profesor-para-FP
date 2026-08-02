@@ -1,5 +1,26 @@
 # Changelog
 
+## 3.15.0 · Séptima auditoría
+
+Con la aplicación abierta y delante: dar de alta un módulo, importar una lista de clase y
+recorrer las pantallas. El detalle, en AUDITORIA_SEPTIMA.md.
+
+### Las copias de seguridad dicen qué llevan dentro
+
+Una base vacía pesa 86 KB y una con un curso entero, 90: por el tamaño no se distinguen, así
+que una copia inservible parecía tan buena como cualquier otra. Ahora cada una muestra sus
+módulos, alumnos y notas, y avisa en rojo si el cuaderno está vacío habiendo copias con datos.
+
+### El «Acerca de» vuelve a contar las novedades
+
+Buscaba un formato de CHANGELOG que dejó de usarse hace cinco versiones.
+
+### Y además
+
+La cabecera del catálogo ya no dice «Grado Superior» cuando también hay grado básico, medio y
+cursos de especialización; el grupo de cada módulo cabe en su línea; y al importar la lista de
+clase, las líneas sin nombre ya no se achacan a duplicados.
+
 ## 3.14.0 · Sexta auditoría
 
 Los scripts de Python de la IA y de la corrección desde foto. Cuatro hallazgos; el detalle,
