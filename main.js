@@ -301,6 +301,14 @@ function createWindow() {
       sandbox: true,
     },
   })
+  // La aplicación funciona sin conexión y no tiene enlaces externos: ni se abren
+  // ventanas nuevas ni se navega fuera del propio index.html. Lo que llegue por
+  // ahí no viene de la interfaz.
+  win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
+  win.webContents.on('will-navigate', (e, url) => {
+    if (!url.startsWith('file://')) e.preventDefault()
+  })
+
   win.loadFile(path.join(__dirname, 'renderer', 'index.html'))
 }
 
@@ -678,7 +686,20 @@ ipcMain.handle('pdf:exportBoletin', async (_, htmlContent, alumnoNombre) => {
   const filename = `boletin_${alumnoNombre.replace(/[^a-zA-Z0-9]/g,'_')}_${Date.now()}.pdf`
   const outPath  = path.join(od, filename)
   // Crear ventana oculta para imprimir
-  const pdfWin = new BrowserWindow({ show: false, webPreferences: { offscreen: true } })
+  // El HTML del boletín lleva datos del alumnado y se carga como data: URL. Sin
+  // JavaScript no hay forma de que un nombre con etiquetas dentro haga nada, y un
+  // documento impreso no necesita ejecutar código.
+  const pdfWin = new BrowserWindow({
+    show: false,
+    webPreferences: {
+      offscreen: true,
+      javascript: false,
+      nodeIntegration: false,
+      contextIsolation: true,
+      sandbox: true,
+      webSecurity: true,
+    },
+  })
   await pdfWin.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`)
   const pdfData = await pdfWin.webContents.printToPDF({ printBackground: true, pageSize: 'A4' })
   pdfWin.close()

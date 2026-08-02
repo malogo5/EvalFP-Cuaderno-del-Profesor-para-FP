@@ -24,11 +24,18 @@ def export_module(name):
     # —AD, AF y GA con dos; DAM, ASIR, IO, DAW, SA y SMR con tres—, así que la
     # aplicación ofrecía una 3ª evaluación que no existe en el calendario.
     #
+    # Los cursos de especialización van igual: duran menos de un curso completo
+    # y se organizan en dos trimestres. Dos módulos se habían quedado con tres
+    # —uno de Ciberseguridad y otro de IA y Big Data— mientras sus compañeros de
+    # curso tenían dos, así que el boletín de un mismo alumno no cuadraba de un
+    # módulo a otro.
+    #
     # Las unidades que estuvieran colocadas en un tercer trimestre pasan al
     # segundo, y lo mismo el mapa de RA por evaluación.
     uts = [dict(u) for u in mod.UTS]
     eval_ras = {str(k): list(v) for k, v in (getattr(mod, "EVAL_RAS", {}) or {}).items()}
-    if str(m.get("curso", "")).strip().startswith("2"):
+    curso = str(m.get("curso", "")).strip()
+    if curso.startswith("2") or curso.upper().startswith("CE"):
         m["eval_count"] = 2
         for u in uts:
             if int(u.get("eval", 1) or 1) > 2:

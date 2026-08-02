@@ -114,7 +114,7 @@ async function exportNotasPDF() {
   try {
     await window.api.exportBoletin(html, nombre)
   } catch(e) {
-    alert('Error al exportar: ' + e.message)
+    alert('Error al exportar: ' + validators.sanitizeErrorMessage(e, 'exportNotasPDF'))
   }
 }
 async function loadNotas() {
@@ -272,7 +272,7 @@ async function abrirEvidencia(ruta) {
   try {
     await window.api.abrirEvidencia(ruta)
   } catch (e) {
-    alert('No se ha podido abrir la evidencia: ' + (e && e.message ? e.message : e))
+    alert('No se ha podido abrir la evidencia: ' + validators.sanitizeErrorMessage(e, 'abrirEvidencia'))
   }
 }
 

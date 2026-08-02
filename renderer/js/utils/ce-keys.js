@@ -28,14 +28,27 @@ function ceKeyCe(clave) {
 }
 
 /** Criterios de una actividad, ya parseados. Nunca lanza. */
+// Los criterios de una actividad viajan como texto JSON desde la base. La
+// pantalla de Evaluaciones pregunta por ellos una vez por alumno, por RA y por
+// criterio: en un grupo de 30 con 8 RA eso son más de cien mil JSON.parse cada
+// vez que se repinta, y se notaba. El resultado se guarda junto al objeto de la
+// actividad, con el texto que lo produjo, así que si la actividad cambia se
+// vuelve a leer.
+const _cacheCes = typeof WeakMap === 'function' ? new WeakMap() : null
+
 function actCesLista(act) {
   if (!act) return []
   const bruto = act.ces
   if (Array.isArray(bruto)) return bruto
+  const guardado = _cacheCes && _cacheCes.get(act)
+  if (guardado && guardado.bruto === bruto) return guardado.lista
+  let lista = []
   try {
     const l = JSON.parse(bruto || '[]')
-    return Array.isArray(l) ? l : []
-  } catch { return [] }
+    if (Array.isArray(l)) lista = l
+  } catch { lista = [] }
+  if (_cacheCes) _cacheCes.set(act, { bruto, lista })
+  return lista
 }
 
 /**

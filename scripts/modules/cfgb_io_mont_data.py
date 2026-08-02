@@ -5,7 +5,7 @@ Duración: 335 h · 10 h/semana · 1º IO.
 """
 MODULO = {
     "nombre":"Montaje y Mantenimiento de Sistemas y Componentes Informáticos","codigo":"3029","abrev":"MMSCI",
-    "ciclo":"","ciclo_clave":"CFGB","ciclo_nivel":"CFGB",
+    "ciclo":"Informática de Oficina","ciclo_clave":"CFGB","ciclo_nivel":"CFGB",
     "curso":"1º IO","horas_sem":10,"total_horas":335,"anno":"2026-2027","eval_count":3,
     "horas_aula":300,  # el resto hasta 335 h es formación en empresa
     "decreto":"Decreto 80/2014, de 01/08/2014, currículo del ciclo de Formación Profesional Básica de Informática de Oficina en Castilla-La Mancha (DOCM, NID 2014/10283) · RA y CE literales del Anexo II",

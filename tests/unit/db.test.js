@@ -407,3 +407,33 @@ describe.skipIf(!sqliteDisponible)('Base de datos de una versión muy anterior',
     if (copia) fs.writeFileSync(dbPath, copia)
   })
 })
+
+// ── Tests: el curso escolar siguiente (A4 de la tercera auditoría) ────────────
+describe.skipIf(!sqliteDisponible)('Empezar un curso escolar nuevo', () => {
+  it('admite el mismo módulo y grupo en otro año', () => {
+    // En septiembre se vuelve a dar ISO a 1ºA. Con la unicidad anterior —módulo
+    // y grupo— la única salida era borrar el curso pasado, porque la
+    // restricción mira toda la tabla, también lo archivado.
+    const key = `MOD_ANNO_${Date.now()}`
+    const viejo = db.addModulo({ ...MODULO_FIXTURE, key, grupo: '1ºA', anno: '2025-26' })
+    const nuevo = db.addModulo({ ...MODULO_FIXTURE, key, grupo: '1ºA', anno: '2026-27' })
+    expect(nuevo).not.toBe(viejo)
+    const suyos = db.getModulos().filter(m => m.key === key)
+    expect(suyos.map(m => m.anno).sort()).toEqual(['2025-26', '2026-27'])
+  })
+
+  it('sigue rechazando el duplicado exacto', () => {
+    const key = `MOD_ANNO_DUP_${Date.now()}`
+    db.addModulo({ ...MODULO_FIXTURE, key, grupo: '1ºB', anno: '2026-27' })
+    expect(() => db.addModulo({ ...MODULO_FIXTURE, key, grupo: '1ºB', anno: '2026-27' })).toThrow()
+  })
+
+  it('el alumnado de cada curso escolar es el suyo', () => {
+    const key = `MOD_ANNO_SEP_${Date.now()}`
+    const a = db.addModulo({ ...MODULO_FIXTURE, key, grupo: '1ºC', anno: '2025-26' })
+    const b = db.addModulo({ ...MODULO_FIXTURE, key, grupo: '1ºC', anno: '2026-27' })
+    db.saveAlumno({ ...ALUMNO_FIXTURE(a), apellidos: 'Del curso pasado' })
+    expect(db.getAlumnos(a).length).toBe(1)
+    expect(db.getAlumnos(b).length).toBe(0)
+  })
+})

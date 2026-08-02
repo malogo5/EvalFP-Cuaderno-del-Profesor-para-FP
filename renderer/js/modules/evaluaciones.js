@@ -50,7 +50,7 @@ async function cerrarSesionEvaluacion(mid, ev) {
     showToast(`${n} resultados de aprendizaje fijados`)
     loadEvaluaciones()
   } catch (e) {
-    alert('No se ha podido cerrar la evaluación: ' + (e && e.message ? e.message : e))
+    alert('No se ha podido cerrar la evaluación: ' + validators.sanitizeErrorMessage(e, 'cerrarEvaluacion'))
   }
 }
 
@@ -70,7 +70,7 @@ async function reabrirRa(mid, alumnoId, raId) {
     showToast(`${raId} reabierto`)
     loadEvaluaciones()
   } catch (e) {
-    alert('No se ha podido reabrir: ' + (e && e.message ? e.message : e))
+    alert('No se ha podido reabrir: ' + validators.sanitizeErrorMessage(e, 'reabrirRa'))
   }
 }
 

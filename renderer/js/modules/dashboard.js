@@ -72,7 +72,7 @@ async function togglePardonCe(mid, alumnoId, raId, ceId) {
       motivo: yaEstaba ? null : motivo,
     })
   } catch (e) {
-    alert('No se ha podido guardar: ' + (e && e.message ? e.message : e)); return
+    alert('No se ha podido guardar: ' + validators.sanitizeErrorMessage(e, 'dashboardGuardar')); return
   }
   if (!_pardones[alumnoId]) _pardones[alumnoId] = new Set()
   if (yaEstaba) _pardones[alumnoId].delete(k); else _pardones[alumnoId].add(k)
@@ -131,7 +131,7 @@ async function saveRec2Nota(mid, alumnoId, raId, ceId, notaStr) {
       perdonado: _pardones[alumnoId]?.has(k) ? 1 : 0,
     })
   } catch (e) {
-    alert('No se ha podido guardar la nota de recuperación: ' + (e && e.message ? e.message : e))
+    alert('No se ha podido guardar la nota de recuperación: ' + validators.sanitizeErrorMessage(e, 'notaRecuperacion'))
   }
   _rec2Timer = setTimeout(() => _reloadEvalSec(), 50)
 }
@@ -635,7 +635,7 @@ async function genBoletin(alumnoId, evParcial = null) {
     await _genBoletin(alumnoId, evParcial ? parseInt(evParcial) : null)
   } catch (e) {
     console.error('genBoletin:', e)
-    alert('No se ha podido generar el boletín: ' + (e && e.message ? e.message : e))
+    alert('No se ha podido generar el boletín: ' + validators.sanitizeErrorMessage(e, 'genBoletin'))
   }
 }
 

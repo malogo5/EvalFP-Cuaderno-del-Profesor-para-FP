@@ -33,7 +33,8 @@ Abre el DMG, arrastra a Aplicaciones y **sustituye** la copia anterior. Si la ti
 Dock, quítala y vuelve a arrastrarla: el icono del Dock apunta a la copia vieja.
 
 La app no está firmada con certificado de Apple, así que la primera vez macOS avisa. Se
-abre con clic derecho → Abrir, o desde Ajustes del Sistema → Privacidad y seguridad.
+abre con clic derecho → Abrir, o desde Ajustes del Sistema → Privacidad y seguridad. Para
+quitar ese aviso hay que firmar: los pasos y lo que cuesta están en [FIRMA.md](FIRMA.md).
 
 ## Windows (en la máquina virtual)
 
@@ -54,6 +55,15 @@ npm run build:win
 ```
 
 (Si ya lo tienes clonado, `git pull` en vez de `git clone`.)
+
+Si PowerShell responde «la ejecución de scripts está deshabilitada en este sistema», usa
+`npm.cmd install` y `npm.cmd run build:win`: el `.cmd` no pasa por la política de scripts y
+evita tener que cambiarla.
+
+En una máquina virtual con Windows on ARM —la de un Mac con Apple Silicon— instala las
+versiones **arm64** de Node y de Python. El instalador que sale sigue siendo de 64 bits para
+Intel/AMD, que es el que necesitan los ordenadores del instituto; a cambio, no podrás
+instalarlo dentro de la propia máquina virtual para probarlo.
 
 Deja en `dist\` el instalador `EvalFP Setup <versión>.exe`, que pregunta dónde instalar y
 crea accesos en el escritorio y en el menú de inicio.

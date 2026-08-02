@@ -5,7 +5,7 @@ Duración: 275 h · 8 h/semana · 1º IO.
 """
 MODULO = {
     "nombre":"Ofimática y Archivo de Documentos","codigo":"3031","abrev":"OAD",
-    "ciclo":"","ciclo_clave":"CFGB","ciclo_nivel":"CFGB",
+    "ciclo":"Informática de Oficina","ciclo_clave":"CFGB","ciclo_nivel":"CFGB",
     "curso":"1º IO","horas_sem":8,"total_horas":275,"anno":"2026-2027","eval_count":3,
     "horas_aula":240,  # el resto hasta 275 h es formación en empresa
     "decreto":"Decreto 80/2014, de 01/08/2014, currículo del ciclo de Formación Profesional Básica de Informática de Oficina en Castilla-La Mancha (DOCM, NID 2014/10283) · RA y CE literales del Anexo II",

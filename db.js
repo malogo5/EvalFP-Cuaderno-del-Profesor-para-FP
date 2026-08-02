@@ -103,14 +103,20 @@ function getDb() {
 }
 
 /**
- * Quita el UNIQUE de `modulos.key` y lo sustituye por UNIQUE(key, grupo).
+ * Unicidad de `modulos`: un módulo es único por su clave, su grupo y su curso
+ * escolar.
  *
- * Dar el mismo módulo a dos grupos es lo normal en FP, pero el esquema original
- * lo impedía: al añadirlo por segunda vez saltaba «UNIQUE constraint failed:
- * modulos.key». SQLite no permite quitar una restricción con ALTER, así que hay
- * que recrear la tabla — el procedimiento que documenta la propia SQLite:
- * claves foráneas apagadas, dentro de una transacción, y comprobando la
- * integridad antes de confirmar.
+ * Han hecho falta dos pasadas. La primera quitó el UNIQUE de `key` a secas, que
+ * impedía dar el mismo módulo a dos grupos. La segunda añade el curso escolar:
+ * sin él, en septiembre no se podía dar de alta ISO · 1ºA del curso nuevo
+ * mientras existiera el del anterior, ni siquiera archivado, porque la
+ * restricción mira toda la tabla. Había que borrar el curso pasado para empezar
+ * el siguiente.
+ *
+ * SQLite no permite quitar una restricción con ALTER, así que hay que recrear la
+ * tabla — el procedimiento que documenta la propia SQLite: claves foráneas
+ * apagadas, dentro de una transacción, y comprobando la integridad antes de
+ * confirmar.
  */
 function _migrarUnicidadModulos() {
   let sql = ''
@@ -119,9 +125,8 @@ function _migrarUnicidadModulos() {
       "SELECT sql FROM sqlite_master WHERE type='table' AND name='modulos'").get()
     sql = String(fila?.sql || '')
   } catch { return }
-  // Ya migrada: el UNIQUE compuesto está presente
-  if (!sql || /UNIQUE\s*\(\s*key\s*,\s*grupo\s*\)/i.test(sql)) return
-  if (!/key\s+TEXT\s+NOT\s+NULL\s+UNIQUE/i.test(sql)) return
+  // Ya migrada del todo: la restricción incluye el curso escolar
+  if (!sql || /UNIQUE\s*\(\s*key\s*,\s*grupo\s*,\s*anno\s*\)/i.test(sql)) return
 
   try {
     _db.exec('PRAGMA foreign_keys = OFF')
@@ -141,7 +146,7 @@ function _migrarUnicidadModulos() {
         data_json  TEXT,
         activo     INTEGER DEFAULT 1,
         created_at TEXT DEFAULT (datetime('now')),
-        UNIQUE (key, grupo)
+        UNIQUE (key, grupo, anno)
       );
       INSERT INTO modulos_nuevo
         SELECT id,key,abrev,nombre,ciclo,curso,anno,grupo,horas,decreto,data_json,activo,created_at
@@ -152,7 +157,7 @@ function _migrarUnicidadModulos() {
     const fallos = _db.prepare('PRAGMA foreign_key_check').all()
     if (fallos.length) throw new Error(`${fallos.length} referencia(s) rota(s)`)
     _db.exec('COMMIT')
-    console.log('[db] modulos: UNIQUE(key) → UNIQUE(key, grupo)')
+    console.log('[db] modulos: la unicidad pasa a ser (módulo, grupo, curso escolar)')
   } catch (e) {
     try { _db.exec('ROLLBACK') } catch { /* sin transacción activa */ }
     console.error('[db] No se pudo migrar la unicidad de modulos:', e.message)
@@ -275,7 +280,7 @@ function _initSchema() {
       data_json  TEXT,
       activo     INTEGER DEFAULT 1,
       created_at TEXT DEFAULT (datetime('now')),
-      UNIQUE (key, grupo)
+      UNIQUE (key, grupo, anno)
     );
 
     -- Alumnos por módulo

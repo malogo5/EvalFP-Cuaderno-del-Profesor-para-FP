@@ -25,6 +25,13 @@ function cargarMotor() {
   return context.module.exports
 }
 
+function cargarCeKeys() {
+  const ceKeys = fs.readFileSync(path.resolve('renderer/js/utils/ce-keys.js'), 'utf8')
+  const context = { module: { exports: {} }, console }
+  vm.runInNewContext(ceKeys, context)
+  return context.module.exports
+}
+
 const M = cargarMotor()
 
 const ras = [{ id: 'RA1', pond: 100 }]
@@ -164,5 +171,29 @@ describe('A-5 · Convocatorias', () => {
     expect(M.actividadesDeConvocatoria(actividades, 2).map(a => a.id)).toEqual([1, 2, 3])
     expect(M.convocatoriaDe({ convocatoria: 2 })).toBe(2)
     expect(M.convocatoriaDe({})).toBe(1)
+  })
+})
+
+describe('Criterios de una actividad: lectura repetida', () => {
+  it('devuelve lo mismo aunque se pregunte muchas veces', () => {
+    // Los criterios llegan como texto JSON y la pantalla los pide una vez por
+    // alumno, por RA y por criterio: en un grupo de 30 eran más de cien mil
+    // JSON.parse por repintado. Ahora el resultado se recuerda, y esto fija que
+    // recordarlo no cambia la respuesta.
+    const ce = cargarCeKeys()
+    const act = { id: 1, ra_id: 'RA1', ces: JSON.stringify(['RA1|CR1', 'RA1|CR2']) }
+    const primera = ce.actCesLista(act)
+    expect(ce.actCesLista(act)).toEqual(primera)
+    expect(ce.actCubreCe(act, 'RA1', 'CR1')).toBe(true)
+    expect(ce.actCubreCe(act, 'RA2', 'CR1')).toBe(false)
+  })
+
+  it('si la actividad cambia de criterios, deja de dar los viejos', () => {
+    const ce = cargarCeKeys()
+    const act = { id: 2, ra_id: 'RA1', ces: JSON.stringify(['RA1|CR1']) }
+    expect(ce.actCubreCe(act, 'RA1', 'CR1')).toBe(true)
+    act.ces = JSON.stringify(['RA1|CR9'])
+    expect(ce.actCubreCe(act, 'RA1', 'CR1'), 'se quedó con los criterios antiguos').toBe(false)
+    expect(ce.actCubreCe(act, 'RA1', 'CR9')).toBe(true)
   })
 })

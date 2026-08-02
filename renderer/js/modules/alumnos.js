@@ -53,7 +53,7 @@ async function updateMatricula(alumnoId, campo, valor) {
     showSaved()
     renderAlumnosTable()
   } catch (e) {
-    alert('No se ha podido guardar: ' + (e && e.message ? e.message : e))
+    alert('No se ha podido guardar: ' + validators.sanitizeErrorMessage(e, 'guardarAlumno'))
   }
 }
 
@@ -79,7 +79,7 @@ async function updateFaseEmpresa(alumnoId, estado) {
     showSaved()
     renderAlumnosTable()
   } catch (e) {
-    alert('No se ha podido guardar: ' + (e && e.message ? e.message : e))
+    alert('No se ha podido guardar: ' + validators.sanitizeErrorMessage(e, 'guardarAlumno'))
   }
 }
 
@@ -285,7 +285,7 @@ async function updateFaltas(alumnoId, horas) {
     showSaved()
     renderAlumnosTable()
   } catch (e) {
-    alert('No se han podido guardar las faltas: ' + (e && e.message ? e.message : e))
+    alert('No se han podido guardar las faltas: ' + validators.sanitizeErrorMessage(e, 'guardarFaltas'))
   }
 }
 

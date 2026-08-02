@@ -1,5 +1,35 @@
 # Changelog
 
+## 3.11.0 · Tercera auditoría
+
+Diez hallazgos en los ángulos que las dos auditorías anteriores no habían tocado. El detalle
+está en AUDITORIA_TERCERA.md; lo que más importa:
+
+### El curso siguiente ya se puede empezar
+
+Un módulo era único por clave y grupo, sin mirar el año. En septiembre, dar de alta ISO · 1ºA
+del curso nuevo fallaba mientras existiera el del anterior, y archivarlo no bastaba: la única
+salida era borrar el curso pasado. Ahora la unicidad incluye el curso escolar.
+
+### «Anonimizar» ahora anonimiza
+
+Mandaba las iniciales del nombre, que en un grupo de veinte identifican a cualquiera. Ya no
+sale ningún nombre, y la casilla viene marcada también en el informe individual, que era el
+único sitio donde venía suelta.
+
+### La pantalla de evaluaciones, dos veces y media más rápida
+
+Los criterios de cada actividad se releían del texto JSON una vez por alumno, por RA y por
+criterio. Con un grupo de 30, el cálculo pasa de 216 ms a 84 ms.
+
+### Y además
+
+El disco lleno se dice con todas las letras en vez de «inténtalo de nuevo». Cuatro módulos de
+Informática de Oficina tenían el ciclo vacío en el boletín. Dos cursos de especialización
+ofrecían una tercera evaluación que no existe. Los sesenta campos de los formularios ya tienen
+nombre para un lector de pantalla. Y la documentación explica qué datos salen del ordenador
+cuando se usa la IA, que tratándose de menores no es un detalle.
+
 ## 3.10.0
 
 ### Retirada la reimportación del formato heredado

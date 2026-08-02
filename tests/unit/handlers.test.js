@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import fs from 'fs'
 import path from 'path'
+import vm from 'vm'
 
 /**
  * El renderer es multi-script: index.html llama a las funciones por su nombre
@@ -170,5 +171,92 @@ describe('Estados del alumnado', () => {
       const faltan = ESPERADOS.filter(e => !src.includes(`'${e}'`))
       expect(faltan, `${archivo} no conoce el estado ${faltan.join(', ')}`).toEqual([])
     }
+  })
+})
+
+describe('Datos del alumnado hacia fuera', () => {
+  it('el informe de la IA sale anonimizado por defecto', () => {
+    // La casilla de anonimizar venía marcada en el plan y en la corrección, pero
+    // no en el informe individual, que es justo el que más datos lleva.
+    const html = leer('renderer/index.html')
+    for (const id of ['ia-i-anonimizar', 'ia-p-anonimizar', 'ia-c-anonimizar']) {
+      const re = new RegExp(`id="${id}"[^>]*checked`)
+      expect(re.test(html), `${id} debería venir marcada`).toBe(true)
+    }
+  })
+
+  it('anonimizar no deja pasar las iniciales', () => {
+    // «Alumno_ANON_FGS» identifica a una persona concreta en un grupo de veinte.
+    const py = leer('scripts/ai_asistente.py')
+    const fn = py.slice(py.indexOf('def _anonimizar_alumno_nombre'),
+                        py.indexOf('def _parse_ponderaciones'))
+    expect(fn, 'la anonimización debe devolver un nombre neutro').toContain('return "Alumno/a"')
+    expect(fn, 'no puede componer iniciales del nombre').not.toMatch(/p\[0\] for p|\.upper\(\)/)
+  })
+
+  it('la ventana que imprime el boletín no ejecuta JavaScript', () => {
+    // El HTML del boletín se construye con nombres y observaciones y se carga
+    // como data: URL, sin la CSP de la ventana principal.
+    const main = leer('main.js')
+    const bloque = main.slice(main.indexOf('const pdfWin'), main.indexOf('printToPDF'))
+    expect(bloque, 'la ventana del PDF debería tener javascript desactivado')
+      .toMatch(/javascript:\s*false/)
+  })
+
+  it('la ventana principal no abre ventanas ni navega fuera', () => {
+    const main = leer('main.js')
+    expect(main).toContain('setWindowOpenHandler')
+    expect(main).toContain("will-navigate")
+  })
+})
+
+describe('Errores que entiende una persona', () => {
+  it('el disco lleno se dice con todas las letras', () => {
+    // Con el mensaje genérico «inténtalo de nuevo», lo natural es reintentar, y
+    // con el disco lleno cada reintento vuelve a fallar mientras se pierden las
+    // notas que se están poniendo. SQLite dice «disk I/O error».
+    const src = leer('renderer/js/utils/validators.js')
+    const context = { module: { exports: {} }, console: { error() {} } }
+    vm.runInNewContext(src, context)
+    const s = context.module.exports.sanitizeErrorMessage
+
+    for (const crudo of ['disk I/O error', 'database or disk is full', 'ENOSPC: no space left on device']) {
+      expect(s(new Error(crudo)), `«${crudo}» debería hablar del disco`).toMatch(/disco/i)
+    }
+    expect(s(new Error('attempt to write a readonly database'))).toMatch(/escritura/i)
+
+    // Y los avisos que escribe la propia aplicación llegan enteros: son los que
+    // de verdad explican qué ha pasado.
+    expect(s(new Error('La evidencia está fuera de la carpeta de EvalFP')))
+      .toBe('La evidencia está fuera de la carpeta de EvalFP')
+    expect(s(new Error('SQLITE_CONSTRAINT: UNIQUE constraint failed')))
+      .not.toMatch(/SQLITE/)
+  })
+
+  it('ninguna pantalla enseña el error crudo al guardar', () => {
+    // «SQLITE_CONSTRAINT: UNIQUE constraint failed» no le dice nada a nadie.
+    for (const archivo of ['renderer/js/modules/alumnos.js', 'renderer/js/modules/notas.js',
+                           'renderer/js/modules/dashboard.js', 'renderer/js/modules/evaluaciones.js']) {
+      const src = leer(archivo)
+      const crudos = [...src.matchAll(/alert\([^)]*e\.message[^)]*\)/g)].map(m => m[0])
+      expect(crudos, `${archivo} enseña el mensaje interno`).toEqual([])
+    }
+  })
+})
+
+describe('Accesibilidad de los formularios', () => {
+  it('todo campo tiene nombre para un lector de pantalla', () => {
+    // Un <select> sin etiqueta asociada se anuncia como «menú desplegable» y ya:
+    // quien no ve la pantalla no sabe si elige módulo, evaluación o proveedor.
+    const sin = []
+    for (const m of html.matchAll(/<(input|select|textarea)\b([^>]*)>/g)) {
+      const atributos = m[2]
+      if (atributos.includes('type="hidden"')) continue
+      const id = /id="([^"]+)"/.exec(atributos)?.[1]
+      const tieneAria = /aria-label|aria-labelledby|title=/.test(atributos)
+      const tieneLabel = id && html.includes(`for="${id}"`)
+      if (!tieneAria && !tieneLabel) sin.push(`${m[1]}#${id || '(sin id)'}`)
+    }
+    expect(sin, `campos que un lector de pantalla no sabe nombrar: ${sin.join(', ')}`).toEqual([])
   })
 })

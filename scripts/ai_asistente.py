@@ -840,15 +840,17 @@ def _ras_de_actividad(act: dict | None) -> list[str]:
 
 
 def _anonimizar_alumno_nombre(alumno: str, activo: bool = True) -> str:
-    """Devuelve un identificador opaco si la anonimización está activa."""
+    """Quita el nombre antes de que salga del ordenador.
+
+    Antes mandaba las iniciales («Alumno_ANON_FGS»). En un grupo de veinte eso
+    identifica a casi cualquiera, así que no era anonimizar: era disimular. El
+    informe no necesita el nombre para nada —lo pone quien lo entrega—, de modo
+    que ahora no sale ninguno.
+    """
     nombre = (alumno or "").strip()
     if not activo or not nombre:
         return nombre
-    piezas = [p for p in nombre.replace(",", " ").split() if p]
-    if not piezas:
-        return "Alumno_ANON"
-    iniciales = "".join(p[0] for p in piezas[:3]).upper()
-    return f"Alumno_ANON_{iniciales or 'X'}"
+    return "Alumno/a"
 
 
 def _parse_ponderaciones(pond_str: str | None) -> dict[str, float]:

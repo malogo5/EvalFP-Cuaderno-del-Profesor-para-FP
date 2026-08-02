@@ -98,7 +98,7 @@
     <!-- ══ PROGRAMACIÓN ══ -->
     <section id="sec-programacion" style="display:none">
       <div style="display:none">
-        <select id="prog-mod-sel" onchange="loadProgramacion()"></select>
+        <select id="prog-mod-sel" aria-label="Módulo de la programación" onchange="loadProgramacion()"></select>
       </div>
       <div id="prog-panel" class="empty-state">Selecciona un módulo para ver y editar la programación. Si no tienes ninguno, empieza por el catálogo.</div>
     </section>
@@ -107,7 +107,7 @@
     <section id="sec-alumnos" style="display:none">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
         <div style="display:none">
-          <select id="alumnos-mod-sel" onchange="loadAlumnos()"></select>
+          <select id="alumnos-mod-sel" aria-label="Módulo del que ver el alumnado" onchange="loadAlumnos()"></select>
         </div>
         <div style="display:flex;gap:8px">
           <button class="btn btn-ghost btn-sm" onclick="importAlumnos()">📋 Importar lista</button>
@@ -144,7 +144,7 @@
       box-shadow:0 20px 60px rgba(0,0,0,0.6)">
       <h3 style="margin:0 0 8px">Importar lista de alumnos</h3>
       <p style="font-size:12px;color:var(--text2);margin:0 0 12px">Una línea por alumno: <code style="background:var(--bg1);padding:2px 4px;border-radius:3px">Apellidos, Nombre</code></p>
-      <textarea id="import-alumnos-txt" rows="12" placeholder="García López, María&#10;Martínez Ruiz, Juan&#10;..." style="width:100%;box-sizing:border-box;background:var(--bg1);color:var(--text1);border:1px solid var(--border);border-radius:6px;padding:8px;font-size:13px;resize:vertical;font-family:monospace"></textarea>
+      <textarea id="import-alumnos-txt" aria-label="Lista de alumnado para importar, uno por línea" rows="12" placeholder="García López, María&#10;Martínez Ruiz, Juan&#10;..." style="width:100%;box-sizing:border-box;background:var(--bg1);color:var(--text1);border:1px solid var(--border);border-radius:6px;padding:8px;font-size:13px;resize:vertical;font-family:monospace"></textarea>
       <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
         <button class="btn btn-ghost btn-sm" onclick="document.getElementById('dlg-import-alumnos').close()">Cancelar</button>
         <button class="btn btn-primary btn-sm" onclick="confirmImportAlumnos()">Importar</button>
@@ -155,10 +155,10 @@
     <section id="sec-notas" style="display:none">
       <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:16px;flex-wrap:wrap">
         <div style="display:none">
-          <select id="notas-mod-sel" onchange="loadNotas()"></select>
+          <select id="notas-mod-sel" aria-label="Módulo del que ver las notas" onchange="loadNotas()"></select>
         </div>
         <div class="field" style="max-width:160px;margin:0">
-          <label>Evaluación</label>
+          <label for="notas-ev-sel">Evaluación</label>
           <select id="notas-ev-sel" onchange="renderNotasGrid()">
             <option value="0">Todas</option>
             <option value="1">EV 1</option>
@@ -176,7 +176,7 @@
     <!-- ══ EVALUACIONES ══ -->
     <section id="sec-evaluaciones" style="display:none">
       <div style="display:none">
-        <select id="eval-mod-sel" onchange="loadEvaluaciones()"></select>
+        <select id="eval-mod-sel" aria-label="Módulo del que ver las evaluaciones" onchange="loadEvaluaciones()"></select>
       </div>
       <div id="eval-content"><div class="empty-state">Selecciona un módulo para revisar evaluaciones, 1ª ordinaria y 2ª ordinaria.</div></div>
     </section>
@@ -184,7 +184,7 @@
     <!-- ══ DASHBOARD ══ -->
     <section id="sec-dashboard" style="display:none">
       <div style="display:none">
-        <select id="dash-mod-sel" onchange="loadDashboard()"></select>
+        <select id="dash-mod-sel" aria-label="Módulo del que ver el resumen" onchange="loadDashboard()"></select>
       </div>
       <div id="dash-content"><div class="empty-state">Selecciona un módulo para ver el dashboard, los boletines y los resúmenes de progreso.</div></div>
     </section>
@@ -206,9 +206,9 @@
       <div id="ia-rubrica" class="card">
         <div class="card-title">Generar Rúbrica</div>
         <div class="form-row">
-          <div class="field"><label>Módulo</label><select id="ia-r-mod"><option value="">Sin módulos</option></select></div>
-          <div class="field"><label>RA</label><select id="ia-r-ra"><option value="">—</option></select></div>
-          <div class="field"><label>Proveedor</label><select id="ia-r-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
+          <div class="field"><label for="ia-r-mod">Módulo</label><select id="ia-r-mod"><option value="">Sin módulos</option></select></div>
+          <div class="field"><label for="ia-r-ra">RA</label><select id="ia-r-ra"><option value="">—</option></select></div>
+          <div class="field"><label for="ia-r-prov">Proveedor</label><select id="ia-r-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
           <button class="btn btn-primary" onclick="runIA('rubrica')">⚡ Generar</button>
         </div>
         <div id="ia-rubrica-term" class="terminal"><span class="placeholder">El resultado aparecerá aquí…</span></div>
@@ -216,10 +216,10 @@
       <div id="ia-actividad" class="card" style="display:none">
         <div class="card-title">Propuestas de Actividades</div>
         <div class="form-row">
-          <div class="field"><label>Módulo</label><select id="ia-a-mod"><option value="">Sin módulos</option></select></div>
-          <div class="field"><label>RA</label><select id="ia-a-ra"><option value="">—</option></select></div>
-          <div class="field" style="max-width:70px"><label>Núm.</label><input type="number" id="ia-a-n" value="3" min="1" max="10"/></div>
-          <div class="field"><label>Proveedor</label><select id="ia-a-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
+          <div class="field"><label for="ia-a-mod">Módulo</label><select id="ia-a-mod"><option value="">Sin módulos</option></select></div>
+          <div class="field"><label for="ia-a-ra">RA</label><select id="ia-a-ra"><option value="">—</option></select></div>
+          <div class="field" style="max-width:70px"><label for="ia-a-n">Núm.</label><input type="number" id="ia-a-n" value="3" min="1" max="10"/></div>
+          <div class="field"><label for="ia-a-prov">Proveedor</label><select id="ia-a-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
           <button class="btn btn-primary" onclick="runIA('actividad')">⚡ Generar</button>
         </div>
         <div id="ia-actividad-term" class="terminal"><span class="placeholder">El resultado aparecerá aquí…</span></div>
@@ -227,25 +227,25 @@
       <div id="ia-informe" class="card" style="display:none">
         <div class="card-title">Informe Individual</div>
         <div class="form-row">
-          <div class="field"><label>Módulo</label><select id="ia-i-mod" onchange="iaInformeLoadAlumnos()"><option value="">Sin módulos</option></select></div>
-          <div class="field" style="flex:2"><label>Alumno/a</label><select id="ia-i-alumno-sel" onchange="iaInformeAutoNotas()"><option value="">— selecciona —</option></select></div>
-          <div class="field"><label>Proveedor</label><select id="ia-i-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
+          <div class="field"><label for="ia-i-mod">Módulo</label><select id="ia-i-mod" onchange="iaInformeLoadAlumnos()"><option value="">Sin módulos</option></select></div>
+          <div class="field" style="flex:2"><label for="ia-i-alumno-sel">Alumno/a</label><select id="ia-i-alumno-sel" onchange="iaInformeAutoNotas()"><option value="">— selecciona —</option></select></div>
+          <div class="field"><label for="ia-i-prov">Proveedor</label><select id="ia-i-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
         </div>
         <div class="form-row">
           <div class="field" style="flex:3">
-            <label>Notas por RA <span style="font-size:11px;color:var(--text3)">(auto-rellenadas desde la BD al elegir alumno)</span></label>
+            <label for="ia-i-notas">Notas por RA <span style="font-size:11px;color:var(--text3)">(auto-rellenadas desde la BD al elegir alumno)</span></label>
             <input type="text" id="ia-i-notas" placeholder="RA1:7,RA2:5.5,RA3:8 — o edita manualmente"/>
           </div>
           <button class="btn btn-primary" onclick="runIA('informe')">⚡ Generar</button>
         </div>
         <div id="ia-i-notas-hint" style="margin-top:-6px;margin-bottom:10px;font-size:10.5px;color:var(--text3)"></div>
         <div style="margin-top:10px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:11px;color:var(--text2);line-height:1.45">
-          <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer">
-            <input type="checkbox" id="ia-i-consent" style="margin-top:2px"/>
+          <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer" for="ia-p-mod">
+            <input type="checkbox" id="ia-i-consent" aria-label="Entiendo que se enviarán las notas al proveedor de IA" style="margin-top:2px"/>
             <span>Entiendo que, al generar el informe, se enviarán las notas y, salvo anonimización, el nombre del alumno/a al proveedor IA seleccionado.</span>
           </label>
           <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer;margin-top:7px">
-            <input type="checkbox" id="ia-i-anonimizar" style="margin-top:2px"/>
+            <input type="checkbox" id="ia-i-anonimizar" aria-label="Anonimizar el nombre antes de enviarlo" checked style="margin-top:2px"/>
             <span>Anonimizar nombre (recomendado).</span>
           </label>
         </div>
@@ -257,25 +257,25 @@
         <div class="card-sub">Solo con los resultados de aprendizaje que le quedan: qué repasar, qué tareas hacer, en cuántas semanas y cómo se le evaluará.</div>
         <div class="form-row">
           <div class="field"><label>Módulo</label><select id="ia-p-mod" onchange="iaPlanLoadAlumnos()"><option value="">Sin módulos</option></select></div>
-          <div class="field" style="flex:2"><label>Alumno/a</label><select id="ia-p-alumno-sel" onchange="iaPlanAutoNotas()"><option value="">— selecciona —</option></select></div>
-          <div class="field" style="max-width:90px"><label>Semanas</label><input type="number" id="ia-p-semanas" value="4" min="1" max="12"/></div>
-          <div class="field"><label>Proveedor</label><select id="ia-p-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
+          <div class="field" style="flex:2"><label for="ia-p-alumno-sel">Alumno/a</label><select id="ia-p-alumno-sel" onchange="iaPlanAutoNotas()"><option value="">— selecciona —</option></select></div>
+          <div class="field" style="max-width:90px"><label for="ia-p-semanas">Semanas</label><input type="number" id="ia-p-semanas" value="4" min="1" max="12"/></div>
+          <div class="field"><label for="ia-p-prov">Proveedor</label><select id="ia-p-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
         </div>
         <div class="form-row">
           <div class="field" style="flex:3">
-            <label>Notas por RA <span style="font-size:11px;color:var(--text3)">(se rellenan solas al elegir alumno/a)</span></label>
+            <label for="ia-p-notas">Notas por RA <span style="font-size:11px;color:var(--text3)">(se rellenan solas al elegir alumno/a)</span></label>
             <input type="text" id="ia-p-notas" placeholder="RA1:7,RA3:3.5"/>
           </div>
           <button class="btn btn-primary" onclick="runIA('plan')">⚡ Generar</button>
         </div>
         <div id="ia-p-hint" style="margin-top:-6px;margin-bottom:10px;font-size:10.5px;color:var(--text3)"></div>
         <div style="margin-top:10px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:11px;color:var(--text2);line-height:1.45">
-          <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer">
-            <input type="checkbox" id="ia-p-consent" style="margin-top:2px"/>
+          <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer" for="ia-g-mod">
+            <input type="checkbox" id="ia-p-consent" aria-label="Entiendo que se enviarán las notas al proveedor de IA" style="margin-top:2px"/>
             <span>Entiendo que se enviarán las notas y, salvo anonimización, el nombre del alumno/a al proveedor IA seleccionado.</span>
           </label>
           <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer;margin-top:7px">
-            <input type="checkbox" id="ia-p-anonimizar" checked style="margin-top:2px"/>
+            <input type="checkbox" id="ia-p-anonimizar" aria-label="Anonimizar el nombre antes de enviarlo" checked style="margin-top:2px"/>
             <span>Anonimizar el nombre antes de enviarlo.</span>
           </label>
         </div>
@@ -287,12 +287,12 @@
         <div class="card-sub">Qué resultados de aprendizaje y qué actividades han ido peor en toda la clase, y qué reforzar. Los números se calculan en tu ordenador; la IA solo los interpreta.</div>
         <div class="form-row">
           <div class="field"><label>Módulo</label><select id="ia-g-mod"><option value="">Sin módulos</option></select></div>
-          <div class="field"><label>Proveedor</label><select id="ia-g-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
+          <div class="field"><label for="ia-g-prov">Proveedor</label><select id="ia-g-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
           <button class="btn btn-primary" onclick="runIA('grupo')">⚡ Generar</button>
         </div>
         <div style="margin-top:4px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:11px;color:var(--text2)">
-          <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer">
-            <input type="checkbox" id="ia-g-consent" style="margin-top:2px"/>
+          <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer" for="ia-e-mod">
+            <input type="checkbox" id="ia-g-consent" aria-label="Entiendo que se enviarán las calificaciones del grupo al proveedor de IA" style="margin-top:2px"/>
             <span>Entiendo que se enviarán las calificaciones del grupo (sin nombres) al proveedor IA seleccionado.</span>
           </label>
         </div>
@@ -304,9 +304,9 @@
         <div class="card-sub">A partir de los criterios de evaluación literales del decreto: enunciado, solucionario y baremo por criterio.</div>
         <div class="form-row">
           <div class="field"><label>Módulo</label><select id="ia-e-mod"><option value="">Sin módulos</option></select></div>
-          <div class="field"><label>RA</label><select id="ia-e-ra"><option value="">—</option></select></div>
-          <div class="field" style="max-width:80px"><label>Preguntas</label><input type="number" id="ia-e-n" value="8" min="3" max="20"/></div>
-          <div class="field" style="max-width:130px"><label>Tipo</label>
+          <div class="field"><label for="ia-e-ra">RA</label><select id="ia-e-ra"><option value="">—</option></select></div>
+          <div class="field" style="max-width:80px"><label for="ia-e-n">Preguntas</label><input type="number" id="ia-e-n" value="8" min="3" max="20"/></div>
+          <div class="field" style="max-width:130px"><label for="ia-e-tipo">Tipo</label>
             <select id="ia-e-tipo">
               <option value="mixto">Mixta</option>
               <option value="test">Test</option>
@@ -314,8 +314,8 @@
               <option value="practico">Supuesto práctico</option>
             </select>
           </div>
-          <div class="field" style="max-width:90px"><label>Minutos</label><input type="number" id="ia-e-duracion" value="50" min="15" max="180"/></div>
-          <div class="field"><label>Proveedor</label><select id="ia-e-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
+          <div class="field" style="max-width:90px"><label for="ia-e-duracion">Minutos</label><input type="number" id="ia-e-duracion" value="50" min="15" max="180"/></div>
+          <div class="field"><label for="ia-e-prov">Proveedor</label><select id="ia-e-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
           <button class="btn btn-primary" onclick="runIA('examen')">⚡ Generar</button>
         </div>
         <div id="ia-examen-term" class="terminal"><span class="placeholder">El resultado aparecerá aquí…</span></div>
@@ -325,15 +325,15 @@
         <div class="card-title">Corregir un examen desde las fotos</div>
         <div class="card-sub">Lee la letra manuscrita, corrige contra los criterios del decreto y te devuelve feedback y las fotos marcadas. La nota es una <b>propuesta</b>: la revisas y decides tú si se guarda.</div>
         <div class="form-row">
-          <div class="field"><label>Módulo</label><select id="ia-c-mod" onchange="iaCorregirLoad()"><option value="">Sin módulos</option></select></div>
-          <div class="field"><label>RA evaluado</label><select id="ia-c-ra"><option value="">—</option></select></div>
-          <div class="field" style="flex:2"><label>Alumno/a</label><select id="ia-c-alumno"><option value="">— selecciona —</option></select></div>
-          <div class="field" style="max-width:90px"><label>Nº lista</label><input type="number" id="ia-c-numero" min="1" max="40" placeholder="03"/></div>
-          <div class="field"><label>Proveedor</label><select id="ia-c-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
+          <div class="field"><label for="ia-c-mod">Módulo</label><select id="ia-c-mod" onchange="iaCorregirLoad()"><option value="">Sin módulos</option></select></div>
+          <div class="field"><label for="ia-c-ra">RA evaluado</label><select id="ia-c-ra"><option value="">—</option></select></div>
+          <div class="field" style="flex:2"><label for="ia-c-alumno">Alumno/a</label><select id="ia-c-alumno"><option value="">— selecciona —</option></select></div>
+          <div class="field" style="max-width:90px"><label for="ia-c-numero">Nº lista</label><input type="number" id="ia-c-numero" min="1" max="40" placeholder="03"/></div>
+          <div class="field"><label for="ia-c-prov">Proveedor</label><select id="ia-c-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
         </div>
         <div class="form-row">
           <div class="field" style="flex:3">
-            <label>Enunciado o solucionario <span style="font-size:11px;color:var(--text3)">(opcional, mejora mucho la corrección)</span></label>
+            <label for="ia-c-enunciado">Enunciado o solucionario <span style="font-size:11px;color:var(--text3)">(opcional, mejora mucho la corrección)</span></label>
             <input type="text" id="ia-c-enunciado" placeholder="Pega aquí el enunciado, las respuestas esperadas o el baremo"/>
           </div>
           <button class="btn btn-ghost" onclick="iaElegirFotos()">📷 Elegir fotos…</button>
@@ -341,16 +341,16 @@
         </div>
         <div id="ia-c-fotos" style="margin:-4px 0 10px;font-size:11px;color:var(--text3)">Ninguna foto seleccionada. Elige las páginas de un solo alumno, en orden.</div>
         <div style="padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:11px;color:var(--text2);line-height:1.45">
-          <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer">
-            <input type="checkbox" id="ia-c-consent" style="margin-top:2px"/>
+          <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer" for="ia-c-modo">
+            <input type="checkbox" id="ia-c-consent" aria-label="Entiendo que se enviarán las fotos del examen al proveedor de IA" style="margin-top:2px"/>
             <span>Entiendo que las fotos del examen se enviarán al proveedor IA seleccionado para poder corregirlas.</span>
           </label>
           <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer;margin-top:7px">
-            <input type="checkbox" id="ia-c-anonimizar" checked style="margin-top:2px"/>
+            <input type="checkbox" id="ia-c-anonimizar" aria-label="Anonimizar el nombre antes de enviarlo" checked style="margin-top:2px"/>
             <span>Referirse al alumno/a por su número de lista, no por su nombre.</span>
           </label>
           <label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer;margin-top:7px">
-            <input type="checkbox" id="ia-c-recorte" checked style="margin-top:2px"/>
+            <input type="checkbox" id="ia-c-recorte" aria-label="Recortar la cabecera de la foto antes de enviarla" checked style="margin-top:2px"/>
             <span><b>Recortar la cabecera de la hoja antes de enviarla.</b>
               El alumnado escribe su nombre arriba: referirse a él por su número no anonimiza la
               imagen. Se recorta solo la copia que se envía; las fotos que se te devuelven marcadas
@@ -358,7 +358,7 @@
           </label>
           <div style="display:flex;align-items:center;gap:8px;margin-top:7px;padding-left:24px">
             <span style="font-size:11px;color:var(--text3)">Franja superior a recortar</span>
-            <input type="number" id="ia-c-recorte-pct" min="5" max="40" step="5" value="15"
+            <input type="number" id="ia-c-recorte-pct" aria-label="Porcentaje de la foto que se recorta" min="5" max="40" step="5" value="15"
               style="width:56px;font-size:11px;padding:2px 5px;border-radius:5px;border:1px solid var(--border2);
                      background:var(--bg);color:var(--text);text-align:center"/>
             <span style="font-size:11px;color:var(--text3)">% de la altura</span>
@@ -374,7 +374,7 @@
                 <option value="paginas">Por número fijo de páginas</option>
               </select>
             </div>
-            <div class="field" style="max-width:110px"><label>Págs./examen</label><input type="number" id="ia-c-paginas" min="1" max="12" value="2"/></div>
+            <div class="field" style="max-width:110px"><label for="ia-c-paginas">Págs./examen</label><input type="number" id="ia-c-paginas" min="1" max="12" value="2"/></div>
             <button class="btn btn-ghost btn-sm" onclick="iaAgruparFotos()">🧩 Verificar reparto</button>
             <button class="btn btn-ghost btn-sm" onclick="iaAsignarPorOrden()">↕️ Asignar por orden de lista</button>
           </div>
@@ -386,7 +386,7 @@
             <button id="ia-c-reanudar" class="btn btn-primary btn-sm" style="display:none" onclick="iaReanudarLote()">▶️ Reanudar</button>
             <button id="ia-c-descartar" class="btn btn-ghost btn-sm" style="display:none" onclick="iaDescartarCola()">✕ Dejarlo aquí</button>
             <div id="ia-c-calibrado" style="display:none;margin-top:10px">
-              <label style="font-size:11px;color:var(--text2)">Ajustes de criterio para el resto de la tanda (opcional)</label>
+              <label style="font-size:11px;color:var(--text2)" for="ia-c-ajustes">Ajustes de criterio para el resto de la tanda (opcional)</label>
               <input type="text" id="ia-c-ajustes" placeholder="Ej.: más estricto con las unidades; el feedforward más corto"/>
               <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="iaCorregirResto()">▶️ Aplicar y corregir el resto</button>
             </div>
@@ -395,7 +395,7 @@
         </div>
         <div id="ia-c-propuesta" style="display:none;margin-top:12px;padding:12px 14px;border:1px solid var(--accent);border-radius:10px">
           <span style="font-size:13px">Nota propuesta: <b id="ia-c-nota">—</b>/10</span>
-          <select id="ia-c-actividad" style="margin:0 8px"><option value="">— actividad donde guardarla —</option></select>
+          <select id="ia-c-actividad" aria-label="Actividad en la que guardar la nota" style="margin:0 8px"><option value="">— actividad donde guardarla —</option></select>
           <button class="btn btn-success btn-sm" onclick="iaGuardarNotaPropuesta()">Guardar esta nota</button>
           <span id="ia-c-guardado" style="font-size:12px;color:var(--green);margin-left:8px"></span>
         </div>
@@ -406,9 +406,9 @@
         <div class="card-title">Generar Apuntes HTML</div>
         <div class="card-sub">Crea un index.html por UT con contenido pedagógico completo. Guardado en Documentos/EvalFP/apuntes/</div>
         <div class="form-row">
-          <div class="field"><label>Módulo</label><select id="ia-ap-mod"><option value="">Sin módulos</option></select></div>
-          <div class="field"><label>UT (vacío = todas)</label><input type="text" id="ia-ap-ut" placeholder="UT1 (opcional)"/></div>
-          <div class="field"><label>Proveedor</label><select id="ia-ap-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
+          <div class="field"><label for="ia-ap-mod">Módulo</label><select id="ia-ap-mod"><option value="">Sin módulos</option></select></div>
+          <div class="field"><label for="ia-ap-ut">UT (vacío = todas)</label><input type="text" id="ia-ap-ut" placeholder="UT1 (opcional)"/></div>
+          <div class="field"><label for="ia-ap-prov">Proveedor</label><select id="ia-ap-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
           <button class="btn btn-primary" onclick="runApuntes()">⚡ Generar</button>
           <button class="btn btn-ghost" onclick="window.api.openOutput()">📂 Ver archivos</button>
         </div>
@@ -418,8 +418,8 @@
         <div class="card-title">Todo el módulo</div>
         <div class="card-sub">Genera rúbricas + actividades para todos los RAs y apuntes HTML para todas las UTs. Todo junto en Documentos/EvalFP/ia_output/</div>
         <div class="form-row">
-          <div class="field"><label>Módulo</label><select id="ia-t-mod"><option value="">Sin módulos</option></select></div>
-          <div class="field"><label>Proveedor</label><select id="ia-t-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
+          <div class="field"><label for="ia-t-mod">Módulo</label><select id="ia-t-mod"><option value="">Sin módulos</option></select></div>
+          <div class="field"><label for="ia-t-prov">Proveedor</label><select id="ia-t-prov"><option value="auto">Auto</option><option value="claude">Claude</option><option value="openai">OpenAI</option><option value="demo">Demo</option></select></div>
           <button class="btn btn-success" onclick="runIA('todo')">🚀 Generar todo</button>
           <button class="btn btn-ghost" onclick="window.api.openOutput()">📂 Ver archivos</button>
         </div>
@@ -434,11 +434,11 @@
         <div class="card-sub">Se guardan de forma segura en tu ordenador. Nunca salen de él.</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
           <div class="field">
-            <label>OpenAI API Key <span id="cfg-openai-status" style="font-size:11px;margin-left:6px"></span></label>
+            <label for="cfg-openai">OpenAI API Key <span id="cfg-openai-status" style="font-size:11px;margin-left:6px"></span></label>
             <input type="password" id="cfg-openai" placeholder="sk-… (dejar vacío para no cambiar)"/>
           </div>
           <div class="field">
-            <label>Anthropic (Claude) API Key <span id="cfg-anthropic-status" style="font-size:11px;margin-left:6px"></span></label>
+            <label for="cfg-anthropic">Anthropic (Claude) API Key <span id="cfg-anthropic-status" style="font-size:11px;margin-left:6px"></span></label>
             <input type="password" id="cfg-anthropic" placeholder="sk-ant-… (dejar vacío para no cambiar)"/>
           </div>
         </div>
@@ -446,7 +446,7 @@
       <div class="card">
         <div class="card-title">Preferencias</div>
         <div class="field" style="max-width:300px">
-          <label>Proveedor IA por defecto</label>
+          <label for="cfg-prov">Proveedor IA por defecto</label>
           <select id="cfg-prov">
             <option value="auto">Auto (Claude → OpenAI → Demo)</option>
             <option value="openai">OpenAI</option>
@@ -573,7 +573,7 @@
         <div style="font-size:11px;color:var(--text2)">Normativa DOCM Castilla-La Mancha · <span id="cat-count">—</span> módulos disponibles</div>
       </div>
       <div style="display:flex;gap:8px;align-items:center">
-        <input id="cat-search" type="search" placeholder="🔍 Buscar módulo…"
+        <input id="cat-search" aria-label="Buscar en el catálogo de módulos" type="search" placeholder="🔍 Buscar módulo…"
           oninput="filterCatalogo()"
           style="width:200px;padding:6px 10px;border-radius:8px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-size:12px"/>
         <button class="btn btn-ghost btn-sm" onclick="closeModal()">✕ Cerrar</button>
@@ -612,7 +612,7 @@
     <div class="cat-footer" id="cat-footer" style="display:none">
       <div class="cat-sel-info" id="cat-sel-info"></div>
       <div style="display:flex;gap:8px;align-items:center">
-        <input type="text" id="add-mod-grupo"
+        <input type="text" id="add-mod-grupo" aria-label="Nombre del grupo"
           placeholder="Grupo / Clase (opcional)"
           style="width:210px;padding:6px 10px;border-radius:8px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-size:12px"/>
         <button class="btn btn-primary btn-sm" onclick="confirmAddModulo()">＋ Añadir módulo</button>

@@ -88,6 +88,34 @@ Lo que la aplicación genera —informes, apuntes, boletines, correcciones— va
 `Documentos/EvalFP`, en subcarpetas por tipo (`Material IA`, `boletines`, `apuntes`,
 `correcciones`).
 
+### Datos de menores: qué sale del ordenador y qué no
+
+Este cuaderno guarda datos personales de alumnado menor de edad, así que conviene tener claro
+por dónde andan.
+
+**No sale nada, salvo si usas la IA.** La aplicación no tiene cuenta, ni nube, ni telemetría.
+Funciona entera sin conexión.
+
+Cuando pides un informe, un plan de recuperación, una radiografía del grupo o una corrección
+desde foto, sí sale información hacia el proveedor de IA que hayas configurado:
+
+| Se envía | No se envía |
+|---|---|
+| Notas por resultado de aprendizaje | Nombres y apellidos (la casilla de anonimizar viene marcada) |
+| Descripciones de las actividades y sus notas | NIA, correo, teléfono, fecha de nacimiento |
+| Los RA y CE del decreto | Cualquier dato de quien no sea el alumno o alumna del informe |
+| En la corrección, la foto del examen | — |
+
+Cada una de esas pantallas exige marcar una casilla de conformidad antes de enviar nada, y la
+radiografía del grupo va siempre sin nombres. Si desmarcas la casilla de anonimizar, el nombre
+sí viaja: hazlo solo si sabes por qué.
+
+Los registros de funcionamiento (`Documentos/EvalFP/logs`) no guardan datos de alumnado: solo
+si arrancó la aplicación, si se hizo la copia y qué error hubo.
+
+**Para borrarlo todo** basta con eliminar la carpeta de datos de la tabla de arriba y la
+carpeta `Documentos/EvalFP`. No queda nada en ningún otro sitio.
+
 ## Copias de seguridad
 
 Se hacen solas: **una diaria a las 2:00** y otra **cada vez que cierras la aplicación**. Se

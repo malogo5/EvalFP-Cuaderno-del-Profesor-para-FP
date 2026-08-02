@@ -157,11 +157,31 @@ const validators = {
     if (context) console.error(`[${context}]`, error)
     else console.error(error)
     const msg = (error?.message || String(error)).toLowerCase()
+    // El disco lleno tiene que decirse con todas las letras. Con el mensaje
+    // genérico —«inténtalo de nuevo»— la respuesta natural es reintentar, y
+    // reintentar con el disco lleno falla igual mientras se pierden las notas
+    // que se están poniendo.
+    if (msg.includes('disk i/o') || msg.includes('disk is full') || msg.includes('enospc') ||
+        msg.includes('no space')) {
+      return 'No se ha podido guardar: el disco está lleno o falla al escribir. ' +
+             'Libera espacio antes de seguir poniendo notas.'
+    }
+    if (msg.includes('readonly') || msg.includes('read-only') || msg.includes('erofs')) {
+      return 'La base de datos está protegida contra escritura y no se puede guardar nada.'
+    }
     if (msg.includes('sql') || msg.includes('database')) return 'Error de base de datos. Inténtalo de nuevo.'
     if (msg.includes('permission') || msg.includes('eacces')) return 'Sin permisos para realizar esta operación.'
     if (msg.includes('enoent') || msg.includes('not found')) return 'Archivo no encontrado.'
     if (msg.includes('network') || msg.includes('timeout')) return 'Error de red. Comprueba la conexión.'
     if (/<|>|script/i.test(msg)) return 'Entrada no válida.'
+    // Los avisos que escribe la propia aplicación ya están en español y dicen
+    // algo útil («La evidencia está fuera de la carpeta de EvalFP»). Taparlos
+    // con un genérico quitaba la única pista que tenía la persona. Se dejan
+    // pasar tal cual mientras no lleven rutas ni códigos internos.
+    const original = (error?.message || String(error)).trim()
+    const parece_nuestro = /^[A-ZÁÉÍÓÚÑ¿¡]/.test(original) && original.includes(' ') &&
+      !/[/\\]|[A-Z]{4,}_|errno|\bcode\b/.test(original)
+    if (parece_nuestro) return original
     return 'Ha ocurrido un error. Inténtalo de nuevo.'
   }
 }
