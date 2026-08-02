@@ -78,6 +78,13 @@ y se arregla recompilando ese módulo desde la carpeta del proyecto:
 npx electron-rebuild -f -w keytar
 ```
 
+Ojo al efecto secundario: recompilar toca el paquete de Electron y le invalida la firma, así
+que la vez siguiente `npm start` muere con **SIGKILL**. Se vuelve a firmar y listo:
+
+```
+codesign --force --deep --sign - node_modules/electron/dist/Electron.app
+```
+
 Para leer letra manuscrita en la corrección de exámenes, Claude da bastante mejor resultado.
 
 ## Dónde viven tus datos
