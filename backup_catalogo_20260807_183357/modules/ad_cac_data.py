@@ -1,0 +1,134 @@
+"""EvalFP — Comunicación y atención al cliente · 0651 · Asistencia a la Dirección
+Decreto 41/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9482), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM
+RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
+Duración: 148 h · 4 h/semana · 1º AD.
+"""
+MODULO = {
+    "nombre":"Comunicación y atención al cliente","codigo":"0651","abrev":"CAC",
+    "ciclo":"Asistencia a la Dirección","ciclo_clave":"AD","ciclo_nivel":"CFGS",
+    "curso":"1º AD","horas_sem":4,"total_horas":148,"anno":"2026-2027","eval_count":3,
+    "decreto":"Decreto 41/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9482), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM",
+}
+UTS = [
+    {"id":"UT1","nombre":"Comunicación empresarial e imagen corporativa","horas":22,"eval":1,"tags":"Comunicación interna y externa · Imagen de marca · Publicidad y promoción · Redes sociales"},
+    {"id":"UT2","nombre":"Comunicación oral presencial y no presencial","horas":21,"eval":1,"tags":"Atención telefónica · Videoconferencia · Escucha activa · Protocolo · Comunicación no verbal"},
+    {"id":"UT3","nombre":"Comunicación escrita profesional","horas":24,"eval":1,"tags":"Cartas e informes · Estilo y ortografía · Correo electrónico · Documentos de la Administración"},
+    {"id":"UT4","nombre":"Registro y gestión de la correspondencia","horas":24,"eval":2,"tags":"Registro de entrada y salida · Distribución interna · Digitalización · Archivo y custodia · Protección de datos"},
+    {"id":"UT5","nombre":"Atención a la clientela","horas":15,"eval":2,"tags":"Tipos de clientela · Necesidades · Asertividad · Fases de la atención"},
+    {"id":"UT6","nombre":"Quejas y reclamaciones","horas":21,"eval":3,"tags":"Normativa de consumo · Hoja de reclamaciones · Mediación y arbitraje · OMIC"},
+    {"id":"UT7","nombre":"Servicio postventa y fidelización","horas":21,"eval":3,"tags":"Postventa · Encuestas de satisfacción · Indicadores · CRM · Mejora continua"},
+]
+RAS = [
+    {"id":"RA1","pond":15,"nombre":"Caracteriza técnicas de comunicación institucional y promocional, distinguiendo entre internas y externas."},
+    {"id":"RA2","pond":15,"nombre":"Realiza comunicaciones orales presenciales y no presenciales, aplicando técnicas de comunicación y adaptándolas a la situación y al interlocutor."},
+    {"id":"RA3","pond":16,"nombre":"Elabora documentos escritos de carácter profesional, aplicando criterios lingüísticos, ortográficos y de estilo."},
+    {"id":"RA4","pond":16,"nombre":"Determina los procesos de recepción, registro, distribución y recuperación de comunicaciones escritas, aplicando criterios específicos de cada una de estas tareas."},
+    {"id":"RA5","pond":10,"nombre":"Aplica técnicas de comunicación, identificando las más adecuadas en la relación y atención a los clientes/usuarios."},
+    {"id":"RA6","pond":14,"nombre":"Gestiona consultas, quejas y reclamaciones de posibles clientes, aplicando la normativa vigente."},
+    {"id":"RA7","pond":14,"nombre":"Organiza el servicio postventa, relacionándolo con la fidelización del cliente."},
+]
+ASIGNACIONES = [
+    ("UT1","RA1",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9","CR10"]),
+    ("UT2","RA2",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9","CR10"]),
+    ("UT3","RA3",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9","CR10","CR11"]),
+    ("UT4","RA4",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9","CR10","CR11"]),
+    ("UT5","RA5",["CR1","CR2","CR3","CR4","CR5","CR6","CR7"]),
+    ("UT6","RA6",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9","CR10"]),
+    ("UT7","RA7",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9","CR10"]),
+]
+EVAL_RAS = {1:["RA1","RA2","RA3"], 2:["RA4","RA5"], 3:["RA6","RA7"]}
+DUAL_RA = None
+RA_INSTRUMENTOS = {
+    "RA1":["examen","practica"],
+    "RA2":["practica"],
+    "RA3":["practica","examen"],
+    "RA4":["practica","examen"],
+    "RA5":["practica","examen"],
+    "RA6":["examen","practica"],
+    "RA7":["practica","examen"],
+}
+CES = {
+    "RA1":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han identificado los tipos de instituciones empresariales, describiendo sus características jurídicas, funcionales y organizativas.",
+        "Se han relacionado las funciones tipo de la organización: dirección, planificación, organización, ejecución y control.",
+        "Se ha identificado la estructura organizativa para una asistencia o la prestación de un servicio de calidad.",
+        "Se han relacionado los distintos estilos de mando de una organización con el clima laboral que generan.",
+        "Se han definido los canales formales de comunicación en la organización a partir de su organigrama.",
+        "Se han diferenciado los procesos de comunicación internos formales e informales.",
+        "Se ha valorado la influencia de la comunicación informal y las cadenas de rumores en las organizaciones, y su repercusión en las actuaciones del servicio de información prestado.",
+        "Se ha relacionado el proceso de demanda de información de acuerdo con el tipo de cliente, interno y externo, que puede intervenir en la misma.",
+        "Se ha valorado la importancia de la transmisión de la imagen corporativa de la organización en las comunicaciones formales.",
+        "Se han identificado los aspectos más significativos que transmiten la imagen corporativa en las comunicaciones institucionales y promocionales de la organización.",
+    ], start=1)],
+    "RA2":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han identificado los elementos y las etapas de un proceso de comunicación.",
+        "Se han aplicado las distintas técnicas de comunicación oral presencial y telefónica.",
+        "Se ha aplicado el protocolo de comunicación verbal y no verbal en las comunicaciones presenciales y no presenciales.",
+        "Se han identificado los elementos necesarios para realizar y recibir una llamada telefónica efectiva en sus distintas fases: preparación, presentación-identificación y realización de la misma.",
+        "Se han tenido en cuenta las costumbres socioculturales y los usos empresariales y se ha valorado la importancia de la transmisión de la imagen corporativa.",
+        "Se han detectado las interferencias que producen las barreras de la comunicación en la comprensión de un mensaje y se han propuesto las acciones correctivas necesarias.",
+        "Se ha utilizado el léxico y las expresiones adecuadas al tipo de comunicación y a los interlocutores.",
+        "Se han aplicado convenientemente elementos de comunicación no verbal en los mensajes emitidos.",
+        "Se ha valorado si la información es transmitida con claridad, de forma estructurada, con precisión, con cortesía, con respeto y con sensibilidad.",
+        "Se han comprobado los errores cometidos y se han propuesto las acciones correctoras necesarias.",
+    ], start=1)],
+    "RA3":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han identificado los soportes y los canales para elaborar y transmitir los documentos.",
+        "Se han diferenciado los soportes más apropiados en función de los criterios de rapidez, seguridad y confidencialidad.",
+        "Se ha identificado al destinatario, observando las debidas normas de protocolo.",
+        "Se han diferenciado las estructuras y estilos de redacción propias de la documentación profesional.",
+        "Se ha redactado el documento apropiado, utilizando una estructura, terminología y forma adecuadas, en función de su finalidad y de la situación de partida.",
+        "Se han utilizado las aplicaciones informáticas de procesamiento de textos y autoedición, así como sus herramientas de corrección.",
+        "Se han publicado documentos con herramientas de la web 2.0.",
+        "Se ha adecuado la documentación escrita al manual de estilo de organizaciones tipo.",
+        "Se ha utilizado la normativa sobre protección de datos y conservación de documentos, establecida para las empresas e instituciones públicas y privadas.",
+        "Se han aplicado, en la elaboración de la documentación, las técnicas 3R (reducir, reutilizar y reciclar).",
+        "Se han aplicado técnicas de transmisión de la imagen corporativa en las comunicaciones escritas, valorando su importancia para las organizaciones.",
+    ], start=1)],
+    "RA4":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han identificado los medios, procedimientos y criterios más adecuados en la recepción, registro, distribución y transmisión de comunicación escrita a través de los medios telemáticos.",
+        "Se han determinado las ventajas e inconvenientes de la utilización de los distintos medios de transmisión de la comunicación escrita.",
+        "Se ha seleccionado el medio de transmisión más adecuado en función de los criterios de urgencia, coste y seguridad.",
+        "Se han identificado los soportes de archivo y registro más utilizados en función de las características de la información que se va a almacenar.",
+        "Se han analizado las técnicas de mantenimiento del archivo de gestión de correspondencia convencional.",
+        "Se ha determinado el sistema de clasificación, registro y archivo apropiado al tipo de documentos.",
+        "Se han reconocido los procedimientos de consulta y conservación de la información y documentación.",
+        "Se han respetado los niveles de protección, seguridad y acceso a la información según la normativa vigente y se han aplicado, en la elaboración y archivo de la documentación, las técnicas 3R (reducir, reutilizar, reciclar).",
+        "Se han registrado los correos electrónicos recibidos o emitidos de forma organizada y rigurosa, según técnicas de gestión eficaz.",
+        "Se ha realizado la gestión y mantenimiento de libretas de direcciones.",
+        "Se ha valorado la importancia de la firma digital en la correspondencia electrónica.",
+    ], start=1)],
+    "RA5":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han aplicado técnicas de comunicación y habilidades sociales que facilitan la empatía con el cliente/usuario en situaciones de atención/asesoramiento al mismo.",
+        "Se han identificado las fases que componen el proceso de atención al cliente/consumidor/usuario a través de diferentes canales de comunicación.",
+        "Se ha adoptado la actitud más adecuada según el comportamiento del cliente ante diversos tipos de situaciones.",
+        "Se han analizado las motivaciones de compra o demanda de un producto o servicio por parte del cliente/usuario.",
+        "Se ha obtenido, en su caso, la información histórica del cliente.",
+        "Se ha aplicado la forma y actitud adecuadas en la atención y asesoramiento a un cliente en función del canal de comunicación utilizado.",
+        "Se han analizado y solucionado los errores más habituales que se cometen en la comunicación con el cliente/ usuario.",
+    ], start=1)],
+    "RA6":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han descrito las funciones del departamento de atención al cliente en empresas.",
+        "Se ha valorado la importancia de una actitud proactiva para anticiparse a incidencias en los procesos.",
+        "Se ha interpretado la comunicación recibida por parte del cliente.",
+        "Se han relacionado los elementos de la queja/reclamación con las fases que componen el plan interno de resolución de quejas/reclamaciones.",
+        "Se han diferenciado los tipos de demanda o reclamación.",
+        "Se ha gestionado la información que hay que suministrar al cliente.",
+        "Se han determinado los documentos propios de la gestión de consultas, quejas y reclamaciones.",
+        "Se han redactado escritos de respuesta, utilizando medios electrónicos u otros canales de comunicación.",
+        "Se ha valorado la importancia de la protección del consumidor.",
+        "Se ha aplicado la normativa en materia de consumo.",
+    ], start=1)],
+    "RA7":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se ha valorado la importancia del servicio posventa en los procesos comerciales.",
+        "Se han identificado los elementos que intervienen en la atención posventa.",
+        "Se han identificado las situaciones comerciales que precisan seguimiento y servicio posventa.",
+        "Se han aplicado los métodos más utilizados habitualmente en el control de calidad del servicio posventa y los elementos que intervienen en la fidelización del cliente.",
+        "Se han distinguido los momentos o fases que estructuran el proceso de posventa.",
+        "Se han utilizado las herramientas de gestión de un servicio posventa.",
+        "Se han descrito las fases del procedimiento de relación con los clientes.",
+        "Se han descrito los estándares de calidad definidos en la prestación del servicio.",
+        "Se han detectado y solventado los errores producidos en la prestación del servicio.",
+        "Se ha aplicado el tratamiento adecuado en la gestión de las anomalías producidas.",
+    ], start=1)],
+}

@@ -1,0 +1,99 @@
+"""EvalFP — Organización de eventos empresariales · 0662 · Asistencia a la Dirección
+Decreto 41/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9482), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM
+RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
+Duración: 313 h · 7 h/semana · 2º AD.
+"""
+MODULO = {
+    "nombre":"Organización de eventos empresariales","codigo":"0662","abrev":"OEE",
+    "ciclo":"Asistencia a la Dirección","ciclo_clave":"AD","ciclo_nivel":"CFGS",
+    "curso":"2º AD","horas_sem":7,"total_horas":313,"anno":"2026-2027","eval_count":2,
+    "decreto":"Decreto 41/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9482), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM",
+}
+UTS = [
+    {"id":"UT1","nombre":"Equipo de trabajo y clima laboral","horas":75,"eval":1,"tags":"Motivación · Liderazgo · Delegación · Gestión de conflictos · Compromiso"},
+    {"id":"UT2","nombre":"Coordinación con la dirección","horas":55,"eval":1,"tags":"Agenda de la dirección · Prioridades · Delegación · Confidencialidad"},
+    {"id":"UT3","nombre":"Organización del trabajo de asistencia a la dirección","horas":61,"eval":1,"tags":"Gestión del tiempo · Planificación · Interlocutores · Objetivos"},
+    {"id":"UT4","nombre":"Organización de reuniones y eventos corporativos","horas":68,"eval":2,"tags":"Convocatoria · Logística · Protocolo · Presupuesto · Acta y seguimiento"},
+    {"id":"UT5","nombre":"Organización de viajes nacionales e internacionales","horas":54,"eval":2,"tags":"Itinerarios · Reservas · Documentación · Divisas · Liquidación de gastos"},
+]
+RAS = [
+    {"id":"RA1","pond":24,"nombre":"Optimiza el ambiente de trabajo y el compromiso del equipo con los objetivos de la organización, aplicando técnicas de motivación en la gestión de trabajos y la transmisión de órdenes y objetivos, de forma sintética, comprensible y por el medio más adecuado."},
+    {"id":"RA2","pond":17,"nombre":"Coordina las actuaciones, propias y de la dirección o del grupo de trabajo a quien presta soporte, aplicando métodos y técnicas de gestión del tiempo, convencionales y/o electrónicos."},
+    {"id":"RA3","pond":20,"nombre":"Planifica las tareas de su puesto de dirección, adaptándolas a la situación, al interlocutor y a los objetivos del trabajo."},
+    {"id":"RA4","pond":22,"nombre":"Organiza reuniones y eventos corporativos, aplicando técnicas de negociación, normas de protocolo y cumpliendo los objetivos propuestos."},
+    {"id":"RA5","pond":17,"nombre":"Organiza viajes y desplazamientos nacionales e internacionales, cumpliendo los objetivos y procedimientos establecidos."},
+]
+ASIGNACIONES = [
+    ("UT1","RA1",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9","CR10","CR11"]),
+    ("UT2","RA2",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8"]),
+    ("UT3","RA3",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9"]),
+    ("UT4","RA4",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9","CR10"]),
+    ("UT5","RA5",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8"]),
+]
+EVAL_RAS = {1:["RA1","RA2","RA3"], 2:["RA4","RA5"]}
+DUAL_RA = None
+RA_INSTRUMENTOS = {
+    "RA1":["practica","examen"],
+    "RA2":["practica"],
+    "RA3":["practica","examen"],
+    "RA4":["proyecto","practica"],
+    "RA5":["practica","examen"],
+}
+CES = {
+    "RA1":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se ha valorado la importancia de crear un ambiente de trabajo positivo y de cooperación.",
+        "Se han identificado las cuestiones clave para el desarrollo de relaciones humanas cordiales que fomenten la asunción de objetivos comunes de la organización.",
+        "Se han reconocido las formas, sistemáticas y puntuales, de motivación de equipos humanos.",
+        "Se han relacionado las situaciones profesionales habituales en una organización con las buenas prácticas y los principios de ética empresarial.",
+        "Se han aplicado las técnicas de liderazgo y dirección de grupos más indicadas en las diferentes situaciones empresariales.",
+        "Se ha descrito la identificación correcta de necesidades y la anticipación como objetivo para la mejora del servicio.",
+        "Se han seleccionado las técnicas de comunicación formal e informal, el diálogo y la argumentación como bases para optimizar la organización del trabajo en la empresa/entidad.",
+        "Se ha analizado la participación de todos los miembros de un grupo como imprescindible para la obtención de resultados con proyección a largo plazo.",
+        "Se ha valorado la importancia de las acciones destinadas a la prevención y reducción del estrés y la tensión.",
+        "Se han analizado las ventajas de fomentar la resolución de conflictos dentro del grupo de trabajo y en las relaciones externas, así como su anticipación",
+        "Se ha mantenido la confidencialidad y privacidad, ajustando sus actuaciones al código deontológico de la profesión.",
+    ], start=1)],
+    "RA2":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han relacionado los métodos y técnicas de gestión del tiempo, analizando las fases de los distintos métodos de su optimización.",
+        "Se han identificado las causas habituales de pérdidas de tiempo (ladrones de tiempo) y los métodos para evitarlas.",
+        "Se han valorado los distintos tipos de prioridades según la situación y los objetivos establecidos para la gestión de la agenda.",
+        "Se han empleado las herramientas, convencionales y/o electrónicas, aplicando los procedimientos para una correcta gestión del tiempo.",
+        "Se ha valorado la importancia de estandarizar tareas y procedimientos, y automatizarlos siempre que sea posible para lograr una mayor eficiencia y eficacia.",
+        "Se han descrito los distintos tipos de agenda disponibles y su utilidad y usabilidad en cada situación.",
+        "Se ha analizado la complejidad de coordinar las agendas de las personas implicadas, atendiendo en todo momento las jerarquías establecidas y las funciones asignadas a cada uno.",
+        "Se ha valorado la importancia de mantener la imagen corporativa y los estándares de calidad establecidos.",
+    ], start=1)],
+    "RA3":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se ha identificado la estructura organizativa, la cultura corporativa y las prioridades establecidas.",
+        "Se han identificado las características propias de las tareas del asistente de dirección, los medios disponibles y los objetivos propuestos.",
+        "Se han diferenciado los niveles de autonomía y responsabilidad que deben aplicarse en las actividades de apoyo y/o en las actividades delegadas.",
+        "Se han descrito los criterios de gestión y organización de recursos materiales e instalaciones, teniendo en cuenta el “diseño para todos”.",
+        "Se han analizado los recursos humanos disponibles y el nivel de autonomía de gestión para cumplir los objetivos establecidos y canalizar adecuadamente tareas y comunicaciones.",
+        "Se han gestionado y mantenido actualizadas redes de contactos, formales e informales, para facilitar la tarea de la dirección o los equipos de trabajo a los que se da soporte.",
+        "Se han seleccionado los modelos de documentación, libro de estilo, manual de imagen corporativa y procedimientos aplicables en cada caso.",
+        "Se han valorado las condiciones medioambientales y de trabajo.",
+        "Se han establecidos los tiempos para la realización de las tareas propias del asistente de dirección, cumpliendo los plazos y niveles de calidad.",
+    ], start=1)],
+    "RA4":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han descrito los criterios de eficiencia y optimización de recursos o instalaciones, atendiendo al tipo de evento que hay que planificar y a sus objetivos.",
+        "Se han identificado los elementos estratégicos para preparar las negociaciones en situaciones profesionales estándares.",
+        "Se han planificado y programado los recursos, personales y materiales, necesarios y se han elaborado los presupuestos, totales y parciales, indicado con condiciones de pago y sus plazos.",
+        "Se han evaluado las ofertas de empresas organizadoras de eventos.",
+        "Se ha valorado la importancia de aplicar técnicas de negociación en la contratación de los servicios necesarios para reuniones y eventos.",
+        "Se han observado las jerarquías y protocolos con respecto a los participantes en reuniones y eventos.",
+        "Se ha previsto la logística necesaria a la reunión o evento, minimizando las posibles contingencias, con eficacia y rapidez, y siguiendo las normas de seguridad.",
+        "Se han recibido con cortesía y aplicación de las normas de protocolo a visitas y clientes, transmitiendo la imagen corporativa.",
+        "Se han distinguido las técnicas propias de la organización de reuniones y eventos, nacionales o internacionales, y se han establecido los indicadores de supervisión y control del desarrollo del evento y el análisis de las causas de incumplimiento, de producirse éste.",
+        "Se han analizado los aspectos de seguridad apropiados, en función del tipo de reunión, viaje o evento corporativo organizado y/o de sus asistentes, y la forma en que puede afectar la organización del mismo.",
+    ], start=1)],
+    "RA5":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han previsto las necesidades logísticas de viajes para las reuniones y eventos corporativos.",
+        "Se han descrito los elementos en la organización de viajes nacionales e internacionales.",
+        "Se ha valorado la idoneidad del modo de transporte en cada caso.",
+        "Se han negociado las condiciones con las agencias de viajes u otros proveedores del servicio.",
+        "Se han tenido en cuenta las posibles contingencias, minimizándolas y preparando alternativas viables",
+        "Se ha preparado la agenda de trabajo que se desarrollará durante el viaje.",
+        "Se ha obtenido información sobre los requisitos de documentación, permisos, divisas, huso horario, vacunaciones, control de aduanas y protocolo y usos del país de destino.",
+        "Se han analizado los aspectos de seguridad apropiados, en función del tipo de reunión, viaje o evento corporativo organizado y/o sus asistentes, y la forma en que puede afectar la organización del mismo.",
+    ], start=1)],
+}

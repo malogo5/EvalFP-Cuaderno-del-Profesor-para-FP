@@ -1,0 +1,2314 @@
+{
+ "comparados": [
+  {
+   "key": "ad_cac_data",
+   "codigo": "0651",
+   "abrev": "CAC",
+   "nombre": "Comunicación y atención al cliente",
+   "ciclo": "AD",
+   "cat_horas": 148,
+   "cat_sem": 4,
+   "dec_horas": 148,
+   "dec_sem": 4,
+   "dec_sem_detalle": [
+    4,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.3º",
+   "nombre_decreto": "Comunicación y atención al cliente",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "ad_data",
+   "codigo": "0486",
+   "abrev": "AD",
+   "nombre": "Acceso a Datos",
+   "ciclo": "DAM",
+   "cat_horas": 233,
+   "cat_sem": 6,
+   "dec_horas": 233,
+   "dec_sem": 6,
+   "dec_sem_detalle": [
+    null,
+    6
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 6º",
+   "nombre_decreto": "Acceso a datos",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "ad_gai_data",
+   "codigo": "0663",
+   "abrev": "GAI",
+   "nombre": "Gestión avanzada de la información",
+   "ciclo": "AD",
+   "cat_horas": 284,
+   "cat_sem": 6,
+   "dec_horas": 284,
+   "dec_sem": 6,
+   "dec_sem_detalle": [
+    null,
+    6
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.3º",
+   "nombre_decreto": "Gestión avanzada de la información",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "ad_gdje_data",
+   "codigo": "0647",
+   "abrev": "GDJE",
+   "nombre": "Gestión de la documentación jurídica y empresarial",
+   "ciclo": "AD",
+   "cat_horas": 67,
+   "cat_sem": 2,
+   "dec_horas": 67,
+   "dec_sem": 2,
+   "dec_sem_detalle": [
+    2,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.3º",
+   "nombre_decreto": "Gestión de la documentación jurídica y empresarial",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "ad_oee_data",
+   "codigo": "0662",
+   "abrev": "OEE",
+   "nombre": "Organización de eventos empresariales",
+   "ciclo": "AD",
+   "cat_horas": 313,
+   "cat_sem": 7,
+   "dec_horas": 313,
+   "dec_sem": 7,
+   "dec_sem_detalle": [
+    null,
+    7
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.3º",
+   "nombre_decreto": "Organización de eventos empresariales",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "ad_opi_data",
+   "codigo": "0649",
+   "abrev": "OPI",
+   "nombre": "Ofimática y proceso de la información",
+   "ciclo": "AD",
+   "cat_horas": 223,
+   "cat_sem": 7,
+   "dec_horas": 223,
+   "dec_sem": 7,
+   "dec_sem_detalle": [
+    7,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.3º",
+   "nombre_decreto": "Ofimática y proceso de la información",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "ad_pe_data",
+   "codigo": "0661",
+   "abrev": "PE",
+   "nombre": "Protocolo empresarial",
+   "ciclo": "AD",
+   "cat_horas": 157,
+   "cat_sem": 4,
+   "dec_horas": 157,
+   "dec_sem": 4,
+   "dec_sem_detalle": [
+    null,
+    4
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.3º",
+   "nombre_decreto": "Protocolo empresarial",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "ad_piac_data",
+   "codigo": "0650",
+   "abrev": "PIAC",
+   "nombre": "Proceso integral de la actividad comercial",
+   "ciclo": "AD",
+   "cat_horas": 205,
+   "cat_sem": 6,
+   "dec_horas": 205,
+   "dec_sem": 6,
+   "dec_sem_detalle": [
+    6,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.3º",
+   "nombre_decreto": "Proceso integral de la actividad comercial",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "ad_rhrsc_data",
+   "codigo": "0648",
+   "abrev": "RHRSC",
+   "nombre": "Recursos humanos y responsabilidad social corporativa",
+   "ciclo": "AD",
+   "cat_horas": 68,
+   "cat_sem": 2,
+   "dec_horas": 68,
+   "dec_sem": 2,
+   "dec_sem_detalle": [
+    2,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.3º",
+   "nombre_decreto": "Recursos Humanos y responsabilidad social corporativa",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "af_cac_data",
+   "codigo": "0651",
+   "abrev": "CAC",
+   "nombre": "Comunicación y atención al cliente",
+   "ciclo": "AF",
+   "cat_horas": 148,
+   "cat_sem": 4,
+   "dec_horas": 148,
+   "dec_sem": 4,
+   "dec_sem_detalle": [
+    4,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.4º",
+   "nombre_decreto": "Comunicación y atención al cliente",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "af_cf_data",
+   "codigo": "0654",
+   "abrev": "CF",
+   "nombre": "Contabilidad y fiscalidad",
+   "ciclo": "AF",
+   "cat_horas": 236,
+   "cat_sem": 6,
+   "dec_horas": 236,
+   "dec_sem": 6,
+   "dec_sem_detalle": [
+    null,
+    6
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.4º",
+   "nombre_decreto": "Contabilidad y fiscalidad",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "af_gdje_data",
+   "codigo": "0647",
+   "abrev": "GDJE",
+   "nombre": "Gestión de la documentación jurídica y empresarial",
+   "ciclo": "AF",
+   "cat_horas": 67,
+   "cat_sem": 2,
+   "dec_horas": 67,
+   "dec_sem": 2,
+   "dec_sem_detalle": [
+    2,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.4º",
+   "nombre_decreto": "Gestión de la documentación jurídica y empresarial",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "af_gf_data",
+   "codigo": "0653",
+   "abrev": "GF",
+   "nombre": "Gestión financiera",
+   "ciclo": "AF",
+   "cat_horas": 197,
+   "cat_sem": 5,
+   "dec_horas": 197,
+   "dec_sem": 5,
+   "dec_sem_detalle": [
+    null,
+    5
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.4º",
+   "nombre_decreto": "Gestión financiera",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "af_glc_data",
+   "codigo": "0655",
+   "abrev": "GLC",
+   "nombre": "Gestión logística y comercial",
+   "ciclo": "AF",
+   "cat_horas": 117,
+   "cat_sem": 3,
+   "dec_horas": 117,
+   "dec_sem": 3,
+   "dec_sem_detalle": [
+    null,
+    3
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.4º",
+   "nombre_decreto": "Gestión logística y comercial",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "af_grh_data",
+   "codigo": "0652",
+   "abrev": "GRH",
+   "nombre": "Gestión de recursos humanos",
+   "ciclo": "AF",
+   "cat_horas": 158,
+   "cat_sem": 4,
+   "dec_horas": 158,
+   "dec_sem": 4,
+   "dec_sem_detalle": [
+    null,
+    4
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.4º",
+   "nombre_decreto": "Gestión de recursos humanos",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "af_opi_data",
+   "codigo": "0649",
+   "abrev": "OPI",
+   "nombre": "Ofimática y proceso de la información",
+   "ciclo": "AF",
+   "cat_horas": 223,
+   "cat_sem": 7,
+   "dec_horas": 223,
+   "dec_sem": 7,
+   "dec_sem_detalle": [
+    7,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.4º",
+   "nombre_decreto": "Ofimática y proceso de la información",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "af_piac_data",
+   "codigo": "0650",
+   "abrev": "PIAC",
+   "nombre": "Proceso integral de la actividad comercial",
+   "ciclo": "AF",
+   "cat_horas": 205,
+   "cat_sem": 6,
+   "dec_horas": 205,
+   "dec_sem": 6,
+   "dec_sem_detalle": [
+    6,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.4º",
+   "nombre_decreto": "Proceso integral de la actividad comercial",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "af_rhrsc_data",
+   "codigo": "0648",
+   "abrev": "RHRSC",
+   "nombre": "Recursos humanos y responsabilidad social corporativa",
+   "ciclo": "AF",
+   "cat_horas": 68,
+   "cat_sem": 2,
+   "dec_horas": 68,
+   "dec_sem": 2,
+   "dec_sem_detalle": [
+    2,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.4º",
+   "nombre_decreto": "Recursos humanos y responsabilidad corporativa",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "af_se_data",
+   "codigo": "0656",
+   "abrev": "SE",
+   "nombre": "Simulación empresarial",
+   "ciclo": "AF",
+   "cat_horas": 156,
+   "cat_sem": 4,
+   "dec_horas": 156,
+   "dec_sem": 4,
+   "dec_sem_detalle": [
+    null,
+    4
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.4º",
+   "nombre_decreto": "Simulación empresarial",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "asir_asgbd_data",
+   "codigo": "0377",
+   "abrev": "ASGBD",
+   "nombre": "Administración de Sistemas Gestores de Bases de Datos",
+   "ciclo": "ASIR",
+   "cat_horas": 65,
+   "cat_sem": 2,
+   "dec_horas": 65,
+   "dec_sem": 2,
+   "dec_sem_detalle": [
+    null,
+    2
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 1º",
+   "nombre_decreto": "Administración de sistemas gestores de bases de datos",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "asir_fhw_data",
+   "codigo": "0371",
+   "abrev": "FH",
+   "nombre": "Fundamentos de Hardware",
+   "ciclo": "ASIR",
+   "cat_horas": 116,
+   "cat_sem": 3,
+   "dec_horas": 116,
+   "dec_sem": 3,
+   "dec_sem_detalle": [
+    3,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 1º",
+   "nombre_decreto": "Fundamentos de hardware",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "aso_data",
+   "codigo": "0374",
+   "abrev": "ASO",
+   "nombre": "Administración de Sistemas Operativos",
+   "ciclo": "ASIR",
+   "cat_horas": 242,
+   "cat_sem": 6,
+   "dec_horas": 242,
+   "dec_sem": 6,
+   "dec_sem_detalle": [
+    null,
+    6
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 1º",
+   "nombre_decreto": "Administración de sistemas operativos",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "bd_data",
+   "codigo": "0484",
+   "abrev": "BD",
+   "nombre": "Bases de Datos",
+   "ciclo": "DAM",
+   "cat_horas": 163,
+   "cat_sem": 5,
+   "dec_horas": 163,
+   "dec_sem": 5,
+   "dec_sem_detalle": [
+    5,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 6º",
+   "nombre_decreto": "Bases de datos",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "cfgb_io_data",
+   "codigo": "3031",
+   "abrev": "OAD",
+   "nombre": "Ofimática y Archivo de Documentos",
+   "ciclo": "CFGB",
+   "cat_horas": 275,
+   "cat_sem": 8,
+   "dec_horas": 275,
+   "dec_sem": 8,
+   "dec_sem_detalle": [
+    8,
+    null
+   ],
+   "decreto": "78/2024",
+   "anexo": "I",
+   "nombre_decreto": "Ofimática y archivo de documentos",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "cfgb_io_ipe_data",
+   "codigo": "3159",
+   "abrev": "IPE",
+   "nombre": "Itinerario Personal para la Empleabilidad",
+   "ciclo": "CFGB",
+   "cat_horas": 60,
+   "cat_sem": 2,
+   "dec_horas": 60,
+   "dec_sem": 2,
+   "dec_sem_detalle": [
+    2,
+    null
+   ],
+   "decreto": "78/2024",
+   "anexo": "I",
+   "nombre_decreto": "Itinerario personal para la empleabilidad",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "cfgb_io_mont_data",
+   "codigo": "3029",
+   "abrev": "MMSCI",
+   "nombre": "Montaje y Mantenimiento de Sistemas y Componentes Informáticos",
+   "ciclo": "CFGB",
+   "cat_horas": 335,
+   "cat_sem": 10,
+   "dec_horas": 335,
+   "dec_sem": 10,
+   "dec_sem_detalle": [
+    10,
+    null
+   ],
+   "decreto": "78/2024",
+   "anexo": "I",
+   "nombre_decreto": "Montaje y mantenimiento de sistemas y componentes informáticos",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "cfgb_io_oper_data",
+   "codigo": "3030",
+   "abrev": "OACE",
+   "nombre": "Operaciones Auxiliares para la Configuración y la Explotación",
+   "ciclo": "CFGB",
+   "cat_horas": 338,
+   "cat_sem": 8,
+   "dec_horas": 338,
+   "dec_sem": 8,
+   "dec_sem_detalle": [
+    null,
+    8
+   ],
+   "decreto": "78/2024",
+   "anexo": "I",
+   "nombre_decreto": "Operaciones auxiliares para la configuración y la explotación",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "cfgb_io_redes_data",
+   "codigo": "3016",
+   "abrev": "IMRTD",
+   "nombre": "Instalación y Mantenimiento de Redes para Transmisión de Datos",
+   "ciclo": "CFGB",
+   "cat_horas": 338,
+   "cat_sem": 8,
+   "dec_horas": 338,
+   "dec_sem": 8,
+   "dec_sem_detalle": [
+    null,
+    8
+   ],
+   "decreto": "78/2024",
+   "anexo": "I",
+   "nombre_decreto": "Instalación y mantenimiento de redes para transmisión de datos",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "dam_lm_data",
+   "codigo": "0373",
+   "abrev": "LMSGI",
+   "nombre": "Lenguajes de Marcas y Sistemas de Gestión de Información",
+   "ciclo": "DAM",
+   "cat_horas": 116,
+   "cat_sem": 3,
+   "dec_horas": 116,
+   "dec_sem": 3,
+   "dec_sem_detalle": [
+    3,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 6º",
+   "nombre_decreto": "Lenguajes de marcas y sistemas de información",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "dam_sge_data",
+   "codigo": "0491",
+   "abrev": "SGE",
+   "nombre": "Sistemas de Gestión Empresarial",
+   "ciclo": "DAM",
+   "cat_horas": 158,
+   "cat_sem": 4,
+   "dec_horas": 158,
+   "dec_sem": 4,
+   "dec_sem_detalle": [
+    null,
+    4
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 6º",
+   "nombre_decreto": "Sistemas de gestión empresarial",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "daw_bd_data",
+   "codigo": "0484",
+   "abrev": "BD",
+   "nombre": "Bases de Datos",
+   "ciclo": "DAW",
+   "cat_horas": 163,
+   "cat_sem": 5,
+   "dec_horas": 163,
+   "dec_sem": 5,
+   "dec_sem_detalle": [
+    5,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 2º",
+   "nombre_decreto": "Bases de datos",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "daw_ed_data",
+   "codigo": "0487",
+   "abrev": "ED",
+   "nombre": "Entornos de Desarrollo",
+   "ciclo": "DAW",
+   "cat_horas": 81,
+   "cat_sem": 2,
+   "dec_horas": 81,
+   "dec_sem": 2,
+   "dec_sem_detalle": [
+    2,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 2º",
+   "nombre_decreto": "Entornos de desarrollo",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "daw_lm_data",
+   "codigo": "0373",
+   "abrev": "LMSGI",
+   "nombre": "Lenguajes de Marcas y Sistemas de Gestión de Información",
+   "ciclo": "DAW",
+   "cat_horas": 116,
+   "cat_sem": 3,
+   "dec_horas": 116,
+   "dec_sem": 3,
+   "dec_sem_detalle": [
+    3,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 2º",
+   "nombre_decreto": "Lenguajes de marcas y sistemas de información",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "daw_prg_data",
+   "codigo": "0485",
+   "abrev": "PRG",
+   "nombre": "Programación",
+   "ciclo": "DAW",
+   "cat_horas": 186,
+   "cat_sem": 6,
+   "dec_horas": 186,
+   "dec_sem": 6,
+   "dec_sem_detalle": [
+    6,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 2º",
+   "nombre_decreto": "Programación",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "daw_si_data",
+   "codigo": "0483",
+   "abrev": "SI",
+   "nombre": "Sistemas Informáticos",
+   "ciclo": "DAW",
+   "cat_horas": 163,
+   "cat_sem": 5,
+   "dec_horas": 163,
+   "dec_sem": 5,
+   "dec_sem_detalle": [
+    5,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 2º",
+   "nombre_decreto": "Sistemas informáticos",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "dep_data",
+   "codigo": "0614",
+   "abrev": "DEAW",
+   "nombre": "Despliegue de Aplicaciones Web",
+   "ciclo": "DAW",
+   "cat_horas": 130,
+   "cat_sem": 3,
+   "dec_horas": 130,
+   "dec_sem": 3,
+   "dec_sem_detalle": [
+    null,
+    3
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 2º",
+   "nombre_decreto": "Despliegue de aplicaciones web",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "di_data",
+   "codigo": "0488",
+   "abrev": "DI",
+   "nombre": "Desarrollo de Interfaces",
+   "ciclo": "DAM",
+   "cat_horas": 233,
+   "cat_sem": 6,
+   "dec_horas": 233,
+   "dec_sem": 6,
+   "dec_sem_detalle": [
+    null,
+    6
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 6º",
+   "nombre_decreto": "Desarrollo de interfaces",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "diw_data",
+   "codigo": "0615",
+   "abrev": "DIW",
+   "nombre": "Diseño de Interfaces Web",
+   "ciclo": "DAW",
+   "cat_horas": 186,
+   "cat_sem": 5,
+   "dec_horas": 186,
+   "dec_sem": 5,
+   "dec_sem_detalle": [
+    null,
+    5
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 2º",
+   "nombre_decreto": "Diseño de interfaces web",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "dwec_data",
+   "codigo": "0612",
+   "abrev": "DWEC",
+   "nombre": "Desarrollo Web en Entorno Cliente",
+   "ciclo": "DAW",
+   "cat_horas": 224,
+   "cat_sem": 6,
+   "dec_horas": 224,
+   "dec_sem": 6,
+   "dec_sem_detalle": [
+    null,
+    6
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 2º",
+   "nombre_decreto": "Desarrollo web en entorno cliente",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "dwes_data",
+   "codigo": "0613",
+   "abrev": "DWES",
+   "nombre": "Desarrollo Web en Entorno Servidor",
+   "ciclo": "DAW",
+   "cat_horas": 326,
+   "cat_sem": 8,
+   "dec_horas": 326,
+   "dec_sem": 8,
+   "dec_sem_detalle": [
+    null,
+    8
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 2º",
+   "nombre_decreto": "Desarrollo web en entorno servidor",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "ed_data",
+   "codigo": "0487",
+   "abrev": "ED",
+   "nombre": "Entornos de Desarrollo",
+   "ciclo": "DAM",
+   "cat_horas": 81,
+   "cat_sem": 2,
+   "dec_horas": 81,
+   "dec_sem": 2,
+   "dec_sem_detalle": [
+    2,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 6º",
+   "nombre_decreto": "Entornos de desarrollo",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "ga_ceac_data",
+   "codigo": "0437",
+   "abrev": "CEAC",
+   "nombre": "Comunicación empresarial y atención al cliente",
+   "ciclo": "GA",
+   "cat_horas": 130,
+   "cat_sem": 4,
+   "dec_horas": 167,
+   "dec_sem": 4,
+   "dec_sem_detalle": [
+    null,
+    4
+   ],
+   "decreto": "79/2024",
+   "anexo": "IC-1. 1º",
+   "nombre_decreto": "Comunicación empresarial y atención al cliente",
+   "dif_horas": 37,
+   "dif_sem": 0
+  },
+  {
+   "key": "ga_ea_data",
+   "codigo": "0439",
+   "abrev": "EA",
+   "nombre": "Empresa y Administración",
+   "ciclo": "GA",
+   "cat_horas": 105,
+   "cat_sem": 3,
+   "dec_horas": 158,
+   "dec_sem": 4,
+   "dec_sem_detalle": [
+    null,
+    4
+   ],
+   "decreto": "79/2024",
+   "anexo": "IC-1. 1º",
+   "nombre_decreto": "Empresa y administración",
+   "dif_horas": 53,
+   "dif_sem": 1
+  },
+  {
+   "key": "ga_eau_data",
+   "codigo": "0446",
+   "abrev": "EAU",
+   "nombre": "Empresa en el aula",
+   "ciclo": "GA",
+   "cat_horas": 145,
+   "cat_sem": 7,
+   "dec_horas": 195,
+   "dec_sem": 5,
+   "dec_sem_detalle": [
+    null,
+    5
+   ],
+   "decreto": "79/2024",
+   "anexo": "IC-1. 1º",
+   "nombre_decreto": "Empresa en el aula",
+   "dif_horas": 50,
+   "dif_sem": -2
+  },
+  {
+   "key": "ga_oacv_data",
+   "codigo": "0438",
+   "abrev": "OACV",
+   "nombre": "Operaciones administrativas de compra-venta",
+   "ciclo": "GA",
+   "cat_horas": 135,
+   "cat_sem": 4,
+   "dec_horas": 133,
+   "dec_sem": 4,
+   "dec_sem_detalle": [
+    4,
+    null
+   ],
+   "decreto": "79/2024",
+   "anexo": "IC-1. 1º",
+   "nombre_decreto": "Operaciones administrativas de compra-venta",
+   "dif_horas": -2,
+   "dif_sem": 0
+  },
+  {
+   "key": "ga_oagt_data",
+   "codigo": "0448",
+   "abrev": "OAGT",
+   "nombre": "Operaciones Auxiliares de Gestión de Tesorería",
+   "ciclo": "GA",
+   "cat_horas": 165,
+   "cat_sem": 7,
+   "dec_horas": 169,
+   "dec_sem": 5,
+   "dec_sem_detalle": [
+    5,
+    null
+   ],
+   "decreto": "79/2024",
+   "anexo": "IC-1. 1º",
+   "nombre_decreto": "Operaciones auxiliares de gestión de tesorería",
+   "dif_horas": 4,
+   "dif_sem": -2
+  },
+  {
+   "key": "ga_oarh_data",
+   "codigo": "0442",
+   "abrev": "OARH",
+   "nombre": "Operaciones Administrativas de Recursos Humanos",
+   "ciclo": "GA",
+   "cat_horas": 130,
+   "cat_sem": 6,
+   "dec_horas": 158,
+   "dec_sem": 4,
+   "dec_sem_detalle": [
+    null,
+    4
+   ],
+   "decreto": "79/2024",
+   "anexo": "IC-1. 1º",
+   "nombre_decreto": "Operaciones administrativas de recursos humanos",
+   "dif_horas": 28,
+   "dif_sem": -2
+  },
+  {
+   "key": "ga_tc_data",
+   "codigo": "0441",
+   "abrev": "TC",
+   "nombre": "Técnica Contable",
+   "ciclo": "GA",
+   "cat_horas": 165,
+   "cat_sem": 5,
+   "dec_horas": 167,
+   "dec_sem": 5,
+   "dec_sem_detalle": [
+    5,
+    null
+   ],
+   "decreto": "79/2024",
+   "anexo": "IC-1. 1º",
+   "nombre_decreto": "Técnica contable",
+   "dif_horas": 2,
+   "dif_sem": 0
+  },
+  {
+   "key": "ga_tdc_data",
+   "codigo": "0443",
+   "abrev": "TDC",
+   "nombre": "Tratamiento de la Documentación Contable",
+   "ciclo": "GA",
+   "cat_horas": 130,
+   "cat_sem": 6,
+   "dec_horas": 195,
+   "dec_sem": 5,
+   "dec_sem_detalle": [
+    null,
+    5
+   ],
+   "decreto": "79/2024",
+   "anexo": "IC-1. 1º",
+   "nombre_decreto": "Tratamiento de la documentación contable",
+   "dif_horas": 65,
+   "dif_sem": -1
+  },
+  {
+   "key": "ga_tii_data",
+   "codigo": "0440",
+   "abrev": "TII",
+   "nombre": "Tratamiento Informático de la Información",
+   "ciclo": "GA",
+   "cat_horas": 315,
+   "cat_sem": 10,
+   "dec_horas": 233,
+   "dec_sem": 7,
+   "dec_sem_detalle": [
+    7,
+    null
+   ],
+   "decreto": "79/2024",
+   "anexo": "IC-1. 1º",
+   "nombre_decreto": "Tratamiento informático de la información",
+   "dif_horas": -82,
+   "dif_sem": -3
+  },
+  {
+   "key": "gbd_data",
+   "codigo": "0372",
+   "abrev": "GBD",
+   "nombre": "Gestión de Bases de Datos",
+   "ciclo": "ASIR",
+   "cat_horas": 134,
+   "cat_sem": 4,
+   "dec_horas": 134,
+   "dec_sem": 4,
+   "dec_sem_detalle": [
+    4,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 1º",
+   "nombre_decreto": "Gestión de bases de datos",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "iaw_data",
+   "codigo": "0376",
+   "abrev": "IAW",
+   "nombre": "Implantación de Aplicaciones Web",
+   "ciclo": "ASIR",
+   "cat_horas": 158,
+   "cat_sem": 4,
+   "dec_horas": 158,
+   "dec_sem": 4,
+   "dec_sem_detalle": [
+    null,
+    4
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 1º",
+   "nombre_decreto": "Implantación de aplicaciones web",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "iso_data",
+   "codigo": "0369",
+   "abrev": "ISO",
+   "nombre": "Implantación de Sistemas Operativos",
+   "ciclo": "ASIR",
+   "cat_horas": 186,
+   "cat_sem": 6,
+   "dec_horas": 186,
+   "dec_sem": 6,
+   "dec_sem_detalle": [
+    6,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 1º",
+   "nombre_decreto": "Implantación de sistemas operativos",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "lm_data",
+   "codigo": "0373",
+   "abrev": "LMSGI",
+   "nombre": "Lenguajes de Marcas y Sistemas de Gestión de Información",
+   "ciclo": "ASIR",
+   "cat_horas": 116,
+   "cat_sem": 3,
+   "dec_horas": 116,
+   "dec_sem": 3,
+   "dec_sem_detalle": [
+    3,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 1º",
+   "nombre_decreto": "Lenguajes de marcas y sistemas de gestión de información",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "par_data",
+   "codigo": "0370",
+   "abrev": "PAR",
+   "nombre": "Planificación y Administración de Redes",
+   "ciclo": "ASIR",
+   "cat_horas": 157,
+   "cat_sem": 5,
+   "dec_horas": 157,
+   "dec_sem": 5,
+   "dec_sem_detalle": [
+    5,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 1º",
+   "nombre_decreto": "Planificación y administración de redes",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "pmdm_data",
+   "codigo": "0489",
+   "abrev": "PMDM",
+   "nombre": "Programación Multimedia y Dispositivos Móviles",
+   "ciclo": "DAM",
+   "cat_horas": 158,
+   "cat_sem": 4,
+   "dec_horas": 158,
+   "dec_sem": 4,
+   "dec_sem_detalle": [
+    null,
+    4
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 6º",
+   "nombre_decreto": "Programación multimedia y dispositivos móviles",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "prg_data",
+   "codigo": "0485",
+   "abrev": "PRG",
+   "nombre": "Programación",
+   "ciclo": "DAM",
+   "cat_horas": 186,
+   "cat_sem": 6,
+   "dec_horas": 186,
+   "dec_sem": 6,
+   "dec_sem_detalle": [
+    6,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 6º",
+   "nombre_decreto": "Programación",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "psp_data",
+   "codigo": "0490",
+   "abrev": "PSP",
+   "nombre": "Programación de Servicios y Procesos",
+   "ciclo": "DAM",
+   "cat_horas": 84,
+   "cat_sem": 2,
+   "dec_horas": 84,
+   "dec_sem": 2,
+   "dec_sem_detalle": [
+    null,
+    2
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 6º",
+   "nombre_decreto": "Programación de servicios y procesos",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "sa_abo_data",
+   "codigo": "3002",
+   "abrev": "ABO",
+   "nombre": "Aplicaciones básicas de ofimática",
+   "ciclo": "SA",
+   "cat_horas": 387,
+   "cat_sem": 9,
+   "dec_horas": 387,
+   "dec_sem": 9,
+   "dec_sem_detalle": [
+    null,
+    9
+   ],
+   "decreto": "78/2024",
+   "anexo": "I",
+   "nombre_decreto": "Aplicaciones básicas de ofimática",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "sa_ac_data",
+   "codigo": "3004",
+   "abrev": "AC",
+   "nombre": "Archivo y comunicación",
+   "ciclo": "SA",
+   "cat_horas": 144,
+   "cat_sem": 4,
+   "dec_horas": 144,
+   "dec_sem": 4,
+   "dec_sem_detalle": [
+    4,
+    null
+   ],
+   "decreto": "78/2024",
+   "anexo": "I",
+   "nombre_decreto": "Archivo y comunicación",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "sa_atc_data",
+   "codigo": "3005",
+   "abrev": "ATC",
+   "nombre": "Atención al cliente",
+   "ciclo": "SA",
+   "cat_horas": 117,
+   "cat_sem": 3,
+   "dec_horas": 117,
+   "dec_sem": 3,
+   "dec_sem_detalle": [
+    null,
+    3
+   ],
+   "decreto": "78/2024",
+   "anexo": "I",
+   "nombre_decreto": "Atención al cliente",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "sa_ipe_data",
+   "codigo": "3159",
+   "abrev": "IPE",
+   "nombre": "Itinerario Personal para la Empleabilidad",
+   "ciclo": "SA",
+   "cat_horas": 60,
+   "cat_sem": 2,
+   "dec_horas": 60,
+   "dec_sem": 2,
+   "dec_sem_detalle": [
+    2,
+    null
+   ],
+   "decreto": "78/2024",
+   "anexo": "I",
+   "nombre_decreto": "Itinerario personal para la empleabilidad",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "sa_ppvp_data",
+   "codigo": "3006",
+   "abrev": "PPVP",
+   "nombre": "Preparación de pedidos y venta de productos",
+   "ciclo": "SA",
+   "cat_horas": 173,
+   "cat_sem": 4,
+   "dec_horas": 173,
+   "dec_sem": 4,
+   "dec_sem_detalle": [
+    null,
+    4
+   ],
+   "decreto": "78/2024",
+   "anexo": "I",
+   "nombre_decreto": "Preparación de pedidos y venta de productos",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "sa_tab_data",
+   "codigo": "3003",
+   "abrev": "TAB",
+   "nombre": "Técnicas administrativas básicas",
+   "ciclo": "SA",
+   "cat_horas": 197,
+   "cat_sem": 6,
+   "dec_horas": 197,
+   "dec_sem": 6,
+   "dec_sem_detalle": [
+    6,
+    null
+   ],
+   "decreto": "78/2024",
+   "anexo": "I",
+   "nombre_decreto": "Técnicas administrativas básicas",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "sa_tid_data",
+   "codigo": "3001",
+   "abrev": "TID",
+   "nombre": "Tratamiento informático de datos",
+   "ciclo": "SA",
+   "cat_horas": 268,
+   "cat_sem": 8,
+   "dec_horas": 268,
+   "dec_sem": 8,
+   "dec_sem_detalle": [
+    8,
+    null
+   ],
+   "decreto": "78/2024",
+   "anexo": "I",
+   "nombre_decreto": "Tratamiento informático de datos",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "sad_data",
+   "codigo": "0378",
+   "abrev": "SAD",
+   "nombre": "Seguridad y Alta Disponibilidad",
+   "ciclo": "ASIR",
+   "cat_horas": 159,
+   "cat_sem": 4,
+   "dec_horas": 159,
+   "dec_sem": 4,
+   "dec_sem_detalle": [
+    null,
+    4
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 1º",
+   "nombre_decreto": "Seguridad y alta disponibilidad",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "si_data",
+   "codigo": "0483",
+   "abrev": "SI",
+   "nombre": "Sistemas Informáticos",
+   "ciclo": "DAM",
+   "cat_horas": 163,
+   "cat_sem": 5,
+   "dec_horas": 163,
+   "dec_sem": 5,
+   "dec_sem_detalle": [
+    5,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 6º",
+   "nombre_decreto": "Sistemas informáticos",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "smr_mf_data",
+   "codigo": "0221",
+   "abrev": "MME",
+   "nombre": "Montaje y Mantenimiento de Equipos",
+   "ciclo": "SMR",
+   "cat_horas": 204,
+   "cat_sem": 6,
+   "dec_horas": 204,
+   "dec_sem": 6,
+   "dec_sem_detalle": [
+    6,
+    null
+   ],
+   "decreto": "79/2024",
+   "anexo": "IA-3 2º",
+   "nombre_decreto": "Montaje y mantenimiento de equipo",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "smr_ofim_data",
+   "codigo": "0223",
+   "abrev": "AO",
+   "nombre": "Aplicaciones Ofimáticas",
+   "ciclo": "SMR",
+   "cat_horas": 270,
+   "cat_sem": 7,
+   "dec_horas": 270,
+   "dec_sem": 7,
+   "dec_sem_detalle": [
+    null,
+    7
+   ],
+   "decreto": "79/2024",
+   "anexo": "IA-3 2º",
+   "nombre_decreto": "Aplicaciones ofimáticas",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "smr_relo_data",
+   "codigo": "0225",
+   "abrev": "RL",
+   "nombre": "Redes Locales",
+   "ciclo": "SMR",
+   "cat_horas": 169,
+   "cat_sem": 5,
+   "dec_horas": 169,
+   "dec_sem": 5,
+   "dec_sem_detalle": [
+    5,
+    null
+   ],
+   "decreto": "79/2024",
+   "anexo": "IA-3 2º",
+   "nombre_decreto": "Redes locales",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "smr_sai_data",
+   "codigo": "0226",
+   "abrev": "SI",
+   "nombre": "Seguridad Informática",
+   "ciclo": "SMR",
+   "cat_horas": 167,
+   "cat_sem": 4,
+   "dec_horas": 167,
+   "dec_sem": 4,
+   "dec_sem_detalle": [
+    null,
+    4
+   ],
+   "decreto": "79/2024",
+   "anexo": "IA-3 2º",
+   "nombre_decreto": "Seguridad informática",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "smr_sle_data",
+   "codigo": "0227",
+   "abrev": "SR",
+   "nombre": "Servicios en Red",
+   "ciclo": "SMR",
+   "cat_horas": 205,
+   "cat_sem": 5,
+   "dec_horas": 205,
+   "dec_sem": 5,
+   "dec_sem_detalle": [
+    null,
+    5
+   ],
+   "decreto": "79/2024",
+   "anexo": "IA-3 2º",
+   "nombre_decreto": "Servicios en red",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "smr_soa_data",
+   "codigo": "0224",
+   "abrev": "SOR",
+   "nombre": "Sistemas Operativos en Red",
+   "ciclo": "SMR",
+   "cat_horas": 223,
+   "cat_sem": 6,
+   "dec_horas": 223,
+   "dec_sem": 6,
+   "dec_sem_detalle": [
+    null,
+    6
+   ],
+   "decreto": "79/2024",
+   "anexo": "IA-3 2º",
+   "nombre_decreto": "Sistemas operativos en red",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "smr_som_data",
+   "codigo": "0222",
+   "abrev": "SOM",
+   "nombre": "Sistemas Operativos Monopuesto",
+   "ciclo": "SMR",
+   "cat_horas": 169,
+   "cat_sem": 5,
+   "dec_horas": 169,
+   "dec_sem": 5,
+   "dec_sem_detalle": [
+    5,
+    null
+   ],
+   "decreto": "79/2024",
+   "anexo": "IA-3 2º",
+   "nombre_decreto": "Sistemas operativos monopuesto",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "smr_web_data",
+   "codigo": "0228",
+   "abrev": "AW",
+   "nombre": "Aplicaciones Web",
+   "ciclo": "SMR",
+   "cat_horas": 169,
+   "cat_sem": 5,
+   "dec_horas": 169,
+   "dec_sem": 5,
+   "dec_sem_detalle": [
+    5,
+    null
+   ],
+   "decreto": "79/2024",
+   "anexo": "IA-3 2º",
+   "nombre_decreto": "Aplicaciones web",
+   "dif_horas": 0,
+   "dif_sem": 0
+  },
+  {
+   "key": "sri_data",
+   "codigo": "0375",
+   "abrev": "SRI",
+   "nombre": "Servicios de Red e Internet",
+   "ciclo": "ASIR",
+   "cat_horas": 242,
+   "cat_sem": 6,
+   "dec_horas": 242,
+   "dec_sem": 6,
+   "dec_sem_detalle": [
+    null,
+    6
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 1º",
+   "nombre_decreto": "Servicios de red e Internet",
+   "dif_horas": 0,
+   "dif_sem": 0
+  }
+ ],
+ "sin_fuente": [
+  {
+   "key": "ce_ciber_af_data",
+   "codigo": "5024",
+   "abrev": "AFI",
+   "nombre": "Análisis Forense Informático",
+   "ciclo": "CE_CIBER",
+   "cat_horas": 120,
+   "cat_sem": 4,
+   "motivo": "curso de especialización: no lo modifican los Decretos 78/79/80 de 2024"
+  },
+  {
+   "key": "ce_ciber_brs_data",
+   "codigo": "5022",
+   "abrev": "BRS",
+   "nombre": "Bastionado de Redes y Sistemas",
+   "ciclo": "CE_CIBER",
+   "cat_horas": 185,
+   "cat_sem": 6,
+   "motivo": "curso de especialización: no lo modifican los Decretos 78/79/80 de 2024"
+  },
+  {
+   "key": "ce_ciber_data",
+   "codigo": "5025",
+   "abrev": "HE",
+   "nombre": "Hacking Ético",
+   "ciclo": "CE_CIBER",
+   "cat_horas": 120,
+   "cat_sem": 4,
+   "motivo": "curso de especialización: no lo modifican los Decretos 78/79/80 de 2024"
+  },
+  {
+   "key": "ce_ciber_ic_data",
+   "codigo": "5021",
+   "abrev": "IC",
+   "nombre": "Incidentes de Ciberseguridad",
+   "ciclo": "CE_CIBER",
+   "cat_horas": 120,
+   "cat_sem": 4,
+   "motivo": "curso de especialización: no lo modifican los Decretos 78/79/80 de 2024"
+  },
+  {
+   "key": "ce_ciber_nc_data",
+   "codigo": "5026",
+   "abrev": "NC",
+   "nombre": "Normativa de Ciberseguridad",
+   "ciclo": "CE_CIBER",
+   "cat_horas": 55,
+   "cat_sem": 2,
+   "motivo": "curso de especialización: no lo modifican los Decretos 78/79/80 de 2024"
+  },
+  {
+   "key": "ce_ciber_pps_data",
+   "codigo": "5023",
+   "abrev": "PPS",
+   "nombre": "Puesta en Producción Segura",
+   "ciclo": "CE_CIBER",
+   "cat_horas": 120,
+   "cat_sem": 4,
+   "motivo": "curso de especialización: no lo modifican los Decretos 78/79/80 de 2024"
+  },
+  {
+   "key": "ce_iabd_bda_data",
+   "codigo": "5075",
+   "abrev": "BDA",
+   "nombre": "Big Data aplicado",
+   "ciclo": "CE_IABD",
+   "cat_horas": 140,
+   "cat_sem": 4,
+   "motivo": "curso de especialización: no lo modifican los Decretos 78/79/80 de 2024"
+  },
+  {
+   "key": "ce_iabd_data",
+   "codigo": "5072",
+   "abrev": "SAA",
+   "nombre": "Sistemas de Aprendizaje Automático",
+   "ciclo": "CE_IABD",
+   "cat_horas": 100,
+   "cat_sem": 3,
+   "motivo": "curso de especialización: no lo modifican los Decretos 78/79/80 de 2024"
+  },
+  {
+   "key": "ce_iabd_mia_data",
+   "codigo": "5071",
+   "abrev": "MIA",
+   "nombre": "Modelos de Inteligencia Artificial",
+   "ciclo": "CE_IABD",
+   "cat_horas": 60,
+   "cat_sem": 2,
+   "motivo": "curso de especialización: no lo modifican los Decretos 78/79/80 de 2024"
+  },
+  {
+   "key": "ce_iabd_pia_data",
+   "codigo": "5073",
+   "abrev": "PIA",
+   "nombre": "Programación de Inteligencia Artificial",
+   "ciclo": "CE_IABD",
+   "cat_horas": 200,
+   "cat_sem": 6,
+   "motivo": "curso de especialización: no lo modifican los Decretos 78/79/80 de 2024"
+  },
+  {
+   "key": "ce_iabd_sbd_data",
+   "codigo": "5074",
+   "abrev": "SBD",
+   "nombre": "Sistemas de Big Data",
+   "ciclo": "CE_IABD",
+   "cat_horas": 100,
+   "cat_sem": 3,
+   "motivo": "curso de especialización: no lo modifican los Decretos 78/79/80 de 2024"
+  },
+  {
+   "key": "ce_python_ctrl_data",
+   "codigo": "PYCTRL",
+   "abrev": "PYCTRL",
+   "nombre": "Estructuras de Control en Python",
+   "ciclo": "CE_PYTHON",
+   "cat_horas": 60,
+   "cat_sem": 2,
+   "motivo": "curso de especialización: no lo modifican los Decretos 78/79/80 de 2024"
+  },
+  {
+   "key": "ce_python_data_data",
+   "codigo": "PYDATA",
+   "abrev": "PYDATA",
+   "nombre": "Análisis de Datos con Python",
+   "ciclo": "CE_PYTHON",
+   "cat_horas": 150,
+   "cat_sem": 5,
+   "motivo": "curso de especialización: no lo modifican los Decretos 78/79/80 de 2024"
+  },
+  {
+   "key": "ce_python_env_data",
+   "codigo": "PYENV",
+   "abrev": "PYENV",
+   "nombre": "Entornos y Sintaxis en Python",
+   "ciclo": "CE_PYTHON",
+   "cat_horas": 60,
+   "cat_sem": 2,
+   "motivo": "curso de especialización: no lo modifican los Decretos 78/79/80 de 2024"
+  },
+  {
+   "key": "ce_python_oop_data",
+   "codigo": "PYOOP",
+   "abrev": "PYOOP",
+   "nombre": "Programación Orientada a Objetos",
+   "ciclo": "CE_PYTHON",
+   "cat_horas": 150,
+   "cat_sem": 5,
+   "motivo": "curso de especialización: no lo modifican los Decretos 78/79/80 de 2024"
+  }
+ ],
+ "faltan_en_catalogo": [
+  {
+   "ciclo": "ASIR",
+   "codigo": "0179",
+   "nombre": "Inglés profesional para ciclos formativos de Grado Superior",
+   "horas": 60,
+   "semanales": [
+    2,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 1º"
+  },
+  {
+   "ciclo": "ASIR",
+   "codigo": "1665",
+   "nombre": "Digitalización aplicada al sector productivo (GS)",
+   "horas": 50,
+   "semanales": [
+    2,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 1º"
+  },
+  {
+   "ciclo": "ASIR",
+   "codigo": "1708",
+   "nombre": "Sostenibilidad aplicada al sistema productivo",
+   "horas": 40,
+   "semanales": [
+    1,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 1º"
+  },
+  {
+   "ciclo": "ASIR",
+   "codigo": "1709",
+   "nombre": "Itinerario personal para la empleabilidad I",
+   "horas": 80,
+   "semanales": [
+    3,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 1º"
+  },
+  {
+   "ciclo": "ASIR",
+   "codigo": "1710",
+   "nombre": "Itinerario personal para la empleabilidad II",
+   "horas": 60,
+   "semanales": [
+    null,
+    3
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 1º"
+  },
+  {
+   "ciclo": "ASIR",
+   "codigo": "0379",
+   "nombre": "Proyecto intermodular de administración de sistemas informáticos en red",
+   "horas": 55,
+   "semanales": [
+    1,
+    1
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 1º"
+  },
+  {
+   "ciclo": "DAW",
+   "codigo": "0179",
+   "nombre": "Inglés profesional para ciclos formativos de Grado Superior",
+   "horas": 60,
+   "semanales": [
+    2,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 2º"
+  },
+  {
+   "ciclo": "DAW",
+   "codigo": "1665",
+   "nombre": "Digitalización aplicada al sector productivo (GS)",
+   "horas": 50,
+   "semanales": [
+    2,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 2º"
+  },
+  {
+   "ciclo": "DAW",
+   "codigo": "1708",
+   "nombre": "Sostenibilidad aplicada al sistema productivo",
+   "horas": 40,
+   "semanales": [
+    1,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 2º"
+  },
+  {
+   "ciclo": "DAW",
+   "codigo": "1709",
+   "nombre": "Itinerario personal para la empleabilidad I",
+   "horas": 80,
+   "semanales": [
+    3,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 2º"
+  },
+  {
+   "ciclo": "DAW",
+   "codigo": "1710",
+   "nombre": "Itinerario personal para la empleabilidad II",
+   "horas": 60,
+   "semanales": [
+    null,
+    3
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 2º"
+  },
+  {
+   "ciclo": "DAW",
+   "codigo": "0616",
+   "nombre": "Proyecto intermodular de desarrollo de aplicaciones Web",
+   "horas": 55,
+   "semanales": [
+    1,
+    1
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 2º"
+  },
+  {
+   "ciclo": "DAM",
+   "codigo": "0179",
+   "nombre": "Inglés profesional para ciclos formativos de Grado Superior",
+   "horas": 60,
+   "semanales": [
+    2,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 6º"
+  },
+  {
+   "ciclo": "DAM",
+   "codigo": "1665",
+   "nombre": "Digitalización aplicada al sector productivo (GS)",
+   "horas": 50,
+   "semanales": [
+    2,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 6º"
+  },
+  {
+   "ciclo": "DAM",
+   "codigo": "1708",
+   "nombre": "Sostenibilidad aplicada al sistema productivo",
+   "horas": 40,
+   "semanales": [
+    1,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 6º"
+  },
+  {
+   "ciclo": "DAM",
+   "codigo": "1709",
+   "nombre": "Itinerario personal para la empleabilidad I",
+   "horas": 80,
+   "semanales": [
+    3,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 6º"
+  },
+  {
+   "ciclo": "DAM",
+   "codigo": "1710",
+   "nombre": "Itinerario personal para la empleabilidad II",
+   "horas": 60,
+   "semanales": [
+    null,
+    3
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 6º"
+  },
+  {
+   "ciclo": "DAM",
+   "codigo": "0492",
+   "nombre": "Proyecto intermodular de desarrollo de aplicaciones multiplataforma",
+   "horas": 55,
+   "semanales": [
+    1,
+    1
+   ],
+   "decreto": "80/2024",
+   "anexo": "IA-3. 6º"
+  },
+  {
+   "ciclo": "AD",
+   "codigo": "0180",
+   "nombre": "Segunda lengua (Francés)",
+   "horas": 110,
+   "semanales": [
+    null,
+    5
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.3º"
+  },
+  {
+   "ciclo": "AD",
+   "codigo": "0179",
+   "nombre": "Inglés profesional para ciclos formativos de Grado Superior",
+   "horas": 60,
+   "semanales": [
+    2,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.3º"
+  },
+  {
+   "ciclo": "AD",
+   "codigo": "1665",
+   "nombre": "Digitalización aplicada al sector productivo (GS)",
+   "horas": 50,
+   "semanales": [
+    2,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.3º"
+  },
+  {
+   "ciclo": "AD",
+   "codigo": "1708",
+   "nombre": "Sostenibilidad aplicada al sistema productivo",
+   "horas": 40,
+   "semanales": [
+    1,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.3º"
+  },
+  {
+   "ciclo": "AD",
+   "codigo": "1709",
+   "nombre": "Itinerario personal para la empleabilidad I",
+   "horas": 80,
+   "semanales": [
+    3,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.3º"
+  },
+  {
+   "ciclo": "AD",
+   "codigo": "1710",
+   "nombre": "Itinerario personal para la empleabilidad II",
+   "horas": 60,
+   "semanales": [
+    null,
+    3
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.3º"
+  },
+  {
+   "ciclo": "AD",
+   "codigo": "0664",
+   "nombre": "Proyecto intermodular de asistencia a la dirección",
+   "horas": 55,
+   "semanales": [
+    1,
+    1
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.3º"
+  },
+  {
+   "ciclo": "AF",
+   "codigo": "0179",
+   "nombre": "Inglés profesional para ciclos formativos de Grado Superior",
+   "horas": 60,
+   "semanales": [
+    2,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.4º"
+  },
+  {
+   "ciclo": "AF",
+   "codigo": "1665",
+   "nombre": "Digitalización aplicada al sector productivo (GS)",
+   "horas": 50,
+   "semanales": [
+    2,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.4º"
+  },
+  {
+   "ciclo": "AF",
+   "codigo": "1708",
+   "nombre": "Sostenibilidad aplicada al sistema productivo",
+   "horas": 40,
+   "semanales": [
+    1,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.4º"
+  },
+  {
+   "ciclo": "AF",
+   "codigo": "1709",
+   "nombre": "Itinerario personal para la empleabilidad I",
+   "horas": 80,
+   "semanales": [
+    3,
+    null
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.4º"
+  },
+  {
+   "ciclo": "AF",
+   "codigo": "1710",
+   "nombre": "Itinerario personal para la empleabilidad II",
+   "horas": 60,
+   "semanales": [
+    null,
+    3
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.4º"
+  },
+  {
+   "ciclo": "AF",
+   "codigo": "0657",
+   "nombre": "Proyecto intermodular de administración y finanzas",
+   "horas": 55,
+   "semanales": [
+    1,
+    1
+   ],
+   "decreto": "80/2024",
+   "anexo": "I-C.4º"
+  },
+  {
+   "ciclo": "GA",
+   "codigo": "0156",
+   "nombre": "Inglés profesional para ciclos formativos de grado medio",
+   "horas": 60,
+   "semanales": [
+    2,
+    null
+   ],
+   "decreto": "79/2024",
+   "anexo": "IC-1. 1º"
+  },
+  {
+   "ciclo": "GA",
+   "codigo": "1664",
+   "nombre": "Digitalización aplicada al sector productivo (GM)",
+   "horas": 50,
+   "semanales": [
+    2,
+    null
+   ],
+   "decreto": "79/2024",
+   "anexo": "IC-1. 1º"
+  },
+  {
+   "ciclo": "GA",
+   "codigo": "1708",
+   "nombre": "Sostenibilidad aplicada al sistema productivo",
+   "horas": 40,
+   "semanales": [
+    1,
+    null
+   ],
+   "decreto": "79/2024",
+   "anexo": "IC-1. 1º"
+  },
+  {
+   "ciclo": "GA",
+   "codigo": "1709",
+   "nombre": "Itinerario personal para la empleabilidad I",
+   "horas": 80,
+   "semanales": [
+    3,
+    null
+   ],
+   "decreto": "79/2024",
+   "anexo": "IC-1. 1º"
+  },
+  {
+   "ciclo": "GA",
+   "codigo": "1710",
+   "nombre": "Itinerario personal para la empleabilidad II",
+   "horas": 60,
+   "semanales": [
+    null,
+    3
+   ],
+   "decreto": "79/2024",
+   "anexo": "IC-1. 1º"
+  },
+  {
+   "ciclo": "GA",
+   "codigo": "1713",
+   "nombre": "Proyecto intermodular de Gestión administrativa",
+   "horas": 55,
+   "semanales": [
+    1,
+    1
+   ],
+   "decreto": "79/2024",
+   "anexo": "IC-1. 1º"
+  },
+  {
+   "ciclo": "SMR",
+   "codigo": "0156",
+   "nombre": "Inglés profesional para ciclos formativos de grado medio",
+   "horas": 60,
+   "semanales": [
+    2,
+    null
+   ],
+   "decreto": "79/2024",
+   "anexo": "IA-3 2º"
+  },
+  {
+   "ciclo": "SMR",
+   "codigo": "1664",
+   "nombre": "Digitalización aplicada al sector productivo (GM)",
+   "horas": 50,
+   "semanales": [
+    2,
+    null
+   ],
+   "decreto": "79/2024",
+   "anexo": "IA-3 2º"
+  },
+  {
+   "ciclo": "SMR",
+   "codigo": "1708",
+   "nombre": "Sostenibilidad aplicada al sistema productivo",
+   "horas": 40,
+   "semanales": [
+    1,
+    null
+   ],
+   "decreto": "79/2024",
+   "anexo": "IA-3 2º"
+  },
+  {
+   "ciclo": "SMR",
+   "codigo": "1709",
+   "nombre": "Itinerario personal para la empleabilidad I",
+   "horas": 80,
+   "semanales": [
+    3,
+    null
+   ],
+   "decreto": "79/2024",
+   "anexo": "IA-3 2º"
+  },
+  {
+   "ciclo": "SMR",
+   "codigo": "1710",
+   "nombre": "Itinerario personal para la empleabilidad II",
+   "horas": 60,
+   "semanales": [
+    null,
+    3
+   ],
+   "decreto": "79/2024",
+   "anexo": "IA-3 2º"
+  },
+  {
+   "ciclo": "SMR",
+   "codigo": "1713",
+   "nombre": "Proyecto intermodular de Sistemas microinformáticos y redes",
+   "horas": 55,
+   "semanales": [
+    1,
+    1
+   ],
+   "decreto": "79/2024",
+   "anexo": "IA-3 2º"
+  },
+  {
+   "ciclo": "CFGB",
+   "codigo": "3163",
+   "nombre": "Ciencias aplicadas I",
+   "horas": 120,
+   "semanales": [
+    4,
+    null
+   ],
+   "decreto": "78/2024",
+   "anexo": "I"
+  },
+  {
+   "ciclo": "CFGB",
+   "codigo": "3161",
+   "nombre": "Comunicación y Ciencias Sociales I",
+   "horas": 120,
+   "semanales": [
+    4,
+    null
+   ],
+   "decreto": "78/2024",
+   "anexo": "I"
+  },
+  {
+   "ciclo": "CFGB",
+   "codigo": "3160",
+   "nombre": "Proyecto intermodular de aprendizaje colaborativo",
+   "horas": 55,
+   "semanales": [
+    1,
+    1
+   ],
+   "decreto": "78/2024",
+   "anexo": "I"
+  },
+  {
+   "ciclo": "CFGB",
+   "codigo": "3164",
+   "nombre": "Ciencias aplicadas II",
+   "horas": 152,
+   "semanales": [
+    null,
+    6
+   ],
+   "decreto": "78/2024",
+   "anexo": "I"
+  },
+  {
+   "ciclo": "CFGB",
+   "codigo": "3162",
+   "nombre": "Comunicación y ciencias sociales II",
+   "horas": 152,
+   "semanales": [
+    null,
+    6
+   ],
+   "decreto": "78/2024",
+   "anexo": "I"
+  },
+  {
+   "ciclo": "SA",
+   "codigo": "3163",
+   "nombre": "Ciencias aplicadas I",
+   "horas": 120,
+   "semanales": [
+    4,
+    null
+   ],
+   "decreto": "78/2024",
+   "anexo": "I"
+  },
+  {
+   "ciclo": "SA",
+   "codigo": "3161",
+   "nombre": "Comunicación y Ciencias Sociales I",
+   "horas": 120,
+   "semanales": [
+    4,
+    null
+   ],
+   "decreto": "78/2024",
+   "anexo": "I"
+  },
+  {
+   "ciclo": "SA",
+   "codigo": "3160",
+   "nombre": "Proyecto intermodular de aprendizaje colaborativo",
+   "horas": 55,
+   "semanales": [
+    1,
+    1
+   ],
+   "decreto": "78/2024",
+   "anexo": "I"
+  },
+  {
+   "ciclo": "SA",
+   "codigo": "3164",
+   "nombre": "Ciencias aplicadas II",
+   "horas": 152,
+   "semanales": [
+    null,
+    6
+   ],
+   "decreto": "78/2024",
+   "anexo": "I"
+  },
+  {
+   "ciclo": "SA",
+   "codigo": "3162",
+   "nombre": "Comunicación y ciencias sociales II",
+   "horas": 152,
+   "semanales": [
+    null,
+    6
+   ],
+   "decreto": "78/2024",
+   "anexo": "I"
+  }
+ ]
+}

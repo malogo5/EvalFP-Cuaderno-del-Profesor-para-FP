@@ -167,7 +167,7 @@ async function loadDashboard() {
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn btn-ghost btn-sm" onclick="goSection('alumnos')">👥 Ir a alumnos</button>
           <button class="btn btn-ghost btn-sm" onclick="goSection('programacion')">📋 Ir a programación</button>
-          <button class="btn btn-ghost btn-sm" onclick="goSection('notas')">📝 Ir a notas</button>
+          <button class="btn btn-ghost btn-sm" onclick="goSection('notas')">🔢 Ir a notas</button>
         </div>
       </div>`
     return

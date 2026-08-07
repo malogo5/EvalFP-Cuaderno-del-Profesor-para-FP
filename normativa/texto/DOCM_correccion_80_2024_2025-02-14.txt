@@ -1,0 +1,42 @@
+FUENTE: DOCM AÑO XLIV Núm. 31, de 14 de febrero de 2025, pág. 6099. NID [2025/1026]
+PDF oficial (Consejería de Educación, CLM):
+https://educacion.castillalamancha.es/sites/default/files/normativas/2025-09/Correccion%20de%20errores%20DECRETO%2080-2024.pdf
+Permalink DOCM: https://docm.jccm.es/docm/descargarArchivo.do?ruta=2025/02/14/pdf/2025_1026.pdf&tipo=rutaDocm
+Recuperado: 7 de agosto de 2026
+NOTA: el segmento "2025-09" de la URL es la carpeta de subida del gestor de
+contenidos de la Consejería, NO la fecha de publicación. La publicación en el
+DOCM es del 14/02/2025.
+
+--- TEXTO ÍNTEGRO ---
+
+I.- DISPOSICIONES GENERALES
+
+Consejería de Educación, Cultura y Deportes
+
+Corrección de errores del Decreto 80/2024, de 5 de noviembre, por el que se modifican determinados
+decretos que establecen los currículos de los ciclos formativos de grado superior correspondientes a los
+títulos de Técnico o Técnica Superior de Formación Profesional en la comunidad autónoma de Castilla-La
+Mancha. [2025/1026]
+
+Advertidos errores en el Decreto 80/2024, de 5 de noviembre, por el que se modifican determinados decretos
+que establecen los currículos de los ciclos formativos de grado superior correspondientes a los títulos de Técnico
+o Técnica Superior de Formación Profesional en la comunidad autónoma de Castilla-La Mancha, se procede a
+efectuar las oportunas correcciones:
+
+En la página 38043, Disposición adicional segunda. Catálogo de módulos optativos, donde dice: "En el anexo III del
+presente Decreto, ..." debe decir: "En el anexo III del Decreto 79/2024, de 5 de noviembre, ..."
+
+AÑO XLIV Núm. 31   14 de febrero de 2025   6099
+
+--- FIN DEL TEXTO ---
+
+ALCANCE PARA EL CATÁLOGO DE EvalFP:
+Ninguno. La corrección afecta exclusivamente a una remisión cruzada de la
+Disposición adicional segunda (catálogo de módulos optativos). No modifica
+ninguna duración ni distribución horaria de ningún módulo profesional, ni
+ningún resultado de aprendizaje ni criterio de evaluación.
+
+CORRECCIÓN HERMANA (grado medio), publicada el mismo día:
+Corrección de errores del Decreto 79/2024 [2025/1027], DOCM núm. 31 de 14/02/2025.
+Afecta a la página 37726, Anexo IA-4. 4º, ciclo de Técnico/a en Elaboración de
+Productos Alimenticios. Ese ciclo NO forma parte del catálogo de EvalFP.

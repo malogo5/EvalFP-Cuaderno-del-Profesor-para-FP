@@ -1,0 +1,145 @@
+"""EvalFP — Desarrollo Web en Entorno Servidor · 0613 · Desarrollo de Aplicaciones Web (DAW)
+Decreto 230/2011, de 28/07/2011, currículo del ciclo de Desarrollo de Aplicaciones Web en Castilla-La Mancha (DOCM, NID 2011/11276) · RA y CE literales del Anexo I
+RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
+Duración: 326 h · 8 h/semana · 2º DAW.
+"""
+MODULO = {
+    "nombre":"Desarrollo Web en Entorno Servidor","codigo":"0613","abrev":"DWES",
+    "ciclo":"Desarrollo de Aplicaciones Web (DAW)","ciclo_clave":"DAW","ciclo_nivel":"CFGS",
+    "curso":"2º DAW","horas_sem":8,"total_horas":326,"anno":"2026-2027","eval_count":3,
+    "decreto":"Decreto 230/2011, de 28/07/2011, currículo del ciclo de Desarrollo de Aplicaciones Web en Castilla-La Mancha (DOCM, NID 2011/11276) · RA y CE literales del Anexo I",
+}
+UTS = [
+    {"id":"UT1","nombre":"Selecciona las arquitecturas y tecnologías de programación Web en…","horas":34,"eval":1,"tags":""},
+    {"id":"UT2","nombre":"Inserción de código en páginas web","horas":43,"eval":1,"tags":"PHP · Variables · Formularios · Sesiones · Cookies"},
+    {"id":"UT3","nombre":"Programación orientada a objetos con PHP","horas":38,"eval":1,"tags":"Clases · Herencia · Interfaces · Namespaces · Composer"},
+    {"id":"UT4","nombre":"Desarrollo de aplicaciones web utilizando código embebido","horas":34,"eval":2,"tags":"MySQL · PDO · CRUD · Preparadas · Transacciones"},
+    {"id":"UT5","nombre":"Desarrollo de aplicaciones web utilizando frameworks","horas":38,"eval":2,"tags":"Laravel · Symfony · ORM · Eloquent · Migrations"},
+    {"id":"UT6","nombre":"Desarrolla aplicaciones de acceso a almacenes de datos","horas":38,"eval":2,"tags":""},
+    {"id":"UT7","nombre":"Desarrolla servicios Web","horas":34,"eval":3,"tags":""},
+    {"id":"UT8","nombre":"Genera páginas Web dinámicas","horas":34,"eval":3,"tags":""},
+    {"id":"UT9","nombre":"Desarrolla aplicaciones Web híbridas","horas":33,"eval":3,"tags":""},
+]
+RAS = [
+    {"id":"RA1","pond":11,"nombre":"Selecciona las arquitecturas y tecnologías de programación Web en entorno servidor, analizando sus capacidades y características propias."},
+    {"id":"RA2","pond":13,"nombre":"Escribe sentencias ejecutables por un servidor Web reconociendo y aplicando procedimientos de integración del código en lenguajes de marcas."},
+    {"id":"RA3","pond":12,"nombre":"Escribe bloques de sentencias embebidos en lenguajes de marcas, seleccionando y utilizando las estructuras de programación."},
+    {"id":"RA4","pond":10,"nombre":"Desarrolla aplicaciones Web embebidas en lenguajes de marcas analizando e incorporando funcionalidades según especificaciones."},
+    {"id":"RA5","pond":12,"nombre":"Desarrolla aplicaciones Web identificando y aplicando mecanismos para separar el código de presentación de la lógica de negocio."},
+    {"id":"RA6","pond":12,"nombre":"Desarrolla aplicaciones de acceso a almacenes de datos, aplicando medidas para mantener la seguridad y la integridad de la información."},
+    {"id":"RA7","pond":10,"nombre":"Desarrolla servicios Web analizando su funcionamiento e implantando la estructura de sus componentes."},
+    {"id":"RA8","pond":10,"nombre":"Genera páginas Web dinámicas analizando y utilizando tecnologías del servidor Web que añadan código al lenguaje de marcas."},
+    {"id":"RA9","pond":10,"nombre":"Desarrolla aplicaciones Web híbridas seleccionando y utilizando librerías de código y repositorios heterogéneos de información."},
+]
+ASIGNACIONES = [
+    ("UT1","RA1",["CR1","CR2","CR3","CR4","CR5","CR6","CR7"]),
+    ("UT2","RA2",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9"]),
+    ("UT3","RA3",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8"]),
+    ("UT4","RA4",["CR1","CR2","CR3","CR4","CR5","CR6","CR7"]),
+    ("UT5","RA5",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8"]),
+    ("UT6","RA6",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8"]),
+    ("UT7","RA7",["CR1","CR2","CR3","CR4","CR5","CR6","CR7"]),
+    ("UT8","RA8",["CR1","CR2","CR3","CR4","CR5","CR6","CR7"]),
+    ("UT9","RA9",["CR1","CR2","CR3","CR4","CR5","CR6","CR7"]),
+]
+EVAL_RAS = {1:["RA1","RA2","RA3"], 2:["RA4","RA5","RA6"], 3:["RA7","RA8","RA9"]}
+DUAL_RA = None
+RA_INSTRUMENTOS = {
+    "RA1":["examen","practica"],
+    "RA2":["examen","practica"],
+    "RA3":["examen","practica"],
+    "RA4":["examen","practica"],
+    "RA5":["examen","practica"],
+    "RA6":["examen","practica"],
+    "RA7":["examen","practica"],
+    "RA8":["examen","practica"],
+    "RA9":["examen","practica"],
+}
+CES = {
+    "RA1":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han caracterizado y diferenciado los modelos de ejecución de código en el servidor y en el cliente Web.",
+        "Se han reconocido las ventajas que proporciona la generación dinámica de páginas Web y sus diferencias con la inclusión de sentencias de guiones en el interior de las páginas Web.",
+        "Se han identificado los mecanismos de ejecución de código en los servidores Web.",
+        "Se han reconocido las funcionalidades que aportan los servidores de aplicaciones y su integración con los servidores Web.",
+        "Se han identificado y caracterizado los principales lenguajes y tecnologías relacionados con la programación Web en entorno servidor.",
+        "Se han verificado los mecanismos de integración de los lenguajes de marcas con los lenguajes de programación en entorno servidor.",
+        "Se han reconocido y evaluado las herramientas de programación en entorno servidor.",
+    ], start=1)],
+    "RA2":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han reconocido los mecanismos de generación de páginas Web a partir de lenguajes de marcas con código embebido.",
+        "Se han identificado las principales tecnologías asociadas.",
+        "Se han utilizado etiquetas para la inclusión de código en el lenguaje de marcas.",
+        "Se ha reconocido la sintaxis del lenguaje de programación que se ha de utilizar.",
+        "Se han escrito sentencias simples y se han comprobado sus efectos en el documento resultante.",
+        "Se han utilizado directivas para modificar el comportamiento predeterminado.",
+        "Se han utilizado los distintos tipos de variables y operadores disponibles en el lenguaje.",
+        "Se han identificado los ámbitos de utilización de las variables.",
+        "Se han diseñado aplicaciones web sencillas.",
+    ], start=1)],
+    "RA3":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han utilizado mecanismos de decisión en la creación de bloques de sentencias.",
+        "Se han utilizado bucles y se ha verificado su funcionamiento.",
+        "Se han utilizado “arrays” para almacenar y recuperar conjuntos de datos.",
+        "Se han creado y utilizado funciones.",
+        "Se han utilizado formularios web para interactuar con el usuario del navegador web.",
+        "Se han empleado métodos para recuperar la información introducida en el formulario.",
+        "Se han añadido comentarios al código.",
+        "Se han utilizado herramientas y entornos para facilitar la programación, prueba y depuración del código.",
+    ], start=1)],
+    "RA4":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han identificado los mecanismos disponibles para el mantenimiento de la información que concierne a un cliente web concreto y se han señalado sus ventajas.",
+        "Se han utilizado sesiones para mantener el estado de las aplicaciones Web.",
+        "Se han utilizado “cookies” para almacenar información en el cliente Web y para recuperar su contenido.",
+        "Se han identificado y caracterizado los mecanismos disponibles para la autentificación de usuarios.",
+        "Se han escrito aplicaciones que integren mecanismos de autentificación de usuarios.",
+        "Se han realizado adaptaciones a aplicaciones Web existentes como gestores de contenidos u otras.",
+        "Se han utilizado herramientas y entornos para facilitar la programación, prueba y depuración del código.",
+    ], start=1)],
+    "RA5":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han identificado las ventajas de separar la lógica de negocio de los aspectos de presentación de la aplicación.",
+        "Se han analizado tecnologías y mecanismos que permiten realizar esta separación y sus características principales.",
+        "Se han utilizado objetos y controles en el servidor para generar el aspecto visual de la aplicación web en el cliente.",
+        "Se han utilizado formularios generados de forma dinámica para responder a los eventos de la aplicación Web.",
+        "Se han identificado y aplicado los parámetros relativos a la configuración de la aplicación Web.",
+        "Se han escrito aplicaciones Web con mantenimiento de estado y separación de la lógica de negocio.",
+        "Se han aplicado los principios de la programación orientada a objetos.",
+        "Se ha probado y documentado el código.",
+    ], start=1)],
+    "RA6":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han analizado las tecnologías que permiten el acceso mediante programación a la información disponible en almacenes de datos.",
+        "Se han creado aplicaciones que establezcan conexiones con bases de datos.",
+        "Se ha recuperado información almacenada en bases de datos.",
+        "Se ha publicado en aplicaciones web la información recuperada.",
+        "Se han utilizado conjuntos de datos para almacenar la información.",
+        "Se han creado aplicaciones web que permitan la actualización y la eliminación de información disponible en una base de datos.",
+        "Se han utilizado transacciones para mantener la consistencia de la información.",
+        "Se han probado y documentado las aplicaciones.",
+    ], start=1)],
+    "RA7":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han reconocido las características propias y el ámbito de aplicación de los servicios Web.",
+        "Se han reconocido las ventajas de utilizar servicios Web para proporcionar acceso a funcionalidades incorporadas a la lógica de negocio de una aplicación.",
+        "Se han identificado las tecnologías y los protocolos implicados en la publicación y utilización de servicios Web.",
+        "Se ha programado un servicio Web.",
+        "Se ha creado el documento de descripción del servicio Web.",
+        "Se ha verificado el funcionamiento del servicio Web.",
+        "Se ha consumido el servicio Web.",
+    ], start=1)],
+    "RA8":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han identificado las diferencias entre la ejecución de código en el servidor y en el cliente Web.",
+        "Se han reconocido las ventajas de unir ambas tecnologías en el proceso de desarrollo de programas.",
+        "Se han identificado las librerías y las tecnologías relacionadas con la generación por parte del servidor de páginas Web con guiones embebidos.",
+        "Se han utilizado estas tecnologías para generar páginas Web que incluyan interacción con el usuario en forma de advertencias y peticiones de confirmación.",
+        "Se han utilizado estas tecnologías, para generar páginas Web que incluyan verificación de formularios.",
+        "Se han utilizado estas tecnologías para generar páginas web que incluyan modificación dinámica de su contenido y su estructura.",
+        "Se han aplicado estas tecnologías en la programación de aplicaciones Web.",
+    ], start=1)],
+    "RA9":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
+        "Se han reconocido las ventajas que proporciona la reutilización de código y el aprovechamiento de información ya existente.",
+        "Se han identificado librerías de código y tecnologías aplicables en la creación de aplicaciones web híbridas.",
+        "Se ha creado una aplicación web que recupere y procese repositorios de información ya existentes.",
+        "Se han creado repositorios específicos a partir de información existente en Internet y en almacenes de información.",
+        "Se han utilizado librerías de código para incorporar funcionalidades específicas a una aplicación web.",
+        "Se han programado servicios y aplicaciones web utilizando como base información y código generados por terceros.",
+        "Se han probado, depurado y documentado las aplicaciones generadas.",
+    ], start=1)],
+}
