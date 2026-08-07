@@ -1,11 +1,11 @@
 # EvalFP — Cuaderno del Profesor para FP
 
 [![Licencia: GPL-3.0-or-later](https://img.shields.io/badge/Licencia-GPL--3.0--or--later-blue.svg)](LICENSE)
-[![Versión](https://img.shields.io/badge/versión-3.8.0-orange.svg)](CHANGELOG.md)
+[![Versión](https://img.shields.io/badge/versión-3.15.0-orange.svg)](CHANGELOG.md)
 
 EvalFP es una aplicación de escritorio Electron para profesorado de Formación Profesional en España. Gestiona programación didáctica, alumnado, notas, evaluaciones, informes y materiales de apoyo en una base de datos SQLite local, sin backend remoto.
 
-**Versión actual:** 3.8.0 · El historial está en el [CHANGELOG](CHANGELOG.md) y lo que viene, en el [ROADMAP](ROADMAP.md).
+**Versión actual:** 3.15.0 · El historial está en el [CHANGELOG](CHANGELOG.md) y lo que viene, en el [ROADMAP](ROADMAP.md).
 
 ## Lo esencial
 
@@ -78,26 +78,28 @@ EvalFP se distribuye bajo [GNU GPL v3.0 o posterior](LICENSE).
 
 ## Estado del proyecto
 
-EvalFP queda muy bien blindado a nivel de código y listo para empaquetado.  
-Los 20 puntos de control del sprint están implementados y validados con compilación y lint básicos, pero la validación definitiva del comportamiento en producción debe hacerse con el binario nativo ejecutándose en macOS y Windows.
+El cuaderno está terminado y en uso: catálogo completo de Castilla-La Mancha, motor de
+calificación único y siete auditorías cerradas con **83 incidencias** corregidas, todas
+cubiertas con pruebas.
 
-### Qué está cubierto
-- Lógica de evaluación y notas reforzada.
-- Ponderaciones dinámicas y control estricto de casos límite.
-- Informes IA con banners de error y advertencia amigables.
-- Validación previa del cliente para reducir errores evitables.
-- Parser de opciones endurecido.
-- Robustez ante caídas de red y errores de API.
-- Anonimización de datos personales antes del envío a IA.
-- Generación masiva de materiales e informes individuales.
-- Resolución de rutas preparada para desarrollo y producción.
+### Qué está comprobado
+- **Normativa**: Orden 201/2024 de CLM, con la modificación de la Orden 55/2026. La regla de
+  oro (todos los RA alcanzados), el redondeo de acta, las dos convocatorias, la renuncia, el
+  superado parcial por fase de empresa y los topes de convocatorias.
+- **Catálogo**: los 91 módulos se dan de alta sin error, con sus 4.444 criterios literales
+  del DOCM y las ponderaciones cuadradas.
+- **Motor de calificación**: 13.000 combinaciones al azar contra las reglas de la Orden, sin
+  una sola infracción. Todas las pantallas —incluido el boletín— calculan con el mismo motor.
+- **Datos de menores**: nada sale del ordenador salvo lo que se manda a la IA, anonimizado y
+  con consentimiento explícito en cada pantalla. Las claves de API van al llavero del sistema
+  o no se guardan.
+- **Aguante**: 6 módulos, 180 matrículas y 8.640 notas sin degradación; un apagón a media
+  escritura no corrompe la base.
+- **Pruebas**: 151 unitarias con Vitest y extremo a extremo con Playwright.
 
 ### Qué queda por validar fuera del código
-- Empaquetado real en macOS y Windows.
-- Ejecución del instalador nativo en un sistema limpio.
-- Comportamiento del flujo completo con datos reales de un centro.
-- Verificación final de rutas, permisos y recursos empaquetados.
-
-### Conclusión
-La base técnica está cerrada y sólidamente implementada.  
-La siguiente fase ya no es tanto de desarrollo como de validación de distribución: confirmar que el instalador nativo reproduce exactamente este comportamiento en el entorno final del usuario.
+- Un curso completo con alumnado real, de septiembre a junio.
+- La sesión de 2ª convocatoria de junio, que es la única que no se puede ensayar
+  (guion en [GUION_2A_CONVOCATORIA.md](GUION_2A_CONVOCATORIA.md)).
+- Firmar los instaladores para que macOS y Windows dejen de avisar
+  (ver [FIRMA.md](FIRMA.md)).
