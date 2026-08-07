@@ -34,6 +34,24 @@ historial de git, en los commits anteriores a la 3.7.0.
 | Pruebas | Unitarias con Vitest · extremo a extremo con Playwright |
 | Distribución | DMG (arm64 + x64) e instalador NSIS para Windows 11 |
 
+## Pendiente de la próxima entrega
+
+**Reconstruir los instaladores.** Hay cambios en la versión de desarrollo que todavía no
+están en el DMG ni en el `.exe`: el icono de Notas y lo que venga de la revisión del
+catálogo. Se hace al final, cuando el lote de cambios esté cerrado:
+
+```
+npm run build:mac      # en el Mac
+npm.cmd run build:win  # en la máquina virtual, tras git pull
+```
+
+**Alinear el catálogo con los Decretos 78, 79 y 80/2024.** El catálogo tiene las horas de los
+decretos de currículo originales; desde la Ley 3/2022 esos currículos están modificados y hay
+módulos transversales nuevos —IPE I y II, Inglés Profesional, Digitalización, Sostenibilidad
+y Proyecto Intermodular— que no están. Ojo: el Decreto 80/2024 tiene una corrección de
+errores de septiembre de 2025, y los RA y CE se copian del DOCM, nunca del Real Decreto
+estatal.
+
 ## Lo siguiente
 
 1. **Probarlo en una 2ª convocatoria de verdad.** El modelo de convocatorias (A-5) está
