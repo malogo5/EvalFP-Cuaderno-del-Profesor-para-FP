@@ -24,9 +24,9 @@ Verificado: MD5 idéntico en el JSON y los 92 `.py` byte a byte.
 
 | Norma | Publicación | Fichero |
 |---|---|---|
-| Decreto 78/2024, de 5 de noviembre (grado básico) | DOCM AÑO XLIII **núm. 218, de 11/11/2024**, pág. 37673. NID [2024/8889] | `normativa/Decreto 78:2024.pdf` |
-| Decreto 79/2024, de 5 de noviembre (grado medio) | DOCM AÑO XLIII **núm. 218, de 11/11/2024**, pág. 37694. NID [2024/8895] | `normativa/Decreto 79:2024.pdf` |
-| Decreto 80/2024, de 5 de noviembre (grado superior) | DOCM AÑO XLIII **núm. 218, de 11/11/2024**, pág. 38018. NID [2024/8907] | `normativa/Decreto 80:2024.pdf` |
+| Decreto 78/2024, de 5 de noviembre (grado básico) | DOCM AÑO XLIII **núm. 218, de 11/11/2024**, pág. 37673. NID [2024/8889] | `normativa/CLM_GradoBasico_78_2024.pdf` |
+| Decreto 79/2024, de 5 de noviembre (grado medio) | DOCM AÑO XLIII **núm. 218, de 11/11/2024**, pág. 37694. NID [2024/8895] | `normativa/CLM_GradoMedio_79_2024.pdf` |
+| Decreto 80/2024, de 5 de noviembre (grado superior) | DOCM AÑO XLIII **núm. 218, de 11/11/2024**, pág. 38018. NID [2024/8907] | `normativa/CLM_GradoSuperior_80_2024.pdf` |
 | Corrección de errores del Decreto 80/2024 | DOCM AÑO XLIV **núm. 31, de 14/02/2025**, pág. 6099. NID [2025/1026] | `normativa/texto/DOCM_correccion_80_2024_2025-02-14.txt` |
 
 Los tres decretos son de la misma fecha y número de DOCM.
