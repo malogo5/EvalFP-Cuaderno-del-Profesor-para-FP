@@ -90,6 +90,30 @@ function getDb() {
     _db.exec('ALTER TABLE actividades ADD COLUMN convocatoria INTEGER NOT NULL DEFAULT 1')
   }
 
+  // Prueba objetiva de evaluación completa del módulo.
+  //
+  // Es la del art. 3.6 de la Orden 201/2024, en la redacción que le da la Orden
+  // 55/2026: la que se hace a quien ha perdido el derecho a la evaluación
+  // continua, y que «incluirá la totalidad de los resultados de aprendizaje a
+  // través de sus criterios de evaluación». No vale marcarla como un examen más:
+  // el motor tiene que poder quedarse SOLO con ella y descartar todo lo demás.
+  if (!colsAct.some(c => c.name === 'prueba_objetiva')) {
+    _db.exec('ALTER TABLE actividades ADD COLUMN prueba_objetiva INTEGER NOT NULL DEFAULT 0')
+  }
+
+  // Convalidación del módulo (art. 25.7) y su efecto en la nota final del ciclo.
+  //
+  // El art. 25.11 —antes 25.12, renumerado por la Orden 55/2026— excluye del
+  // cálculo de la calificación final los módulos «convalidados sin nota». Con
+  // nota sí computan, así que hacen falta las dos columnas: la marca y la nota.
+  const colsMat = _db.prepare('PRAGMA table_info(matricula)').all()
+  if (!colsMat.some(c => c.name === 'convalidado')) {
+    _db.exec('ALTER TABLE matricula ADD COLUMN convalidado INTEGER NOT NULL DEFAULT 0')
+  }
+  if (!colsMat.some(c => c.name === 'nota_convalidacion')) {
+    _db.exec('ALTER TABLE matricula ADD COLUMN nota_convalidacion REAL')
+  }
+
   _migrarUnicidadModulos()
 
   // Notas fuera de escala que hubiera dejado alguna versión anterior: la
@@ -403,6 +427,23 @@ function _initSchema() {
       FOREIGN KEY (alumno_id) REFERENCES alumnos(id) ON DELETE CASCADE
     );
 
+    -- Pérdida del derecho a la evaluación continua, por alumno y módulo.
+    --
+    -- Orden 201/2024, art. 3.6 (redacción de la Orden 55/2026): quien lo pierde
+    -- «tendrá derecho a la realización de las pruebas objetivas que determine el
+    -- equipo docente […] sin que pueda considerarse la conservación de
+    -- calificaciones parciales obtenidas con anterioridad».
+    --
+    -- Se guarda la fecha y el motivo porque es una decisión que hay que poder
+    -- justificar: es la que deja a alguien sin la nota que ya había sacado.
+    CREATE TABLE IF NOT EXISTS evaluacion_continua (
+      alumno_id INTEGER PRIMARY KEY,
+      perdida   INTEGER NOT NULL DEFAULT 0,
+      fecha     TEXT DEFAULT (datetime('now')),
+      motivo    TEXT,
+      FOREIGN KEY (alumno_id) REFERENCES alumnos(id) ON DELETE CASCADE
+    );
+
     -- RA que el equipo docente ha dado por superados en una sesión de evaluación.
     -- «Un resultado de aprendizaje superado no se puede volver a evaluar»
     -- (Orden 201/2024 de CLM, art. 4.3.f): sin este registro, una actividad
@@ -533,6 +574,104 @@ function setFaseEmpresa({ alumnoId, estado, motivo = null }) {
       motivo=excluded.motivo, fecha=excluded.fecha`).run(alumnoId, estado, motivo)
   return { alumnoId, estado, motivo }
 }
+
+// ── Pérdida del derecho a la evaluación continua (art. 3.6) ──────────────────
+const getEvaluacionContinua = moduloId => getDb().prepare(`
+  SELECT e.alumno_id, e.perdida, e.motivo, e.fecha
+  FROM evaluacion_continua e JOIN alumnos a ON a.id = e.alumno_id
+  WHERE a.modulo_id = ?
+`).all(moduloId)
+
+/**
+ * Marca o levanta la pérdida del derecho a la evaluación continua.
+ *
+ * Quitar la marca devuelve al alumnado a la evaluación ordinaria y recupera lo
+ * calificado durante el curso, que sigue guardado: aquí no se borra nada. Lo que
+ * hace el art. 3.6 es impedir que esas notas se tengan en cuenta mientras la
+ * pérdida esté vigente, no eliminarlas.
+ */
+function setEvaluacionContinua({ alumnoId, perdida, motivo = null }) {
+  const v = perdida ? 1 : 0
+  getDb().prepare(`INSERT INTO evaluacion_continua (alumno_id, perdida, motivo, fecha)
+    VALUES (?,?,?,datetime('now'))
+    ON CONFLICT (alumno_id) DO UPDATE SET perdida=excluded.perdida,
+      motivo=excluded.motivo, fecha=excluded.fecha`).run(alumnoId, v, motivo)
+  return { alumnoId, perdida: v, motivo }
+}
+
+// ── Convalidación de módulos (art. 25.7 y 25.11) ─────────────────────────────
+const getConvalidaciones = moduloId => getDb().prepare(`
+  SELECT m.alumno_id, m.convalidado, m.nota_convalidacion
+  FROM matricula m JOIN alumnos a ON a.id = m.alumno_id
+  WHERE a.modulo_id = ? AND m.convalidado = 1
+`).all(moduloId)
+
+/**
+ * Convalida un módulo, con nota o sin ella.
+ *
+ * La diferencia importa: el art. 25.11 excluye del cálculo de la calificación
+ * final los convalidados **sin nota**. Con nota, computan como cualquier otro.
+ */
+function setConvalidacion({ alumnoId, convalidado, nota = null }) {
+  const v = convalidado ? 1 : 0
+  const n = (nota === null || nota === undefined || nota === '') ? null : Number(nota)
+  if (n !== null && (!isFinite(n) || n < 0 || n > 10)) {
+    throw new Error('La nota de convalidación tiene que estar entre 0 y 10')
+  }
+  getDb().prepare(`INSERT INTO matricula (alumno_id, convalidado, nota_convalidacion)
+    VALUES (?,?,?)
+    ON CONFLICT (alumno_id) DO UPDATE SET convalidado=excluded.convalidado,
+      nota_convalidacion=excluded.nota_convalidacion`).run(alumnoId, v, n)
+  return { alumnoId, convalidado: v, nota: n }
+}
+
+/**
+ * Fase de formación en empresa del CE de Desarrollo de aplicaciones en Python.
+ *
+ * Decreto 79/2025, art. 5.3: es potestativa, «a propuesta del centro educativo»,
+ * y en régimen general debe durar «entre el 20 y 35 %» de las 430 horas del
+ * curso. De ahí la franja de 86 a 150 horas: el decreto fija los límites, el
+ * centro elige el número.
+ *
+ * Las horas se reparten entre los cuatro módulos en proporción a su duración y
+ * se guardan como `horas_aula`, que es lo que el motor usa para saber que un
+ * módulo tiene fase de empresa. Poner 0 significa no ofertarla.
+ */
+const CE_PYTHON_TOTAL = 430
+const CE_PYTHON_MIN = 86
+const CE_PYTHON_MAX = 150
+
+function setFaseEmpresaPython(horasEmpresa) {
+  const h = Number(horasEmpresa) || 0
+  if (h !== 0 && (h < CE_PYTHON_MIN || h > CE_PYTHON_MAX)) {
+    throw new Error(
+      `La fase de empresa del CE de Python debe estar entre ${CE_PYTHON_MIN} y ` +
+      `${CE_PYTHON_MAX} horas en régimen general (Decreto 79/2025, art. 5.3), ` +
+      'o 0 si no se oferta.')
+  }
+  const db = getDb()
+  const filas = db.prepare("SELECT id, data_json FROM modulos WHERE key LIKE 'ce_python_%'").all()
+  let tocados = 0
+  for (const f of filas) {
+    let data
+    try { data = JSON.parse(f.data_json || '{}') } catch { continue }
+    const m = data.modulo
+    if (!m) continue
+    const total = Number(m.total_horas) || 0
+    // Reparto proporcional a la duración de cada módulo, redondeando al alza
+    const empresa = h === 0 ? 0 : Math.round((h * total) / CE_PYTHON_TOTAL)
+    m.horas_aula = h === 0 ? 0 : Math.max(1, total - empresa)
+    db.prepare('UPDATE modulos SET data_json=? WHERE id=?').run(JSON.stringify(data), f.id)
+    tocados++
+  }
+  setConfig('ce_python_horas_empresa', String(h))
+  return { horas: h, modulos: tocados }
+}
+
+const getFaseEmpresaPython = () => ({
+  horas: Number(getConfig('ce_python_horas_empresa') || 0),
+  min: CE_PYTHON_MIN, max: CE_PYTHON_MAX, total: CE_PYTHON_TOTAL,
+})
 
 // ── RA superados y cerrados en una sesión de evaluación ──────────────────────
 const getRasSuperados = moduloId => getDb().prepare(`
@@ -670,19 +809,24 @@ function saveActividad(a) {
   // COALESCE en convocatoria: quien no la manda (todas las pantallas antiguas)
   // no debe cambiar de convocatoria una actividad por guardar su descripción.
   const conv = a.convocatoria == null ? null : Number(a.convocatoria)
+  // Prueba objetiva del art. 3.6: igual que la convocatoria, COALESCE para que
+  // guardar la descripción de una actividad no le quite la marca.
+  const po = a.prueba_objetiva == null ? null : (a.prueba_objetiva ? 1 : 0)
   if (a.id) {
     db.prepare(`UPDATE actividades SET descripcion=?,instrumento=COALESCE(?,instrumento),
         tipo=COALESCE(?,tipo),peso=?,nota_max=?,eval=?,ut_id=?,ra_id=?,ces=?,orden=?,
-        convocatoria=COALESCE(?,convocatoria) WHERE id=?`)
+        convocatoria=COALESCE(?,convocatoria),
+        prueba_objetiva=COALESCE(?,prueba_objetiva) WHERE id=?`)
       .run(a.descripcion, a.instrumento ?? null, a.tipo ?? null, peso, notaMax,
-           evalNum, a.ut_id??null, a.ra_id??null, cesJson, a.orden??0, conv, a.id)
+           evalNum, a.ut_id??null, a.ra_id??null, cesJson, a.orden??0, conv, po, a.id)
     return a.id
   }
   return Number(db.prepare(`INSERT INTO actividades
-    (modulo_id,ut_id,ra_id,descripcion,instrumento,tipo,peso,nota_max,eval,orden,ces,convocatoria)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`)
+    (modulo_id,ut_id,ra_id,descripcion,instrumento,tipo,peso,nota_max,eval,orden,ces,
+     convocatoria,prueba_objetiva)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`)
     .run(a.modulo_id,a.ut_id,a.ra_id,a.descripcion,a.instrumento,
-         a.tipo,peso,notaMax,evalNum,a.orden,cesJson, conv ?? 1).lastInsertRowid)
+         a.tipo,peso,notaMax,evalNum,a.orden,cesJson, conv ?? 1, po ?? 0).lastInsertRowid)
 }
 
 // ── Notas ──────────────────────────────────────────────────────────────────────
@@ -869,6 +1013,9 @@ module.exports = {
   getCalificacionesCE, setCalificacionCE,
   getRasSuperados, cerrarEvaluacionRAs, reabrirRaSuperado,
   getFaseEmpresa, setFaseEmpresa,
+  getEvaluacionContinua, setEvaluacionContinua,
+  getConvalidaciones, setConvalidacion,
+  getFaseEmpresaPython, setFaseEmpresaPython,
   getEvidencias, addEvidencia,
   getMatriculas, setMatricula,
   getConfig, setConfig, deleteConfig, getAllConfig,

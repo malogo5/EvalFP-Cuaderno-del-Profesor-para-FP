@@ -1,5 +1,5 @@
 """EvalFP — Análisis Forense Informático · 5024 · CE Ciberseguridad en Entornos de las TI
-Decreto 77/2022, de 12/07/2022, currículo del Curso de Especialización en Ciberseguridad en Entornos de las Tecnologías de la Información en Castilla-La Mancha (DOCM) · RA y CE literales del Anexo II
+Decreto 77/2022, de 12/07/2022, currículo del Curso de Especialización en Ciberseguridad en Entornos de las Tecnologías de la Información en Castilla-La Mancha (DOCM núm. 136, de 18/07/2022) · Horas: Anexo I · RA y CE literales del Anexo II
 RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
 Duración: 120 h · 4 h/semana · CE Ciberseguridad.
 """
@@ -7,7 +7,7 @@ MODULO = {
     "nombre":"Análisis Forense Informático","codigo":"5024","abrev":"AFI",
     "ciclo":"CE Ciberseguridad en Entornos de las TI","ciclo_clave":"CE_CIBER","ciclo_nivel":"CE",
     "curso":"CE Ciberseguridad","horas_sem":4,"total_horas":120,"anno":"2026-2027","eval_count":2,
-    "decreto":"Decreto 77/2022, de 12/07/2022, currículo del Curso de Especialización en Ciberseguridad en Entornos de las Tecnologías de la Información en Castilla-La Mancha (DOCM) · RA y CE literales del Anexo II",
+    "decreto":"Decreto 77/2022, de 12/07/2022, currículo del Curso de Especialización en Ciberseguridad en Entornos de las Tecnologías de la Información en Castilla-La Mancha (DOCM núm. 136, de 18/07/2022) · Horas: Anexo I · RA y CE literales del Anexo II",
 }
 UTS = [
     {"id":"UT1","nombre":"Aplica metodologías de análisis forense caracterizando las fases de…","horas":26,"eval":1,"tags":""},

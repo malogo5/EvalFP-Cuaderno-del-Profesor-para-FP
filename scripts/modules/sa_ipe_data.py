@@ -7,7 +7,7 @@ MODULO = {
     "nombre":"Itinerario Personal para la Empleabilidad","codigo":"3159","abrev":"IPE",
     "ciclo":"Servicios Administrativos","ciclo_clave":"SA","ciclo_nivel":"CFGB",
     "curso":"1º SA","horas_sem":2,"total_horas":60,"anno":"2026-2027","eval_count":3,
-    "decreto":"Decreto 78/2024, de 05/11/2024, por el que se modifican los decretos de currículo de los ciclos formativos de Grado Básico de Castilla-La Mancha (DOCM 11/11/2024, NID 2024/8889) · RA y CE literales del Anexo II",
+    "decreto":"Horas y curso: Decreto 78/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo I · RA y CE: Decreto 78/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo II (texto literal de Castilla-La Mancha)",
 }
 UTS = [
     {"id":"UT1","nombre":"Prevención de riesgos laborales","horas":18,"eval":1,"tags":"Cultura preventiva · Factores de riesgo · Evaluación de riesgos · Señalización · Emergencias · Primeros auxilios"},

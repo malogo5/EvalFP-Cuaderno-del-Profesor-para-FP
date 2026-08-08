@@ -1,5 +1,5 @@
 """EvalFP — Programación de Inteligencia Artificial · 5073 · CE Inteligencia Artificial y Big Data
-Decreto 69/2022, de 12/07/2022, currículo del Curso de Especialización en Inteligencia Artificial y Big Data en Castilla-La Mancha (DOCM, NID 2022/6683) · RA y CE literales del Anexo II
+Decreto 69/2022, de 12/07/2022, currículo del Curso de Especialización en Inteligencia Artificial y Big Data en Castilla-La Mancha (DOCM núm. 136, de 18/07/2022, NID 2022/6683) · Horas: Anexo I · RA y CE literales del Anexo II
 RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
 Duración: 200 h · 6 h/semana · CE IA y Big Data.
 """
@@ -7,7 +7,7 @@ MODULO = {
     "nombre":"Programación de Inteligencia Artificial","codigo":"5073","abrev":"PIA",
     "ciclo":"CE Inteligencia Artificial y Big Data","ciclo_clave":"CE_IABD","ciclo_nivel":"CE",
     "curso":"CE IA y Big Data","horas_sem":6,"total_horas":200,"anno":"2026-2027","eval_count":3,
-    "decreto":"Decreto 69/2022, de 12/07/2022, currículo del Curso de Especialización en Inteligencia Artificial y Big Data en Castilla-La Mancha (DOCM, NID 2022/6683) · RA y CE literales del Anexo II",
+    "decreto":"Decreto 69/2022, de 12/07/2022, currículo del Curso de Especialización en Inteligencia Artificial y Big Data en Castilla-La Mancha (DOCM núm. 136, de 18/07/2022, NID 2022/6683) · Horas: Anexo I · RA y CE literales del Anexo II",
 }
 UTS = [
     {"id":"UT1","nombre":"Lenguajes de programación para IA","horas":60,"eval":1,"tags":"Estructura de un programa · Python · R · Java · JavaScript · NodeJS · JSON · Lenguajes de marcado"},

@@ -1,5 +1,5 @@
 """EvalFP — Big Data aplicado · 5075 · CE Inteligencia Artificial y Big Data
-Decreto 69/2022, de 12/07/2022, currículo del Curso de Especialización en Inteligencia Artificial y Big Data en Castilla-La Mancha (DOCM, NID 2022/6683) · RA y CE literales del Anexo II
+Decreto 69/2022, de 12/07/2022, currículo del Curso de Especialización en Inteligencia Artificial y Big Data en Castilla-La Mancha (DOCM núm. 136, de 18/07/2022, NID 2022/6683) · Horas: Anexo I · RA y CE literales del Anexo II
 RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
 Duración: 140 h · 4 h/semana · CE IA y Big Data.
 """
@@ -7,7 +7,7 @@ MODULO = {
     "nombre":"Big Data aplicado","codigo":"5075","abrev":"BDA",
     "ciclo":"CE Inteligencia Artificial y Big Data","ciclo_clave":"CE_IABD","ciclo_nivel":"CE",
     "curso":"CE IA y Big Data","horas_sem":4,"total_horas":140,"anno":"2026-2027","eval_count":2,
-    "decreto":"Decreto 69/2022, de 12/07/2022, currículo del Curso de Especialización en Inteligencia Artificial y Big Data en Castilla-La Mancha (DOCM, NID 2022/6683) · RA y CE literales del Anexo II",
+    "decreto":"Decreto 69/2022, de 12/07/2022, currículo del Curso de Especialización en Inteligencia Artificial y Big Data en Castilla-La Mancha (DOCM núm. 136, de 18/07/2022, NID 2022/6683) · Horas: Anexo I · RA y CE literales del Anexo II",
 }
 UTS = [
     {"id":"UT1","nombre":"Gestiona soluciones a problemas propuestos","horas":27,"eval":1,"tags":""},

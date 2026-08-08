@@ -1,5 +1,5 @@
 """EvalFP — Bastionado de Redes y Sistemas · 5022 · CE Ciberseguridad en Entornos de las TI
-Decreto 77/2022, de 12/07/2022, currículo del Curso de Especialización en Ciberseguridad en Entornos de las Tecnologías de la Información en Castilla-La Mancha (DOCM) · RA y CE literales del Anexo II
+Decreto 77/2022, de 12/07/2022, currículo del Curso de Especialización en Ciberseguridad en Entornos de las Tecnologías de la Información en Castilla-La Mancha (DOCM núm. 136, de 18/07/2022) · Horas: Anexo I · RA y CE literales del Anexo II
 RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
 Duración: 185 h · 6 h/semana · CE Ciberseguridad.
 """
@@ -7,7 +7,7 @@ MODULO = {
     "nombre":"Bastionado de Redes y Sistemas","codigo":"5022","abrev":"BRS",
     "ciclo":"CE Ciberseguridad en Entornos de las TI","ciclo_clave":"CE_CIBER","ciclo_nivel":"CE",
     "curso":"CE Ciberseguridad","horas_sem":6,"total_horas":185,"anno":"2026-2027","eval_count":2,
-    "decreto":"Decreto 77/2022, de 12/07/2022, currículo del Curso de Especialización en Ciberseguridad en Entornos de las Tecnologías de la Información en Castilla-La Mancha (DOCM) · RA y CE literales del Anexo II",
+    "decreto":"Decreto 77/2022, de 12/07/2022, currículo del Curso de Especialización en Ciberseguridad en Entornos de las Tecnologías de la Información en Castilla-La Mancha (DOCM núm. 136, de 18/07/2022) · Horas: Anexo I · RA y CE literales del Anexo II",
 }
 UTS = [
     {"id":"UT1","nombre":"Diseño de planes de securización","horas":31,"eval":1,"tags":"CIS Controls · NIST · ISO 27001 · Plan director · Análisis de riesgos · MAGERIT"},

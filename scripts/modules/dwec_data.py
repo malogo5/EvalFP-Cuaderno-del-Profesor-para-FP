@@ -1,5 +1,5 @@
 """EvalFP — Desarrollo Web en Entorno Cliente · 0612 · Desarrollo de Aplicaciones Web (DAW)
-Decreto 230/2011, de 28/07/2011, currículo del ciclo de Desarrollo de Aplicaciones Web en Castilla-La Mancha (DOCM, NID 2011/11276) · RA y CE literales del Anexo I
+Horas y curso: Decreto 80/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IA-3. 2º · RA y CE: Decreto 230/2011, de 28/07/2011 (DOCM núm. 155, de 09/08/2011), Anexo II
 RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
 Duración: 224 h · 6 h/semana · 2º DAW.
 """
@@ -7,7 +7,7 @@ MODULO = {
     "nombre":"Desarrollo Web en Entorno Cliente","codigo":"0612","abrev":"DWEC",
     "ciclo":"Desarrollo de Aplicaciones Web (DAW)","ciclo_clave":"DAW","ciclo_nivel":"CFGS",
     "curso":"2º DAW","horas_sem":6,"total_horas":224,"anno":"2026-2027","eval_count":3,
-    "decreto":"Decreto 230/2011, de 28/07/2011, currículo del ciclo de Desarrollo de Aplicaciones Web en Castilla-La Mancha (DOCM, NID 2011/11276) · RA y CE literales del Anexo I",
+    "decreto":"Horas y curso: Decreto 80/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IA-3. 2º · RA y CE: Decreto 230/2011, de 28/07/2011 (DOCM núm. 155, de 09/08/2011), Anexo II",
 }
 UTS = [
     {"id":"UT1","nombre":"Selección de arquitecturas y herramientas de programación","horas":24,"eval":1,"tags":"JS · ECMAScript · Navegadores · DOM · BOM"},

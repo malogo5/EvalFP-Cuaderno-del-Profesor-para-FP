@@ -86,8 +86,9 @@ cubiertas con pruebas.
 - **Normativa**: Orden 201/2024 de CLM, con la modificación de la Orden 55/2026. La regla de
   oro (todos los RA alcanzados), el redondeo de acta, las dos convocatorias, la renuncia, el
   superado parcial por fase de empresa y los topes de convocatorias.
-- **Catálogo**: los 91 módulos se dan de alta sin error, con sus 4.444 criterios literales
-  del DOCM y las ponderaciones cuadradas.
+- **Catálogo**: los 130 módulos se dan de alta sin error, con sus 5.964 criterios literales
+  del DOCM y las ponderaciones cuadradas. Los criterios están cotejados uno a uno contra el
+  texto de su decreto: 100 % de coincidencia (`python3 scripts/normativa/cotejar_ce.py`).
 - **Motor de calificación**: 13.000 combinaciones al azar contra las reglas de la Orden, sin
   una sola infracción. Todas las pantallas —incluido el boletín— calculan con el mismo motor.
 - **Datos de menores**: nada sale del ordenador salvo lo que se manda a la IA, anonimizado y
@@ -95,7 +96,7 @@ cubiertas con pruebas.
   o no se guardan.
 - **Aguante**: 6 módulos, 180 matrículas y 8.640 notas sin degradación; un apagón a media
   escritura no corrompe la base.
-- **Pruebas**: 151 unitarias con Vitest y extremo a extremo con Playwright.
+- **Pruebas**: 175 unitarias con Vitest y extremo a extremo con Playwright.
 
 ### Qué queda por validar fuera del código
 - Un curso completo con alumnado real, de septiembre a junio.

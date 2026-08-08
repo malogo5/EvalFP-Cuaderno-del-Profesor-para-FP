@@ -1,5 +1,16 @@
 # Todo el catálogo con los decretos de Castilla-La Mancha
 
+> **Documento histórico, con las cifras de la fecha en que se escribió.**
+> El 07/08/2026 el catálogo se alineó con los Decretos 78, 79 y 80 de 2024 y pasó a
+> **130 módulos y 5.964 criterios**. Lo vigente está en
+> [INFORME_DISCREPANCIAS_2026-27.md](INFORME_DISCREPANCIAS_2026-27.md).
+> Corrección concreta: donde este informe dice que el CE de Desarrollo de Aplicaciones
+> en Python es un «curso propio, sin normativa asociada», ya no es cierto. Su currículo
+> lo establece el **Decreto 79/2025, de 14 de octubre** (DOCM núm. 205, de 23/10/2025),
+> y los cuatro módulos se rehicieron con él.
+
+
+
 30/07/2026 · **91 módulos · 552 RA · 552 unidades de trabajo · 4.444 criterios de evaluación**
 
 De los 4.351 criterios de los 87 módulos que tienen decreto autonómico, **el 100 % es texto

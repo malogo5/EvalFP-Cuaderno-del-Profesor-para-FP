@@ -1,5 +1,5 @@
 """EvalFP — Simulación empresarial · 0656 · Administración y Finanzas
-Decreto 43/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9487), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM
+Horas y curso: Decreto 80/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo I-C.4º · RA y CE: Decreto 43/2013, de 25/07/2013 (DOCM núm. 148, de 01/08/2013), Anexo II
 RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
 Duración: 156 h · 4 h/semana · 2º AF.
 """
@@ -7,7 +7,7 @@ MODULO = {
     "nombre":"Simulación empresarial","codigo":"0656","abrev":"SE",
     "ciclo":"Administración y Finanzas","ciclo_clave":"AF","ciclo_nivel":"CFGS",
     "curso":"2º AF","horas_sem":4,"total_horas":156,"anno":"2026-2027","eval_count":2,
-    "decreto":"Decreto 43/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9487), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM",
+    "decreto":"Horas y curso: Decreto 80/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo I-C.4º · RA y CE: Decreto 43/2013, de 25/07/2013 (DOCM núm. 148, de 01/08/2013), Anexo II",
 }
 UTS = [
     {"id":"UT1","nombre":"Innovación y creación de empresas","horas":21,"eval":1,"tags":"Innovación · Emprendimiento · Detección de oportunidades · Casos reales"},

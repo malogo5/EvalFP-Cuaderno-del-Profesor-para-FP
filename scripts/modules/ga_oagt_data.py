@@ -1,19 +1,19 @@
 """EvalFP — Operaciones Auxiliares de Gestión de Tesorería · 0448 · Gestión Administrativa
-Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)
-RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
-Duración: 165 h · 7 h/semana · 2º GA.
+Horas y curso: Decreto 79/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IC-1. 1º · RA y CE: Decreto 251/2011, de 12/08/2011 (DOCM núm. 164, de 22/08/2011), Anexo II
+RA y CE literales del Anexo II del Decreto 251/2011 (DOCM); las horas y el curso son los del Decreto 79/2024, que modifica aquel currículo.
+Duración: 169 h · 5 h/semana · 1º GA.
 """
 MODULO = {
     "nombre":"Operaciones Auxiliares de Gestión de Tesorería","codigo":"0448","abrev":"OAGT",
     "ciclo":"Gestión Administrativa","ciclo_clave":"GA","ciclo_nivel":"CFGM",
-    "curso":"2º GA","horas_sem":7,"total_horas":165,"anno":"2026-2027","eval_count":2,
-    "decreto":"Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)",
+    "curso":"1º GA","horas_sem":5,"total_horas":169,"anno":"2026-2027","eval_count":3,
+    "decreto":"Horas y curso: Decreto 79/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IC-1. 1º · RA y CE: Decreto 251/2011, de 12/08/2011 (DOCM núm. 164, de 22/08/2011), Anexo II",
 }
 UTS = [
-    {"id":"UT1","nombre":"Control de tesorería","horas":39,"eval":1,"tags":"Libro de caja y bancos · Previsión de tesorería · Arqueo · Conciliación bancaria"},
-    {"id":"UT2","nombre":"Productos financieros de financiación e inversión","horas":39,"eval":1,"tags":"Préstamos · Créditos · Leasing · Descuento comercial · Depósitos · Renta fija y variable"},
-    {"id":"UT3","nombre":"Cálculo financiero","horas":36,"eval":2,"tags":"Interés simple y compuesto · Descuento · Equivalencia de capitales · TAE · Hoja de cálculo"},
-    {"id":"UT4","nombre":"Operaciones y documentación bancaria","horas":51,"eval":2,"tags":"Cuentas · Medios de pago · Banca electrónica · Extractos · Comisiones"},
+    {"id":"UT1","nombre":"Control de tesorería","horas":40,"eval":1,"tags":"Libro de caja y bancos · Previsión de tesorería · Arqueo · Conciliación bancaria"},
+    {"id":"UT2","nombre":"Productos financieros de financiación e inversión","horas":40,"eval":1,"tags":"Préstamos · Créditos · Leasing · Descuento comercial · Depósitos · Renta fija y variable"},
+    {"id":"UT3","nombre":"Cálculo financiero","horas":37,"eval":2,"tags":"Interés simple y compuesto · Descuento · Equivalencia de capitales · TAE · Hoja de cálculo"},
+    {"id":"UT4","nombre":"Operaciones y documentación bancaria","horas":52,"eval":2,"tags":"Cuentas · Medios de pago · Banca electrónica · Extractos · Comisiones"},
 ]
 RAS = [
     {"id":"RA1","pond":24,"nombre":"Aplica métodos de control de tesorería describiendo las fases del mismo."},

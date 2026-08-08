@@ -1,21 +1,21 @@
 """EvalFP — Operaciones Administrativas de Recursos Humanos · 0442 · Gestión Administrativa
-Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)
-RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
-Duración: 130 h · 6 h/semana · 2º GA.
+Horas y curso: Decreto 79/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IC-1. 1º · RA y CE: Decreto 251/2011, de 12/08/2011 (DOCM núm. 164, de 22/08/2011), Anexo II
+RA y CE literales del Anexo II del Decreto 251/2011 (DOCM); las horas y el curso son los del Decreto 79/2024, que modifica aquel currículo.
+Duración: 158 h · 4 h/semana · 2º GA.
 """
 MODULO = {
     "nombre":"Operaciones Administrativas de Recursos Humanos","codigo":"0442","abrev":"OARH",
     "ciclo":"Gestión Administrativa","ciclo_clave":"GA","ciclo_nivel":"CFGM",
-    "curso":"2º GA","horas_sem":6,"total_horas":130,"anno":"2026-2027","eval_count":2,
-    "decreto":"Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)",
+    "curso":"2º GA","horas_sem":4,"total_horas":158,"anno":"2026-2027","eval_count":2,
+    "decreto":"Horas y curso: Decreto 79/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IC-1. 1º · RA y CE: Decreto 251/2011, de 12/08/2011 (DOCM núm. 164, de 22/08/2011), Anexo II",
 }
 UTS = [
-    {"id":"UT1","nombre":"Selección de personal","horas":26,"eval":1,"tags":"Reclutamiento · Curriculum · Pruebas de selección · Entrevista · Protección de datos"},
-    {"id":"UT2","nombre":"Formación y desarrollo de RRHH","horas":26,"eval":1,"tags":"Plan de formación · Promoción · Retribución variable · Beneficios sociales"},
-    {"id":"UT3","nombre":"El contrato de trabajo","horas":26,"eval":1,"tags":"Modalidades · Alta y afiliación · Contrat@ · Modificaciones · Extinción y liquidación"},
-    {"id":"UT4","nombre":"Nómina y seguros sociales","horas":23,"eval":2,"tags":"Bases de cotización · Deducciones · IRPF · RLC y RNT · Sistema de liquidación directa · Modelo 111"},
-    {"id":"UT5","nombre":"Incidencias de la relación laboral","horas":16,"eval":2,"tags":"Incapacidad temporal · Nacimiento y cuidado de menor · Vacaciones · Permisos · Parte de accidente"},
-    {"id":"UT6","nombre":"Calidad y prevención en la gestión de RRHH","horas":13,"eval":2,"tags":"Indicadores · Sistema integrado de gestión · Prevención de riesgos · Protección ambiental"},
+    {"id":"UT1","nombre":"Selección de personal","horas":32,"eval":1,"tags":"Reclutamiento · Curriculum · Pruebas de selección · Entrevista · Protección de datos"},
+    {"id":"UT2","nombre":"Formación y desarrollo de RRHH","horas":32,"eval":1,"tags":"Plan de formación · Promoción · Retribución variable · Beneficios sociales"},
+    {"id":"UT3","nombre":"El contrato de trabajo","horas":31,"eval":1,"tags":"Modalidades · Alta y afiliación · Contrat@ · Modificaciones · Extinción y liquidación"},
+    {"id":"UT4","nombre":"Nómina y seguros sociales","horas":28,"eval":2,"tags":"Bases de cotización · Deducciones · IRPF · RLC y RNT · Sistema de liquidación directa · Modelo 111"},
+    {"id":"UT5","nombre":"Incidencias de la relación laboral","horas":19,"eval":2,"tags":"Incapacidad temporal · Nacimiento y cuidado de menor · Vacaciones · Permisos · Parte de accidente"},
+    {"id":"UT6","nombre":"Calidad y prevención en la gestión de RRHH","horas":16,"eval":2,"tags":"Indicadores · Sistema integrado de gestión · Prevención de riesgos · Protección ambiental"},
 ]
 RAS = [
     {"id":"RA1","pond":20,"nombre":"Realiza la tramitación administrativa de los procesos de captación y selección del personal describiendo la docu - mentación asociada."},

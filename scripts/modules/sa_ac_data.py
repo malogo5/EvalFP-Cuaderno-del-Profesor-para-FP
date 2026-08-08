@@ -1,5 +1,5 @@
 """EvalFP — Archivo y comunicación · 3004 · Servicios Administrativos
-Decreto 83/2014, de 01/08/2014 (DOCM, NID 2014/10286), Anexo II · distribución horaria LOFP vigente publicada por la Consejería de Educación de CLM
+Horas y curso: Decreto 78/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo I · RA y CE: Decreto 83/2014, de 01/08/2014 (DOCM núm. 151, de 07/08/2014), Anexo II
 RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
 Duración: 144 h · 4 h/semana · 1º SA.
 """
@@ -8,7 +8,7 @@ MODULO = {
     "ciclo":"Servicios Administrativos","ciclo_clave":"SA","ciclo_nivel":"CFGB",
     "curso":"1º SA","horas_sem":4,"total_horas":144,"anno":"2026-2027","eval_count":3,
     "horas_aula":120,  # el resto hasta 144 h es formación en empresa
-    "decreto":"Decreto 83/2014, de 01/08/2014 (DOCM, NID 2014/10286), Anexo II · distribución horaria LOFP vigente publicada por la Consejería de Educación de CLM",
+    "decreto":"Horas y curso: Decreto 78/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo I · RA y CE: Decreto 83/2014, de 01/08/2014 (DOCM núm. 151, de 07/08/2014), Anexo II",
 }
 UTS = [
     {"id":"UT1","nombre":"Reprografía de documentos","horas":31,"eval":1,"tags":"Fotocopiadora · Escáner · Encuadernación · Calidad · Mantenimiento y residuos"},

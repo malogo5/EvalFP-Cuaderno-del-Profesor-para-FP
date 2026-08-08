@@ -173,6 +173,14 @@ async function loadEvaluaciones() {
     const filas = await window.api.getFaseEmpresa(parseInt(mid))
     filas.forEach(f => { fasesAlumno[Number(f.alumno_id)] = f.estado })
   } catch { /* base antigua sin la tabla */ }
+  // Pérdida del derecho a la evaluación continua por alumno (art. 3.6): quien la
+  // ha perdido se califica SOLO con la prueba objetiva y sin conservar nada de lo
+  // anterior, así que el motor tiene que saberlo aquí, no solo en la pantalla.
+  const ecPerdida = {}
+  try {
+    const filasEC = await window.api.getEvaluacionContinua(parseInt(mid))
+    filasEC.forEach(f => { if (f.perdida) ecPerdida[Number(f.alumno_id)] = true })
+  } catch { /* base antigua sin la tabla */ }
   const tieneFaseEmpresa = moduloConFaseEmpresa(modData?.modulo)
   // Los ámbitos de grado básico se califican IN/SU/BI/NT/SB (art. 25.2)
   const esAmbito = moduloEsAmbito(modData?.modulo)
@@ -241,7 +249,8 @@ async function loadEvaluaciones() {
    * los calificados). Antes contaban como 0 y arrastraban la media.
    */
   function estadoAlumno(alumnoId) {
-    return estadoModulo(ctxDe(alumnoId), ng[alumnoId], { faseEmpresa: fasesAlumno[alumnoId] })
+    return estadoModulo(ctxDe(alumnoId), ng[alumnoId],
+      { faseEmpresa: fasesAlumno[alumnoId], evalContinuaPerdida: !!ecPerdida[alumnoId] })
   }
 
   function nombreAl(al) {
@@ -251,7 +260,8 @@ async function loadEvaluaciones() {
   const badgeEstado = est => `<span style="background:var(--bg3);color:var(--text3);padding:1px 7px;border-radius:8px;font-size:10px;font-weight:700;border:1px solid var(--border2)">${est === 'Renuncia' ? 'RC' : 'BAJA'}</span>`
   // La etiqueta tiene que decir el estado REAL de cada persona: una etiqueta fija
   // de «Baja» presentaba como baja a quien había renunciado a la convocatoria,
-  // que es otra cosa —y en el acta figura como RC (art. 25.9)—.
+  // que es otra cosa —y en el acta figura como RC (art. 25.8, renumerado por la
+  // Orden 55/2026)—.
   const badgeDe = al => badgeEstado(al.estado || 'Baja')
 
   // Marca de recuperación sobre una celda de RA (H6)

@@ -1,5 +1,12 @@
 # Catálogo de módulos · Administración y Gestión + revisión de Informática
 
+> **Documento histórico, con las cifras de la fecha en que se escribió.**
+> El 07/08/2026 el catálogo se alineó con los Decretos 78, 79 y 80 de 2024 y pasó a
+> **130 módulos y 5.964 criterios**. Lo vigente está en
+> [INFORME_DISCREPANCIAS_2026-27.md](INFORME_DISCREPANCIAS_2026-27.md).
+
+
+
 30/07/2026 · el catálogo pasa de **58 a 91 módulos** en 12 ciclos.
 
 ## 1. Los 33 módulos nuevos de Administración y Gestión

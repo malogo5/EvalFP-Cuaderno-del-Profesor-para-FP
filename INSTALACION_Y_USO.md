@@ -186,6 +186,15 @@ Para restaurar: cierra la aplicación, sustituye `evalfp.db` por la copia que qu
      exenta. Es lo que decide si el módulo queda «superado parcial».
    - **Convocatorias gastadas** con su tope, y la marca **«pend.»** para quien arrastra el
      módulo de un curso anterior.
+   - **Ev. continua · conval.**, dos botones pequeños:
+     - **EC** marca la **pérdida del derecho a la evaluación continua**. Se pone en ámbar con
+       el porcentaje en cuanto alguien pasa del 25 % de faltas, pero no se activa solo: la
+       decisión es tuya. Al pulsarlo te explica lo que implica, te pide un motivo y lo guarda
+       con la fecha. A partir de ahí esa persona **se califica solo con la prueba objetiva**,
+       sin arrastrar nada de lo hecho durante el curso. Sus notas no se borran: si levantas la
+       pérdida, vuelven. En grado básico no aplica y sale un guion.
+     - **CONV** convalida el módulo, con nota o sin ella. La diferencia importa fuera de este
+       cuaderno: los convalidados sin nota no computan en la calificación final del ciclo.
    - **Estado**: Activo, Pendiente, **Renuncia** (aparece como RC en las actas) o Baja.
 3. **Programación.** Es la base de la que come todo lo demás: reparte las unidades por
    evaluación, ajusta horas y ponderaciones —de cada RA y, si quieres, **de cada criterio**—,
@@ -220,9 +229,25 @@ Para restaurar: cierra la aplicación, sustituye `evalfp.db` por la copia que qu
      examen, acta— funciona igual que en la primera.
    - Si un criterio lo das por alcanzado sin prueba escrita, sigue estando el botón de siempre,
      que te pide con qué evidencia y lo deja registrado con la fecha.
-8. **Asistente IA** (opcional). Rúbricas, actividades, informes de alumno, planes de
+8. **La prueba objetiva del módulo completo**, para quien haya perdido la evaluación
+   continua. En **Programación**, debajo de la recuperación, el botón
+   **«＋ Prueba objetiva del módulo completo»** la crea **ya con todos los criterios del
+   módulo marcados**. No es un capricho: la norma exige que incluya la totalidad de los
+   resultados de aprendizaje, y marcarlos a mano invita a olvidar alguno. Si aun así la prueba
+   deja algún RA sin evaluar, el módulo se queda en **PENDIENTE** en vez de darse por superado.
+
+   Para quien conserva la evaluación continua es una actividad más y no le altera nada.
+9. **Asistente IA** (opcional). Rúbricas, actividades, informes de alumno, planes de
    recuperación, radiografía del grupo, pruebas escritas con solucionario, apuntes y
    corrección de exámenes desde foto.
+
+## El curso de especialización de Python y su fase de empresa
+
+Este curso puede ofertar periodo de formación en empresa o no hacerlo: lo decide el centro.
+En **Ajustes → Fase de empresa · CE de Python** se pone el número de horas, que debe estar
+**entre 86 y 150** —el 20 y el 35 % de las 430 horas del curso— o **0** si no se oferta.
+La aplicación no deja salirse de esa franja. Al aplicarlo, las horas se reparten entre los
+cuatro módulos en proporción a su duración.
 
 ## La IA no pone notas
 

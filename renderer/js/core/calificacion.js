@@ -78,6 +78,22 @@ function convocatoriaDe(act) {
   return isFinite(c) && c >= 2 ? 2 : 1
 }
 
+/**
+ * ¿Es una prueba objetiva de evaluación completa del módulo?
+ *
+ * Es la prueba del art. 3.6 de la Orden 201/2024 (redacción de la Orden
+ * 55/2026): la que se hace a quien ha perdido el derecho a la evaluación
+ * continua y que «incluirá la totalidad de los resultados de aprendizaje a
+ * través de sus criterios de evaluación».
+ *
+ * Se marca en la actividad con `prueba_objetiva`. No basta con que sea un examen:
+ * un examen de la 2ª evaluación no evalúa el módulo entero.
+ */
+function esPruebaObjetiva(act) {
+  const v = act?.prueba_objetiva
+  return v === 1 || v === true || v === '1'
+}
+
 /** Actividades que cuentan en una convocatoria: la 2ª ve también las de la 1ª. */
 function actividadesDeConvocatoria(acts, conv) {
   const c = Number(conv) >= 2 ? 2 : 1
@@ -245,11 +261,32 @@ function estadoModulo(ctx, notasAl, opts) {
   const o = opts || {}
   const porRA = {}, conNota = [], pendientes = [], sinNota = []
 
-  ctx.rasActivos.forEach(ra => {
+  // ── Pérdida del derecho a la evaluación continua (art. 3.6) ──────────────
+  //
+  // «Estas pruebas de evaluación completa del módulo o módulos profesionales
+  //  incluirán la totalidad de los resultados de aprendizaje a través de sus
+  //  criterios de evaluación, SIN QUE PUEDA CONSIDERARSE LA CONSERVACIÓN DE
+  //  CALIFICACIONES PARCIALES obtenidas con anterioridad a la pérdida del
+  //  derecho a la evaluación continua.»
+  //
+  // Es lo contrario de lo que hace un cuaderno de notas por defecto, así que
+  // aquí se corta por tres sitios a la vez:
+  //   1. solo cuentan las actividades marcadas como prueba objetiva;
+  //   2. no se aplican los RA cerrados como superados en sesiones anteriores;
+  //   3. no se aplican los criterios dados por alcanzados a mano.
+  // Y se exigen TODOS los RA, no solo los que tengan actividad: si la prueba no
+  // cubre alguno, el módulo se queda en PENDIENTE en vez de darse por superado.
+  const perdidaEC = !!o.evalContinuaPerdida
+  const acts = perdidaEC ? ctx.actividades.filter(esPruebaObjetiva) : ctx.actividades
+  const cierres = perdidaEC ? null : ctx.rasSuperados
+  const ceOverride = perdidaEC ? null : o.notaCEOverride
+  const raEnJuego = perdidaEC ? (ctx.ras || []) : ctx.rasActivos
+
+  raEnJuego.forEach(ra => {
     const ceLst = ctx.cesByRa[ra.id] || []
-    let n = notaRA(ra.id, ceLst, ctx.actividades, notasAl, ctx.PRAC, ctx.EXAM, ctx.asigs,
-                   ctx.convocatoria, o.notaCEOverride)
-    let minKO = raMinExamKO(ra.id, ceLst, ctx.actividades, notasAl, ctx.minExam, ctx.asigs, ctx.convocatoria)
+    let n = notaRA(ra.id, ceLst, acts, notasAl, ctx.PRAC, ctx.EXAM, ctx.asigs,
+                   ctx.convocatoria, ceOverride)
+    let minKO = raMinExamKO(ra.id, ceLst, acts, notasAl, ctx.minExam, ctx.asigs, ctx.convocatoria)
 
     // «Presentarse a la recuperación no puede salir caro» (art. 4.3.f, que
     // prohíbe volver a evaluar un RA superado). El cálculo por criterio ya se
@@ -260,14 +297,14 @@ function estadoModulo(ctx, notasAl, opts) {
     // la prueba, que es lo más cómodo de hacer. Así que la nota de la 2ª
     // convocatoria nunca puede quedar por debajo de la que ya había.
     if (ctx.convocatoria >= 2) {
-      const n1 = notaRA(ra.id, ceLst, ctx.actividades, notasAl, ctx.PRAC, ctx.EXAM, ctx.asigs, 1)
+      const n1 = notaRA(ra.id, ceLst, acts, notasAl, ctx.PRAC, ctx.EXAM, ctx.asigs, 1)
       // El «igual» importa: si las dos convocatorias dan la misma nota, la que
       // vale es la del curso. Con un 8 en el examen de mayo y un 2 en el de
       // junio, la nota se quedaba en 8 —bien— pero el mínimo de examen miraba
       // el de junio y dejaba el RA sin alcanzar. Un 8 y un RA suspenso a la vez.
       if (n1 !== null && (n === null || n1 >= n)) {
         n = n1
-        minKO = raMinExamKO(ra.id, ceLst, ctx.actividades, notasAl, ctx.minExam, ctx.asigs, 1)
+        minKO = raMinExamKO(ra.id, ceLst, acts, notasAl, ctx.minExam, ctx.asigs, 1)
       }
     }
 
@@ -279,7 +316,7 @@ function estadoModulo(ctx, notasAl, opts) {
     // evaluación anterior, una actividad posterior no puede tumbarlo: la nota se
     // mantiene en la del cierre y se avisa de que está congelada.
     // Puede subir —la evaluación continua juega a favor— pero nunca bajar.
-    const cierre = ctx.rasSuperados ? ctx.rasSuperados[ra.id] : null
+    const cierre = cierres ? cierres[ra.id] : null
     let congelado = false
     if (cierre != null) {
       if (n === null || n < cierre) { n = cierre; congelado = true }
@@ -390,12 +427,204 @@ function etiquetaResultado(resultado) {
   }
 }
 
+/* ==========================================================================
+ * Calificaciones finales de ciclo · Orden 201/2024 en la redacción dada por la
+ * Orden 55/2026, de 17 de abril (DOCM núm. 78, de 27/04/2026)
+ *
+ * Cuidado con la numeración: la Orden 55/2026 suprimió el apartado 8 del
+ * artículo 25 y renumeró los siguientes. Aquí se cita SIEMPRE la numeración
+ * vigente, indicando entre paréntesis la anterior cuando ayuda.
+ * ========================================================================== */
+
+/**
+ * ¿Computa este módulo en la calificación final del ciclo?
+ *
+ * Art. 25.11 (antes 25.12): «Los módulos profesionales convalidados sin nota no
+ * podrán ser computados a efectos del cálculo de la calificación final».
+ *
+ * La Orden 55/2026 eliminó de este apartado la mención «o exentos», en
+ * coherencia con la supresión del apartado que creaba el estado «EXEN».
+ *
+ * @param {Object} m  { nota, convalidado }
+ */
+function computaEnNotaFinal(m) {
+  if (!m) return false
+  if (m.convalidado && (m.nota === null || m.nota === undefined || m.nota === '')) return false
+  return m.nota !== null && m.nota !== undefined && m.nota !== ''
+}
+
+/**
+ * Calificación final del ciclo formativo o curso de especialización.
+ *
+ * Art. 25.9 y 25.10 (antes 25.10 y 25.11): «será la media aritmética entre 1 y
+ * 10 con dos decimales […] **con independencia de la carga lectiva de los
+ * mismos**». Es media aritmética simple: NO se pondera por horas. Es el error
+ * fácil de cometer, porque dentro de un módulo sí se pondera.
+ *
+ * Para el título de Técnico Básico el art. 25.9 acota el conjunto a «todos los
+ * módulos del ámbito profesional y proyecto intermodular»: los ámbitos de
+ * Comunicación y Ciencias Sociales y de Ciencias Aplicadas quedan fuera.
+ *
+ * @param {Array}  modulos  [{ nota, convalidado, esAmbito }]
+ * @param {Object} [opts]
+ * @param {boolean} [opts.soloAmbitoProfesional]  true para el título de Técnico Básico
+ * @returns {?number} media con dos decimales, o null si no computa ninguno
+ */
+function notaFinalCiclo(modulos, opts) {
+  const o = opts || {}
+  let lista = (modulos || []).filter(computaEnNotaFinal)
+  if (o.soloAmbitoProfesional) lista = lista.filter(m => !m.esAmbito)
+  if (!lista.length) return null
+  const suma = lista.reduce((s, m) => s + Number(m.nota), 0)
+  return Math.round((suma / lista.length) * 100) / 100
+}
+
+/**
+ * Nota que se presenta como requisito de acceso a grado medio tras un grado
+ * básico (art. 25.9, párrafo tercero): aquí sí entran los ámbitos.
+ *
+ * Ojo: el título de Graduado en ESO obtenido por superar un ciclo de grado
+ * básico «se expedirá sin calificación» (art. 25.9, párrafo segundo). Esta
+ * media es sólo para el procedimiento de admisión, no va en el título.
+ */
+function notaAccesoGradoMedio(modulos) {
+  return notaFinalCiclo(modulos, { soloAmbitoProfesional: false })
+}
+
+/**
+ * Cupo de Matrícula de Honor de un centro.
+ *
+ * Art. 25.12 (antes 25.13): «Se podrá conceder una Matrícula de Honor por cada
+ * veinte alumnos y alumnas o fracción, computando la totalidad del alumnado de
+ * último curso en el centro, diferenciado por ciclo formativo o curso de
+ * especialización y modalidad».
+ *
+ * La Orden 55/2026 cambió el criterio de reparto: antes era «por modalidades»,
+ * ahora por ciclo o curso de especialización **y** modalidad.
+ */
+function cupoMatriculaHonor(totalAlumnadoUltimoCurso) {
+  const n = Number(totalAlumnadoUltimoCurso) || 0
+  return n <= 0 ? 0 : Math.ceil(n / 20)
+}
+
+/**
+ * Quién puede optar a Matrícula de Honor: calificación final ≥ 9 (art. 25.12).
+ *
+ * Devuelve las candidaturas ordenadas por nota, junto al cupo disponible. La
+ * concesión no es automática: «será otorgada por acuerdo del equipo docente»,
+ * valorando además el esfuerzo y la evolución. Por eso esto propone, no decide.
+ *
+ * @param {Array} alumnado  [{ id, nombre, notaFinal }]
+ * @param {number} totalUltimoCurso  alumnado de último curso del ciclo y modalidad
+ */
+function candidatosMatriculaHonor(alumnado, totalUltimoCurso) {
+  const cupo = cupoMatriculaHonor(totalUltimoCurso)
+  const candidatos = (alumnado || [])
+    .filter(a => a.notaFinal !== null && a.notaFinal !== undefined && Number(a.notaFinal) >= 9)
+    .sort((a, b) => Number(b.notaFinal) - Number(a.notaFinal))
+  return { cupo, candidatos, excedeCupo: candidatos.length > cupo }
+}
+
+/**
+ * Art. 18.5 (añadido por la Orden 55/2026): en el último curso de un grado D,
+ * el equipo docente puede decidir que el alumnado no vuelva a cursar hasta tres
+ * materias no superadas si su carga horaria conjunta es inferior al 30 % de la
+ * duración total del curso. Se evalúan al año siguiente como pendientes.
+ *
+ * Devuelve si se cumplen las condiciones objetivas. La decisión sigue siendo
+ * del equipo docente, que además debe emitir el informe del anexo VIII.
+ *
+ * @param {Array}  pendientes    [{ nombre, horas }] materias no superadas
+ * @param {number} horasCurso    duración total del curso
+ */
+function puedeContinuarConPendientes(pendientes, horasCurso) {
+  const lista = pendientes || []
+  const total = Number(horasCurso) || 0
+  const horas = lista.reduce((s, m) => s + (Number(m.horas) || 0), 0)
+  const porcentaje = total > 0 ? (horas / total) * 100 : null
+  const cumple = lista.length > 0 && lista.length <= 3 && total > 0 && porcentaje < 30
+  return {
+    cumple,
+    materias: lista.length,
+    horas,
+    porcentaje: porcentaje === null ? null : Math.round(porcentaje * 100) / 100,
+    // Motivo de por qué no cumple, para poder explicarlo en pantalla
+    motivo: !lista.length ? 'sin materias pendientes'
+      : lista.length > 3 ? `${lista.length} materias pendientes, el máximo son 3`
+      : total <= 0 ? 'falta la duración del curso'
+      : porcentaje >= 30 ? `la carga pendiente es el ${Math.round(porcentaje * 100) / 100} %, y el tope es el 30 %`
+      : null,
+  }
+}
+
+/**
+ * Franja legal de la fase de formación en empresa de un curso de especialización.
+ *
+ * Decreto 79/2025, de 14 de octubre, artículo 5.3 (el del CE de Desarrollo de
+ * aplicaciones en lenguaje Python, DOCM núm. 205 de 23/10/2025):
+ *
+ *   · Régimen general: duración «entre el 20 y 35 %» de la duración total del
+ *     currículo, y «entre el 10 y el 20 % de los resultados de aprendizaje».
+ *   · Régimen intensivo: «entre el 35 y 50 %» de la duración y «al menos, el
+ *     30 % de los resultados de aprendizaje».
+ *
+ * Los porcentajes de RA se aplican «a la totalidad de los mismos y no por módulo
+ * profesional»: son del curso entero, no de cada módulo por separado.
+ *
+ * Es una oferta potestativa, «a propuesta del centro educativo». Esta función no
+ * decide nada: devuelve los límites entre los que la decisión del centro es legal.
+ */
+function franjaFaseEmpresaCE(horasTotales, regimen) {
+  const t = Number(horasTotales) || 0
+  const intensivo = regimen === 'intensivo'
+  const pHoras = intensivo ? [0.35, 0.50] : [0.20, 0.35]
+  const pRa    = intensivo ? [0.30, 1] : [0.10, 0.20]
+  return {
+    regimen: intensivo ? 'intensivo' : 'general',
+    horasMin: Math.ceil(t * pHoras[0]),
+    horasMax: Math.floor(t * pHoras[1]),
+    porcentajeHoras: pHoras.map(p => p * 100),
+    porcentajeRa: pRa.map(p => p * 100),
+  }
+}
+
+/**
+ * ¿Encaja en la norma la fase de empresa que propone el centro?
+ *
+ * @param {Object} p
+ * @param {number} p.horasEmpresa   horas que se van a la empresa
+ * @param {number} p.horasTotales   duración total del curso de especialización
+ * @param {number} p.raEnEmpresa    RA que se trabajan en la empresa
+ * @param {number} p.raTotales      RA del curso completo
+ * @param {string} [p.regimen]      'general' (por defecto) o 'intensivo'
+ */
+function validaFaseEmpresaCE({ horasEmpresa, horasTotales, raEnEmpresa, raTotales, regimen }) {
+  const f = franjaFaseEmpresaCE(horasTotales, regimen)
+  const h = Number(horasEmpresa) || 0
+  const pctRa = Number(raTotales) > 0 ? (Number(raEnEmpresa) / Number(raTotales)) * 100 : null
+  const horasOk = h >= f.horasMin && h <= f.horasMax
+  const raOk = pctRa !== null && pctRa >= f.porcentajeRa[0] && pctRa <= f.porcentajeRa[1]
+  const avisos = []
+  if (!horasOk) {
+    avisos.push(`las horas de empresa (${h}) tienen que estar entre ${f.horasMin} y ` +
+                `${f.horasMax} en régimen ${f.regimen}`)
+  }
+  if (!raOk) {
+    avisos.push(`los RA en empresa (${pctRa === null ? '?' : Math.round(pctRa * 10) / 10} %) ` +
+                `tienen que estar entre el ${f.porcentajeRa[0]} y el ${f.porcentajeRa[1]} %`)
+  }
+  return { valida: horasOk && raOk, franja: f, porcentajeRa: pctRa, avisos }
+}
+
 // Exportado también para los tests (en el navegador `module` no existe)
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     notaEnEscala10, mediaActividades, pesosPorTipo, notaCE, notaRA,
     raMinExamKO, actaEntera, contextoModulo, estadoModulo, etiquetaResultado,
     moduloConFaseEmpresa, calificacionCualitativa, moduloEsAmbito,
-    convocatoriaDe, actividadesDeConvocatoria, notaExamenDecisiva,
+    convocatoriaDe, actividadesDeConvocatoria, notaExamenDecisiva, esPruebaObjetiva,
+    computaEnNotaFinal, notaFinalCiclo, notaAccesoGradoMedio,
+    cupoMatriculaHonor, candidatosMatriculaHonor, puedeContinuarConPendientes,
+    franjaFaseEmpresaCE, validaFaseEmpresaCE,
   }
 }

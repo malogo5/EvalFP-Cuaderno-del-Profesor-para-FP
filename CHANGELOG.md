@@ -1,5 +1,93 @@
 # Changelog
 
+## 3.16.0 · El catálogo, alineado con la normativa de 2026-27
+
+Revisión completa del catálogo contra los Decretos 78, 79 y 80 de 2024, que modifican todos
+los currículos de FP de Castilla-La Mancha desde la Ley 3/2022. El informe con cada decisión
+y su cita está en INFORME_DISCREPANCIAS_2026-27.md.
+
+### El problema no estaba donde parecía
+
+Se daba por hecho que las horas de ASIR venían del Decreto 200/2010 y estaban desfasadas. No
+era así: coincidían al 100 % con el Decreto 80/2024. Lo mismo en DAM, DAW, Asistencia a la
+Dirección, Administración y Finanzas, SMR, Informática de Oficina y Servicios Administrativos.
+
+**El único ciclo desactualizado era Gestión Administrativa**, y ahí sí había trabajo: nueve
+módulos con las horas del Decreto 251/2011 y, lo que nadie había visto, **tres que cambian de
+curso**. Comunicación empresarial y Empresa y administración pasan a 2.º; Operaciones
+auxiliares de gestión de tesorería baja a 1.º.
+
+Lo que sí estaba mal en todos los ciclos era la procedencia: cada módulo citaba el decreto
+original derogado. Ahora la cita es doble y dice de dónde sale cada cosa —las horas del
+decreto de 2024, los RA y CE del decreto de currículo—, con anexo, número y fecha de DOCM.
+En ASIR, además, la cita apuntaba al Anexo I; los RA y CE están en el Anexo II.
+
+### 39 módulos transversales que faltaban
+
+Itinerario Personal para la Empleabilidad I y II, Inglés Profesional, Digitalización,
+Sostenibilidad y Proyecto Intermodular, en los siete ciclos de grado medio y superior más los
+dos de grado básico. El catálogo pasa de 91 a 130 módulos.
+
+Sus RA y CE salen del Real Decreto, y no es una excepción a la regla de copiar siempre del
+DOCM: el artículo undécimo del Decreto 80/2024 y el duodécimo del 79/2024 **remiten
+expresamente** al RD 659/2023 para estos módulos. Copiar de ahí es cumplir el decreto
+autonómico. Las horas, en cambio, siguen saliendo del anexo de CLM.
+
+### El curso de especialización de Python tenía códigos inventados
+
+Su procedencia decía literalmente «Decreto CLM — Turno Diurno», que no es una cita, y sus
+módulos se llamaban PYOOP, PYDATA, PYENV y PYCTRL. Existe decreto desde octubre de 2025 —el
+**Decreto 79/2025**— y ninguno de los cuatro coincidía con él: ni en código, ni en horas, ni
+en resultados de aprendizaje, ni en criterios. Reconstruidos con los códigos oficiales 5098 a
+5101 y los 127 criterios literales del Anexo II.
+
+Su fase de formación en empresa es potestativa (art. 5.3) y ahora se configura desde Ajustes,
+con la franja legal validada: entre 86 y 150 horas en régimen general.
+
+### Los criterios, cotejados uno a uno
+
+Decir «RA y CE literales del DOCM» solo vale si se puede demostrar. `cotejar_ce.py` compara
+cada criterio del catálogo con el texto de su decreto, neutralizando los guiones de partición
+del PDF pero no una palabra distinta. **5.964 de 5.964, el 100 %.** Devuelve código de salida
+0 o 1, así que sirve para el control de calidad de cada cambio.
+
+### La Orden 55/2026, implementada
+
+Modifica la Orden 201/2024 y entró en vigor en abril, o sea que aplica a este curso.
+
+Lo más delicado es su artículo 3.6: quien pierde el derecho a la evaluación continua se
+evalúa con una prueba objetiva que cubre todos los RA, **«sin que pueda considerarse la
+conservación de calificaciones parciales obtenidas con anterioridad»**. Es exactamente lo
+contrario de lo que hace un cuaderno de notas, que arrastra todo por diseño. Ahora, al marcar
+la pérdida, dejan de contar las actividades del curso, los RA cerrados en evaluaciones
+anteriores y los criterios dados por alcanzados a mano. Y si la prueba no cubre algún RA, el
+módulo se queda PENDIENTE en vez de darse por superado. Las notas no se borran: vuelven si se
+levanta la pérdida.
+
+También entran las convalidaciones (art. 25.7), con o sin nota, porque los convalidados sin
+nota no computan en la calificación final.
+
+Y una corrección pequeña con consecuencias: la Orden suprime el apartado 8 del artículo 25 y
+renumera los siguientes, así que las siglas «RC» de renuncia a convocatoria pasan del 25.9 al
+25.8. Estaban citadas en tres ficheros.
+
+### Dos cosas que se daban por buenas y eran falsas
+
+La corrección de errores del Decreto 80/2024 **es del 14 de febrero de 2025, no de septiembre**
+—el «2025-09» de la URL es la carpeta del gestor de contenidos— y no modifica ninguna hora:
+solo arregla una remisión cruzada.
+
+Y las 400 horas de formación en empresa de grado básico **salen de dentro** de las 2.000 del
+ciclo. El artículo 16.1 de la Orden 204/2024 obliga a respetar los anexos de los decretos, y
+el Anexo I del 78/2024 ya suma 2.000 exactas incluyéndolas. No hay un segundo recorte que
+hacer a los módulos técnicos.
+
+### Un error de la propia norma
+
+La tabla de SMR del Decreto 79/2024 declara 2.000 horas, pero sus módulos suman 2.001.
+Comprobado con dos extractores independientes. No se ha tocado nada: el catálogo coincide con
+el decreto módulo a módulo y la inconsistencia está en el DOCM.
+
 ## 3.15.0 · Séptima auditoría
 
 Con la aplicación abierta y delante: dar de alta un módulo, importar una lista de clase y

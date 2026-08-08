@@ -19,7 +19,9 @@ function _validateAlumno(a) {
   if (a.apellidos !== null && a.apellidos !== undefined && !_isStr(a.apellidos, 100)) throw new Error('apellidos muy largo')
   if (a.nombre !== null && a.nombre !== undefined && !_isStr(a.nombre, 100)) throw new Error('nombre muy largo')
   // «Renuncia» es la renuncia a convocatoria del art. 11 de la Orden 201/2024,
-  // que en actas figura como «RC» (art. 25.9). Faltaba en esta lista, así que el
+  // que en actas figura como «RC» (art. 25.8; era el 25.9 hasta que la Orden
+  // 55/2026 suprimió el apartado 8 del art. 25 y renumeró los siguientes).
+  // Faltaba en esta lista, así que el
   // puente rechazaba el estado y la renuncia no se podía registrar: la interfaz
   // lo ofrecía, la base lo aceptaba y aquí se caía con «estado inválido».
   if (a.estado !== null && a.estado !== undefined &&
@@ -106,6 +108,12 @@ contextBridge.exposeInMainWorld('api', {
   addEvidencia:        p   => ipcRenderer.invoke('db:addEvidencia', p),
   getFaseEmpresa:      mid => ipcRenderer.invoke('db:getFaseEmpresa', mid),
   setFaseEmpresa:      p   => ipcRenderer.invoke('db:setFaseEmpresa', p),
+  getEvaluacionContinua: id => ipcRenderer.invoke('db:getEvaluacionContinua', id),
+  setEvaluacionContinua: p  => ipcRenderer.invoke('db:setEvaluacionContinua', p),
+  getConvalidaciones:  id  => ipcRenderer.invoke('db:getConvalidaciones', id),
+  setConvalidacion:    p   => ipcRenderer.invoke('db:setConvalidacion', p),
+  getFaseEmpresaPython: () => ipcRenderer.invoke('db:getFaseEmpresaPython'),
+  setFaseEmpresaPython: h  => ipcRenderer.invoke('db:setFaseEmpresaPython', h),
   getRasSuperados:     mid => ipcRenderer.invoke('db:getRasSuperados', mid),
   cerrarEvaluacionRAs: p   => ipcRenderer.invoke('db:cerrarEvaluacionRAs', p),
   reabrirRaSuperado:   p   => ipcRenderer.invoke('db:reabrirRaSuperado', p),

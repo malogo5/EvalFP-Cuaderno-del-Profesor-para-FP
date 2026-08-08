@@ -1,19 +1,19 @@
 """EvalFP — Operaciones administrativas de compra-venta · 0438 · Gestión Administrativa
-Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)
-RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
-Duración: 135 h · 4 h/semana · 1º GA.
+Horas y curso: Decreto 79/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IC-1. 1º · RA y CE: Decreto 251/2011, de 12/08/2011 (DOCM núm. 164, de 22/08/2011), Anexo II
+RA y CE literales del Anexo II del Decreto 251/2011 (DOCM); las horas y el curso son los del Decreto 79/2024, que modifica aquel currículo.
+Duración: 133 h · 4 h/semana · 1º GA.
 """
 MODULO = {
     "nombre":"Operaciones administrativas de compra-venta","codigo":"0438","abrev":"OACV",
     "ciclo":"Gestión Administrativa","ciclo_clave":"GA","ciclo_nivel":"CFGM",
-    "curso":"1º GA","horas_sem":4,"total_horas":135,"anno":"2026-2027","eval_count":3,
-    "decreto":"Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)",
+    "curso":"1º GA","horas_sem":4,"total_horas":133,"anno":"2026-2027","eval_count":3,
+    "decreto":"Horas y curso: Decreto 79/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IC-1. 1º · RA y CE: Decreto 251/2011, de 12/08/2011 (DOCM núm. 164, de 22/08/2011), Anexo II",
 }
 UTS = [
     {"id":"UT1","nombre":"Cálculo comercial","horas":28,"eval":1,"tags":"Precios de compra y venta · Márgenes · Descuentos · IVA · Recargo de equivalencia"},
-    {"id":"UT2","nombre":"Documentación de compraventa","horas":32,"eval":1,"tags":"Pedido · Albarán · Factura · Factura electrónica · Facturas rectificativas · Archivo"},
+    {"id":"UT2","nombre":"Documentación de compraventa","horas":31,"eval":1,"tags":"Pedido · Albarán · Factura · Factura electrónica · Facturas rectificativas · Archivo"},
     {"id":"UT3","nombre":"IVA y obligaciones fiscales","horas":22,"eval":2,"tags":"Regímenes de IVA · Libros registro · Modelos 303 y 390 · Presentación telemática"},
-    {"id":"UT4","nombre":"Gestión de almacén y existencias","horas":28,"eval":2,"tags":"Fichas de almacén · PMP y FIFO · Inventario · Stock mínimo · Valoración de existencias"},
+    {"id":"UT4","nombre":"Gestión de almacén y existencias","horas":27,"eval":2,"tags":"Fichas de almacén · PMP y FIFO · Inventario · Stock mínimo · Valoración de existencias"},
     {"id":"UT5","nombre":"Cobros y pagos","horas":25,"eval":3,"tags":"Efectivo · Transferencia · Cheque · Pagaré · Letra de cambio · Domiciliación"},
 ]
 RAS = [

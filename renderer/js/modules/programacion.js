@@ -356,6 +356,18 @@ async function loadProgramacion() {
           style="${btnRec}background:rgba(74,144,217,.12);color:var(--accent2)">+ Trabajo de recuperación</button>
       </div>
     </div>`
+    // ── Pérdida del derecho a la evaluación continua (art. 3.6) ──────────
+    h += `<div style="margin-top:14px">
+      <div style="font-size:12px;font-weight:700;color:var(--ice);background:var(--navy3);padding:7px 14px;border-radius:6px;margin-bottom:6px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <span>📕 Pérdida de la evaluación continua</span>
+        <span style="font-size:11px;font-weight:400;color:var(--text2)">
+          Quien la pierde se evalúa solo con esta prueba, sin conservar nada de lo anterior (art. 3.6)</span>
+      </div>
+      <div style="padding:2px 2px 2px">
+        <button onclick="addPruebaObjetiva(${mid})"
+          style="${btnRec}background:rgba(239,68,68,.12);color:#ef4444">+ Prueba objetiva del módulo completo</button>
+      </div>
+    </div>`
     h += `</div>`
   }
 
@@ -985,6 +997,45 @@ async function addActividad(mid, ev, tipo) {
     peso: 0, nota_max: 10, eval: ev, orden: maxOrden + 1
   })
   showSaved()
+  loadProgramacion()
+}
+
+/**
+ * Alta de la prueba objetiva de evaluación completa del módulo (art. 3.6).
+ *
+ * Es la prueba de quien ha perdido el derecho a la evaluación continua. La Orden
+ * 201/2024, en la redacción de la Orden 55/2026, exige que «incluirá la totalidad
+ * de los resultados de aprendizaje a través de sus criterios de evaluación», así
+ * que se crea ya con TODOS los criterios del módulo marcados: si se dejara al
+ * profesorado marcarlos a mano, lo fácil sería olvidar alguno y el módulo se
+ * daría por superado sin haber evaluado todo.
+ *
+ * Peso 0 y sin evaluación parcial asignada: no compite con las actividades del
+ * curso. Para quien conserva la evaluación continua es una actividad más; para
+ * quien la ha perdido es la única que cuenta.
+ */
+async function addPruebaObjetiva(mid) {
+  const data = _getModData(mid)
+  const ces  = data?.ces || {}
+  const todos = []
+  for (const raId of Object.keys(ces)) {
+    for (const ce of (ces[raId] || [])) todos.push(`${raId}|${ce.id}`)
+  }
+  if (!todos.length) {
+    alert('Este módulo no tiene criterios de evaluación cargados.')
+    return
+  }
+  const allActs  = await window.api.getActividades(parseInt(mid))
+  const maxOrden = allActs.reduce((m, a) => Math.max(m, a.orden || 0), 0)
+  const evalCount = Number(data?.modulo?.eval_count) || 3
+  await window.api.saveActividad({
+    modulo_id: parseInt(mid), ut_id: null, ra_id: null,
+    descripcion: 'Prueba objetiva de evaluación completa (art. 3.6)',
+    instrumento: 'Examen', tipo: 'examen',
+    peso: 0, nota_max: 10, eval: evalCount, orden: maxOrden + 1,
+    ces: todos, convocatoria: 1, prueba_objetiva: 1,
+  })
+  showToast(`Prueba objetiva creada con los ${todos.length} criterios del módulo`)
   loadProgramacion()
 }
 

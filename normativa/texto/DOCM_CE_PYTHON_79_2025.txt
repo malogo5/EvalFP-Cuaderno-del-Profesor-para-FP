@@ -1,0 +1,67 @@
+FUENTE: Decreto 79/2025, de 14 de octubre, por el que se establece el currículo del
+Curso de Especialización de Formación Profesional de Grado Superior en Desarrollo de
+Aplicaciones en Lenguaje Python en la comunidad autónoma de Castilla-La Mancha.
+
+DOCM AÑO XLIV Núm. 205, de 23 de octubre de 2025, pág. 33217. NID [2025/7868]
+Permalink ELI: https://docm.jccm.es/docm/eli/es-cm/d/2025/10/14/79
+PDF oficial (Consejería de Educación, CLM):
+https://educacion.castillalamancha.es/sites/default/files/2025-11/DECRETO%2079_2025%20curr%C3%ADculo%20curso%20especializaci%C3%B3n%20FPGS%20Desarrollo%20de%20aplicaciones%20en%20lenguaje%20Python.pdf
+Recuperado: 7 de agosto de 2026
+
+Complementa el Real Decreto 566/2024, de 18 de junio (BOE), que fija los aspectos
+básicos del currículo.
+
+Implantación: a partir del curso 2025/2026 (disposición final primera).
+Duración total: 430 horas. Equivalencia: 26 créditos ECTS.
+Familia profesional: Informática y Comunicaciones.
+
+
+ANEXO I — Duración de los módulos profesionales y la asignación horaria semanal
+-------------------------------------------------------------------------------
+
+Módulo profesional                         Horas   3 trimestres   2 trimestres
+                                          totales  (32 semanas)   (24 semanas)
+5098. Entornos y sintaxis en Python.          50         2              2
+5099. Estructuras de control en Python.       80         2              3
+5100. Programación orientada a objetos.      150         5              6
+5101. Análisis de datos con Python           150         5              6
+                                             ---        --             --
+                                             430        14             17
+
+Comprobación: 50+80+150+150 = 430. Cuadra con el total del anexo.
+
+
+ANEXO II — Resultados de aprendizaje y criterios de evaluación
+--------------------------------------------------------------
+
+Transcritos literalmente a los ficheros fuente del catálogo:
+
+  scripts/modules/ce_python_env_data.py    5098   5 RA · 32 CE
+  scripts/modules/ce_python_ctrl_data.py   5099   5 RA · 34 CE
+  scripts/modules/ce_python_oop_data.py    5100   5 RA · 41 CE
+  scripts/modules/ce_python_data_data.py   5101   4 RA · 20 CE
+                                                       127 CE en total
+
+Equivalencias ECTS por módulo (artículo 2 y anexo II): 5098 → 3 · 5099 → 5 ·
+5100 → 9 · 5101 → 9.
+
+
+NOTAS
+-----
+
+1. Errata del propio decreto: el artículo 5.1 escribe el módulo 5099 como
+   «Estructuras de control en Phyton». El anexo I y el anexo II lo escriben
+   correctamente como «Estructuras de control en Python». El catálogo usa la
+   grafía correcta de los anexos.
+
+2. Formación en empresa (artículo 5.3): es opcional y a propuesta del centro. En
+   régimen general, entre el 20 y el 35 % de la duración total del currículo, y
+   entre el 10 y el 20 % de los resultados de aprendizaje, aplicados «a la
+   totalidad de los mismos y no por módulo profesional». En régimen intensivo,
+   entre el 35 y el 50 % de la duración y al menos el 30 % de los RA.
+   El catálogo NO tiene dada de alta ninguna fase de empresa para este curso.
+
+3. Estado anterior del catálogo (sustituido el 07/08/2026): los cuatro módulos
+   tenían códigos inventados (PYENV, PYCTRL, PYOOP, PYDATA), duración total de
+   420 h en vez de 430, y RA y CE sin fuente oficial que no coincidían con el
+   anexo II en ninguno de los cuatro módulos.

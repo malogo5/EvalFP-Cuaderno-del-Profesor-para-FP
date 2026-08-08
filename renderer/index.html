@@ -125,6 +125,7 @@
               <th class="th-editable" style="width:96px" title="Horas de falta. Por encima del 25 % de las horas del módulo se pierde el derecho a la evaluación continua (Orden 201/2024, art. 3.3)">Faltas (h)</th>
               <th style="width:112px" title="Fase de formación en empresa u organismo equiparado (Orden 201/2024, art. 12 y 21)">Empresa</th>
               <th style="width:140px" title="Convocatorias ordinarias consumidas (art. 8.2) y si arrastra el módulo de un curso anterior (art. 19)">Convoc. · pend.</th>
+              <th style="width:132px" title="Pérdida del derecho a la evaluación continua (art. 3.6) y convalidación del módulo (art. 25.7). Quien pierde la evaluación continua se califica solo con la prueba objetiva, sin conservar calificaciones parciales anteriores.">Ev. continua · conval.</th>
               <th>Estado</th><th style="width:60px"></th>
             </tr></thead>
             <tbody id="alumnos-tbody"><tr><td colspan="9" style="color:var(--text2);text-align:center;padding:20px">Selecciona un módulo para gestionar alumnado.</td></tr></tbody>
@@ -490,6 +491,22 @@
           porque un curso calificado es un documento de evaluación. Aquí puedes recuperarlo.
         </p>
         <div id="archivados-info" style="font-size:12px;color:var(--text2)">Cargando…</div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">🐍 Fase de empresa · CE de Python</div>
+        <p style="font-size:12px;color:var(--text2);margin:0 0 12px">
+          El artículo 5.3 del Decreto 79/2025 deja este periodo «a propuesta del centro educativo».
+          En régimen general debe durar entre el 20 y el 35 % de las 430 horas del curso, es decir,
+          <b>entre 86 y 150 horas</b>. Pon 0 si no se oferta.
+        </p>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <label for="cfg-python-empresa" style="font-size:12px;color:var(--text2)">Horas en empresa</label>
+          <input id="cfg-python-empresa" type="number" min="0" max="150" step="1"
+            style="width:96px" placeholder="0"
+            aria-label="Horas de formación en empresa del curso de especialización de Python"/>
+          <button class="btn btn-sm" onclick="guardarFaseEmpresaPython()">Aplicar a los 4 módulos</button>
+          <span id="cfg-python-empresa-info" style="font-size:12px;color:var(--text2)"></span>
+        </div>
       </div>
       <div style="display:flex;gap:10px;align-items:center">
         <button class="btn btn-success" onclick="saveAjustes()">💾 Guardar</button>

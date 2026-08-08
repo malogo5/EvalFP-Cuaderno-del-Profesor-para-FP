@@ -64,6 +64,43 @@ async function loadAjustes() {
   pintarLlavero()
   pintarCopiasSeguridad()
   pintarModulosArchivados()
+  pintarFaseEmpresaPython()
+}
+
+/**
+ * Fase de empresa del CE de Python (Decreto 79/2025, art. 5.3).
+ *
+ * El decreto fija la franja —86 a 150 horas en régimen general— y deja el número
+ * al centro. Aquí se elige y se reparte entre los cuatro módulos en proporción a
+ * su duración; el motor lo lee después como `horas_aula`.
+ */
+async function pintarFaseEmpresaPython() {
+  const inp = document.getElementById('cfg-python-empresa')
+  const info = document.getElementById('cfg-python-empresa-info')
+  if (!inp) return
+  try {
+    const cfg = await window.api.getFaseEmpresaPython()
+    inp.value = cfg.horas || 0
+    info.textContent = cfg.horas
+      ? `${cfg.horas} h en empresa · ${cfg.total - cfg.horas} h en el centro`
+      : 'No se oferta: las 430 h se imparten en el centro'
+  } catch { info.textContent = '' }
+}
+
+async function guardarFaseEmpresaPython() {
+  const inp = document.getElementById('cfg-python-empresa')
+  const info = document.getElementById('cfg-python-empresa-info')
+  const h = Number(inp.value) || 0
+  try {
+    const r = await window.api.setFaseEmpresaPython(h)
+    info.textContent = r.horas
+      ? `Aplicado a ${r.modulos} módulo(s): ${r.horas} h en empresa`
+      : `Aplicado a ${r.modulos} módulo(s): sin fase de empresa`
+    info.style.color = 'var(--green)'
+  } catch (e) {
+    info.textContent = validators.sanitizeErrorMessage(e, 'guardarAjustes')
+    info.style.color = 'var(--red)'
+  }
 }
 
 /** Módulos archivados, con su botón para devolverlos al cuaderno. */

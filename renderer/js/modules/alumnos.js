@@ -1,6 +1,8 @@
 let _faltas = {}   // { alumnoId: horas } del módulo activo
 let _fases  = {}   // { alumnoId: 'pendiente'|'superada'|'no_superada'|'exenta' }
 let _matri  = {}   // { alumnoId: {convocatorias, pendiente} }
+let _evalCont = {} // { alumnoId: {perdida, motivo} }  art. 3.6
+let _conval = {}   // { alumnoId: {convalidado, nota} }  art. 25.7 y 25.11
 
 async function loadAlumnos() {
   const mid = document.getElementById('alumnos-mod-sel').value
@@ -27,6 +29,17 @@ async function loadAlumnos() {
     const filas = await window.api.getMatriculas(parseInt(mid))
     filas.forEach(f => { _matri[Number(f.alumno_id)] = { convocatorias: f.convocatorias, pendiente: f.pendiente } })
   } catch { /* base antigua sin la tabla */ }
+  // Pérdida del derecho a la evaluación continua (art. 3.6) y convalidaciones (art. 25.7)
+  _evalCont = {}
+  try {
+    const filas = await window.api.getEvaluacionContinua(parseInt(mid))
+    filas.forEach(f => { _evalCont[Number(f.alumno_id)] = { perdida: !!f.perdida, motivo: f.motivo } })
+  } catch { /* base antigua sin la tabla */ }
+  _conval = {}
+  try {
+    const filas = await window.api.getConvalidaciones(parseInt(mid))
+    filas.forEach(f => { _conval[Number(f.alumno_id)] = { convalidado: !!f.convalidado, nota: f.nota_convalidacion } })
+  } catch { /* base antigua sin las columnas */ }
   renderAlumnosTable()
 }
 
@@ -88,7 +101,7 @@ function renderAlumnosTable() {
   if (!_alumnos.length) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="9" style="padding:0">
+        <td colspan="10" style="padding:0">
           <div class="empty-state" style="margin:0">
             <div style="font-weight:700;color:var(--text);margin-bottom:6px">Todavía no hay alumnado en este módulo</div>
             <div style="margin-bottom:12px">Importa una lista o añade el primer alumno para empezar a trabajar.</div>
@@ -111,6 +124,7 @@ function renderAlumnosTable() {
       <td>${_celdaFaltas(a)}</td>
       <td>${_celdaFase(a)}</td>
       <td>${_celdaMatricula(a)}</td>
+      <td>${_celdaSituacion(a)}</td>
       <td>
         <select onchange="updateAlumno(${a.id},'estado',this.value)">
           <option ${a.estado==='Activo'?'selected':''}>Activo</option>
@@ -132,6 +146,122 @@ function renderAlumnosTable() {
     (_moduloTieneFase(mid)
       ? ` · fase de empresa: ${_alumnos.filter(a => ['superada', 'exenta'].includes(_fases[a.id])).length} resuelta(s)`
       : '')
+}
+
+/**
+ * Pérdida del derecho a la evaluación continua (art. 3.6).
+ *
+ * Es la decisión más seria de esta pantalla: a partir de que se marca, la nota
+ * del módulo deja de contar lo trabajado durante el curso y se calcula solo con
+ * la prueba objetiva. Por eso pide confirmación y motivo, y por eso avisa de
+ * quién está por encima del 25 % de faltas, que es el supuesto habitual.
+ *
+ * No borra nada: las notas del curso siguen guardadas y vuelven si se levanta la
+ * pérdida. Lo que el artículo impide es *considerarlas* mientras esté vigente.
+ */
+async function updateEvalContinua(alumnoId, perdida) {
+  const mid = parseInt(document.getElementById('alumnos-mod-sel').value)
+  if (!mid) return
+  let motivo = null
+  if (perdida) {
+    const pct = _porcentajeFalta(mid, alumnoId)
+    if (!confirm(
+      'Vas a marcar la pérdida del derecho a la evaluación continua.\n\n' +
+      `Faltas acumuladas: ${pct ? pct.toFixed(1) : 0} % de las horas del módulo.\n\n` +
+      'A partir de ahora la calificación saldrá SOLO de la prueba objetiva de\n' +
+      'evaluación completa, sin conservar ninguna calificación parcial anterior\n' +
+      '(Orden 201/2024, art. 3.6). Las notas del curso no se borran: vuelven si\n' +
+      'levantas la pérdida.\n\n¿Continuar?')) { renderAlumnosTable(); return }
+    motivo = prompt('¿En qué se basa la pérdida? Quedará registrado con la fecha.',
+                    pct ? `Faltas de asistencia: ${pct.toFixed(1)} % de las horas del módulo` : '')
+    if (motivo === null) { renderAlumnosTable(); return }
+  }
+  try {
+    await window.api.setEvaluacionContinua({ alumnoId, perdida, motivo })
+    _evalCont[alumnoId] = { perdida: !!perdida, motivo }
+    showSaved()
+    renderAlumnosTable()
+  } catch (e) {
+    alert('No se ha podido guardar: ' + validators.sanitizeErrorMessage(e, 'guardarAlumno'))
+  }
+}
+
+/**
+ * Convalidación del módulo (art. 25.7), con nota o sin ella.
+ *
+ * La distinción importa fuera de este cuaderno: el art. 25.11 excluye del
+ * cálculo de la calificación final los convalidados **sin** nota.
+ */
+async function updateConvalidacion(alumnoId) {
+  const mid = parseInt(document.getElementById('alumnos-mod-sel').value)
+  if (!mid) return
+  const actual = _conval[alumnoId] || { convalidado: false, nota: null }
+  if (actual.convalidado) {
+    if (!confirm('¿Quitar la convalidación de este módulo?')) { renderAlumnosTable(); return }
+    try {
+      await window.api.setConvalidacion({ alumnoId, convalidado: 0, nota: null })
+      _conval[alumnoId] = { convalidado: false, nota: null }
+      showSaved(); renderAlumnosTable()
+    } catch (e) {
+      alert('No se ha podido guardar: ' + validators.sanitizeErrorMessage(e, 'guardarAlumno'))
+    }
+    return
+  }
+  const txt = prompt(
+    'Convalidación del módulo (Orden 201/2024, art. 25.7).\n\n' +
+    'Escribe la nota según expediente (0 a 10), o déjalo vacío si la\n' +
+    'convalidación es sin nota. Los convalidados SIN nota no computan en la\n' +
+    'calificación final del ciclo (art. 25.11).', '')
+  if (txt === null) { renderAlumnosTable(); return }
+  const nota = txt.trim() === '' ? null : Number(txt.replace(',', '.'))
+  if (nota !== null && (!isFinite(nota) || nota < 0 || nota > 10)) {
+    alert('La nota tiene que estar entre 0 y 10.'); renderAlumnosTable(); return
+  }
+  try {
+    await window.api.setConvalidacion({ alumnoId, convalidado: 1, nota })
+    _conval[alumnoId] = { convalidado: true, nota }
+    showSaved(); renderAlumnosTable()
+  } catch (e) {
+    alert('No se ha podido guardar: ' + validators.sanitizeErrorMessage(e, 'guardarAlumno'))
+  }
+}
+
+/** Celda conjunta de evaluación continua y convalidación. */
+function _celdaSituacion(a) {
+  const mid = parseInt(document.getElementById('alumnos-mod-sel').value)
+  const ec = _evalCont[a.id] || { perdida: false }
+  const cv = _conval[a.id] || { convalidado: false, nota: null }
+  // El aviso solo tiene sentido donde la evaluación continua se puede perder:
+  // en grado básico no aplica (art. 3.4).
+  const aplica = _aplicaEvaluacionContinua(mid)
+  const pct = aplica ? _porcentajeFalta(mid, a.id) : 0
+  const riesgo = aplica && !ec.perdida && pct > 25
+
+  const btnEC = !aplica
+    ? '<span style="color:var(--text3);font-size:11px" title="En grado básico no se pierde la evaluación continua (art. 3.4)">—</span>'
+    : `<button onclick="updateEvalContinua(${a.id},${ec.perdida ? 'false' : 'true'})"
+        title="${ec.perdida
+          ? 'Evaluación continua perdida: la nota sale solo de la prueba objetiva (art. 3.6). Pulsa para levantarla.'
+          : 'Marcar la pérdida del derecho a la evaluación continua (art. 3.6)'}"
+        style="border:1px solid ${ec.perdida ? 'rgba(239,68,68,.45)' : 'var(--border2)'};border-radius:6px;
+          padding:1px 7px;font-size:10.5px;font-weight:700;cursor:pointer;line-height:1.5;
+          background:${ec.perdida ? 'rgba(239,68,68,.14)' : 'transparent'};
+          color:${ec.perdida ? '#ef4444' : riesgo ? 'var(--amber)' : 'var(--text2)'}"
+        >${ec.perdida ? 'EC perdida' : riesgo ? `EC ⚠ ${pct.toFixed(0)} %` : 'EC'}</button>`
+
+  const etiquetaCv = cv.convalidado
+    ? (cv.nota === null || cv.nota === undefined ? 'CONV s/n' : `CONV ${cv.nota}`)
+    : 'CONV'
+  const btnCv = `<button onclick="updateConvalidacion(${a.id})"
+      title="${cv.convalidado
+        ? 'Módulo convalidado (art. 25.7). Pulsa para quitarlo.'
+        : 'Convalidar el módulo (art. 25.7)'}"
+      style="border:1px solid ${cv.convalidado ? 'rgba(74,144,217,.45)' : 'var(--border2)'};border-radius:6px;
+        padding:1px 7px;font-size:10.5px;font-weight:700;cursor:pointer;line-height:1.5;
+        background:${cv.convalidado ? 'rgba(74,144,217,.14)' : 'transparent'};
+        color:${cv.convalidado ? 'var(--accent2)' : 'var(--text2)'}">${etiquetaCv}</button>`
+
+  return `<div style="display:flex;gap:4px;flex-wrap:wrap">${btnEC}${btnCv}</div>`
 }
 
 /**
@@ -240,7 +370,8 @@ function updateAlumno(id, field, val) {
           break
         case 'estado':
           // «Renuncia» es la renuncia a convocatoria del art. 11 de la Orden
-          // 201/2024, que en actas se refleja como «RC» (art. 25.9).
+          // 201/2024, que en actas se refleja como «RC» (art. 25.8, renumerado por la
+          // Orden 55/2026; antes era el 25.9).
           if (!['Activo', 'Pendiente', 'Renuncia', 'Baja'].includes(val)) { alert('Estado inválido'); return }
           newVal = val
           break

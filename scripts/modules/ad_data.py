@@ -1,5 +1,5 @@
 """EvalFP — Acceso a Datos · 0486 · Desarrollo de Aplicaciones Multiplataforma (DAM)
-Decreto 252/2011, de 12/08/2011, currículo del ciclo de Desarrollo de Aplicaciones Multiplataforma en Castilla-La Mancha (DOCM, NID 2011/11916) · RA y CE literales del Anexo I
+Horas y curso: Decreto 80/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IA-3. 6º · RA y CE: Decreto 252/2011, de 12/08/2011 (DOCM núm. 164, de 22/08/2011), Anexo II
 RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
 Duración: 233 h · 6 h/semana · 2º DAM.
 """
@@ -7,7 +7,7 @@ MODULO = {
     "nombre":"Acceso a Datos","codigo":"0486","abrev":"AD",
     "ciclo":"Desarrollo de Aplicaciones Multiplataforma (DAM)","ciclo_clave":"DAM","ciclo_nivel":"CFGS",
     "curso":"2º DAM","horas_sem":6,"total_horas":233,"anno":"2026-2027","eval_count":3,
-    "decreto":"Decreto 252/2011, de 12/08/2011, currículo del ciclo de Desarrollo de Aplicaciones Multiplataforma en Castilla-La Mancha (DOCM, NID 2011/11916) · RA y CE literales del Anexo I",
+    "decreto":"Horas y curso: Decreto 80/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IA-3. 6º · RA y CE: Decreto 252/2011, de 12/08/2011 (DOCM núm. 164, de 22/08/2011), Anexo II",
 }
 UTS = [
     {"id":"UT1","nombre":"Desarrolla aplicaciones que gestionan información almacenada en ficheros","horas":31,"eval":1,"tags":""},

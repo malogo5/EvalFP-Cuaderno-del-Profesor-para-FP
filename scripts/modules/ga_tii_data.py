@@ -1,23 +1,23 @@
 """EvalFP — Tratamiento Informático de la Información · 0440 · Gestión Administrativa
-Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)
-RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
-Duración: 315 h · 10 h/semana · 1º GA.
+Horas y curso: Decreto 79/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IC-1. 1º · RA y CE: Decreto 251/2011, de 12/08/2011 (DOCM núm. 164, de 22/08/2011), Anexo II
+RA y CE literales del Anexo II del Decreto 251/2011 (DOCM); las horas y el curso son los del Decreto 79/2024, que modifica aquel currículo.
+Duración: 233 h · 7 h/semana · 1º GA.
 """
 MODULO = {
     "nombre":"Tratamiento Informático de la Información","codigo":"0440","abrev":"TII",
     "ciclo":"Gestión Administrativa","ciclo_clave":"GA","ciclo_nivel":"CFGM",
-    "curso":"1º GA","horas_sem":10,"total_horas":315,"anno":"2026-2027","eval_count":3,
-    "decreto":"Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)",
+    "curso":"1º GA","horas_sem":7,"total_horas":233,"anno":"2026-2027","eval_count":3,
+    "decreto":"Horas y curso: Decreto 79/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IC-1. 1º · RA y CE: Decreto 251/2011, de 12/08/2011 (DOCM núm. 164, de 22/08/2011), Anexo II",
 }
 UTS = [
-    {"id":"UT1","nombre":"Mecanografía por ordenador","horas":35,"eval":1,"tags":"Teclado extendido · Postura y ergonomía · Velocidad y precisión · Tutores mecanográficos"},
-    {"id":"UT2","nombre":"Instalación de aplicaciones ofimáticas","horas":56,"eval":1,"tags":"Sistema operativo · Instalación y actualización · Licencias · Copias de seguridad · Antivirus"},
-    {"id":"UT3","nombre":"Hoja de cálculo","horas":43,"eval":2,"tags":"Fórmulas y funciones · Formatos · Gráficos · Plantillas · Filtros y tablas dinámicas"},
-    {"id":"UT4","nombre":"Procesador de textos","horas":43,"eval":2,"tags":"Formatos y estilos · Tablas · Combinar correspondencia · Plantillas · Índices"},
-    {"id":"UT5","nombre":"Bases de datos ofimáticas","horas":37,"eval":2,"tags":"Tablas · Consultas · Formularios · Informes · Relaciones"},
-    {"id":"UT6","nombre":"Imagen y vídeo digital","horas":32,"eval":3,"tags":"Periféricos de captura · Formatos · Edición básica · Integración en documentos"},
-    {"id":"UT7","nombre":"Presentaciones multimedia","horas":29,"eval":3,"tags":"Diseño de diapositivas · Plantillas · Animaciones · Exposición · Accesibilidad"},
-    {"id":"UT8","nombre":"Correo y agenda electrónica","horas":40,"eval":3,"tags":"Cuentas · Libreta de direcciones · Filtros · Calendario · Tareas · Netiqueta"},
+    {"id":"UT1","nombre":"Mecanografía por ordenador","horas":26,"eval":1,"tags":"Teclado extendido · Postura y ergonomía · Velocidad y precisión · Tutores mecanográficos"},
+    {"id":"UT2","nombre":"Instalación de aplicaciones ofimáticas","horas":41,"eval":1,"tags":"Sistema operativo · Instalación y actualización · Licencias · Copias de seguridad · Antivirus"},
+    {"id":"UT3","nombre":"Hoja de cálculo","horas":32,"eval":2,"tags":"Fórmulas y funciones · Formatos · Gráficos · Plantillas · Filtros y tablas dinámicas"},
+    {"id":"UT4","nombre":"Procesador de textos","horas":32,"eval":2,"tags":"Formatos y estilos · Tablas · Combinar correspondencia · Plantillas · Índices"},
+    {"id":"UT5","nombre":"Bases de datos ofimáticas","horas":27,"eval":2,"tags":"Tablas · Consultas · Formularios · Informes · Relaciones"},
+    {"id":"UT6","nombre":"Imagen y vídeo digital","horas":24,"eval":3,"tags":"Periféricos de captura · Formatos · Edición básica · Integración en documentos"},
+    {"id":"UT7","nombre":"Presentaciones multimedia","horas":21,"eval":3,"tags":"Diseño de diapositivas · Plantillas · Animaciones · Exposición · Accesibilidad"},
+    {"id":"UT8","nombre":"Correo y agenda electrónica","horas":30,"eval":3,"tags":"Cuentas · Libreta de direcciones · Filtros · Calendario · Tareas · Netiqueta"},
 ]
 RAS = [
     {"id":"RA1","pond":11,"nombre":"Procesa textos alfanuméricos en un teclado extendido aplicando las técnicas mecanográficas."},

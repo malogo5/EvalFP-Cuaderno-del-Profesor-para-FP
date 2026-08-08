@@ -1,5 +1,5 @@
 """EvalFP — Programación de Servicios y Procesos · 0490 · Desarrollo de Aplicaciones Multiplataforma (DAM)
-Decreto 252/2011, de 12/08/2011, currículo del ciclo de Desarrollo de Aplicaciones Multiplataforma en Castilla-La Mancha (DOCM, NID 2011/11916) · RA y CE literales del Anexo I
+Horas y curso: Decreto 80/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IA-3. 6º · RA y CE: Decreto 252/2011, de 12/08/2011 (DOCM núm. 164, de 22/08/2011), Anexo II
 RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
 Duración: 84 h · 2 h/semana · 2º DAM.
 """
@@ -7,7 +7,7 @@ MODULO = {
     "nombre":"Programación de Servicios y Procesos","codigo":"0490","abrev":"PSP",
     "ciclo":"Desarrollo de Aplicaciones Multiplataforma (DAM)","ciclo_clave":"DAM","ciclo_nivel":"CFGS",
     "curso":"2º DAM","horas_sem":2,"total_horas":84,"anno":"2026-2027","eval_count":3,
-    "decreto":"Decreto 252/2011, de 12/08/2011, currículo del ciclo de Desarrollo de Aplicaciones Multiplataforma en Castilla-La Mancha (DOCM, NID 2011/11916) · RA y CE literales del Anexo I",
+    "decreto":"Horas y curso: Decreto 80/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IA-3. 6º · RA y CE: Decreto 252/2011, de 12/08/2011 (DOCM núm. 164, de 22/08/2011), Anexo II",
 }
 UTS = [
     {"id":"UT1","nombre":"Programación multiproceso","horas":18,"eval":1,"tags":"Procesos · Fork · ProcessBuilder · IPC · Pipes · Señales"},

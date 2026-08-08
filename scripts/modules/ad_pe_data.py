@@ -1,5 +1,5 @@
 """EvalFP — Protocolo empresarial · 0661 · Asistencia a la Dirección
-Decreto 41/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9482), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM
+Horas y curso: Decreto 80/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo I-C.3º · RA y CE: Decreto 41/2013, de 25/07/2013 (DOCM núm. 148, de 01/08/2013), Anexo II
 RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
 Duración: 157 h · 4 h/semana · 2º AD.
 """
@@ -7,7 +7,7 @@ MODULO = {
     "nombre":"Protocolo empresarial","codigo":"0661","abrev":"PE",
     "ciclo":"Asistencia a la Dirección","ciclo_clave":"AD","ciclo_nivel":"CFGS",
     "curso":"2º AD","horas_sem":4,"total_horas":157,"anno":"2026-2027","eval_count":2,
-    "decreto":"Decreto 41/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9482), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM",
+    "decreto":"Horas y curso: Decreto 80/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo I-C.3º · RA y CE: Decreto 41/2013, de 25/07/2013 (DOCM núm. 148, de 01/08/2013), Anexo II",
 }
 UTS = [
     {"id":"UT1","nombre":"Fundamentos de relaciones públicas","horas":19,"eval":1,"tags":"Comunicación corporativa · Públicos · Medios · Patrocinio y mecenazgo"},

@@ -1,5 +1,5 @@
 """EvalFP — Seguridad y Alta Disponibilidad · 0378 · Administración de Sistemas Informáticos en Red (ASIR)
-Decreto 200/2010, de 03/08/2010, currículo del ciclo de Administración de Sistemas Informáticos en Red en Castilla-La Mancha (DOCM, NID 2010/13389) · RA y CE literales del Anexo I
+Horas y curso: Decreto 80/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IA-3. 1º · RA y CE: Decreto 200/2010, de 03/08/2010 (DOCM núm. 151, de 06/08/2010), Anexo II
 RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
 Duración: 159 h · 4 h/semana · 2º ASIR.
 """
@@ -7,7 +7,7 @@ MODULO = {
     "nombre":"Seguridad y Alta Disponibilidad","codigo":"0378","abrev":"SAD",
     "ciclo":"Administración de Sistemas Informáticos en Red (ASIR)","ciclo_clave":"ASIR","ciclo_nivel":"CFGS",
     "curso":"2º ASIR","horas_sem":4,"total_horas":159,"anno":"2026-2027","eval_count":3,
-    "decreto":"Decreto 200/2010, de 03/08/2010, currículo del ciclo de Administración de Sistemas Informáticos en Red en Castilla-La Mancha (DOCM, NID 2010/13389) · RA y CE literales del Anexo I",
+    "decreto":"Horas y curso: Decreto 80/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IA-3. 1º · RA y CE: Decreto 200/2010, de 03/08/2010 (DOCM núm. 151, de 06/08/2010), Anexo II",
 }
 UTS = [
     {"id":"UT1","nombre":"Adopta pautas y prácticas de tratamiento seguro de la información","horas":27,"eval":1,"tags":""},

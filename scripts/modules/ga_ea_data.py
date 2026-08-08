@@ -1,22 +1,22 @@
 """EvalFP — Empresa y Administración · 0439 · Gestión Administrativa
-Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)
-RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
-Duración: 105 h · 3 h/semana · 1º GA.
+Horas y curso: Decreto 79/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IC-1. 1º · RA y CE: Decreto 251/2011, de 12/08/2011 (DOCM núm. 164, de 22/08/2011), Anexo II
+RA y CE literales del Anexo II del Decreto 251/2011 (DOCM); las horas y el curso son los del Decreto 79/2024, que modifica aquel currículo.
+Duración: 158 h · 4 h/semana · 2º GA.
 """
 MODULO = {
     "nombre":"Empresa y Administración","codigo":"0439","abrev":"EA",
     "ciclo":"Gestión Administrativa","ciclo_clave":"GA","ciclo_nivel":"CFGM",
-    "curso":"1º GA","horas_sem":3,"total_horas":105,"anno":"2026-2027","eval_count":3,
-    "decreto":"Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)",
+    "curso":"2º GA","horas_sem":4,"total_horas":158,"anno":"2026-2027","eval_count":2,
+    "decreto":"Horas y curso: Decreto 79/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IC-1. 1º · RA y CE: Decreto 251/2011, de 12/08/2011 (DOCM núm. 164, de 22/08/2011), Anexo II",
 }
 UTS = [
-    {"id":"UT1","nombre":"Innovación y creación de empresas","horas":15,"eval":1,"tags":"Innovación empresarial · Emprendimiento · Plan de empresa · Ayudas y subvenciones"},
-    {"id":"UT2","nombre":"La empresa y su forma jurídica","horas":13,"eval":1,"tags":"Empresario individual · Sociedades · Trámites de constitución · Registro Mercantil"},
-    {"id":"UT3","nombre":"El sistema tributario español","horas":15,"eval":2,"tags":"Tributos, tasas y contribuciones · LGT · Elementos del tributo · Hecho imponible"},
-    {"id":"UT4","nombre":"Obligaciones fiscales de la empresa","horas":17,"eval":2,"tags":"Censo · IAE · IRPF · Impuesto de Sociedades · IVA · Calendario fiscal"},
-    {"id":"UT5","nombre":"La Administración Pública","horas":12,"eval":3,"tags":"Administración General, autonómica y local · Poderes del Estado · Personal al servicio"},
-    {"id":"UT6","nombre":"El procedimiento administrativo","horas":21,"eval":3,"tags":"Acto administrativo · Fases · Silencio administrativo · Recursos · Notificaciones"},
-    {"id":"UT7","nombre":"Registros y Administración electrónica","horas":12,"eval":3,"tags":"Registro de entrada y salida · Certificado digital · Sede electrónica · Compulsas"},
+    {"id":"UT1","nombre":"Innovación y creación de empresas","horas":23,"eval":1,"tags":"Innovación empresarial · Emprendimiento · Plan de empresa · Ayudas y subvenciones"},
+    {"id":"UT2","nombre":"La empresa y su forma jurídica","horas":19,"eval":1,"tags":"Empresario individual · Sociedades · Trámites de constitución · Registro Mercantil"},
+    {"id":"UT3","nombre":"El sistema tributario español","horas":22,"eval":2,"tags":"Tributos, tasas y contribuciones · LGT · Elementos del tributo · Hecho imponible"},
+    {"id":"UT4","nombre":"Obligaciones fiscales de la empresa","horas":26,"eval":2,"tags":"Censo · IAE · IRPF · Impuesto de Sociedades · IVA · Calendario fiscal"},
+    {"id":"UT5","nombre":"La Administración Pública","horas":18,"eval":3,"tags":"Administración General, autonómica y local · Poderes del Estado · Personal al servicio"},
+    {"id":"UT6","nombre":"El procedimiento administrativo","horas":32,"eval":3,"tags":"Acto administrativo · Fases · Silencio administrativo · Recursos · Notificaciones"},
+    {"id":"UT7","nombre":"Registros y Administración electrónica","horas":18,"eval":3,"tags":"Registro de entrada y salida · Certificado digital · Sede electrónica · Compulsas"},
 ]
 RAS = [
     {"id":"RA1","pond":14,"nombre":"Describe las características inherentes a la innovación empresarial relacionándolas con la actividad de creación de empresas."},

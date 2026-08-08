@@ -1,5 +1,5 @@
 """EvalFP — Sistemas Informáticos · 0483 · DAW
-Decreto 230/2011, de 28/07/2011, currículo del ciclo de Desarrollo de Aplicaciones Web en Castilla-La Mancha (DOCM, NID 2011/11276) · RA y CE literales del Anexo I
+Horas y curso: Decreto 80/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IA-3. 2º · RA y CE: Decreto 230/2011, de 28/07/2011 (DOCM núm. 155, de 09/08/2011), Anexo II
 RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
 Duración: 163 h · 5 h/semana · 1º DAW.
 """
@@ -7,7 +7,7 @@ MODULO = {
     "nombre":"Sistemas Informáticos","codigo":"0483","abrev":"SI",
     "ciclo":"DAW","ciclo_clave":"DAW","ciclo_nivel":"CFGS",
     "curso":"1º DAW","horas_sem":5,"total_horas":163,"anno":"2026-2027","eval_count":3,
-    "decreto":"Decreto 230/2011, de 28/07/2011, currículo del ciclo de Desarrollo de Aplicaciones Web en Castilla-La Mancha (DOCM, NID 2011/11276) · RA y CE literales del Anexo I",
+    "decreto":"Horas y curso: Decreto 80/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IA-3. 2º · RA y CE: Decreto 230/2011, de 28/07/2011 (DOCM núm. 155, de 09/08/2011), Anexo II",
 }
 UTS = [
     {"id":"UT1","nombre":"Representación de la información","horas":22,"eval":1,"tags":"Binario · Hexadecimal · ASCII · Unicode · Aritmética binaria"},

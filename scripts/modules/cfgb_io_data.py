@@ -1,5 +1,5 @@
 """EvalFP — Ofimática y Archivo de Documentos · 3031 · 
-Decreto 80/2014, de 01/08/2014, currículo del ciclo de Formación Profesional Básica de Informática de Oficina en Castilla-La Mancha (DOCM, NID 2014/10283) · RA y CE literales del Anexo II
+Horas y curso: Decreto 78/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo I · RA y CE: Decreto 80/2014, de 01/08/2014 (DOCM núm. 151, de 07/08/2014), Anexo II
 RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
 Duración: 275 h · 8 h/semana · 1º IO.
 """
@@ -8,7 +8,7 @@ MODULO = {
     "ciclo":"Informática de Oficina","ciclo_clave":"CFGB","ciclo_nivel":"CFGB",
     "curso":"1º IO","horas_sem":8,"total_horas":275,"anno":"2026-2027","eval_count":3,
     "horas_aula":240,  # el resto hasta 275 h es formación en empresa
-    "decreto":"Decreto 80/2014, de 01/08/2014, currículo del ciclo de Formación Profesional Básica de Informática de Oficina en Castilla-La Mancha (DOCM, NID 2014/10283) · RA y CE literales del Anexo II",
+    "decreto":"Horas y curso: Decreto 78/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo I · RA y CE: Decreto 80/2014, de 01/08/2014 (DOCM núm. 151, de 07/08/2014), Anexo II",
 }
 UTS = [
     {"id":"UT1","nombre":"Tramitación de información en línea","horas":31,"eval":1,"tags":"Internet · Intranet · Búsqueda · Nube · Páginas institucionales"},

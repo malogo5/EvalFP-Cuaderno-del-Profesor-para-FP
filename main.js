@@ -444,6 +444,12 @@ ipcMain.handle('db:addEvidencia', (_, payload) => db.addEvidencia(payload))
 
 ipcMain.handle('db:getFaseEmpresa', (_, mid) => db.getFaseEmpresa(mid))
 ipcMain.handle('db:setFaseEmpresa', (_, payload) => db.setFaseEmpresa(payload))
+ipcMain.handle('db:getEvaluacionContinua', (_, moduloId) => db.getEvaluacionContinua(moduloId))
+ipcMain.handle('db:setEvaluacionContinua', (_, payload) => db.setEvaluacionContinua(payload))
+ipcMain.handle('db:getConvalidaciones', (_, moduloId) => db.getConvalidaciones(moduloId))
+ipcMain.handle('db:setConvalidacion', (_, payload) => db.setConvalidacion(payload))
+ipcMain.handle('db:getFaseEmpresaPython', () => db.getFaseEmpresaPython())
+ipcMain.handle('db:setFaseEmpresaPython', (_, horas) => db.setFaseEmpresaPython(horas))
 
 ipcMain.handle('db:getRasSuperados', (_, mid) => db.getRasSuperados(mid))
 ipcMain.handle('db:cerrarEvaluacionRAs', (_, { mid, evaluacion, filas }) =>

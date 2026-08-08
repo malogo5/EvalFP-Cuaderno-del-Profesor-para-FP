@@ -1,5 +1,5 @@
 """EvalFP — Lenguajes de Marcas y Sistemas de Gestión de Información · 0373 · Desarrollo de Aplicaciones Web
-Decreto 230/2011, de 28/07/2011, currículo del ciclo de Desarrollo de Aplicaciones Web en Castilla-La Mancha (DOCM, NID 2011/11276) · RA y CE literales del Anexo I
+Horas y curso: Decreto 80/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IA-3. 2º · RA y CE: Decreto 230/2011, de 28/07/2011 (DOCM núm. 155, de 09/08/2011), Anexo II
 RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
 Duración: 116 h · 3 h/semana · 1º DAW.
 """
@@ -7,7 +7,7 @@ MODULO = {
     "nombre":"Lenguajes de Marcas y Sistemas de Gestión de Información","codigo":"0373","abrev":"LMSGI",
     "ciclo":"Desarrollo de Aplicaciones Web","ciclo_clave":"DAW","ciclo_nivel":"CFGS",
     "curso":"1º DAW","horas_sem":3,"total_horas":116,"anno":"2026-2027","eval_count":3,
-    "decreto":"Decreto 230/2011, de 28/07/2011, currículo del ciclo de Desarrollo de Aplicaciones Web en Castilla-La Mancha (DOCM, NID 2011/11276) · RA y CE literales del Anexo I",
+    "decreto":"Horas y curso: Decreto 80/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IA-3. 2º · RA y CE: Decreto 230/2011, de 28/07/2011 (DOCM núm. 155, de 09/08/2011), Anexo II",
 }
 UTS = [
     {"id":"UT1","nombre":"Reconocimiento de las características del lenguaje XML","horas":20,"eval":1,"tags":"XML · DTD · XSD · Validación · Namespaces · Parsers SAX/DOM"},

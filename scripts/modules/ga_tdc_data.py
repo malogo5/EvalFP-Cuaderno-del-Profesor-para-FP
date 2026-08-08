@@ -1,19 +1,19 @@
 """EvalFP — Tratamiento de la Documentación Contable · 0443 · Gestión Administrativa
-Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)
-RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
-Duración: 130 h · 6 h/semana · 2º GA.
+Horas y curso: Decreto 79/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IC-1. 1º · RA y CE: Decreto 251/2011, de 12/08/2011 (DOCM núm. 164, de 22/08/2011), Anexo II
+RA y CE literales del Anexo II del Decreto 251/2011 (DOCM); las horas y el curso son los del Decreto 79/2024, que modifica aquel currículo.
+Duración: 195 h · 5 h/semana · 2º GA.
 """
 MODULO = {
     "nombre":"Tratamiento de la Documentación Contable","codigo":"0443","abrev":"TDC",
     "ciclo":"Gestión Administrativa","ciclo_clave":"GA","ciclo_nivel":"CFGM",
-    "curso":"2º GA","horas_sem":6,"total_horas":130,"anno":"2026-2027","eval_count":2,
-    "decreto":"Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)",
+    "curso":"2º GA","horas_sem":5,"total_horas":195,"anno":"2026-2027","eval_count":2,
+    "decreto":"Horas y curso: Decreto 79/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IC-1. 1º · RA y CE: Decreto 251/2011, de 12/08/2011 (DOCM núm. 164, de 22/08/2011), Anexo II",
 }
 UTS = [
-    {"id":"UT1","nombre":"Documentos soporte de la contabilidad","horas":27,"eval":1,"tags":"Facturas · Extractos bancarios · Nóminas · Justificantes · Archivo y conservación"},
-    {"id":"UT2","nombre":"Registro contable de operaciones","horas":31,"eval":1,"tags":"Compras y ventas · Gastos e ingresos · Inmovilizado · Personal · IVA"},
-    {"id":"UT3","nombre":"El ciclo contable completo","horas":34,"eval":2,"tags":"Apertura · Regularización · Amortizaciones · Cierre · Cuentas anuales"},
-    {"id":"UT4","nombre":"Comprobación y control contable","horas":38,"eval":2,"tags":"Punteo · Conciliación bancaria · Balance de sumas y saldos · Detección y corrección de errores"},
+    {"id":"UT1","nombre":"Documentos soporte de la contabilidad","horas":41,"eval":1,"tags":"Facturas · Extractos bancarios · Nóminas · Justificantes · Archivo y conservación"},
+    {"id":"UT2","nombre":"Registro contable de operaciones","horas":46,"eval":1,"tags":"Compras y ventas · Gastos e ingresos · Inmovilizado · Personal · IVA"},
+    {"id":"UT3","nombre":"El ciclo contable completo","horas":51,"eval":2,"tags":"Apertura · Regularización · Amortizaciones · Cierre · Cuentas anuales"},
+    {"id":"UT4","nombre":"Comprobación y control contable","horas":57,"eval":2,"tags":"Punteo · Conciliación bancaria · Balance de sumas y saldos · Detección y corrección de errores"},
 ]
 RAS = [
     {"id":"RA1","pond":21,"nombre":"Prepara la documentación soporte de los hechos contables interpretando la información que contiene."},

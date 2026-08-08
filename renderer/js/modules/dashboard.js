@@ -193,12 +193,22 @@ async function loadDashboard() {
     filas.forEach(f => { fasesDash[Number(f.alumno_id)] = f.estado })
   } catch { /* base antigua sin la tabla */ }
 
+  // Pérdida del derecho a la evaluación continua por alumno (art. 3.6): quien la
+  // ha perdido se califica SOLO con la prueba objetiva y sin conservar nada de lo
+  // anterior, así que el motor tiene que saberlo aquí, no solo en la pantalla.
+  const ecDash = {}
+  try {
+    const filasEC = await window.api.getEvaluacionContinua(parseInt(mid))
+    filasEC.forEach(f => { if (f.perdida) ecDash[Number(f.alumno_id)] = true })
+  } catch { /* base antigua sin la tabla */ }
+
   const ctxCalculo = contextoModulo({
     ras, cesByRa: cesDict, asignaciones: asigs, actividades, minExam,
     tieneFaseEmpresa: moduloConFaseEmpresa(modData?.modulo),
   })
   const estadoDe = alumnoId =>
-    estadoModulo(ctxCalculo, ng[alumnoId], { faseEmpresa: fasesDash[alumnoId] })
+    estadoModulo(ctxCalculo, ng[alumnoId],
+      { faseEmpresa: fasesDash[alumnoId], evalContinuaPerdida: !!ecDash[alumnoId] })
 
   function computeRaNotas(alumnoId) {
     const st = estadoDe(alumnoId)
@@ -699,6 +709,12 @@ async function _genBoletin(alumnoId, evParcial = null) {
     faseAlumnoBol = filas.find(f => Number(f.alumno_id) === alumnoId)?.estado || null
   } catch { /* base antigua sin la tabla */ }
 
+  let ecBol = false
+  try {
+    const filasEC = await window.api.getEvaluacionContinua(parseInt(mid))
+    ecBol = !!filasEC.find(f => Number(f.alumno_id) === alumnoId)?.perdida
+  } catch { /* base antigua sin la tabla */ }
+
   // ── Nota de cada evaluación ───────────────────────────────────────────
   //
   // Esto lo calculaba el boletín por su cuenta: una media de las actividades
@@ -929,7 +945,8 @@ async function _genBoletin(alumnoId, evParcial = null) {
     ras, cesByRa: cesDict, asignaciones: asigs, actividades, minExam: minExamB,
     tieneFaseEmpresa: moduloConFaseEmpresa(modData?.modulo),
   })
-  const stBol = estadoModulo(ctxBol, miNotas, { faseEmpresa: faseAlumnoBol })
+  const stBol = estadoModulo(ctxBol, miNotas,
+    { faseEmpresa: faseAlumnoBol, evalContinuaPerdida: ecBol })
 
   // Acumulado hasta la evaluación del boletín. En un boletín de diciembre, la
   // situación del módulo tiene que calcularse con lo evaluado HASTA diciembre:

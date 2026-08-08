@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'path'
 
 /**
- * El catálogo son 91 módulos con 4.444 criterios copiados de los decretos del
+ * El catálogo son 130 módulos con sus criterios copiados de los decretos del
  * DOCM. Nadie los va a revisar a mano cada vez, así que estas comprobaciones
  * fijan lo que tiene que cumplir cualquier módulo para que las pantallas no
  * enseñen huecos ni la nota salga torcida.
@@ -13,8 +13,8 @@ const data = JSON.parse(fs.readFileSync(path.resolve('renderer/modules_data.json
 const modulos = Object.entries(data.modules)
 
 describe('Catálogo de módulos de Castilla-La Mancha', () => {
-  it('tiene los 91 módulos, y el índice concuerda', () => {
-    expect(modulos.length).toBe(91)
+  it('tiene los 130 módulos, y el índice concuerda', () => {
+    expect(modulos.length).toBe(130)
     expect(data.index.length).toBe(modulos.length)
   })
 

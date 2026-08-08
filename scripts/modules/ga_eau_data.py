@@ -1,22 +1,22 @@
 """EvalFP — Empresa en el aula · 0446 · Gestión Administrativa
-Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)
-RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
-Duración: 145 h · 7 h/semana · 2º GA.
+Horas y curso: Decreto 79/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IC-1. 1º · RA y CE: Decreto 251/2011, de 12/08/2011 (DOCM núm. 164, de 22/08/2011), Anexo II
+RA y CE literales del Anexo II del Decreto 251/2011 (DOCM); las horas y el curso son los del Decreto 79/2024, que modifica aquel currículo.
+Duración: 195 h · 5 h/semana · 2º GA.
 """
 MODULO = {
     "nombre":"Empresa en el aula","codigo":"0446","abrev":"EAU",
     "ciclo":"Gestión Administrativa","ciclo_clave":"GA","ciclo_nivel":"CFGM",
-    "curso":"2º GA","horas_sem":7,"total_horas":145,"anno":"2026-2027","eval_count":2,
-    "decreto":"Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)",
+    "curso":"2º GA","horas_sem":5,"total_horas":195,"anno":"2026-2027","eval_count":2,
+    "decreto":"Horas y curso: Decreto 79/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IC-1. 1º · RA y CE: Decreto 251/2011, de 12/08/2011 (DOCM núm. 164, de 22/08/2011), Anexo II",
 }
 UTS = [
-    {"id":"UT1","nombre":"El proyecto de empresa en el aula","horas":18,"eval":1,"tags":"Actividad y sector · Organigrama · Puestos y rotación · Plan de empresa"},
-    {"id":"UT2","nombre":"Comunicación interna y externa","horas":23,"eval":1,"tags":"Atención telefónica · Correo · Circulares · Registro · Trato a la clientela"},
-    {"id":"UT3","nombre":"Organización de la información","horas":18,"eval":1,"tags":"Archivo manual e informático · Bases de datos · Copias de seguridad · Confidencialidad"},
-    {"id":"UT4","nombre":"Documentación por departamentos","horas":21,"eval":2,"tags":"Compras · Ventas · Almacén · Tesorería · RRHH · Contabilidad"},
-    {"id":"UT5","nombre":"Gestión comercial de compras y ventas","horas":18,"eval":2,"tags":"Proveedores · Pedidos · Facturación · Cobros · Atención a la clientela"},
-    {"id":"UT6","nombre":"Resolución de incidencias y reclamaciones","horas":18,"eval":2,"tags":"Criterios de resolución · Procedimiento · Registro · Seguimiento · Satisfacción"},
-    {"id":"UT7","nombre":"Trabajo en equipo y desempeño profesional","horas":29,"eval":2,"tags":"Roles · Responsabilidad · Iniciativa · Autoevaluación · Rúbricas de desempeño"},
+    {"id":"UT1","nombre":"El proyecto de empresa en el aula","horas":24,"eval":1,"tags":"Actividad y sector · Organigrama · Puestos y rotación · Plan de empresa"},
+    {"id":"UT2","nombre":"Comunicación interna y externa","horas":31,"eval":1,"tags":"Atención telefónica · Correo · Circulares · Registro · Trato a la clientela"},
+    {"id":"UT3","nombre":"Organización de la información","horas":24,"eval":1,"tags":"Archivo manual e informático · Bases de datos · Copias de seguridad · Confidencialidad"},
+    {"id":"UT4","nombre":"Documentación por departamentos","horas":29,"eval":2,"tags":"Compras · Ventas · Almacén · Tesorería · RRHH · Contabilidad"},
+    {"id":"UT5","nombre":"Gestión comercial de compras y ventas","horas":24,"eval":2,"tags":"Proveedores · Pedidos · Facturación · Cobros · Atención a la clientela"},
+    {"id":"UT6","nombre":"Resolución de incidencias y reclamaciones","horas":24,"eval":2,"tags":"Criterios de resolución · Procedimiento · Registro · Seguimiento · Satisfacción"},
+    {"id":"UT7","nombre":"Trabajo en equipo y desempeño profesional","horas":39,"eval":2,"tags":"Roles · Responsabilidad · Iniciativa · Autoevaluación · Rúbricas de desempeño"},
 ]
 RAS = [
     {"id":"RA1","pond":12,"nombre":"Identifica las características del proyecto de empresa creada en el aula tomando parte en la actividad que esta desarrolla."},

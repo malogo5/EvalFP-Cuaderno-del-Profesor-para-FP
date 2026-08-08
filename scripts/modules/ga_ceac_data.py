@@ -1,23 +1,23 @@
 """EvalFP — Comunicación empresarial y atención al cliente · 0437 · Gestión Administrativa
-Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)
-RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
-Duración: 130 h · 4 h/semana · 1º GA.
+Horas y curso: Decreto 79/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IC-1. 1º · RA y CE: Decreto 251/2011, de 12/08/2011 (DOCM núm. 164, de 22/08/2011), Anexo II
+RA y CE literales del Anexo II del Decreto 251/2011 (DOCM); las horas y el curso son los del Decreto 79/2024, que modifica aquel currículo.
+Duración: 167 h · 4 h/semana · 2º GA.
 """
 MODULO = {
     "nombre":"Comunicación empresarial y atención al cliente","codigo":"0437","abrev":"CEAC",
     "ciclo":"Gestión Administrativa","ciclo_clave":"GA","ciclo_nivel":"CFGM",
-    "curso":"1º GA","horas_sem":4,"total_horas":130,"anno":"2026-2027","eval_count":3,
-    "decreto":"Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)",
+    "curso":"2º GA","horas_sem":4,"total_horas":167,"anno":"2026-2027","eval_count":2,
+    "decreto":"Horas y curso: Decreto 79/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IC-1. 1º · RA y CE: Decreto 251/2011, de 12/08/2011 (DOCM núm. 164, de 22/08/2011), Anexo II",
 }
 UTS = [
-    {"id":"UT1","nombre":"La comunicación en la empresa","horas":16,"eval":1,"tags":"Elementos del proceso · Barreras · Estructura organizativa · Organigramas · Flujos de información · Imagen corporativa"},
-    {"id":"UT2","nombre":"Comunicación oral y telefónica","horas":17,"eval":1,"tags":"Atención telefónica · Centralita · Protocolo · Comunicación no verbal · Presentaciones · Videoconferencia"},
-    {"id":"UT3","nombre":"Comunicación escrita","horas":19,"eval":1,"tags":"Cartas comerciales · Informes · Correo electrónico · Documentos de la Administración · Registro de entrada y salida"},
-    {"id":"UT4","nombre":"Archivo y gestión documental","horas":17,"eval":2,"tags":"Sistemas de clasificación · Archivo físico e informático · Bases de datos · Protección de datos · Conservación y destrucción"},
-    {"id":"UT5","nombre":"La clientela y sus necesidades","horas":15,"eval":2,"tags":"Tipos de clientela · Motivaciones de compra · Fases de la atención · Técnicas de venta"},
-    {"id":"UT6","nombre":"Quejas, consultas y reclamaciones","horas":17,"eval":2,"tags":"Normativa de consumo · Hoja de reclamaciones · Mediación y arbitraje · OMIC · Juntas arbitrales"},
-    {"id":"UT7","nombre":"Marketing e imagen de empresa","horas":12,"eval":3,"tags":"Marketing mix · Publicidad y promoción · Fidelización · Imagen de marca · Redes sociales"},
-    {"id":"UT8","nombre":"Calidad en la atención a la clientela","horas":17,"eval":3,"tags":"Estándares e indicadores · Certificación · Tratamiento de anomalías · Mejora continua"},
+    {"id":"UT1","nombre":"La comunicación en la empresa","horas":21,"eval":1,"tags":"Elementos del proceso · Barreras · Estructura organizativa · Organigramas · Flujos de información · Imagen corporativa"},
+    {"id":"UT2","nombre":"Comunicación oral y telefónica","horas":22,"eval":1,"tags":"Atención telefónica · Centralita · Protocolo · Comunicación no verbal · Presentaciones · Videoconferencia"},
+    {"id":"UT3","nombre":"Comunicación escrita","horas":24,"eval":1,"tags":"Cartas comerciales · Informes · Correo electrónico · Documentos de la Administración · Registro de entrada y salida"},
+    {"id":"UT4","nombre":"Archivo y gestión documental","horas":22,"eval":2,"tags":"Sistemas de clasificación · Archivo físico e informático · Bases de datos · Protección de datos · Conservación y destrucción"},
+    {"id":"UT5","nombre":"La clientela y sus necesidades","horas":19,"eval":2,"tags":"Tipos de clientela · Motivaciones de compra · Fases de la atención · Técnicas de venta"},
+    {"id":"UT6","nombre":"Quejas, consultas y reclamaciones","horas":22,"eval":2,"tags":"Normativa de consumo · Hoja de reclamaciones · Mediación y arbitraje · OMIC · Juntas arbitrales"},
+    {"id":"UT7","nombre":"Marketing e imagen de empresa","horas":15,"eval":3,"tags":"Marketing mix · Publicidad y promoción · Fidelización · Imagen de marca · Redes sociales"},
+    {"id":"UT8","nombre":"Calidad en la atención a la clientela","horas":22,"eval":3,"tags":"Estándares e indicadores · Certificación · Tratamiento de anomalías · Mejora continua"},
 ]
 RAS = [
     {"id":"RA1","pond":12,"nombre":"Selecciona técnicas de comunicación, relacionándolas con la estructura e imagen de la empresa y los flujos de información existentes en ella."},

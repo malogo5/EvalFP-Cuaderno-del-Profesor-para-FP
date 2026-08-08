@@ -1,5 +1,5 @@
 """EvalFP — Servicios en Red · 0227 · Sistemas Microinformáticos y Redes (SMR)
-Decreto 107/2009, de 04/08/2009, currículo del ciclo de Sistemas Microinformáticos y Redes en Castilla-La Mancha (DOCM, NID 2009/11413) · RA y CE literales del Anexo I
+Horas y curso: Decreto 79/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IA-3 2º · RA y CE: Decreto 107/2009, de 04/08/2009 (DOCM núm. 153, de 07/08/2009), Anexo II
 RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
 Duración: 205 h · 5 h/semana · 2º SMR.
 """
@@ -7,7 +7,7 @@ MODULO = {
     "nombre":"Servicios en Red","codigo":"0227","abrev":"SR",
     "ciclo":"Sistemas Microinformáticos y Redes (SMR)","ciclo_clave":"SMR","ciclo_nivel":"CFGM",
     "curso":"2º SMR","horas_sem":5,"total_horas":205,"anno":"2026-2027","eval_count":3,
-    "decreto":"Decreto 107/2009, de 04/08/2009, currículo del ciclo de Sistemas Microinformáticos y Redes en Castilla-La Mancha (DOCM, NID 2009/11413) · RA y CE literales del Anexo I",
+    "decreto":"Horas y curso: Decreto 79/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IA-3 2º · RA y CE: Decreto 107/2009, de 04/08/2009 (DOCM núm. 153, de 07/08/2009), Anexo II",
 }
 UTS = [
     {"id":"UT1","nombre":"Instala servicios de configuración dinámica","horas":26,"eval":1,"tags":""},

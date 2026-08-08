@@ -1,5 +1,5 @@
 """EvalFP — Modelos de Inteligencia Artificial · 5071 · CE Inteligencia Artificial y Big Data
-Decreto 69/2022, de 12/07/2022, currículo del Curso de Especialización en Inteligencia Artificial y Big Data en Castilla-La Mancha (DOCM, NID 2022/6683) · RA y CE literales del Anexo II
+Decreto 69/2022, de 12/07/2022, currículo del Curso de Especialización en Inteligencia Artificial y Big Data en Castilla-La Mancha (DOCM núm. 136, de 18/07/2022, NID 2022/6683) · Horas: Anexo I · RA y CE literales del Anexo II
 RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
 Duración: 60 h · 2 h/semana · CE IA y Big Data.
 """
@@ -7,7 +7,7 @@ MODULO = {
     "nombre":"Modelos de Inteligencia Artificial","codigo":"5071","abrev":"MIA",
     "ciclo":"CE Inteligencia Artificial y Big Data","ciclo_clave":"CE_IABD","ciclo_nivel":"CE",
     "curso":"CE IA y Big Data","horas_sem":2,"total_horas":60,"anno":"2026-2027","eval_count":2,
-    "decreto":"Decreto 69/2022, de 12/07/2022, currículo del Curso de Especialización en Inteligencia Artificial y Big Data en Castilla-La Mancha (DOCM, NID 2022/6683) · RA y CE literales del Anexo II",
+    "decreto":"Decreto 69/2022, de 12/07/2022, currículo del Curso de Especialización en Inteligencia Artificial y Big Data en Castilla-La Mancha (DOCM núm. 136, de 18/07/2022, NID 2022/6683) · Horas: Anexo I · RA y CE literales del Anexo II",
 }
 UTS = [
     {"id":"UT1","nombre":"Caracteriza sistemas de Inteligencia Artificial","horas":8,"eval":1,"tags":""},

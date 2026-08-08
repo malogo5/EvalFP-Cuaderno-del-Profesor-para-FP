@@ -1,18 +1,18 @@
 """EvalFP — Técnica Contable · 0441 · Gestión Administrativa
-Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)
-RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
-Duración: 165 h · 5 h/semana · 1º GA.
+Horas y curso: Decreto 79/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IC-1. 1º · RA y CE: Decreto 251/2011, de 12/08/2011 (DOCM núm. 164, de 22/08/2011), Anexo II
+RA y CE literales del Anexo II del Decreto 251/2011 (DOCM); las horas y el curso son los del Decreto 79/2024, que modifica aquel currículo.
+Duración: 167 h · 5 h/semana · 1º GA.
 """
 MODULO = {
     "nombre":"Técnica Contable","codigo":"0441","abrev":"TC",
     "ciclo":"Gestión Administrativa","ciclo_clave":"GA","ciclo_nivel":"CFGM",
-    "curso":"1º GA","horas_sem":5,"total_horas":165,"anno":"2026-2027","eval_count":3,
-    "decreto":"Decreto 251/2011, de 12/08/2011, por el que se establece el currículo del ciclo formativo de grado medio de Gestión Administrativa en Castilla-La Mancha (DOCM 22/08/2011)",
+    "curso":"1º GA","horas_sem":5,"total_horas":167,"anno":"2026-2027","eval_count":3,
+    "decreto":"Horas y curso: Decreto 79/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IC-1. 1º · RA y CE: Decreto 251/2011, de 12/08/2011 (DOCM núm. 164, de 22/08/2011), Anexo II",
 }
 UTS = [
     {"id":"UT1","nombre":"El patrimonio de la empresa","horas":26,"eval":1,"tags":"Activo · Pasivo · Patrimonio neto · Masas patrimoniales · Equilibrio patrimonial"},
-    {"id":"UT2","nombre":"Metodología contable","horas":40,"eval":1,"tags":"La cuenta · Partida doble · Libro diario · Libro mayor · Balance de comprobación"},
-    {"id":"UT3","nombre":"El Plan General de Contabilidad de PYMES","horas":40,"eval":2,"tags":"Marco conceptual · Cuadro de cuentas · Normas de registro y valoración · Cuentas anuales"},
+    {"id":"UT2","nombre":"Metodología contable","horas":41,"eval":1,"tags":"La cuenta · Partida doble · Libro diario · Libro mayor · Balance de comprobación"},
+    {"id":"UT3","nombre":"El Plan General de Contabilidad de PYMES","horas":41,"eval":2,"tags":"Marco conceptual · Cuadro de cuentas · Normas de registro y valoración · Cuentas anuales"},
     {"id":"UT4","nombre":"Registro de operaciones básicas","horas":26,"eval":3,"tags":"Compras y ventas · IVA soportado y repercutido · Gastos e ingresos · Nóminas"},
     {"id":"UT5","nombre":"Contabilidad informatizada","horas":33,"eval":3,"tags":"Plan de cuentas · Asientos predefinidos · Punteo · Libros oficiales · Copias de seguridad"},
 ]

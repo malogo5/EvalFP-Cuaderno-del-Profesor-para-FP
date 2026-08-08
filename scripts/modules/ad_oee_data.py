@@ -1,5 +1,5 @@
 """EvalFP — Organización de eventos empresariales · 0662 · Asistencia a la Dirección
-Decreto 41/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9482), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM
+Horas y curso: Decreto 80/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo I-C.3º · RA y CE: Decreto 41/2013, de 25/07/2013 (DOCM núm. 148, de 01/08/2013), Anexo II
 RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
 Duración: 313 h · 7 h/semana · 2º AD.
 """
@@ -7,7 +7,7 @@ MODULO = {
     "nombre":"Organización de eventos empresariales","codigo":"0662","abrev":"OEE",
     "ciclo":"Asistencia a la Dirección","ciclo_clave":"AD","ciclo_nivel":"CFGS",
     "curso":"2º AD","horas_sem":7,"total_horas":313,"anno":"2026-2027","eval_count":2,
-    "decreto":"Decreto 41/2013, de 25/07/2013 (DOCM 01/08/2013, NID 2013/9482), Anexo I · distribución horaria LOFP publicada por la Consejería de Educación de CLM",
+    "decreto":"Horas y curso: Decreto 80/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo I-C.3º · RA y CE: Decreto 41/2013, de 25/07/2013 (DOCM núm. 148, de 01/08/2013), Anexo II",
 }
 UTS = [
     {"id":"UT1","nombre":"Equipo de trabajo y clima laboral","horas":75,"eval":1,"tags":"Motivación · Liderazgo · Delegación · Gestión de conflictos · Compromiso"},
