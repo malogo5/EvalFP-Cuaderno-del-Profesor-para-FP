@@ -1,7 +1,6 @@
 """EvalFP — Implantación de Sistemas Operativos · 0369 · Administración de Sistemas Informáticos en Red (ASIR)
 Horas y curso: Decreto 80/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IA-3. 1º · RA y CE: Decreto 200/2010, de 03/08/2010 (DOCM núm. 151, de 06/08/2010), Anexo II
-RA y CE literales del anexo de curriculo del decreto de Castilla-La Mancha (DOCM).
-UT, horas y asignacion de CE alineadas con el temario del modulo (revision de 12/08/2026).
+RA y CE literales del anexo de currículo del decreto de Castilla-La Mancha (DOCM).
 Duración: 186 h · 6 h/semana · 1º ASIR.
 """
 MODULO = {
@@ -11,14 +10,14 @@ MODULO = {
     "decreto":"Horas y curso: Decreto 80/2024, de 05/11/2024 (DOCM núm. 218, de 11/11/2024), Anexo IA-3. 1º · RA y CE: Decreto 200/2010, de 03/08/2010 (DOCM núm. 151, de 06/08/2010), Anexo II",
 }
 UTS = [
-    {"id":"UT1","nombre":"Instalación de software libre y propietario","horas":30,"eval":1,"tags":""},
-    {"id":"UT2","nombre":"Administración de software base","horas":25,"eval":1,"tags":""},
-    {"id":"UT3","nombre":"Administración y aseguramiento de la información","horas":22,"eval":1,"tags":""},
-    {"id":"UT4","nombre":"Gestión de dominios","horas":30,"eval":2,"tags":""},
-    {"id":"UT5","nombre":"Administración de acceso al dominio","horas":25,"eval":2,"tags":""},
-    {"id":"UT6","nombre":"Supervisión del rendimiento del sistema","horas":22,"eval":3,"tags":""},
-    {"id":"UT7","nombre":"Directivas de seguridad y auditorías","horas":22,"eval":3,"tags":""},
-    {"id":"UT8","nombre":"Resolución de incidencias y asistencia técnica","horas":10,"eval":3,"tags":""},
+    {"id":"UT1","nombre":"Instala sistemas operativos","horas":19,"eval":1,"tags":""},
+    {"id":"UT2","nombre":"Configura el software de base","horas":45,"eval":1,"tags":""},
+    {"id":"UT3","nombre":"Asegura la información del sistema","horas":19,"eval":2,"tags":""},
+    {"id":"UT4","nombre":"Centraliza la información en servidores administrando estructuras de…","horas":19,"eval":2,"tags":""},
+    {"id":"UT5","nombre":"Administra el acceso a dominios","horas":19,"eval":2,"tags":""},
+    {"id":"UT6","nombre":"Detecta problemas de rendimiento","horas":23,"eval":3,"tags":""},
+    {"id":"UT7","nombre":"Audita la utilización y acceso a recursos","horas":21,"eval":3,"tags":""},
+    {"id":"UT8","nombre":"Implanta software específico con estructura cliente/servidor dando…","horas":21,"eval":3,"tags":""},
 ]
 RAS = [
     {"id":"RA1","pond":10,"nombre":"Instala sistemas operativos, analizando sus características e interpretando la documentación técnica."},
@@ -32,21 +31,15 @@ RAS = [
 ]
 ASIGNACIONES = [
     ("UT1","RA1",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8"]),
-    ("UT1","RA2",["CR7","CR8"]),
-    ("UT2","RA2",["CR1","CR2","CR3","CR4","CR5","CR6","CR10","CR11","CR12","CR13","CR14","CR16","CR17","CR19"]),
-    ("UT2","RA7",["CR1"]),
+    ("UT2","RA2",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9","CR10","CR11","CR12","CR13","CR14","CR15","CR16","CR17","CR18","CR19"]),
     ("UT3","RA3",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8"]),
-    ("UT3","RA2",["CR9","CR15","CR18"]),
     ("UT4","RA4",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8"]),
-    ("UT5","RA5",["CR1","CR2","CR3","CR4","CR5","CR6","CR7"]),
+    ("UT5","RA5",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8"]),
     ("UT6","RA6",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9","CR10"]),
-    ("UT7","RA7",["CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9"]),
-    ("UT7","RA5",["CR8"]),
+    ("UT7","RA7",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9"]),
     ("UT8","RA8",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8","CR9"]),
 ]
-EVAL_RAS = {1:["RA1","RA2","RA3"],
-            2:["RA4"],
-            3:["RA5","RA6","RA7","RA8"]}
+EVAL_RAS = {1:["RA1","RA2"], 2:["RA3","RA4","RA5"], 3:["RA6","RA7","RA8"]}
 DUAL_RA = "RA8"
 RA_INSTRUMENTOS = {
     "RA1":["examen","practica"],
