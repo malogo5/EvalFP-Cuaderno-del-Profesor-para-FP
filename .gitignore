@@ -56,3 +56,4 @@ EvalFP.zip
 # Copias de seguridad del catálogo hechas antes de una revisión normativa.
 # Son redundantes con git: el estado anterior está en el historial.
 backup_catalogo_*/
+*.bak-*
