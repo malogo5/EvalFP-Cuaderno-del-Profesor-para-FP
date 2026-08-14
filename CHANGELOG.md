@@ -1,5 +1,37 @@
 # Changelog
 
+## 3.16.1 · Dualización de ISO al 50 % y corrección del reparto de RA por evaluación
+
+### Corregido
+
+`rasPorEvaluacion` asignaba cada resultado de aprendizaje a la *primera* evaluación en que
+aparecía, en lugar de a la última. El panel «Distribución de RA por evaluación» de la pestaña
+Programación mostraba así un reparto que no coincidía con el cierre real de cada resultado: un
+RA que se trabaja en la primera y se cierra en la tercera aparecía contado en la primera.
+Ahora manda la evaluación de cierre, que es la que decide cuándo se califica.
+
+### Añadido
+
+La pestaña Programación permite marcar qué resultados de aprendizaje se dualizan y con qué
+criterios. Muestra el porcentaje de dualización que resulta de la selección y avisa cuando cae
+fuera de la franja del 10 % al 20 % que fija la administración para la formación en empresa.
+Los criterios acreditados en la empresa quedan señalados en la relación de criterios.
+
+### Catálogo de ISO 0369, curso 2026-2027
+
+Ponderación de los ocho resultados de aprendizaje proporcional a la dedicación real que recibe
+cada uno en la temporalización: 13, 19, 9, 16, 15, 12, 11 y 5 %.
+
+Dualización de RA1, RA2, RA4 y RA5 mediante actividades gemelas de igual peso —la práctica del
+centro y el informe del periodo de formación en empresa—, de modo que cada uno de los 15
+criterios acreditados en la empresa se califica exactamente al 50 % en cada ámbito. Esos
+criterios quedan excluidos de los exámenes, y los pesos de cada evaluación se reescalan a 100
+conservando la igualdad de cada pareja. Comprobado sobre el motor de calificación: con un 10
+en el centro y un 0 en la empresa, la nota del criterio dual es 5,000 exacto, y los criterios
+no duales no se ven afectados.
+
+U.T.4 renombrada a «Administración de dominios».
+
 ## 3.16.0 · El catálogo, alineado con la normativa de 2026-27
 
 Revisión completa del catálogo contra los Decretos 78, 79 y 80 de 2024, que modifican todos

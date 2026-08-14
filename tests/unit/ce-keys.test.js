@@ -128,6 +128,22 @@ describe('RAs por evaluación', () => {
     expect(ce.rasPorEvaluacion(movido, 3)).toEqual({ 1: ['RA1'], 2: [], 3: ['RA2', 'RA3'] })
   })
 
+  it('un RA repartido entre trimestres se califica en el de cierre', () => {
+    // RA2 se empieza en la 1ª (UT2) y se termina en la 3ª (UT4): su nota no puede
+    // salir en la 1ª, cuando solo se ha trabajado una parte de sus criterios.
+    const repartido = {
+      ...DATA,
+      uts: [{ id: 'UT1', eval: 1 }, { id: 'UT2', eval: 1 }, { id: 'UT3', eval: 2 }, { id: 'UT4', eval: 3 }],
+      asignaciones: [
+        { ut: 'UT1', ra: 'RA1', ces: ['CR1'] },
+        { ut: 'UT2', ra: 'RA2', ces: ['CR1'] },
+        { ut: 'UT3', ra: 'RA3', ces: ['CR1'] },
+        { ut: 'UT4', ra: 'RA2', ces: ['CR2'] },
+      ],
+    }
+    expect(ce.rasPorEvaluacion(repartido, 3)).toEqual({ 1: ['RA1'], 2: ['RA3'], 3: ['RA2'] })
+  })
+
   it('un RA sin UT conserva la evaluación del catálogo y no se duplica', () => {
     const suelto = { ...DATA, asignaciones: [{ ut: 'UT1', ra: 'RA1', ces: ['CR1'] }] }
     const mapa = ce.rasPorEvaluacion(suelto, 3)

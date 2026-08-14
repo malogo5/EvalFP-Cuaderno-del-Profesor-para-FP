@@ -14,21 +14,21 @@ UTS = [
     {"id":"UT1","nombre":"Instalación de software libre y propietario","horas":30,"eval":1,"tags":""},
     {"id":"UT2","nombre":"Administración de software base","horas":25,"eval":1,"tags":""},
     {"id":"UT3","nombre":"Administración y aseguramiento de la información","horas":22,"eval":1,"tags":""},
-    {"id":"UT4","nombre":"Gestión de dominios","horas":30,"eval":2,"tags":""},
-    {"id":"UT5","nombre":"Administración de acceso al dominio","horas":25,"eval":2,"tags":""},
+    {"id":"UT4","nombre":"Administración de dominios","horas":30,"eval":2,"tags":""},
+    {"id":"UT5","nombre":"Administración de acceso al dominio","horas":25,"eval":3,"tags":""},
     {"id":"UT6","nombre":"Supervisión del rendimiento del sistema","horas":22,"eval":3,"tags":""},
     {"id":"UT7","nombre":"Directivas de seguridad y auditorías","horas":22,"eval":3,"tags":""},
     {"id":"UT8","nombre":"Resolución de incidencias y asistencia técnica","horas":10,"eval":3,"tags":""},
 ]
 RAS = [
-    {"id":"RA1","pond":10,"nombre":"Instala sistemas operativos, analizando sus características e interpretando la documentación técnica."},
-    {"id":"RA2","pond":24,"nombre":"Configura el software de base, analizando las necesidades de explotación del sistema informático."},
-    {"id":"RA3","pond":10,"nombre":"Asegura la información del sistema, describiendo los procedimientos y utilizando copias de seguridad y sistemas tolerantes a fallos."},
-    {"id":"RA4","pond":10,"nombre":"Centraliza la información en servidores administrando estructuras de dominios y analizando sus ventajas."},
-    {"id":"RA5","pond":10,"nombre":"Administra el acceso a dominios analizando y respetando requerimientos de seguridad."},
-    {"id":"RA6","pond":13,"nombre":"Detecta problemas de rendimiento, monitorizando el sistema con las herramientas adecuadas y documentando el procedimiento."},
-    {"id":"RA7","pond":12,"nombre":"Audita la utilización y acceso a recursos, identificando y respetando las necesidades de seguridad del sistema."},
-    {"id":"RA8","pond":11,"nombre":"Implanta software específico con estructura cliente/servidor dando respuesta a los requisitos funcionales."},
+    {"id":"RA1","pond":13,"llave":True,"nombre":"Instala sistemas operativos, analizando sus características e interpretando la documentación técnica."},
+    {"id":"RA2","pond":19,"llave":True,"nombre":"Configura el software de base, analizando las necesidades de explotación del sistema informático."},
+    {"id":"RA3","pond":9,"nombre":"Asegura la información del sistema, describiendo los procedimientos y utilizando copias de seguridad y sistemas tolerantes a fallos."},
+    {"id":"RA4","pond":16,"nombre":"Centraliza la información en servidores administrando estructuras de dominios y analizando sus ventajas."},
+    {"id":"RA5","pond":15,"nombre":"Administra el acceso a dominios analizando y respetando requerimientos de seguridad."},
+    {"id":"RA6","pond":12,"nombre":"Detecta problemas de rendimiento, monitorizando el sistema con las herramientas adecuadas y documentando el procedimiento."},
+    {"id":"RA7","pond":11,"nombre":"Audita la utilización y acceso a recursos, identificando y respetando las necesidades de seguridad del sistema."},
+    {"id":"RA8","pond":5,"nombre":"Implanta software específico con estructura cliente/servidor dando respuesta a los requisitos funcionales."},
 ]
 ASIGNACIONES = [
     ("UT1","RA1",["CR1","CR2","CR3","CR4","CR5","CR6","CR7","CR8"]),
@@ -49,14 +49,14 @@ EVAL_RAS = {1:["RA1","RA2","RA3"],
             3:["RA5","RA6","RA7","RA8"]}
 DUAL_RA = "RA8"
 RA_INSTRUMENTOS = {
-    "RA1":["examen","practica"],
-    "RA2":["examen","practica"],
+    "RA1":["examen","practica","empresa"],
+    "RA2":["examen","practica","empresa"],
     "RA3":["examen","practica"],
-    "RA4":["examen","practica"],
-    "RA5":["examen","practica"],
+    "RA4":["examen","practica","empresa"],
+    "RA5":["examen","practica","empresa"],
     "RA6":["examen","practica"],
     "RA7":["examen","practica"],
-    "RA8":["empresa"],
+    "RA8":["examen","practica"],
 }
 CES = {
     "RA1":[{"id":f"CR{i}","texto":t} for i,t in enumerate([
@@ -154,4 +154,16 @@ CES = {
         "Se han documentado las tareas realizadas.",
         "Se ha accedido al equipo de forma remota desde otro, ya sea en la misma red o desde Internet.",
     ], start=1)],
+}
+
+# Criterios que se trabajan también durante la fase de formación en empresa.
+# Se califican al 50 % en el centro y al 50 % con el informe de la tutoría de la
+# empresa, conforme a los criterios de calificación del módulo. Los criterios no
+# listados se evalúan íntegramente en el centro, y todos los criterios de un
+# mismo RA ponderan por igual dentro de él.
+DUAL_CES = {
+    "RA1": ["CR4", "CR5", "CR6"],
+    "RA2": ["CR1", "CR2", "CR3", "CR4"],
+    "RA4": ["CR2", "CR3", "CR4", "CR6"],
+    "RA5": ["CR1", "CR2", "CR3", "CR4"],
 }

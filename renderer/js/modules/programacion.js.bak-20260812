@@ -405,7 +405,6 @@ async function loadProgramacion() {
            <span style="font-weight:700;color:var(--accent2);min-width:34px">${esc(raId)}</span>
            <span style="font-size:11px;color:var(--text2);flex:1;line-height:1.3">${esc(ra.nombre||'')}</span>
            <span style="font-size:10px;color:${instrStr ? 'var(--text2)' : 'var(--warn)'}" title="${instrStr ? 'Instrumentos de evaluación' : 'Ningún instrumento evalúa este RA'}">${esc(instrStr || 'sin instrumento')}</span>
-           ${Number(ra.dual) ? `<span style="font-size:10px;color:var(--accent2);font-weight:700" title="Parte que se acredita en la fase de formación en empresa">🏭 ${Number(ra.dual)}%</span>` : ''}
            <span class="badge badge-accent">${ra.pond||0}%</span>
          </div>`
       }
@@ -421,12 +420,6 @@ async function loadProgramacion() {
   const _horasAula = parseInt(data.modulo?.horas_aula, 10) || 0
   const _horasOfi  = parseInt(data.modulo?.total_horas, 10) || mod.horas || 0
   const _sumUtH = uts.reduce((s, u) => s + (parseInt(u.horas, 10) || 0), 0)
-  // Horas del módulo que se cursan en la fase de formación en empresa. Cuentan
-  // dentro de la duración del módulo (RD 659/2023, art. 9: la fase no tiene
-  // currículo propio, contribuye a los RA de los módulos), pero van marcadas
-  // para poder justificar cuántas horas del módulo se hacen fuera del centro.
-  const _sumUtEmp = uts.reduce((s, u) => s + (parseInt(u.horas_empresa, 10) || 0), 0)
-  const _pctEmp   = _sumUtH ? Math.round(_sumUtEmp * 1000 / _sumUtH) / 10 : 0
   const _modH    = _horasAula || _horasOfi || 0
   const _hOk     = _sumUtH === _modH
   const _hNota   = _horasAula && _horasAula !== _horasOfi ? ' de aula' : ''
@@ -440,8 +433,6 @@ async function loadProgramacion() {
         title="${_hNota ? `${_horasOfi} h de duración oficial, de las que ${_horasAula} son de aula y el resto formación en empresa` : 'Duración del módulo'}">
         Σ ${_sumUtH}h / ${_modH}h${esc(_hNota)}${_hOk?' ✓':' ⚠'}
       </span>
-      ${_sumUtEmp ? `<span id="ut-empresa-badge" style="font-size:10.5px;padding:2px 10px;border-radius:8px;font-weight:700;background:rgba(74,144,217,.14);color:var(--accent2)"
-        title="Horas del módulo que se cursan en la fase de formación en empresa. Están incluidas en la duración del módulo.">🏭 ${_sumUtEmp}h en empresa · ${_pctEmp}% del módulo</span>` : ''}
     </div>
     <div style="overflow-x:auto">
     <table class="prog-table">
@@ -449,7 +440,6 @@ async function loadProgramacion() {
         <th style="width:56px">UT</th>
         <th style="min-width:180px">Nombre</th>
         <th style="width:82px;text-align:center">Horas</th>
-        <th class="th-editable" style="width:88px;text-align:center" title="De esas horas, cuántas se cursan en la fase de formación en empresa">🏭 Empresa</th>
         <th style="width:58px;text-align:center">Eval</th>
         <th style="width:60px;text-align:center">RA</th>
         <th style="min-width:160px">Contenidos clave</th>
@@ -472,10 +462,6 @@ async function loadProgramacion() {
           style="width:70px"
           oninput="_refreshUtHoras(this,${_modH},'${_hNota}')"
           onchange="saveUtField(${mid},'${ut.id}','horas',this.value)"/></td>
-      <td style="text-align:center">
-        <input class="peso-cell" type="number" min="0" max="999" value="${ut.horas_empresa||0}"
-          style="width:64px" title="Horas de esta unidad que se cursan en la empresa"
-          onchange="saveUtField(${mid},'${ut.id}','horas_empresa',this.value)"/></td>
       <td style="text-align:center">
         <select class="nota-cell" style="width:52px;padding:3px 4px;text-align:center;font-weight:600"
           onchange="saveUtField(${mid},'${ut.id}','eval',this.value)">
@@ -511,48 +497,17 @@ async function loadProgramacion() {
 
   // Cuántos criterios evalúa de verdad alguna actividad. Sin esto, la programación
   // puede tener criterios que nadie califica y no enterarte hasta la reclamación.
-  // Los criterios de un RA dualizado que no tiene actividad de aula no son un
-  // olvido: se acreditan en la fase de formación en empresa. Contarlos como
-  // «sin actividad» dejaba el aviso en ámbar para siempre y escondía los que sí
-  // faltan de verdad.
-  const _raDual = Object.fromEntries(ras.map(r => [r.id, Number(r.dual) || 0]))
-  let cesEnEmpresa = 0
-  for (const ra of ras) {
-    if (!_raDual[ra.id]) continue
-    for (const ce of (ces[ra.id] || [])) {
-      if (!coberturaCe[ceKey(ra.id, ce.id)]) cesEnEmpresa++
-    }
-  }
-  const cesPendientes = totalCes - cesCubiertos - cesEnEmpresa
-  const _empresaTxt = cesEnEmpresa
-    ? ` <span style="font-size:10.5px;padding:2px 9px;border-radius:8px;background:rgba(74,144,217,.14);color:var(--accent2);font-weight:700"
-         title="Criterios de resultados dualizados que se acreditan en la fase de formación en empresa">🏭 ${cesEnEmpresa} en empresa</span>`
-    : ''
-  // Parte del módulo que se acredita en la empresa, ponderada por el peso de cada
-  // resultado: es la cifra que hay que poder enseñar para justificar que la
-  // estancia tiene carácter curricular y no es una visita.
-  const _pesoDual = ras.reduce((acc, r) => acc + (Number(r.pond) || 0) * (Number(r.dual) || 0) / 100, 0)
-  const _pesoDualTxt = Math.round(_pesoDual * 10) / 10
-  const _dualEnRango = _pesoDual >= 10 && _pesoDual <= 20
-  const dualBadge = _pesoDual
-    ? `<span style="font-size:10.5px;padding:2px 9px;border-radius:8px;font-weight:700;${_dualEnRango
-        ? 'background:rgba(16,185,129,.12);color:var(--green)'
-        : 'background:rgba(245,158,11,.15);color:var(--amber)'}"
-        title="Peso de los resultados de aprendizaje que se acreditan en la fase de formación en empresa, ponderado por la ponderación de cada RA. El periodo de formación en empresa del grado D debe cubrir entre el 10 % y el 20 % de los RA de los módulos asociados a estándares de competencia.">
-        🏭 ${_pesoDualTxt}% del módulo se acredita en empresa${_dualEnRango ? ' ✓' : ' ⚠ fuera del 10-20 %'}</span>`
-    : ''
   const cobBadge = totalCes
-    ? (cesPendientes <= 0
+    ? (cesCubiertos === totalCes
         ? `<span style="font-size:10.5px;padding:2px 9px;border-radius:8px;background:rgba(16,185,129,.12);color:var(--green);font-weight:700"
-             title="Cada criterio del decreto está cubierto: por una actividad del aula o por la fase de formación en empresa">✓ los ${totalCes} criterios se evalúan</span>${_empresaTxt}`
+             title="Cada criterio del decreto está marcado en alguna actividad">✓ los ${totalCes} criterios se evalúan</span>`
         : `<span style="font-size:10.5px;padding:2px 9px;border-radius:8px;background:rgba(245,158,11,.15);color:var(--amber);font-weight:700"
-             title="Los criterios sin actividad salen marcados abajo con ○. Asígnalos a una práctica o examen desde la columna CEs del plan, o marca su RA como dualizado si se acreditan en la empresa.">⚠ ${cesPendientes} criterio${cesPendientes > 1 ? 's' : ''} sin actividad que los evalúe</span>${_empresaTxt}`)
+             title="Los criterios sin actividad salen marcados abajo con ○. Asígnalos a una práctica o examen desde la columna CEs del plan.">⚠ ${totalCes - cesCubiertos} criterio${totalCes - cesCubiertos > 1 ? 's' : ''} sin actividad que los evalúe</span>`)
     : ''
 
   h += `<div class="card" style="margin-bottom:16px">
     <div class="prog-section-title" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">🎯 Resultados de Aprendizaje y Criterios de Evaluación
       ${cobBadge}
-      ${dualBadge}
       ${raSumBadge}
     </div>
     <div style="display:flex;flex-direction:column;gap:10px">`
@@ -580,18 +535,6 @@ async function loadProgramacion() {
       <span style="font-size:11px;color:rgba(255,255,255,.6);font-weight:600">%</span>
     </span>`
 
-    // Porcentaje del RA que se adquiere y acredita en la fase de formación en
-    // empresa (Decreto 80/2024, art. 5.bis). 0 o vacío = íntegramente en el aula.
-    const dualInput = `<span title="Parte de este resultado que se adquiere y acredita en la fase de formación en empresa (Decreto 80/2024, art. 5.bis). 0 o vacío significa que se acredita íntegramente en el centro."
-        style="display:inline-flex;align-items:center;gap:4px;background:rgba(74,144,217,.12);border-radius:8px;padding:2px 8px 2px 6px;white-space:nowrap">
-      <span style="font-size:11px">🏭</span>
-      <input class="ra-dual-cell peso-cell" type="number" min="0" max="100" step="5"
-        value="${ra.dual != null && ra.dual !== '' ? ra.dual : ''}" placeholder="0"
-        data-mid="${mid}" data-raid="${esc(ra.id)}"
-        onchange="updateRaDual(this)" style="width:48px;font-size:11px"/>
-      <span style="font-size:10.5px;color:var(--text2);font-weight:600">% en empresa</span>
-    </span>`
-
     // RA que hay que tener alcanzado para incorporarse a la fase de empresa
     // (Orden 201/2024, art. 4.3.a). La programación debe especificarlos.
     const llaveChk = `<label title="Marca los RA que el alumnado debe tener alcanzados para incorporarse a la fase de formación en empresa (Orden 201/2024, art. 4.3.a)"
@@ -608,7 +551,6 @@ async function loadProgramacion() {
          <span style="font-size:13px;font-weight:600;flex:1">${esc(ra.nombre)}</span>
          ${llaveChk}
          ${pondInput}
-         ${dualInput}
          <span class="badge">${raEval}</span>
          ${utAsigs.length ? `<span class="badge">${esc(utAsigs.join(', '))}</span>` : ''}
          ${instrStr ? `<span class="badge badge-green">${esc(instrStr)}</span>` : ''}
@@ -622,9 +564,7 @@ async function loadProgramacion() {
          const donde = coberturaCe[ceKey(ra.id, ce.id)] || []
          const marca = donde.length
            ? `<span title="Se evalúa en: ${esc(donde.join(' · '))}" style="color:var(--green);font-size:11px">●</span>`
-           : (_raDual[ra.id]
-             ? `<span title="Se acredita en la fase de formación en empresa (${_raDual[ra.id]}% de este resultado)" style="font-size:10px">🏭</span>`
-             : `<span title="Ningún examen ni práctica evalúa este criterio todavía" style="color:var(--amber);font-size:11px">○</span>`)
+           : `<span title="Ningún examen ni práctica evalúa este criterio todavía" style="color:var(--amber);font-size:11px">○</span>`
          // Ponderación del criterio dentro del RA (Orden 201/2024, art. 4.3.a).
          // En blanco = todos los criterios del RA valen lo mismo.
          const pesoCe = `<input class="peso-cell" type="number" min="0" max="100" step="1"
@@ -753,38 +693,6 @@ async function updateCePeso(el) {
   } else if (conPeso.length) {
     showToast(`${raId}: faltan ${lista.length - conPeso.length} criterios por ponderar`)
   }
-}
-
-/**
- * Porcentaje de un RA que se adquiere y acredita en la fase de formación en
- * empresa (Decreto 80/2024, art. 5.bis: el currículo puede desarrollarse en
- * parte en la empresa). Se guarda en el propio RA para que la programación
- * declare, resultado a resultado, qué parte se acredita fuera del centro.
- *
- * 0 o vacío = íntegramente en el aula. 100 = el resultado completo se acredita
- * en la empresa, y sus criterios dejan de contar como «sin actividad».
- */
-async function updateRaDual(el) {
-  const mid  = parseInt(el.dataset.mid)
-  const raId = el.dataset.raid
-  if (!mid || !raId) return
-  const vacio = String(el.value).trim() === ''
-  const pct   = vacio ? 0 : parseFloat(el.value)
-  if (!vacio && (isNaN(pct) || pct < 0 || pct > 100)) {
-    alert('Porcentaje inválido. Debe estar entre 0 y 100.')
-    el.value = ''
-    return
-  }
-  const data = _getModData(mid)
-  if (!data) return
-  const ra = (data.ras || []).find(r => r.id === raId)
-  if (!ra) return
-  if (!pct) delete ra.dual
-  else ra.dual = pct
-  await _saveModData(mid, data, true)
-  showToast(pct
-    ? `${raId}: ${pct}% se acredita en la fase de formación en empresa`
-    : `${raId} vuelve a acreditarse íntegramente en el aula`)
 }
 
 /**
@@ -1265,17 +1173,9 @@ async function saveUtField(mid, utId, field, value) {
   if (!data) return
   const ut = (data.uts||[]).find(u => u.id === utId)
   if (!ut) return
-  const numericos = ['horas', 'eval', 'horas_empresa']
-  ut[field] = numericos.includes(field) ? (parseInt(value) || 0) : value
-  // Nunca más horas en empresa que horas de la unidad: el resto del módulo
-  // (badge, porcentaje, informes) da por hecho que es un subconjunto.
-  if (field === 'horas_empresa' && (ut.horas_empresa || 0) > (ut.horas || 0)) {
-    ut.horas_empresa = ut.horas || 0
-    showToast(`${utId}: las horas en empresa no pueden superar las ${ut.horas || 0} h de la unidad`)
-  }
-  if (field === 'horas' && (ut.horas_empresa || 0) > (ut.horas || 0)) ut.horas_empresa = ut.horas || 0
+  ut[field] = (field === 'horas' || field === 'eval') ? (parseInt(value)||0) : value
   // Recargar programación al cambiar eval → actualiza distribución de RAs
-  await _saveModData(mid, data, field === 'eval' || field === 'horas_empresa')
+  await _saveModData(mid, data, field === 'eval')
 }
 
 async function addUt(mid) {

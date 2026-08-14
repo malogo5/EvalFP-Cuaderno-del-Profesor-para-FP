@@ -65,14 +65,8 @@ def main():
             if n > 1:
                 avisos.append('%s · el criterio %s se trabaja en %d UT' % (et, k, n))
 
-        # Cada RA debe tener al menos una actividad con la que calificarse. Una
-        # actividad puede no declarar ra_id y calificar igualmente: el examen de
-        # varias UT y el informe de la fase de empresa llevan los criterios en
-        # `ces`, con la clave RA|CE, y de ahí sale el RA al que pertenecen.
+        # cada RA debe tener al menos una actividad con la que calificarse
         con_actividad = {a.get('ra_id') for a in m.get('actividades', []) if a.get('ra_id')}
-        for a in m.get('actividades', []):
-            for clave in (a.get('ces') or []):
-                con_actividad.add(str(clave).split('|')[0])
         for r in m['ras']:
             if r['id'] not in con_actividad:
                 fallos.append('%s · %s no tiene ninguna actividad de partida' % (et, r['id']))

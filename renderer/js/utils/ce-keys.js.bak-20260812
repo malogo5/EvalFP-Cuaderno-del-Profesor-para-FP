@@ -173,13 +173,7 @@ function cesEvaluadosDeRa(raId, raCeList, acts) {
 /**
  * RAs de cada evaluación deducidos de las UT, que son lo que el profesor mueve.
  * Devuelve { "1": [raId, …], … }; un RA repartido entre varias evaluaciones se
- * queda en la ÚLTIMA en la que se trabaja, que es cuando se puede calificar.
- *
- * Antes se quedaba en la primera, y eso colocaba un RA en un trimestre en el que
- * solo se había trabajado uno de sus criterios: la distribución le atribuía todo
- * su peso y la nota de la evaluación salía de una parte mínima del resultado.
- * Un resultado de aprendizaje se califica cuando están trabajados todos sus
- * criterios, así que manda la evaluación de cierre.
+ * queda en la primera en la que se trabaja.
  */
 function rasPorEvaluacion(data, evalCount) {
   const uts = data?.uts || []
@@ -193,7 +187,7 @@ function rasPorEvaluacion(data, evalCount) {
   for (const a of asigs) {
     const ev = utEval[a.ut]
     if (!ev) continue
-    if (evalDe[a.ra] === undefined || ev > evalDe[a.ra]) evalDe[a.ra] = ev
+    if (evalDe[a.ra] === undefined || ev < evalDe[a.ra]) evalDe[a.ra] = ev
   }
   // Los RA sin UT asignada conservan la evaluación que dijera el catálogo.
   for (const [ev, lista] of Object.entries(data?.eval_ras || {})) {
