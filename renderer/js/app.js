@@ -143,6 +143,7 @@ function registerWindowHandlers() {
     addActividadRecuperacion,
     setEvalCount, addActividad, deleteActividadRow, _refreshPesoTotal, _getModData, _saveModData,
     updateRaLlave, saveUtField, addUt, deleteUt, openUtRasModal, _refreshUtHoras, _toggleRaSection, saveUtRas,
+    updateRaEstado, openRaNoImpartidoModal, saveRaNoImpartido, closeRaEstadoModal,
     closeUtRasModal, applyModuloPesos, updateActividadUT, rellenarCesDesdeUts,
     openActUtsModal, saveActUts, closeActUtsModal,
     openActCesModal, saveActCes, _marcarCesDeRa, closeActCesModal,

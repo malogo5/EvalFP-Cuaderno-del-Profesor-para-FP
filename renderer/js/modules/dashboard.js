@@ -202,9 +202,17 @@ async function loadDashboard() {
     filasEC.forEach(f => { if (f.perdida) ecDash[Number(f.alumno_id)] = true })
   } catch { /* base antigua sin la tabla */ }
 
+  // Estado de impartición de cada RA (RF-01, Orden 201/2024 art. 2.3): sin esto
+  // el motor no sabe distinguir un RA aún no dado de uno excluido por decisión
+  // de la docente.
+  let raEstadosDash = {}
+  try {
+    raEstadosDash = await window.api.getRaEstados(parseInt(mid)) || {}
+  } catch { /* base antigua sin la tabla */ }
+
   const ctxCalculo = contextoModulo({
     ras, cesByRa: cesDict, asignaciones: asigs, actividades, minExam,
-    tieneFaseEmpresa: moduloConFaseEmpresa(modData?.modulo),
+    tieneFaseEmpresa: moduloConFaseEmpresa(modData?.modulo), raEstados: raEstadosDash,
   })
   const estadoDe = alumnoId =>
     estadoModulo(ctxCalculo, ng[alumnoId],
@@ -715,6 +723,13 @@ async function _genBoletin(alumnoId, evParcial = null) {
     ecBol = !!filasEC.find(f => Number(f.alumno_id) === alumnoId)?.perdida
   } catch { /* base antigua sin la tabla */ }
 
+  // Estado de impartición de cada RA (RF-01, Orden 201/2024 art. 2.3): el
+  // boletín tiene que decir lo mismo que el motor, también en esto.
+  let raEstadosBol = {}
+  try {
+    raEstadosBol = await window.api.getRaEstados(parseInt(mid)) || {}
+  } catch { /* base antigua sin la tabla */ }
+
   // ── Nota de cada evaluación ───────────────────────────────────────────
   //
   // Esto lo calculaba el boletín por su cuenta: una media de las actividades
@@ -726,7 +741,7 @@ async function _genBoletin(alumnoId, evParcial = null) {
     const actsEv = actividades.filter(a => Number(a.convocatoria) !== 2 && a.eval === ev)
     const ctxEv = contextoModulo({
       ras, cesByRa: cesDict, asignaciones: asigs, actividades: actsEv,
-      minExam: minExamB, tieneFaseEmpresa: false,
+      minExam: minExamB, tieneFaseEmpresa: false, raEstados: raEstadosBol,
     })
     const stEv = estadoModulo(ctxEv, miNotas)
     return {
@@ -943,7 +958,7 @@ async function _genBoletin(alumnoId, evParcial = null) {
   // cada evaluación y salía 6,75 donde Evaluaciones decía 6,25.
   const ctxBol   = contextoModulo({
     ras, cesByRa: cesDict, asignaciones: asigs, actividades, minExam: minExamB,
-    tieneFaseEmpresa: moduloConFaseEmpresa(modData?.modulo),
+    tieneFaseEmpresa: moduloConFaseEmpresa(modData?.modulo), raEstados: raEstadosBol,
   })
   const stBol = estadoModulo(ctxBol, miNotas,
     { faseEmpresa: faseAlumnoBol, evalContinuaPerdida: ecBol })
@@ -957,7 +972,8 @@ async function _genBoletin(alumnoId, evParcial = null) {
   const stAcum = evParcial
     ? estadoModulo(
         contextoModulo({ ras, cesByRa: cesDict, asignaciones: asigs, actividades: actsHasta,
-                         minExam: minExamB, tieneFaseEmpresa: moduloConFaseEmpresa(modData?.modulo) }),
+                         minExam: minExamB, tieneFaseEmpresa: moduloConFaseEmpresa(modData?.modulo),
+                         raEstados: raEstadosBol }),
         miNotas, { faseEmpresa: faseAlumnoBol })
     : stBol
 

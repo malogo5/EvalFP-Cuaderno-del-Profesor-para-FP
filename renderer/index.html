@@ -579,6 +579,31 @@
   </div>
 </dialog>
 
+<!-- Modal motivo de RA no impartido (RF-01, Orden 201/2024 art. 2.3) -->
+<dialog id="modal-ra-estado" aria-labelledby="ra-estado-title"
+        oncancel="closeRaEstadoModal()"
+        onclick="if(event.target===this)closeRaEstadoModal()">
+  <div class="modal" style="max-height:70vh;display:flex;flex-direction:column;gap:0">
+    <div style="display:flex;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+      <span style="font-size:16px">🚫</span>
+      <div>
+        <div class="modal-title" id="ra-estado-title" style="margin:0;padding:0;border:none"></div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">El motivo es obligatorio: es lo que documenta la decisión (Orden 201/2024, art. 2.3)</div>
+      </div>
+    </div>
+    <div style="overflow-y:auto;flex:1;padding:14px 0 4px">
+      <label style="display:block;font-size:12px;font-weight:700;color:var(--text2);margin-bottom:6px" for="ra-estado-motivo">Motivo</label>
+      <textarea id="ra-estado-motivo" rows="4"
+        style="width:100%;border:1.5px solid var(--border2);border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;color:var(--text);background:var(--bg);resize:vertical"
+        placeholder="Por qué no se va a impartir este resultado de aprendizaje…"></textarea>
+    </div>
+    <div class="modal-footer" style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px">
+      <button class="btn btn-ghost" onclick="closeRaEstadoModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveRaNoImpartido()">Guardar</button>
+    </div>
+  </div>
+</dialog>
+
 <!-- Dialog nativo: tiene focus trap, Escape integrado, y es accesible por defecto -->
 <!-- ══ MODAL CATÁLOGO DE MÓDULOS ══ -->
 <dialog id="modal-add-mod" class="cat-dialog" aria-labelledby="cat-title">

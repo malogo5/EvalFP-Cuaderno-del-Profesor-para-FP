@@ -704,6 +704,13 @@ async function _notasRaDelGrupo(mod) {
       })
     } catch { /* base antigua */ }
 
+    // Estado de impartición de cada RA (RF-01, Orden 201/2024 art. 2.3): el
+    // informe de IA no puede calcular por su cuenta lo que ya resuelve el motor.
+    let raEstadosGrupo = {}
+    try {
+      raEstadosGrupo = await window.api.getRaEstados(mod.id) || {}
+    } catch { /* base antigua sin la tabla */ }
+
     const conv = acts.some(a => convocatoriaDe(a) === 2) || Object.keys(ord2).length ? 2 : 1
     const notasPorAlumno = {}
     grid.forEach(g => {
@@ -716,7 +723,7 @@ async function _notasRaDelGrupo(mod) {
       const ctx = contextoModulo({
         ras, cesByRa: modData?.ces || {}, asignaciones: modData?.asignaciones || [],
         actividades: acts, minExam, rasSuperados: cerrados[al.id] || null,
-        tieneFaseEmpresa: false, convocatoria: conv,
+        tieneFaseEmpresa: false, convocatoria: conv, raEstados: raEstadosGrupo,
       })
       const st = estadoModulo(ctx, notasPorAlumno[al.id] || {}, {
         notaCEOverride: (raId, ceId, calculada) => {
@@ -840,10 +847,16 @@ async function iaInformeAutoNotas(pref = 'i') {
     const hayRec = acts.some(a => convocatoriaDe(a) === 2)
     const conv   = hayRec || Object.keys(ord2).length ? 2 : 1
 
+    // Estado de impartición de cada RA (RF-01, Orden 201/2024 art. 2.3).
+    let raEstadosInf = {}
+    try {
+      raEstadosInf = await window.api.getRaEstados(mod.id) || {}
+    } catch { /* base antigua sin la tabla */ }
+
     const ctx = contextoModulo({
       ras, cesByRa, asignaciones: modData?.asignaciones || [],
       actividades: acts, minExam, rasSuperados,
-      tieneFaseEmpresa: false, convocatoria: conv,
+      tieneFaseEmpresa: false, convocatoria: conv, raEstados: raEstadosInf,
     })
     const st = estadoModulo(ctx, ng, {
       notaCEOverride: (raId, ceId, calculada) => {

@@ -203,9 +203,17 @@ async function loadEvaluaciones() {
     })
   } catch { /* base antigua sin la tabla */ }
 
+  // Estado de impartición de cada RA (RF-01, Orden 201/2024 art. 2.3): sin
+  // pasárselo al motor, un RA sin actividad se seguiría tratando como «previsto»
+  // por defecto, pero no reflejaría una decisión de «no impartido» ya tomada.
+  let raEstadosEval = {}
+  try {
+    raEstadosEval = await window.api.getRaEstados(parseInt(mid)) || {}
+  } catch { /* base antigua sin la tabla */ }
+
   // Contexto del motor único de calificación (js/core/calificacion.js). Todas las
   // notas de esta pantalla, del Dashboard y del boletín salen de ahí.
-  const ctxBase = { ras, cesByRa, asignaciones: asigsMod, actividades, minExam, tieneFaseEmpresa }
+  const ctxBase = { ras, cesByRa, asignaciones: asigsMod, actividades, minExam, tieneFaseEmpresa, raEstados: raEstadosEval }
   const ctxCalculo = contextoModulo(ctxBase)
   const ctxDe = alumnoId => contextoModulo({ ...ctxBase, rasSuperados: rasCerrados[alumnoId] || null })
   // Un RA está en juego si alguna actividad lo califica: por ra_id, por criterios

@@ -39,6 +39,19 @@ async function loadProgramacion() {
     if (raPondOverrides[ra.id] !== undefined) ra.pond = raPondOverrides[ra.id]
   })
 
+  // RF-01 · Estado de impartición de cada RA (previsto/impartido/no_impartido).
+  // Se le pasa al motor único para conocer, por RA, el estado resuelto y la
+  // ponderación efectiva tras repartir la de los no impartidos: no se recalcula
+  // aquí, se lee tal cual la devuelve `contextoModulo`.
+  let raEstadosDb = {}
+  try {
+    raEstadosDb = await window.api.getRaEstados(parseInt(mid)) || {}
+  } catch { /* base antigua sin la tabla */ }
+  const ctxRA = contextoModulo({
+    ras, cesByRa: ces, asignaciones: asigs, actividades, raEstados: raEstadosDb,
+  })
+  const algunRaNoImpartido = Object.values(ctxRA.ponderaciones).some(p => p.estado === 'no_impartido')
+
   // índices rápidos
   const utMap  = Object.fromEntries(uts.map(u => [u.id, u]))
   const raMap  = Object.fromEntries(ras.map(r => [r.id, r]))
@@ -602,12 +615,50 @@ async function loadProgramacion() {
       🔑 para empresa
     </label>`
 
+    // RF-01 · Estado de impartición (Orden 201/2024, art. 2.3). De grupo, nunca
+    // individual: o se da al módulo entero o no se da. "No impartido" exige
+    // motivo, así que ese valor solo se fija desde el modal, nunca al vuelo.
+    const raEstadoActual = ctxRA.raEstados[ra.id]
+    const raEstadoMotivo = raEstadosDb[ra.id]?.motivo || ''
+    const raEstadoColores = {
+      previsto:     'background:rgba(106,96,80,.12);color:var(--text2)',
+      impartido:    'background:rgba(16,185,129,.12);color:var(--green)',
+      no_impartido: 'background:rgba(239,68,68,.12);color:#ef4444',
+    }
+    const raEstadoTitulo = raEstadoActual === 'no_impartido' && raEstadoMotivo
+      ? `No impartido: ${raEstadoMotivo}`
+      : 'Estado de impartición de este RA (Orden 201/2024, art. 2.3). "No impartido" excluye el RA del cómputo y reparte su ponderación.'
+    const estadoSelect = `<span style="display:inline-flex;align-items:center;gap:3px">
+      <select class="ra-estado-sel" data-mid="${mid}" data-raid="${esc(ra.id)}"
+        data-current="${raEstadoActual}" data-motivo="${esc(raEstadoMotivo)}"
+        onchange="updateRaEstado(this)" title="${esc(raEstadoTitulo)}"
+        style="border:1.5px solid var(--border2);border-radius:8px;padding:2px 6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;${raEstadoColores[raEstadoActual] || ''}">
+        <option value="previsto"${raEstadoActual === 'previsto' ? ' selected' : ''}>Previsto</option>
+        <option value="impartido"${raEstadoActual === 'impartido' ? ' selected' : ''}>Impartido</option>
+        <option value="no_impartido"${raEstadoActual === 'no_impartido' ? ' selected' : ''}>No impartido</option>
+      </select>
+      ${raEstadoActual === 'no_impartido' ? `<button type="button" onclick="openRaNoImpartidoModal(${mid},'${esc(ra.id)}')"
+        title="Ver o editar el motivo" aria-label="Ver o editar el motivo"
+        style="background:transparent;border:none;color:var(--text2);cursor:pointer;font-size:12px;padding:0 2px">✎</button>` : ''}
+    </span>`
+
+    // Ponderación original → efectiva: solo cuando hay algún RA no impartido en
+    // el módulo, para no ensuciar la pantalla el resto del tiempo. La cifra sale
+    // tal cual de `contextoModulo().ponderaciones`, sin recalcularla aquí.
+    const raPond = ctxRA.ponderaciones[ra.id] || {}
+    const repartoBadge = algunRaNoImpartido && Math.abs((raPond.original || 0) - (raPond.efectiva || 0)) > 0.05
+      ? `<span class="badge" title="Ponderación original → efectiva tras repartir la de los RA no impartidos"
+          style="background:rgba(245,158,11,.15);color:var(--amber);font-weight:700">${_fmtPct(raPond.original)}% → ${_fmtPct(raPond.efectiva)}%</span>`
+      : ''
+
     h += `<div style="border:1px solid var(--border);border-left:4px solid var(--accent2);border-radius:8px;overflow:hidden">
       <div style="background:var(--bg3);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
          <span style="font-size:13px;font-weight:800;color:var(--accent2);min-width:38px">${esc(ra.id)}</span>
          <span style="font-size:13px;font-weight:600;flex:1">${esc(ra.nombre)}</span>
+         ${estadoSelect}
          ${llaveChk}
          ${pondInput}
+         ${repartoBadge}
          ${dualInput}
          <span class="badge">${raEval}</span>
          ${utAsigs.length ? `<span class="badge">${esc(utAsigs.join(', '))}</span>` : ''}
@@ -803,6 +854,77 @@ async function updateRaLlave(mid, raId, esLlave) {
   showToast(esLlave
     ? `${raId} marcado como necesario para la fase de empresa`
     : `${raId} ya no condiciona la fase de empresa`)
+}
+
+// RF-01 · ESTADO DE IMPARTICIÓN DEL RA
+// ═══════════════════════════════════════════════════════════════
+let _raEstadoModalState = null
+
+/** Redondea a 1 decimal y quita el ".0" sobrante, para las cifras del badge de reparto. */
+function _fmtPct(n) {
+  const r = Math.round((Number(n) || 0) * 10) / 10
+  return Number.isInteger(r) ? String(r) : String(r.toFixed(1))
+}
+
+/**
+ * Cambia el estado de impartición de un RA. "Previsto" e "impartido" se
+ * guardan al vuelo; "no impartido" exige motivo (RF-01, Orden 201/2024 art.
+ * 2.3), así que abre el modal en vez de guardar directamente.
+ */
+async function updateRaEstado(el) {
+  const mid   = parseInt(el.dataset.mid)
+  const raId  = el.dataset.raid
+  const valor = el.value
+  if (!mid || !raId) return
+
+  if (valor === 'no_impartido') {
+    openRaNoImpartidoModal(mid, raId, el)
+    return
+  }
+  try {
+    await window.api.setRaEstado(mid, raId, valor, null)
+    el.dataset.current = valor
+    showToast(`${raId}: ${valor === 'impartido' ? 'impartido' : 'previsto'}`)
+    await loadProgramacion()
+  } catch (e) {
+    alert('Error guardando el estado del RA: ' + validators.sanitizeErrorMessage(e, 'updateRaEstado'))
+    el.value = el.dataset.current
+  }
+}
+
+/** Abre el modal de motivo para marcar (o revisar) un RA como no impartido. */
+function openRaNoImpartidoModal(mid, raId, el) {
+  const selEl = el || document.querySelector(`.ra-estado-sel[data-mid="${mid}"][data-raid="${CSS.escape(raId)}"]`)
+  _raEstadoModalState = { mid, raId, el: selEl }
+  document.getElementById('ra-estado-title').textContent = `${raId} — marcar como no impartido`
+  document.getElementById('ra-estado-motivo').value = selEl?.dataset.motivo || ''
+  document.getElementById('modal-ra-estado').showModal()
+}
+
+async function saveRaNoImpartido() {
+  if (!_raEstadoModalState) return
+  const { mid, raId } = _raEstadoModalState
+  const motivo = document.getElementById('ra-estado-motivo').value.trim()
+  if (!motivo) {
+    alert('El motivo es obligatorio para marcar un RA como no impartido.')
+    return
+  }
+  try {
+    await window.api.setRaEstado(mid, raId, 'no_impartido', motivo)
+    closeRaEstadoModal()
+    showToast(`${raId} marcado como no impartido`)
+    await loadProgramacion()
+  } catch (e) {
+    alert('Error guardando el motivo: ' + validators.sanitizeErrorMessage(e, 'setRaEstado'))
+  }
+}
+
+/** Cierra el modal. Si no se ha guardado, el select vuelve a su valor previo. */
+function closeRaEstadoModal() {
+  const dlg = document.getElementById('modal-ra-estado')
+  if (dlg.open) dlg.close()
+  if (_raEstadoModalState?.el) _raEstadoModalState.el.value = _raEstadoModalState.el.dataset.current
+  _raEstadoModalState = null
 }
 
 function _refreshRaPondTotal(el) {
