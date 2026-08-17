@@ -539,9 +539,13 @@ async function loadProgramacion() {
 
     // RF-01, sobre la fuente normalizada: el motor único no cambia, solo de
     // dónde sacamos ras/cesByRa.
+    // RF-17: el motor necesita el tipo ya resuelto a familia, no el real que
+    // usa el resto de esta pantalla (plan de actividades, UT…) — por eso se
+    // vuelve a pedir aquí en vez de reutilizar `actividades` tal cual.
     const rasParaCtx = raCatalogo.map(r => ({ id: r.ra_id, nombre: r.nombre, pond: r.pond }))
+    const { actividades: actividadesParaCtx } = await getActividadesParaMotor(parseInt(mid))
     const ctxRA = contextoModulo({
-      ras: rasParaCtx, cesByRa: cesByRaNorm, asignaciones: asigs, actividades,
+      ras: rasParaCtx, cesByRa: cesByRaNorm, asignaciones: asigs, actividades: actividadesParaCtx,
       raEstados: raEstadosDb,
     })
     const algunRaNoImpartido = Object.values(ctxRA.ponderaciones).some(p => p.estado === 'no_impartido')
@@ -591,10 +595,13 @@ async function loadProgramacion() {
                title="Los criterios sin actividad salen marcados en el desplegable con ○. Asígnalos a una práctica o examen, o marca su RA como dualizado si se acreditan en la empresa.">⚠ ${nCesPendientes} criterio${nCesPendientes > 1 ? 's' : ''} sin actividad que los evalúe</span>${nEmpresaTxt}`)
       : ''
 
-    const INSTRUMENTOS = [
-      ['practica', 'Práctica'], ['examen', 'Examen'], ['proyecto', 'Proyecto'],
-      ['informe', 'Informe'], ['presentacion', 'Presentación'], ['empresa', '🏭 Empresa'],
-    ]
+    // RF-17: misma lista que el tipo de actividad (renderer/js/utils/tipos-
+    // actividad.js) — el instrumento previsto de RF-02 y el tipo de actividad
+    // son la misma fuente, no dos listas que puedan desincronizarse. 'empresa'
+    // ya no está: no es un tipo de actividad, es la dualización que vive en
+    // ra_catalogo.dual_pct (ver 00-CONTEXTO.md, tareas abiertas, sobre el
+    // hueco de instrumento en fase_empresa para los CE dualizados).
+    const INSTRUMENTOS = TIPOS_ACTIVIDAD.map(t => [t.id, t.label])
     // Instrumentos "del RA": los que comparten TODOS sus CE. Si divergen, no se
     // inventa un valor común — se avisa y se resuelve en el desplegable.
     const instrumentosDeRa = (raId, cesDelRa) => {

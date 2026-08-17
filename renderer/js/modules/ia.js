@@ -670,7 +670,8 @@ async function _notasRaDelGrupo(mod) {
     if (!ras.length) return null
 
     const alumnos = (await window.api.getAlumnos(mod.id)).filter(a => a.estado === 'Activo')
-    const acts    = await window.api.getActividades(mod.id)
+    // RF-17: única vía de obtención de actividades para el motor.
+    const { actividades: acts } = await getActividadesParaMotor(mod.id)
     const grid    = await window.api.getNotasGrid(mod.id)
     if (!alumnos.length || !acts.length) return null
 
@@ -787,7 +788,8 @@ async function iaInformeAutoNotas(pref = 'i') {
 
     // Obtener notas y actividades
     const notasArr = await window.api.getNotasGrid(mod.id)
-    const acts     = await window.api.getActividades(mod.id)
+    // RF-17: única vía de obtención de actividades para el motor.
+    const { actividades: acts } = await getActividadesParaMotor(mod.id)
     const alumnos  = await window.api.getAlumnos(mod.id)
     const alumno   = alumnos.find(a =>
       `${a.apellidos||''}${a.apellidos&&a.nombre?', ':''}${a.nombre||''}` === alumnoName

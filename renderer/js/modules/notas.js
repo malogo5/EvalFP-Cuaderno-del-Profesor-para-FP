@@ -136,7 +136,10 @@ async function loadNotas() {
   if (evSel.value !== 'R' && parseInt(evSel.value) > evalCount) evSel.value = '0'
 
   _alumnos = await window.api.getAlumnos(mid)
-  _actividades = await window.api.getActividades(mid)
+  // RF-17: única vía de obtención de actividades para el motor (tipo ya
+  // resuelto a familia). No se usa aquí ningún tipo real: la parrilla
+  // muestra `instrumento` (campo aparte, sin tocar), no `tipo`.
+  ;({ actividades: _actividades } = await getActividadesParaMotor(mid))
   // Evidencias: los archivos que respaldan una nota (correcciones desde foto).
   // Se guardaban desde el asistente y no las leía nadie, así que la nota no
   // llevaba a su prueba. El art. 2.4 de la Orden 201/2024 reconoce el derecho a

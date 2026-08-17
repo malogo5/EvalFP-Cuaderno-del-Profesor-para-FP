@@ -141,7 +141,9 @@ async function loadDashboard() {
   if (!mid) return
   _alumnos = await window.api.getAlumnos(mid)           // poblar global para genBoletin
   const alumnos = _alumnos.filter(a => a.estado === 'Activo')
-  const allActividades = await window.api.getActividades(mid)
+  // RF-17: única vía de obtención de actividades para el motor — tipo ya
+  // resuelto a familia (examen|practica), no el tipo real.
+  const { actividades: allActividades } = await getActividadesParaMotor(mid)
   const notasArr = await window.api.getNotasGrid(mid)
   const ng = {}
   // H6: nota efectiva = nota_rec (recuperación) si existe, si no la original
@@ -680,7 +682,8 @@ async function _genBoletin(alumnoId, evParcial = null) {
   if (!alumno) { alert('Alumno/a no encontrado en este módulo.'); return }
 
   // ── Cargar datos ──────────────────────────────────────────────────────
-  const actividades = await window.api.getActividades(mid)
+  // RF-17: única vía de obtención de actividades para el motor.
+  const { actividades } = await getActividadesParaMotor(mid)
   const notasArr    = await window.api.getNotasGrid(mid)
 
   // Mapa de notas de este alumno

@@ -583,6 +583,29 @@ function setRaInstrumentos(moduloId, raId, instrumentos) {
   }
 }
 
+// ── RF-17 · Familia de reparto por tipo de actividad ──────────────────────────
+// (docs/rediseno/00-CONTEXTO.md §10). La lista de tipos válidos vive en
+// renderer/js/utils/tipos-actividad.js, la misma que usa RF-02 para
+// "instrumento previsto" — se valida aquí contra esa fuente, no una copia.
+
+/** { tipo, familia } por módulo. [] si el módulo no ha fijado ningún override. */
+const getTipoFamilia = moduloId =>
+  getDb().prepare('SELECT tipo, familia FROM tipo_familia WHERE modulo_id=?').all(moduloId)
+
+function setTipoFamilia(moduloId, tipo, familia) {
+  const { TIPOS_ACTIVIDAD } = require('./renderer/js/utils/tipos-actividad.js')
+  if (!TIPOS_ACTIVIDAD.some(t => t.id === tipo)) {
+    throw new Error(`tipo de actividad desconocido: ${tipo}`)
+  }
+  if (familia !== 'examen' && familia !== 'practica') {
+    throw new Error(`familia de reparto inválida: ${familia} (solo 'examen' o 'practica')`)
+  }
+  getDb().prepare(`
+    INSERT INTO tipo_familia (modulo_id, tipo, familia) VALUES (?,?,?)
+    ON CONFLICT (modulo_id, tipo) DO UPDATE SET familia=excluded.familia
+  `).run(moduloId, tipo, familia)
+}
+
 function _initSchema() {
   _db.exec(`
     -- Módulos que el profesor imparte
@@ -871,6 +894,19 @@ function _initSchema() {
       FOREIGN KEY (actividad_id, modulo_id) REFERENCES actividades(id, modulo_id),
       FOREIGN KEY (modulo_id, ra_id, ce_id) REFERENCES ce_catalogo(modulo_id, ra_id, ce_id)
         ON DELETE CASCADE
+    );
+
+    -- RF-17 · Familia de reparto de cada tipo de actividad, por módulo
+    -- (docs/rediseno/00-CONTEXTO.md §10). Dispersa: una fila solo existe
+    -- cuando el módulo decide una familia distinta del defecto de
+    -- renderer/js/utils/tipos-actividad.js. Sin ninguna fila, todos los
+    -- tipos usan su defecto — es el estado de cualquier base existente.
+    CREATE TABLE IF NOT EXISTS tipo_familia (
+      modulo_id INTEGER NOT NULL,
+      tipo      TEXT    NOT NULL,
+      familia   TEXT    NOT NULL,
+      PRIMARY KEY (modulo_id, tipo),
+      FOREIGN KEY (modulo_id) REFERENCES modulos(id) ON DELETE CASCADE
     );
   `)
 }
@@ -1491,5 +1527,7 @@ module.exports = {
   getRaCatalogo, setRaCatalogoPond, setRaCatalogoLlave, setRaCatalogoDual,
   getCeCatalogo, setCeCatalogoPeso,
   getCeInstrumentosPrevistos, setCeInstrumentos, setRaInstrumentos,
+  // RF-17 · tipos de actividad y familia de reparto
+  getTipoFamilia, setTipoFamilia,
   TEST_ONLY_rawDb,
 }

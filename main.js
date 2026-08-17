@@ -550,6 +550,10 @@ ipcMain.handle('db:setCeInstrumentos',   (_, mid, raId, ceId, instrumentos) =>
 ipcMain.handle('db:setRaInstrumentos',   (_, mid, raId, instrumentos) =>
   db.setRaInstrumentos(mid, raId, instrumentos))
 
+// RF-17 · familia de reparto por tipo de actividad (docs/rediseno/00-CONTEXTO.md §10)
+ipcMain.handle('db:getTipoFamilia', (_, mid) => db.getTipoFamilia(mid))
+ipcMain.handle('db:setTipoFamilia', (_, mid, tipo, familia) => db.setTipoFamilia(mid, tipo, familia))
+
 /**
  * Migración a la programación normalizada (RF-02). Acción manual disparada
  * desde Ajustes, nunca automática al abrir la aplicación: es fail-closed (ver

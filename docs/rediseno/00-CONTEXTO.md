@@ -160,6 +160,13 @@ resuelve en la presentación, no en el motor.
   nota, incluidos los no impartidos, así que el informe de IA sale PENDIENTE de forma incorrecta
   en cualquier módulo con un RA excluido. Fallo preexistente; se resuelve en RF-13, cuando la IA
   deje de calcular por su cuenta y pida los estados al motor.
+- **Instrumento de evaluación de los CE dualizados, sin registrar.** `fase_empresa` es
+  `(alumno_id, estado, motivo, fecha)` — una fila por alumno para toda la fase de formación en
+  empresa, sin RA, sin CE y sin instrumento. El art. 4.3.b exige el instrumento previsto también
+  para los CE que se acreditan en empresa, y RF-11 lo necesita para el documento informativo de
+  inicio de curso. Detectado al revisar RF-17 (el tipo `empresa` que existía en
+  `ra_instrumentos`/`ce_instrumentos_previstos` se ha retirado por no ser un tipo de actividad;
+  esto es lo que queda sin cubrir tras retirarlo). No tiene requisito propio todavía.
 
 ---
 

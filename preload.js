@@ -177,6 +177,15 @@ contextBridge.exposeInMainWorld('api', {
     _validateId(mid, 'modulo_id')
     return ipcRenderer.invoke('db:setRaInstrumentos', mid, raId, instrumentos)
   },
+  // RF-17 · familia de reparto por tipo de actividad
+  getTipoFamilia: mid => {
+    _validateId(mid, 'modulo_id')
+    return ipcRenderer.invoke('db:getTipoFamilia', mid)
+  },
+  setTipoFamilia: (mid, tipo, familia) => {
+    _validateId(mid, 'modulo_id')
+    return ipcRenderer.invoke('db:setTipoFamilia', mid, tipo, familia)
+  },
   // Migración a tablas normalizadas: manual desde Ajustes, con copia de
   // seguridad previa hecha en el proceso principal (ver main.js).
   migrarProgramacionNormalizada: () => ipcRenderer.invoke('db:migrarProgramacionNormalizada'),

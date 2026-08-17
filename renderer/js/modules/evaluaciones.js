@@ -119,7 +119,8 @@ async function loadEvaluaciones() {
   const alumnosTodos = await window.api.getAlumnos(mid)
   const alumnos      = alumnosTodos.filter(a => a.estado === 'Activo')
   const alumnosBaja  = alumnosTodos.filter(a => a.estado !== 'Activo')   // H7
-  const actividades  = await window.api.getActividades(mid)
+  // RF-17: única vía de obtención de actividades para el motor.
+  const { actividades } = await getActividadesParaMotor(mid)
   const notasArr     = await window.api.getNotasGrid(mid)
 
   // H6 — nota efectiva = nota_rec ?? nota; ngRec para mostrar trazabilidad

@@ -107,6 +107,10 @@ const MODULE_SCRIPTS = [
   // Identidad de los criterios (RA|CE): la usan programación, evaluaciones,
   // dashboard e IA, así que va antes que todos ellos.
   'js/utils/ce-keys.js',
+  // RF-17 · tipos de actividad y familia de reparto: getActividadesParaMotor()
+  // es el único punto de obtención de actividades para el motor, así que
+  // tiene que estar antes que cualquier pantalla que lo llame.
+  'js/utils/tipos-actividad.js',
   // Motor único de calificación: lo comparten Evaluaciones, Dashboard, boletín e IA
   'js/core/calificacion.js',
   // csrf-token.js y session-manager.js eliminados: son utilidades web sin uso
