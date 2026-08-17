@@ -128,9 +128,16 @@ CREATE TABLE ce_instrumentos_previstos (
     ON DELETE CASCADE
 );
 
+-- Índice único auxiliar: `id` ya es única por sí sola (PK de actividades), pero
+-- SQLite exige un índice que cubra EXACTAMENTE las columnas de una referencia
+-- compuesta. Sin él no se puede declarar la FK (actividad_id, modulo_id) de abajo.
+CREATE UNIQUE INDEX IF NOT EXISTS idx_actividades_id_modulo ON actividades(id, modulo_id);
+
 -- Relación actividad→CE. Sustituye a la columna actividades.ces (JSON de claves
--- "RA|CE"). modulo_id va redundante (ya está en actividades) solo para poder
--- referenciar la clave compuesta de ce_catalogo sin un JOIN previo.
+-- "RA|CE"). modulo_id NO es redundante de adorno: es lo que permite declarar la
+-- segunda FK, que obliga a que la actividad y el CE sean del MISMO módulo. Sin
+-- ella, nada impedía insertar una fila con el modulo_id de un módulo y el
+-- actividad_id de otro — las dos FK por separado la habrían dejado pasar.
 CREATE TABLE actividad_ce (
   actividad_id INTEGER NOT NULL,
   modulo_id    INTEGER NOT NULL,
@@ -138,6 +145,7 @@ CREATE TABLE actividad_ce (
   ce_id        TEXT    NOT NULL,
   PRIMARY KEY (actividad_id, ra_id, ce_id),
   FOREIGN KEY (actividad_id) REFERENCES actividades(id) ON DELETE CASCADE,
+  FOREIGN KEY (actividad_id, modulo_id) REFERENCES actividades(id, modulo_id),
   FOREIGN KEY (modulo_id, ra_id, ce_id) REFERENCES ce_catalogo(modulo_id, ra_id, ce_id)
     ON DELETE CASCADE
 );
@@ -166,6 +174,24 @@ opcional a nivel de cada ruta de código que edite el catálogo. La única difer
 si quiere conservar el aviso «N criterios quitados» que ve la docente hoy (`programacion.js`,
 alrededor de `_saveModData`); `CASCADE` resuelve la integridad, no el aviso.
 
+**`actividad_ce` necesita las DOS FK a la vez, no una a costa de la otra.** Quitar `modulo_id` de
+la tabla (para no tener nada "redundante") pierde la FK contra `ce_catalogo` y abre el problema
+contrario: filas que apuntan a un CE que no existe. Pero dejar solo `modulo_id` con su FK a
+`ce_catalogo`, sin nada que lo ate al `modulo_id` real de la actividad, deja el hueco opuesto: una
+fila puede llevar el `actividad_id` de un módulo y el `modulo_id` de otro, y las dos FK por
+separado la dejan pasar igual — el criterio existiría, la actividad existiría, pero de dos
+módulos distintos, y nada en el esquema lo detecta. Con una base de un solo módulo esto no se ve
+nunca; con una base de varios módulos (varios cursos, varios grupos del mismo profesor) es
+exactamente el tipo de fallo silencioso que no aparece hasta una reclamación.
+
+La solución que cierra los dos lados sin renunciar a ninguno: un índice único sobre
+`actividades(id, modulo_id)` y una segunda FK `(actividad_id, modulo_id) REFERENCES
+actividades(id, modulo_id)`, además de la que ya hay contra `ce_catalogo`. SQLite permite
+referenciar cualquier conjunto de columnas cubierto por un índice único, no solo la clave
+primaria — con las dos FK a la vez, una fila de `actividad_ce` solo puede insertarse si el CE
+existe en el catálogo de ESE módulo **y** si la actividad existe con ESE mismo `modulo_id` a la
+vez. Ninguna de las dos solas basta; juntas si.
+
 **No se toca el esquema de `ra_ponderaciones`, `ra_estado` ni `ra_superados`.** Podrían ganar
 una FK compuesta a `ra_catalogo(modulo_id, ra_id)` por higiene, pero eso exige recrearlas (SQLite
 no añade FK con `ALTER TABLE`) para un beneficio puramente de integridad, sobre tablas que ya
@@ -191,26 +217,46 @@ juntos, no uno antes que otro.**
 
 Para cada fila de `modulos`, con `data = JSON.parse(data_json)`:
 
+**Regla única para todo §2, sin excepciones: fallo cierra, no se salta.** La primera versión de
+este plan toleraba que un módulo con un dato suelto inconsistente (un RA huérfano, un CE que ya
+no está en el catálogo…) se saltara esa referencia y siguiera con el resto, dejando el módulo
+"parcialmente" normalizado. Se descarta: con varios módulos en la misma base, eso deja unos
+migrados a las tablas nuevas y otros todavía dependientes de `data_json`, y obligaría al
+renderer a saber leer de los dos sitios según el módulo — exactamente el "modo mixto" que no se
+quiere. En su lugar:
+
+- **Cualquier validación que falle en cualquier módulo aborta toda la transacción del paso 3**
+  (§5), para todos los módulos, no solo para el que falló. Esto incluye el propio
+  `JSON.parse(data_json)`: un módulo con JSON corrupto también aborta con
+  `"módulo <id>: data_json no es JSON válido"`, no se salta en silencio.
+- El error se lanza con **el `modulo_id`, su `key`/`abrev` y el motivo exacto** (p. ej. `"módulo
+  3 (par_data/1ºB): la asignación UT4→RA2 referencia el CE 'CR9', que no existe en el catálogo
+  de RA2"`), para poder localizarlo y corregirlo en la programación de ese módulo concreto antes
+  de reintentar.
+- Reintentar significa: arreglar el dato de origen en `data_json` (vía la interfaz actual, que
+  sigue funcionando exactamente igual mientras la migración no se haya confirmado) y volver a
+  ejecutar el paso 3 desde el principio. No hay migración parcial que retomar ni módulos ya
+  "hechos" que conservar entre intentos.
+
 ### 2.1 `ra_catalogo`
 
 ```
 overrides = SELECT ra_id, pond FROM ra_ponderaciones WHERE modulo_id = ?   -- mapa ra_id→pond
 
 para cada ra en data.ras:
+  si ra.id o ra.nombre están vacíos → ABORTAR ("módulo <id>: RA sin id o sin nombre")
   pond_efectivo = overrides[ra.id] ?? ra.pond ?? 0
   INSERT INTO ra_catalogo (modulo_id, ra_id, nombre, pond, llave, dual_pct)
   VALUES (modulo_id, ra.id, ra.nombre, pond_efectivo, ra.llave ? 1 : 0, ra.dual ?? NULL)
 ```
 
-Validación: `ra.id` y `ra.nombre` no vacíos (si faltan, se cuenta como fallo del módulo y se
-avisa — no se inventa un nombre).
-
 ### 2.2 `ce_catalogo`
 
 ```
 para cada ra_id en data.ces:
-  si ra_id no está en data.ras → CONTAR como "RA huérfano en ces", NO insertar sus CE
-     (mismo defecto que ya vigila tests/unit/catalogo.test.js sobre el catálogo estático)
+  si ra_id no está en data.ras → ABORTAR ("módulo <id>: 'ces' tiene un RA (<ra_id>) que no
+     está en 'ras'" — mismo defecto que ya vigila tests/unit/catalogo.test.js sobre el
+     catálogo estático, pero ahí solo avisa; aquí bloquea la migración)
   para cada ce en data.ces[ra_id]:
     INSERT INTO ce_catalogo (modulo_id, ra_id, ce_id, texto, peso)
     VALUES (modulo_id, ra_id, ce.id, ce.texto, ce.peso ?? NULL)
@@ -229,17 +275,18 @@ para cada ut en data.uts:
 
 ```
 para cada asignación {ut, ra, ces} en data.asignaciones:
-  si ut no está en data.uts → CONTAR "asignación con UT huérfana", saltar
-  si ra no está en data.ras → CONTAR "asignación con RA huérfano", saltar
+  si ut no está en data.uts → ABORTAR ("módulo <id>: asignación a la UT '<ut>', que no existe")
+  si ra no está en data.ras → ABORTAR ("módulo <id>: asignación al RA '<ra>', que no existe")
   para cada ce_id en asignación.ces:
-    si ce_id no está en data.ces[ra] → CONTAR "asignación con CE huérfano", saltar ese CE
+    si ce_id no está en data.ces[ra] → ABORTAR ("módulo <id>: la asignación <ut>→<ra>
+        referencia el CE '<ce_id>', que no existe en el catálogo de <ra>")
     INSERT OR IGNORE INTO ut_ce (modulo_id, ut_id, ra_id, ce_id)
     VALUES (modulo_id, ut, ra, ce_id)
 ```
 
-`INSERT OR IGNORE` porque el mismo `(ut,ra)` puede aparecer más de una vez en `asignaciones` en
-otros módulos del catálogo aunque no ocurra en el inspeccionado (dos entradas para el mismo par
-que amplíen la lista de CE) — la tabla normalizada los fusiona sin más.
+`INSERT OR IGNORE` aquí no es tolerancia a datos malos: es solo para el caso legítimo de que el
+mismo `(ut,ra)` aparezca dos veces en `asignaciones` (dos entradas para el mismo par que amplíen
+la lista de CE) — la tabla normalizada los fusiona sin más, ninguno de los dos es un error.
 
 Este es el paso que hace cumplir la regla de RF-02 "no puede existir asignación UT–RA que
 contradiga UT–CE": como `ut_ce` no tiene fila si no hay al menos un CE, un RA sin ningún CE
@@ -249,7 +296,8 @@ asignado a una UT sencillamente no aparece ligado a ella — no hace falta una r
 
 ```
 para cada ra_id en data.ra_instrumentos:
-  si ra_id no está en data.ras → CONTAR, saltar
+  si ra_id no está en data.ras → ABORTAR ("módulo <id>: 'ra_instrumentos' tiene un RA
+     (<ra_id>) que no está en 'ras'")
   para cada ce en data.ces[ra_id] ?? []:
     para cada instrumento en data.ra_instrumentos[ra_id]:
       INSERT OR IGNORE INTO ce_instrumentos_previstos (modulo_id, ra_id, ce_id, instrumento)
@@ -271,19 +319,26 @@ paso se ejecute ya no debería quedar ninguna clave suelta sin `|`; aun así se 
 para cada actividad en SELECT id, modulo_id, ces FROM actividades:
   lista = JSON.parse(actividad.ces ?? '[]')
   para cada clave en lista:
-    si clave no contiene '|' → CONTAR "clave sin migrar todavía", saltar (no debería pasar
-        si este paso corre después de _migrarCesDeActividades, pero no se asume)
+    si clave no contiene '|' → ABORTAR ("actividad <id> (módulo <modulo_id>): el criterio
+        '<clave>' no tiene la clave compuesta RA|CE" — no debería pasar si este paso corre
+        después de _migrarCesDeActividades, pero no se asume)
     [ra_id, ce_id] = clave.split('|', 2)
-    si (modulo_id, ra_id, ce_id) no existe en ce_catalogo → CONTAR "actividad con CE que ya
-        no está en el catálogo" (pasa si se borró un CE de la programación después de crear
-        la actividad — comportamiento ya conocido y avisado por _saveModData con sus
-        "huérfanas"), saltar
+    si (modulo_id, ra_id, ce_id) no existe en ce_catalogo → ABORTAR ("actividad <id> (módulo
+        <modulo_id>): evalúa el criterio '<ra_id>|<ce_id>', que ya no está en el catálogo")
     INSERT OR IGNORE INTO actividad_ce (actividad_id, modulo_id, ra_id, ce_id)
     VALUES (actividad.id, modulo_id, ra_id, ce_id)
 ```
 
 Con los datos reales: 158 claves de entrada, y las 158 deberían insertarse limpias porque el
 catálogo (79 CE) las cubre todas — se comprueba, no se asume.
+
+**Este es previsiblemente el punto de la migración con más probabilidad real de abortar.** Hoy
+`setModuloDataJson` (`db.js:991-1051`) solo limpia estas referencias sueltas **al guardar la
+programación** — una actividad que evalúa un CE que se quitó del catálogo, y cuya programación no
+se ha vuelto a guardar desde entonces, se queda así indefinidamente sin que nada avise. Antes de
+ejecutar la migración conviene, en cada módulo, entrar una vez en Programación y guardar (dispara
+`criteriosLimpiados`) — así se llega al paso 3 sin este tipo de deuda pendiente y no aborta por
+algo que la propia aplicación ya sabía limpiar.
 
 ### 2.7 Qué NO se toca en este paso
 
@@ -455,18 +510,24 @@ interfaz actual tampoco las muestra.
    obligatorio, no en una sugerencia. Verificar que la copia abre y que
    `PRAGMA integrity_check` devuelve `ok` sobre ella, en solo lectura, antes de continuar.
 2. **Esquema aditivo** (fuera de transacción explícita, igual que hoy hacen las migraciones de
-   columnas en `getDb()`): `CREATE TABLE IF NOT EXISTS` de las seis tablas de §1, y
-   `ALTER TABLE actividades ADD COLUMN` de `es_recuperacion`/`recupera_actividad_id` de §3.2,
-   cada uno guardado tras comprobar con `PRAGMA table_info`/`sqlite_master` que no existe ya —
-   el mismo patrón que sigue el resto de `db.js`. No modifica ni una fila existente.
+   columnas en `getDb()`): `CREATE TABLE IF NOT EXISTS` de las seis tablas de §1, el
+   `CREATE UNIQUE INDEX IF NOT EXISTS idx_actividades_id_modulo` que necesita la FK compuesta de
+   `actividad_ce`, y `ALTER TABLE actividades ADD COLUMN` de
+   `es_recuperacion`/`recupera_actividad_id` de §3.2, cada uno guardado tras comprobar con
+   `PRAGMA table_info`/`sqlite_master` que no existe ya — el mismo patrón que sigue el resto de
+   `db.js`. No modifica ni una fila existente.
 3. **Transformación RF-02 (§2), en una única transacción** que cubre los seis pasos (2.1 a 2.6)
    para TODOS los módulos de la base. Un único `BEGIN`/`COMMIT`, no uno por módulo: con la
    escala real de esta app (un profesor, un fichero, un puñado de módulos — `AGENTS.md`,
    ADR-001/002) el coste de repetir todo si algo falla es bajo, y mantiene el mismo estilo que
-   `_migrarCesDeActividades`/`_migrarCalificacionesCE`, que ya hacen exactamente esto. Dentro de
-   la transacción, un módulo con `data_json` ilegible o sin `ras`/`ces` se salta con un
-   `try/catch` alrededor de su `JSON.parse` y se cuenta — eso NO aborta la transacción, solo la
-   sentencia SQL que fallase de verdad la abortaría.
+   `_migrarCesDeActividades`/`_migrarCalificacionesCE`, que ya hacen exactamente esto.
+   **Fail-closed, sin excepción**: cualquier validación de §2 que falle en cualquier módulo
+   —JSON corrupto, RA/CE/UT huérfano, criterio de una actividad que ya no está en el catálogo—
+   lanza un error con el módulo y el motivo, y aborta ahí mismo. No hay ruta que capture el
+   error y siga con el resto: una sola sentencia disconforme basta para que la migración entera
+   no se confirme. La razón está en §2: con varios módulos, terminar con unos migrados y otros no
+   obligaría al renderer a leer de dos sitios distintos según el módulo, y eso es justo lo que
+   esta migración existe para eliminar, no para añadir.
 
    **No antes de que exista el código de RF-02 que lee y escribe `ra_catalogo`.** Este paso no
    se ejecuta solo, por delante del cambio de renderer que deja de usar
@@ -477,9 +538,11 @@ interfaz actual tampoco las muestra.
    código de RF-02 se despliegan juntos, no en dos pasos separados en el tiempo.
 4. **Verificación antes de confirmar (dentro de la misma transacción del paso 3):**
    - `PRAGMA foreign_key_check` sin filas.
-   - Recuento cruzado: nº de filas insertadas en `ut_ce` == nº de pares (asignación, CE) que
-     pasaron la validación (no los huérfanos descartados); mismo contraste para
-     `ce_instrumentos_previstos` y `actividad_ce`.
+   - Recuento cruzado: nº de filas insertadas en `ut_ce` == nº de pares (asignación, CE) de
+     `data.asignaciones` — con el fail-closed de §2 ya no hay "huérfanos descartados" que restar,
+     así que la cifra tiene que cuadrar exacta; mismo contraste para `ce_instrumentos_previstos`
+     y `actividad_ce`. Si no cuadra, es señal de que alguna validación de §2 tiene un hueco no
+     previsto, no de un dato malo real (esos ya habrían abortado antes).
    - Ningún RA de `ra_catalogo` con `pond` fuera de 0–100; si los `pond` de un módulo no suman
      100, **no bloquea** (ya pasa hoy, el badge de Programación solo avisa) pero se deja constancia
      en el log de migración.
@@ -507,9 +570,10 @@ interfaz actual tampoco las muestra.
 
 | Puede fallar | Causa real observable | Cómo se revierte |
 |---|---|---|
-| `JSON.parse(data_json)` lanza | Módulo con JSON corrupto (no se ha visto en la base inspeccionada, pero `data_json` es un `TEXT` sin validación de esquema en `modulos`) | Se captura por módulo, se cuenta, no aborta el resto de la transacción del paso 3 |
-| Asignación con CE que ya no está en el catálogo | Se borró un CE del módulo después de que quedara referenciado en `asignaciones` (mismo defecto que ya vigila `tests/unit/catalogo.test.js` sobre el catálogo estático) | Se descarta esa fila de `ut_ce`, se cuenta, no aborta |
-| `ra_instrumentos` con un RA que ya no está en `ras` | Programación editada a mano entre versiones | Se descarta, se cuenta, no aborta |
+| `JSON.parse(data_json)` lanza | Módulo con JSON corrupto (no se ha visto en la base inspeccionada, pero `data_json` es un `TEXT` sin validación de esquema en `modulos`) | `ROLLBACK` de toda la transacción del paso 3, con el `modulo_id` en el error; se corrige el JSON de ese módulo (o se restaura desde la copia si no es reparable) y se reintenta desde el principio |
+| Asignación con CE que ya no está en el catálogo | Se borró un CE del módulo después de que quedara referenciado en `asignaciones` (mismo defecto que ya vigila `tests/unit/catalogo.test.js` sobre el catálogo estático) | `ROLLBACK` de toda la transacción del paso 3, con el módulo, la UT y el CE en el error; se limpia la asignación desde Programación (o se añade el CE que falta) y se reintenta |
+| `ra_instrumentos` con un RA que ya no está en `ras` | Programación editada a mano entre versiones | `ROLLBACK` de toda la transacción del paso 3, con el módulo y el RA en el error; se corrige y se reintenta |
+| Actividad que evalúa un criterio que ya no está en el catálogo | Nadie ha vuelto a guardar la programación de ese módulo desde que se quitó el CE — es el caso con más probabilidad real (ver nota al final de §2.6) | `ROLLBACK` de toda la transacción del paso 3, con la actividad y el criterio en el error; se abre Programación y se guarda una vez (limpia la referencia sola) y se reintenta |
 | `PRAGMA foreign_key_check` devuelve filas al final del paso 3 | Alguna de las validaciones anteriores tiene un hueco no previsto | `ROLLBACK` de toda la transacción del paso 3; la base queda exactamente como estaba, sin ninguna tabla nueva poblada (siguen existiendo, vacías, por el `CREATE TABLE IF NOT EXISTS` del paso 2, que es inocuo) |
 | `notas.nota_rec` con `actividad_id` que ya no existe | Solo posible si la fila de `notas` sobrevivió al `ON DELETE CASCADE` de su actividad, lo que no debería pasar nunca con las FK activas — se trata como bug a investigar, no como caso normal, y bloquea el paso 5 hasta explicarlo | `ROLLBACK` del paso 5; no toca el paso 3 |
 | El recuento de `notas` migradas no cuadra en el paso 5 | Alguna fila con `nota_rec` fuera de rango 0–10 que el `INSERT` rechazara (la base ya avisa hoy de notas fuera de escala en `getDb()`, línea ~121) | `ROLLBACK` del paso 5; se corrige el dato de origen y se reintenta |
