@@ -176,3 +176,47 @@ evaluación parcial filtra los RA por la evaluación a la que están temporaliza
 los posteriores. El motor no se toca, y el estado del módulo sigue siendo el que es.
 
 No es urgente. Se decide al montar la interfaz de RF-01.
+
+---
+
+## 8. RF-15 — Control de asistencia
+
+*Normativo verificado la necesidad (art. 3.3); los umbrales concretos son criterio de centro.*
+
+EvalFP no registra asistencia, así que hoy la pérdida del derecho a evaluación continua se
+introduce a mano en `evaluacion_continua` sin nada que la sustente. El art. 3.3 condiciona ese
+derecho a la asistencia, y el art. 4.3.e obliga a que la programación prevea los instrumentos
+para ese alumnado.
+
+Registro por alumno, módulo, fecha y tramo horario, con estados presente, falta justificada,
+falta injustificada y retraso. A partir de ahí, porcentaje de inasistencia sobre las horas del
+módulo y aviso cuando se acerca al límite.
+
+**Cuidado con las cifras.** El límite y la equivalencia entre retrasos y faltas **no** están en
+la Orden 201/2024: son criterio de centro y deben ser configurables, no constantes en el
+código. Ningún texto de la aplicación debe atribuir esas cifras a la Orden. Lo que sí es
+normativo es que la pérdida del derecho se acuerde y se comunique, y sus efectos del art. 3.6
+en su redacción vigente, que ya implementa el motor.
+
+Sustituye a `_extractFaltasPorcentaje` de `ia.js`, que hoy recalcula el porcentaje por su
+cuenta fuera del motor (ver RF-13).
+
+## 9. RF-16 — Diario de observaciones
+
+*Decisión de EvalFP; se apoya en el art. 2.2 (la observación directa como instrumento).*
+
+Notas breves por alumno y fecha, con categoría, escritas sobre la marcha durante la clase. No
+es una calificación: es la evidencia no formalizada que hoy no queda registrada en ninguna
+parte.
+
+Su valor está en RF-03: cuando se da un criterio por alcanzado por criterio docente, el motivo
+puede apoyarse en una observación concreta y fechada en lugar de en un texto libre escrito
+meses después. Y alimenta la vista de pendientes de RF-14 con contexto sobre cada alumno.
+
+Requiere que la observación directa figure como instrumento en la programación (art. 4.3.b) si
+va a sustentar la valoración de un criterio.
+
+**Origen de ambos requisitos:** un prototipo alternativo generado con Arena AI a partir de un
+prompt de un párrafo. Se descartó como sustituto —sin tests, sin convocatorias, con el mismo
+agujero del art. 2.3 y con cifras normativas inventadas— pero tenía estas dos piezas que
+EvalFP no cubre.
