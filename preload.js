@@ -129,6 +129,16 @@ contextBridge.exposeInMainWorld('api', {
     return ipcRenderer.invoke('db:setRaPonderacion', mid, raId, pond)
   },
 
+  // RF-01 · estado de impartición del RA (previsto / impartido / no_impartido)
+  getRaEstados: mid => {
+    _validateId(mid, 'modulo_id')
+    return ipcRenderer.invoke('db:getRaEstados', mid)
+  },
+  setRaEstado: (mid, raId, estado, motivo) => {
+    _validateId(mid, 'modulo_id')
+    return ipcRenderer.invoke('db:setRaEstado', mid, raId, estado, motivo)
+  },
+
   // ── Edición UT/RA/CE ──────────────────────────────────────────────────────────
   setModuloDataJson: (id, data) => {
     _validateId(id, 'modulo id')

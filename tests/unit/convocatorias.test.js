@@ -157,8 +157,15 @@ describe('A-5 · Convocatorias', () => {
     const hastaLa1a = M.estadoModulo(
       M.contextoModulo({ ras: rasB, cesByRa: cesB, asignaciones: [], actividades: actsB.filter(a => a.eval <= 1) }),
       soloUnaNota)
+    // Lo que este test protege sigue en pie: RA2 no cuenta como cero, así que la
+    // media de diciembre es 7 y no 3,5.
     expect(hastaLa1a.media).toBeCloseTo(7)
-    expect(hastaLa1a.sinNota).toEqual([])
+    // Lo que cambia con RF-01: RA2 ya no desaparece del cómputo por no tener
+    // actividades todavía. Figura como pendiente de evaluar, que es lo que exige
+    // el art. 2.3 —hacen falta todos los RA—, y por eso el módulo no puede darse
+    // por superado en diciembre. Antes salía SUPERADO con medio módulo sin dar.
+    expect(hastaLa1a.sinNota).toEqual(['RA2'])
+    expect(hastaLa1a.resultado).toBe('PENDIENTE')
 
     const cursoEntero = M.estadoModulo(
       M.contextoModulo({ ras: rasB, cesByRa: cesB, asignaciones: [], actividades: actsB }),

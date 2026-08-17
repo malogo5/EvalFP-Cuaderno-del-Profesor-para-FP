@@ -1,0 +1,490 @@
+diff --git a/db.js b/db.js
+index 619c6a2..e5bc25a 100644
+--- a/db.js
++++ b/db.js
+@@ -466,6 +466,21 @@ function _initSchema() {
+       PRIMARY KEY (modulo_id, ra_id),
+       FOREIGN KEY (modulo_id) REFERENCES modulos(id) ON DELETE CASCADE
+     );
++
++    -- RF-01 · Estado de impartición del RA (Orden 201/2024, art. 2.3).
++    -- Es de GRUPO, no de alumno: o el RA se da al módulo entero o no se da.
++    -- 'previsto' | 'impartido' | 'no_impartido'. El estado no se deduce de que
++    -- existan actividades; la ausencia de un RA tiene que ser una decisión
++    -- fechada y motivada, no un efecto colateral de no haberlo programado.
++    CREATE TABLE IF NOT EXISTS ra_estado (
++      modulo_id  INTEGER NOT NULL,
++      ra_id      TEXT    NOT NULL,
++      estado     TEXT    NOT NULL DEFAULT 'previsto',
++      motivo     TEXT,
++      fecha      TEXT,
++      PRIMARY KEY (modulo_id, ra_id),
++      FOREIGN KEY (modulo_id) REFERENCES modulos(id) ON DELETE CASCADE
++    );
+   `)
+ }
+ 
+@@ -913,6 +928,45 @@ function setRaPonderacion(moduloId, raId, pond) {
+   `).run(moduloId, raId, limpia)
+ }
+ 
++// ── RF-01 · Estado de impartición del RA ──────────────────────────────────────
++
++const ESTADOS_RA = ['previsto', 'impartido', 'no_impartido']
++
++/** { raId: { estado, motivo, fecha } } de un módulo. */
++function getRaEstados(moduloId) {
++  const filas = getDb()
++    .prepare('SELECT ra_id, estado, motivo, fecha FROM ra_estado WHERE modulo_id=?')
++    .all(moduloId)
++  const out = {}
++  for (const f of filas) out[f.ra_id] = { estado: f.estado, motivo: f.motivo, fecha: f.fecha }
++  return out
++}
++
++/**
++ * Fija el estado de impartición de un RA.
++ *
++ * Marcar «no impartido» exige motivo: es lo que hace defendible que ese RA no
++ * compute. Sin motivo se rechaza, porque un RA que desaparece de la calificación
++ * sin explicación es exactamente el problema que RF-01 viene a corregir.
++ */
++function setRaEstado(moduloId, raId, estado, motivo) {
++  if (!ESTADOS_RA.includes(estado)) {
++    throw new Error(`Estado de RA no válido: ${estado}`)
++  }
++  const txt = (motivo == null ? '' : String(motivo)).trim()
++  if (estado === 'no_impartido' && !txt) {
++    throw new Error('Marcar un RA como no impartido exige indicar el motivo.')
++  }
++  getDb().prepare(`
++    INSERT INTO ra_estado (modulo_id, ra_id, estado, motivo, fecha)
++    VALUES (?,?,?,?,date('now'))
++    ON CONFLICT (modulo_id, ra_id) DO UPDATE SET
++      estado = excluded.estado,
++      motivo = excluded.motivo,
++      fecha  = excluded.fecha
++  `).run(moduloId, raId, estado, estado === 'no_impartido' ? txt : (txt || null))
++}
++
+ // ── Modulo data_json (edición UT/RA/CE) ───────────────────────────────────────
+ 
+ /**
+@@ -1010,6 +1064,7 @@ module.exports = {
+   getActividades, saveActividad, deleteActividad,
+   getNotasGrid, saveNota, saveNotaRec, closeDb, backupTo,
+   getRaPonderaciones, setRaPonderacion,
++  getRaEstados, setRaEstado,
+   getCalificacionesCE, setCalificacionCE,
+   getRasSuperados, cerrarEvaluacionRAs, reabrirRaSuperado,
+   getFaseEmpresa, setFaseEmpresa,
+diff --git a/main.js b/main.js
+index 3459435..e28c59b 100644
+--- a/main.js
++++ b/main.js
+@@ -532,6 +532,9 @@ ipcMain.handle('db:saveNotaRec',   (_, aid, actId, nota) => db.saveNotaRec(aid,
+ // ── IPC: Ponderaciones RA ─────────────────────────────────────────────────────
+ ipcMain.handle('db:getRaPonderaciones',  (_, mid)             => db.getRaPonderaciones(mid))
+ ipcMain.handle('db:setRaPonderacion',    (_, mid, raId, pond) => db.setRaPonderacion(mid, raId, pond))
++// RF-01 · estado de impartición del RA (art. 2.3)
++ipcMain.handle('db:getRaEstados',        (_, mid)             => db.getRaEstados(mid))
++ipcMain.handle('db:setRaEstado',         (_, mid, raId, estado, motivo) => db.setRaEstado(mid, raId, estado, motivo))
+ ipcMain.handle('db:setModuloDataJson',   (_, id, data)        => db.setModuloDataJson(id, data))
+ 
+ // ── IPC: Config ───────────────────────────────────────────────────────────────
+diff --git a/preload.js b/preload.js
+index 5fa8032..1194ae7 100644
+--- a/preload.js
++++ b/preload.js
+@@ -129,6 +129,16 @@ contextBridge.exposeInMainWorld('api', {
+     return ipcRenderer.invoke('db:setRaPonderacion', mid, raId, pond)
+   },
+ 
++  // RF-01 · estado de impartición del RA (previsto / impartido / no_impartido)
++  getRaEstados: mid => {
++    _validateId(mid, 'modulo_id')
++    return ipcRenderer.invoke('db:getRaEstados', mid)
++  },
++  setRaEstado: (mid, raId, estado, motivo) => {
++    _validateId(mid, 'modulo_id')
++    return ipcRenderer.invoke('db:setRaEstado', mid, raId, estado, motivo)
++  },
++
+   // ── Edición UT/RA/CE ──────────────────────────────────────────────────────────
+   setModuloDataJson: (id, data) => {
+     _validateId(id, 'modulo id')
+diff --git a/renderer/js/core/calificacion.js b/renderer/js/core/calificacion.js
+index cb79bfc..57e5473 100644
+--- a/renderer/js/core/calificacion.js
++++ b/renderer/js/core/calificacion.js
+@@ -216,13 +216,20 @@ function actaEntera(media, superado) {
+  *                                  superados en una sesión anterior
+  */
+ function contextoModulo({ ras, cesByRa, asignaciones, actividades, minExam, rasSuperados,
+-                          tieneFaseEmpresa, convocatoria }) {
++                          tieneFaseEmpresa, convocatoria, raEstados }) {
+   const conv = Number(convocatoria) >= 2 ? 2 : 1
+   // En la 1ª convocatoria las actividades de recuperación de junio no existen
+   // todavía: no pueden entrar en la nota que va al acta de la 1ª.
+   const acts = actividadesDeConvocatoria(actividades, conv)
+   const { PRAC, EXAM } = pesosPorTipo(acts.filter(a => convocatoriaDe(a) === 1))
+   const rasBase = ras || []
++  // Un RA está en juego si alguna actividad lo califica, por ra_id, por
++  // criterios marcados o por sus unidades de trabajo.
++  const rasActivos = rasBase.filter(ra =>
++    acts.some(a => actividadDeRa(a, ra.id, (cesByRa || {})[ra.id] || [], asignaciones || [])))
++  const estados = estadoImparticion(rasBase, rasActivos, raEstados)
++  const excluidos = rasBase.filter(ra => estados[ra.id] === ESTADO_RA.NO_IMPARTIDO).map(ra => ra.id)
++  const enJuego = rasBase.filter(ra => estados[ra.id] !== ESTADO_RA.NO_IMPARTIDO)
+   return {
+     ras: rasBase,
+     cesByRa: cesByRa || {},
+@@ -233,13 +240,113 @@ function contextoModulo({ ras, cesByRa, asignaciones, actividades, minExam, rasS
+     rasSuperados: rasSuperados || null,
+     tieneFaseEmpresa: !!tieneFaseEmpresa,
+     PRAC, EXAM,
+-    // Un RA está en juego si alguna actividad lo califica, por ra_id, por
+-    // criterios marcados o por sus unidades de trabajo.
+-    rasActivos: rasBase.filter(ra =>
+-      acts.some(a => actividadDeRa(a, ra.id, (cesByRa || {})[ra.id] || [], asignaciones || []))),
++    rasActivos,
++    // ── RF-01 ────────────────────────────────────────────────────────────────
++    raEstados: estados,
++    rasExcluidos: excluidos,
++    // Los que entran en el cómputo: todos menos los marcados como no impartidos.
++    // Un RA «previsto» sí entra, y al no tener nota deja el módulo en PENDIENTE.
++    rasEnJuego: enJuego,
++    ponderaciones: reparterPonderaciones(rasBase, estados),
+   }
+ }
+ 
++// ═══════════════════════════════════════════════════════════════
++// RF-01 · ESTADO DE IMPARTICIÓN DEL RESULTADO DE APRENDIZAJE
++// ═══════════════════════════════════════════════════════════════
++// Antes, un RA sin ninguna actividad desaparecía del cómputo: `rasActivos` lo
++// filtraba y `estadoModulo` no llegaba a mirarlo, así que nunca caía en
++// `sinNota` y el módulo podía darse por SUPERADO sin haberse evaluado ese RA.
++// El art. 2.3 de la Orden 201/2024 exige alcanzarlos TODOS, así que la ausencia
++// de actividades no puede seguir siendo una exclusión silenciosa.
++//
++// Ahora el estado es explícito, de grupo y lo decide la docente:
++//   · previsto      — se dará; bloquea el cierre y deja el módulo en PENDIENTE
++//   · impartido     — entra en el cómputo con normalidad
++//   · no_impartido  — no se evalúa; sale del cómputo y reparte su ponderación
++//
++// El reparto proporcional de la ponderación de un RA no impartido NO es una
++// exigencia de la Orden: es una regla funcional de EvalFP, que debe estar
++// recogida en la programación didáctica del módulo. Lo que sí exige la norma es
++// que la decisión quede documentada, de ahí la fecha y el motivo.
++
++const ESTADO_RA = {
++  PREVISTO:     'previsto',
++  IMPARTIDO:    'impartido',
++  NO_IMPARTIDO: 'no_impartido',
++}
++
++/**
++ * Estado de impartición de cada RA del módulo.
++ *
++ * Lo que diga la docente manda. Para lo que no haya decidido se usa un valor por
++ * defecto conservador: si el RA tiene actividades, está impartido; si no, sigue
++ * previsto. Nunca se deduce «no impartido», porque eso es una decisión suya y
++ * requiere fecha y motivo.
++ *
++ * @param {Array}  ras         RA del módulo
++ * @param {Array}  rasActivos  los que tienen alguna actividad
++ * @param {Object} raEstados   { raId: 'previsto'|'impartido'|'no_impartido' | {estado} }
++ * @returns {Object} { raId: estado }
++ */
++function estadoImparticion(ras, rasActivos, raEstados) {
++  const activos = new Set((rasActivos || []).map(ra => ra.id))
++  const guardados = raEstados || {}
++  const out = {}
++  for (const ra of ras || []) {
++    const g = guardados[ra.id]
++    const declarado = (g && typeof g === 'object') ? g.estado : g
++    if (declarado === ESTADO_RA.PREVISTO ||
++        declarado === ESTADO_RA.IMPARTIDO ||
++        declarado === ESTADO_RA.NO_IMPARTIDO) {
++      out[ra.id] = declarado
++    } else {
++      out[ra.id] = activos.has(ra.id) ? ESTADO_RA.IMPARTIDO : ESTADO_RA.PREVISTO
++    }
++  }
++  return out
++}
++
++/**
++ * Ponderación original y efectiva de cada RA.
++ *
++ * La ponderación de los RA no impartidos se reparte entre los demás de forma
++ * proporcional a su peso original —no a partes iguales—, y se conservan los dos
++ * valores: el informe de justificación de la calificación tiene que poder
++ * enseñar de dónde sale la nota.
++ *
++ * @returns {Object} { raId: { original, efectiva, estado } }
++ */
++function reparterPonderaciones(ras, estados) {
++  const lst = ras || []
++  const out = {}
++  const dentro = lst.filter(ra => estados[ra.id] !== ESTADO_RA.NO_IMPARTIDO)
++  const sumaDentro = dentro.reduce((s, ra) => s + (Number(ra.pond) || 0), 0)
++  const sumaTotal  = lst.reduce((s, ra) => s + (Number(ra.pond) || 0), 0)
++  // Solo hay algo que repartir si se excluye algún RA con peso.
++  const factor = (sumaDentro > 0 && sumaTotal > sumaDentro) ? sumaTotal / sumaDentro : 1
++  for (const ra of lst) {
++    const original = Number(ra.pond) || 0
++    const excluido = estados[ra.id] === ESTADO_RA.NO_IMPARTIDO
++    out[ra.id] = {
++      original,
++      efectiva: excluido ? 0 : original * factor,
++      estado: estados[ra.id],
++    }
++  }
++  return out
++}
++
++/**
++ * ¿Se puede cerrar el acta? No, mientras quede algún RA en «previsto»: o se
++ * imparte y se evalúa, o se marca como no impartido con su motivo (RF-01).
++ */
++function raPendientesDeDecidir(ctx) {
++  return (ctx.ras || [])
++    .filter(ra => ctx.raEstados[ra.id] === ESTADO_RA.PREVISTO)
++    .map(ra => ra.id)
++}
++
+ /**
+  * Estado completo de un alumno en el módulo: nota por RA, nota final, RA
+  * pendientes, RA sin calificar y veredicto.
+@@ -280,7 +387,10 @@ function estadoModulo(ctx, notasAl, opts) {
+   const acts = perdidaEC ? ctx.actividades.filter(esPruebaObjetiva) : ctx.actividades
+   const cierres = perdidaEC ? null : ctx.rasSuperados
+   const ceOverride = perdidaEC ? null : o.notaCEOverride
+-  const raEnJuego = perdidaEC ? (ctx.ras || []) : ctx.rasActivos
++  // RF-01: se recorren TODOS los RA menos los marcados como no impartidos. Antes
++  // se recorría `rasActivos`, así que un RA sin actividad nunca llegaba a
++  // `sinNota` y el módulo salía SUPERADO sin haberlo evaluado (art. 2.3).
++  const raEnJuego = ctx.rasEnJuego || ctx.rasActivos
+ 
+   raEnJuego.forEach(ra => {
+     const ceLst = ctx.cesByRa[ra.id] || []
+@@ -360,6 +470,14 @@ function estadoModulo(ctx, notasAl, opts) {
+     porRA, media, pendientes, sinNota, completo, superado, acta,
+     resultado,
+     centroOk,
++    // ── RF-01 ────────────────────────────────────────────────────────────────
++    // Qué RA se han dejado fuera del cómputo y con qué reparto de ponderación,
++    // para que el informe de justificación pueda enseñarlo.
++    raEstados: ctx.raEstados || null,
++    rasExcluidos: ctx.rasExcluidos || [],
++    ponderaciones: ctx.ponderaciones || null,
++    // RA que siguen en «previsto»: impiden cerrar el acta.
++    raPorDecidir: ctx.raEstados ? raPendientesDeDecidir(ctx) : [],
+     // A efectos de promoción, SP cuenta como superado (art. 18.4)
+     superadoParaPromocion: resultado === 'SUPERADO' || resultado === 'SUPERADO_PARCIAL',
+   }
+@@ -626,5 +744,7 @@ if (typeof module !== 'undefined' && module.exports) {
+     computaEnNotaFinal, notaFinalCiclo, notaAccesoGradoMedio,
+     cupoMatriculaHonor, candidatosMatriculaHonor, puedeContinuarConPendientes,
+     franjaFaseEmpresaCE, validaFaseEmpresaCE,
++    // RF-01
++    ESTADO_RA, estadoImparticion, reparterPonderaciones, raPendientesDeDecidir,
+   }
+ }
+diff --git a/tests/unit/convocatorias.test.js b/tests/unit/convocatorias.test.js
+index a25811c..77030ff 100644
+--- a/tests/unit/convocatorias.test.js
++++ b/tests/unit/convocatorias.test.js
+@@ -157,8 +157,15 @@ describe('A-5 · Convocatorias', () => {
+     const hastaLa1a = M.estadoModulo(
+       M.contextoModulo({ ras: rasB, cesByRa: cesB, asignaciones: [], actividades: actsB.filter(a => a.eval <= 1) }),
+       soloUnaNota)
++    // Lo que este test protege sigue en pie: RA2 no cuenta como cero, así que la
++    // media de diciembre es 7 y no 3,5.
+     expect(hastaLa1a.media).toBeCloseTo(7)
+-    expect(hastaLa1a.sinNota).toEqual([])
++    // Lo que cambia con RF-01: RA2 ya no desaparece del cómputo por no tener
++    // actividades todavía. Figura como pendiente de evaluar, que es lo que exige
++    // el art. 2.3 —hacen falta todos los RA—, y por eso el módulo no puede darse
++    // por superado en diciembre. Antes salía SUPERADO con medio módulo sin dar.
++    expect(hastaLa1a.sinNota).toEqual(['RA2'])
++    expect(hastaLa1a.resultado).toBe('PENDIENTE')
+ 
+     const cursoEntero = M.estadoModulo(
+       M.contextoModulo({ ras: rasB, cesByRa: cesB, asignaciones: [], actividades: actsB }),
+diff --git a/tests/unit/ra-imparticion.test.js b/tests/unit/ra-imparticion.test.js
+new file mode 100644
+index 0000000..77b7f7d
+--- /dev/null
++++ b/tests/unit/ra-imparticion.test.js
+@@ -0,0 +1,169 @@
++import { describe, expect, it } from 'vitest'
++import fs from 'fs'
++import path from 'path'
++import vm from 'vm'
++
++// El motor se apoya en las claves RA|CE de js/utils/ce-keys.js: se cargan en el
++// mismo orden que en la aplicación, igual que en evaluation-calculations.test.js
++function cargarMotor() {
++  const ceKeys = fs.readFileSync(path.resolve('renderer/js/utils/ce-keys.js'), 'utf8')
++  const motor  = fs.readFileSync(path.resolve('renderer/js/core/calificacion.js'), 'utf8')
++  const context = { module: { exports: {} }, console }
++  vm.runInNewContext(`${ceKeys}\n${motor}`, context)
++  return context.module.exports
++}
++
++const {
++  contextoModulo, estadoModulo, estadoImparticion,
++  reparterPonderaciones, raPendientesDeDecidir, ESTADO_RA,
++} = cargarMotor()
++
++/**
++ * RF-01 · Estado de impartición del resultado de aprendizaje.
++ *
++ * El fallo que corrige: `rasActivos` filtraba los RA sin actividad y
++ * `estadoModulo` solo recorría esos, así que un RA que nunca se había evaluado
++ * no llegaba a `sinNota`, `completo` salía true y el módulo podía darse por
++ * SUPERADO. El art. 2.3 de la Orden 201/2024 exige alcanzarlos TODOS.
++ *
++ * El reparto proporcional de la ponderación de un RA no impartido no es una
++ * exigencia normativa, es una regla funcional de EvalFP que debe constar en la
++ * programación didáctica. Lo que la norma pide es que la decisión esté
++ * documentada: de ahí el motivo obligatorio.
++ */
++
++const RAS = [
++  { id: 'RA1', pond: 25 },
++  { id: 'RA2', pond: 25 },
++  { id: 'RA3', pond: 50 },
++]
++
++const CES = {
++  RA1: [{ id: 'a' }],
++  RA2: [{ id: 'a' }],
++  RA3: [{ id: 'a' }],
++}
++
++// Una actividad por RA, salvo RA3, que se queda sin ninguna.
++const ACTS = [
++  { id: 1, ra_id: 'RA1', tipo: 'examen', peso: 1, nota_max: 10, eval: 1, convocatoria: 1 },
++  { id: 2, ra_id: 'RA2', tipo: 'examen', peso: 1, nota_max: 10, eval: 1, convocatoria: 1 },
++]
++
++const NOTAS = { 1: 8, 2: 8 }
++
++const ctxCon = raEstados => contextoModulo({
++  ras: RAS, cesByRa: CES, asignaciones: [], actividades: ACTS,
++  minExam: null, rasSuperados: null, tieneFaseEmpresa: false,
++  convocatoria: 1, raEstados,
++})
++
++describe('RF-01 · un RA sin actividad ya no desaparece del cómputo', () => {
++  it('el módulo queda PENDIENTE, no SUPERADO, si un RA no se ha evaluado', () => {
++    const est = estadoModulo(ctxCon(null), NOTAS)
++    expect(est.sinNota).toContain('RA3')
++    expect(est.completo).toBe(false)
++    expect(est.resultado).toBe('PENDIENTE')
++    expect(est.superado).toBe(false)
++  })
++
++  it('un RA sin decidir arranca como «previsto», nunca como no impartido', () => {
++    const ctx = ctxCon(null)
++    expect(ctx.raEstados.RA3).toBe(ESTADO_RA.PREVISTO)
++    expect(ctx.rasExcluidos).toEqual([])
++  })
++
++  it('el cierre de acta se bloquea mientras quede algún RA en previsto', () => {
++    expect(raPendientesDeDecidir(ctxCon(null))).toEqual(['RA3'])
++    const todos = {
++      RA1: ESTADO_RA.IMPARTIDO,
++      RA2: ESTADO_RA.IMPARTIDO,
++      RA3: { estado: ESTADO_RA.NO_IMPARTIDO, motivo: 'sin tiempo', fecha: '2026-06-01' },
++    }
++    expect(raPendientesDeDecidir(ctxCon(todos))).toEqual([])
++  })
++})
++
++describe('RF-01 · RA marcado como no impartido', () => {
++  const ESTADOS = {
++    RA1: ESTADO_RA.IMPARTIDO,
++    RA2: ESTADO_RA.IMPARTIDO,
++    RA3: { estado: ESTADO_RA.NO_IMPARTIDO, motivo: 'no dio tiempo', fecha: '2026-06-01' },
++  }
++
++  it('sale del cómputo y el módulo puede superarse con el resto', () => {
++    const est = estadoModulo(ctxCon(ESTADOS), NOTAS)
++    expect(est.sinNota).toEqual([])
++    expect(est.completo).toBe(true)
++    expect(est.resultado).toBe('SUPERADO')
++    expect(est.rasExcluidos).toEqual(['RA3'])
++  })
++
++  it('no cuenta como no superado para el tope de 4 del art. 25.5', () => {
++    const est = estadoModulo(ctxCon(ESTADOS), NOTAS)
++    expect(est.pendientes).not.toContain('RA3')
++    expect(est.acta).toBe(8)
++  })
++
++  it('reparte su ponderación proporcionalmente, no a partes iguales', () => {
++    const p = ctxCon(ESTADOS).ponderaciones
++    expect(p.RA3.efectiva).toBe(0)
++    expect(p.RA3.original).toBe(50)
++    // RA1 y RA2 tenían 25 cada uno sobre 100: al salir RA3 pasan a 50 y 50.
++    expect(p.RA1.efectiva).toBeCloseTo(50)
++    expect(p.RA2.efectiva).toBeCloseTo(50)
++    expect(p.RA1.original).toBe(25)
++  })
++
++  it('conserva pesos desiguales al repartir', () => {
++    const ras = [{ id: 'RA1', pond: 10 }, { id: 'RA2', pond: 30 }, { id: 'RA3', pond: 60 }]
++    const p = reparterPonderaciones(ras, {
++      RA1: ESTADO_RA.IMPARTIDO, RA2: ESTADO_RA.IMPARTIDO, RA3: ESTADO_RA.NO_IMPARTIDO,
++    })
++    // 10 y 30 sobre 40 → 25 % y 75 % del total.
++    expect(p.RA1.efectiva).toBeCloseTo(25)
++    expect(p.RA2.efectiva).toBeCloseTo(75)
++    expect(p.RA1.efectiva + p.RA2.efectiva).toBeCloseTo(100)
++  })
++})
++
++describe('RF-01 · el estado no lo decide la existencia de actividades', () => {
++  it('crear o borrar actividades no cambia un estado ya declarado', () => {
++    const declarado = { RA3: ESTADO_RA.IMPARTIDO }
++    // RA3 no tiene ninguna actividad y aun así sigue impartido: lo dijo la docente.
++    expect(ctxCon(declarado).raEstados.RA3).toBe(ESTADO_RA.IMPARTIDO)
++    // Y un RA con actividades puede declararse no impartido sin que el motor
++    // lo contradiga.
++    const est = estadoImparticion(RAS, [{ id: 'RA1' }], { RA1: ESTADO_RA.NO_IMPARTIDO })
++    expect(est.RA1).toBe(ESTADO_RA.NO_IMPARTIDO)
++  })
++
++  it('el valor por defecto solo se usa donde no hay decisión', () => {
++    const est = estadoImparticion(RAS, [{ id: 'RA1' }, { id: 'RA2' }], { RA2: ESTADO_RA.PREVISTO })
++    expect(est.RA1).toBe(ESTADO_RA.IMPARTIDO)   // tiene actividad
++    expect(est.RA2).toBe(ESTADO_RA.PREVISTO)    // declarado a mano
++    expect(est.RA3).toBe(ESTADO_RA.PREVISTO)    // sin actividad
++  })
++})
++
++describe('RF-01 · pérdida del derecho a evaluación continua', () => {
++  it('sigue exigiendo todos los RA salvo los no impartidos', () => {
++    const estados = {
++      RA1: ESTADO_RA.IMPARTIDO,
++      RA2: ESTADO_RA.IMPARTIDO,
++      RA3: { estado: ESTADO_RA.NO_IMPARTIDO, motivo: 'no dio tiempo' },
++    }
++    const acts = [
++      { id: 9, ra_id: 'RA1', tipo: 'examen', peso: 1, nota_max: 10, convocatoria: 1, prueba_objetiva: 1 },
++    ]
++    const ctx = contextoModulo({
++      ras: RAS, cesByRa: CES, asignaciones: [], actividades: acts,
++      convocatoria: 1, raEstados: estados,
++    })
++    const est = estadoModulo(ctx, { 9: 9 }, { evalContinuaPerdida: true })
++    // RA2 no lo cubre la prueba objetiva → PENDIENTE. RA3 no cuenta.
++    expect(est.sinNota).toContain('RA2')
++    expect(est.sinNota).not.toContain('RA3')
++    expect(est.resultado).toBe('PENDIENTE')
++  })
++})

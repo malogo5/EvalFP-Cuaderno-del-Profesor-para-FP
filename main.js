@@ -532,6 +532,9 @@ ipcMain.handle('db:saveNotaRec',   (_, aid, actId, nota) => db.saveNotaRec(aid, 
 // ── IPC: Ponderaciones RA ─────────────────────────────────────────────────────
 ipcMain.handle('db:getRaPonderaciones',  (_, mid)             => db.getRaPonderaciones(mid))
 ipcMain.handle('db:setRaPonderacion',    (_, mid, raId, pond) => db.setRaPonderacion(mid, raId, pond))
+// RF-01 · estado de impartición del RA (art. 2.3)
+ipcMain.handle('db:getRaEstados',        (_, mid)             => db.getRaEstados(mid))
+ipcMain.handle('db:setRaEstado',         (_, mid, raId, estado, motivo) => db.setRaEstado(mid, raId, estado, motivo))
 ipcMain.handle('db:setModuloDataJson',   (_, id, data)        => db.setModuloDataJson(id, data))
 
 // ── IPC: Config ───────────────────────────────────────────────────────────────

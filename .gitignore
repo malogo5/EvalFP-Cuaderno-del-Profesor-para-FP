@@ -57,3 +57,10 @@ EvalFP.zip
 # Son redundantes con git: el estado anterior está en el historial.
 backup_catalogo_*/
 *.bak-*
+
+
+# para rehacer la app
+*.sqlite
+*-wal
+*-shm 
+tmp/

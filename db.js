@@ -466,6 +466,21 @@ function _initSchema() {
       PRIMARY KEY (modulo_id, ra_id),
       FOREIGN KEY (modulo_id) REFERENCES modulos(id) ON DELETE CASCADE
     );
+
+    -- RF-01 · Estado de impartición del RA (Orden 201/2024, art. 2.3).
+    -- Es de GRUPO, no de alumno: o el RA se da al módulo entero o no se da.
+    -- 'previsto' | 'impartido' | 'no_impartido'. El estado no se deduce de que
+    -- existan actividades; la ausencia de un RA tiene que ser una decisión
+    -- fechada y motivada, no un efecto colateral de no haberlo programado.
+    CREATE TABLE IF NOT EXISTS ra_estado (
+      modulo_id  INTEGER NOT NULL,
+      ra_id      TEXT    NOT NULL,
+      estado     TEXT    NOT NULL DEFAULT 'previsto',
+      motivo     TEXT,
+      fecha      TEXT,
+      PRIMARY KEY (modulo_id, ra_id),
+      FOREIGN KEY (modulo_id) REFERENCES modulos(id) ON DELETE CASCADE
+    );
   `)
 }
 
@@ -913,6 +928,45 @@ function setRaPonderacion(moduloId, raId, pond) {
   `).run(moduloId, raId, limpia)
 }
 
+// ── RF-01 · Estado de impartición del RA ──────────────────────────────────────
+
+const ESTADOS_RA = ['previsto', 'impartido', 'no_impartido']
+
+/** { raId: { estado, motivo, fecha } } de un módulo. */
+function getRaEstados(moduloId) {
+  const filas = getDb()
+    .prepare('SELECT ra_id, estado, motivo, fecha FROM ra_estado WHERE modulo_id=?')
+    .all(moduloId)
+  const out = {}
+  for (const f of filas) out[f.ra_id] = { estado: f.estado, motivo: f.motivo, fecha: f.fecha }
+  return out
+}
+
+/**
+ * Fija el estado de impartición de un RA.
+ *
+ * Marcar «no impartido» exige motivo: es lo que hace defendible que ese RA no
+ * compute. Sin motivo se rechaza, porque un RA que desaparece de la calificación
+ * sin explicación es exactamente el problema que RF-01 viene a corregir.
+ */
+function setRaEstado(moduloId, raId, estado, motivo) {
+  if (!ESTADOS_RA.includes(estado)) {
+    throw new Error(`Estado de RA no válido: ${estado}`)
+  }
+  const txt = (motivo == null ? '' : String(motivo)).trim()
+  if (estado === 'no_impartido' && !txt) {
+    throw new Error('Marcar un RA como no impartido exige indicar el motivo.')
+  }
+  getDb().prepare(`
+    INSERT INTO ra_estado (modulo_id, ra_id, estado, motivo, fecha)
+    VALUES (?,?,?,?,date('now'))
+    ON CONFLICT (modulo_id, ra_id) DO UPDATE SET
+      estado = excluded.estado,
+      motivo = excluded.motivo,
+      fecha  = excluded.fecha
+  `).run(moduloId, raId, estado, estado === 'no_impartido' ? txt : (txt || null))
+}
+
 // ── Modulo data_json (edición UT/RA/CE) ───────────────────────────────────────
 
 /**
@@ -1010,6 +1064,7 @@ module.exports = {
   getActividades, saveActividad, deleteActividad,
   getNotasGrid, saveNota, saveNotaRec, closeDb, backupTo,
   getRaPonderaciones, setRaPonderacion,
+  getRaEstados, setRaEstado,
   getCalificacionesCE, setCalificacionCE,
   getRasSuperados, cerrarEvaluacionRAs, reabrirRaSuperado,
   getFaseEmpresa, setFaseEmpresa,
