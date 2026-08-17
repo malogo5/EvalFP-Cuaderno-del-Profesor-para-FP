@@ -220,3 +220,31 @@ va a sustentar la valoración de un criterio.
 prompt de un párrafo. Se descartó como sustituto —sin tests, sin convocatorias, con el mismo
 agujero del art. 2.3 y con cifras normativas inventadas— pero tenía estas dos piezas que
 EvalFP no cubre.
+
+---
+
+## 10. RF-17 — Tipos de actividad y familia de reparto
+
+*Derivado del código; los tipos y su clasificación son decisión de EvalFP.*
+
+Hoy solo existen dos tipos, `practica` y `examen`, y no son una etiqueta: `pesosPorTipo` en
+`calificacion.js` reparte la nota según el peso acumulado de cada grupo. Añadir tipos nuevos
+sin más haría que su peso **desapareciera del reparto**: se calificaría un proyecto y no
+contaría para nada.
+
+Se separan dos conceptos:
+
+- **Tipo**: examen, práctica, proyecto, observación, exposición, trabajo, cuestionario.
+- **Familia de reparto**: examen o práctica. Cada tipo declara la suya, **configurable por
+  módulo**: un proyecto puede pesar como práctica en un módulo y como examen en otro.
+
+`calificacion.js` no se toca: sigue recibiendo actividades clasificadas en dos familias. Lo que
+cambia es cómo se clasifica antes de llegar al motor.
+
+Los tipos existentes se migran manteniendo su familia actual, de modo que ninguna nota cambie.
+
+**Relación con RF-02**: el tipo de actividad es también el instrumento de evaluación. La lista
+de tipos y la de instrumentos previstos deben ser la misma, no dos listas paralelas que puedan
+contradecirse.
+
+Va antes de la vista de unidades de trabajo, porque desde ella se crean actividades.
