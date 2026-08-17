@@ -186,6 +186,44 @@ contextBridge.exposeInMainWorld('api', {
     _validateId(mid, 'modulo_id')
     return ipcRenderer.invoke('db:setTipoFamilia', mid, tipo, familia)
   },
+  // RF-02 · unidades de trabajo normalizadas, segunda parte
+  getUnidadesTrabajo: mid => {
+    _validateId(mid, 'modulo_id')
+    return ipcRenderer.invoke('db:getUnidadesTrabajo', mid)
+  },
+  setUnidadTrabajo: (mid, utId, campos) => {
+    _validateId(mid, 'modulo_id')
+    return ipcRenderer.invoke('db:setUnidadTrabajo', mid, utId, campos)
+  },
+  deleteUnidadTrabajo: (mid, utId) => {
+    _validateId(mid, 'modulo_id')
+    return ipcRenderer.invoke('db:deleteUnidadTrabajo', mid, utId)
+  },
+  getUtCe: (mid, utId) => {
+    _validateId(mid, 'modulo_id')
+    return ipcRenderer.invoke('db:getUtCe', mid, utId)
+  },
+  getUtCeModulo: mid => {
+    _validateId(mid, 'modulo_id')
+    return ipcRenderer.invoke('db:getUtCeModulo', mid)
+  },
+  setUtCe: (mid, utId, pares) => {
+    _validateId(mid, 'modulo_id')
+    return ipcRenderer.invoke('db:setUtCe', mid, utId, pares)
+  },
+  getActividadCe: actId => {
+    _validateId(actId, 'actividad_id')
+    return ipcRenderer.invoke('db:getActividadCe', actId)
+  },
+  getActividadCeModulo: mid => {
+    _validateId(mid, 'modulo_id')
+    return ipcRenderer.invoke('db:getActividadCeModulo', mid)
+  },
+  setActividadCe: (actId, mid, pares) => {
+    _validateId(actId, 'actividad_id')
+    _validateId(mid, 'modulo_id')
+    return ipcRenderer.invoke('db:setActividadCe', actId, mid, pares)
+  },
   // Migración a tablas normalizadas: manual desde Ajustes, con copia de
   // seguridad previa hecha en el proceso principal (ver main.js).
   migrarProgramacionNormalizada: () => ipcRenderer.invoke('db:migrarProgramacionNormalizada'),

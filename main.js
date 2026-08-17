@@ -252,6 +252,10 @@ function setupBackups() {
 
 async function performBackup() {
   try {
+    // No asumir que setupBackups() ya creó el directorio: en modo test
+    // (EVALFP_TEST=1) esa función no se llama, y un backup manual —como el
+    // de la migración de RF-02— fallaría por directorio inexistente.
+    fs.mkdirSync(backupsDir(), { recursive: true })
     // Con precisión de segundos, dos copias seguidas chocan de nombre. Si el
     // archivo ya existe se añade un sufijo en vez de fallar.
     const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-')
@@ -553,6 +557,17 @@ ipcMain.handle('db:setRaInstrumentos',   (_, mid, raId, instrumentos) =>
 // RF-17 · familia de reparto por tipo de actividad (docs/rediseno/00-CONTEXTO.md §10)
 ipcMain.handle('db:getTipoFamilia', (_, mid) => db.getTipoFamilia(mid))
 ipcMain.handle('db:setTipoFamilia', (_, mid, tipo, familia) => db.setTipoFamilia(mid, tipo, familia))
+
+// RF-02 · unidades de trabajo normalizadas, segunda parte (04-REDISENO-PANTALLAS.md §1.2-§1.4)
+ipcMain.handle('db:getUnidadesTrabajo', (_, mid) => db.getUnidadesTrabajo(mid))
+ipcMain.handle('db:setUnidadTrabajo',   (_, mid, utId, campos) => db.setUnidadTrabajo(mid, utId, campos))
+ipcMain.handle('db:deleteUnidadTrabajo', (_, mid, utId) => db.deleteUnidadTrabajo(mid, utId))
+ipcMain.handle('db:getUtCe',        (_, mid, utId) => db.getUtCe(mid, utId))
+ipcMain.handle('db:getUtCeModulo',  (_, mid)       => db.getUtCeModulo(mid))
+ipcMain.handle('db:setUtCe',        (_, mid, utId, pares) => db.setUtCe(mid, utId, pares))
+ipcMain.handle('db:getActividadCe', (_, actId) => db.getActividadCe(actId))
+ipcMain.handle('db:getActividadCeModulo', (_, mid) => db.getActividadCeModulo(mid))
+ipcMain.handle('db:setActividadCe', (_, actId, mid, pares) => db.setActividadCe(actId, mid, pares))
 
 /**
  * Migración a la programación normalizada (RF-02). Acción manual disparada

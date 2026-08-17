@@ -469,6 +469,11 @@ dialog[open]{display:block}
 .modal-title{font-family:ui-serif,'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;font-size:17px;font-weight:600;margin-bottom:20px;color:var(--text);letter-spacing:-.1px}
 .modal-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:24px}
 
+/* Barra de progreso del asistente de UT (RF-02, tres pasos) */
+.ut-asis-bar-seg{flex:1;height:4px;border-radius:2px;background:var(--border2);transition:background .15s}
+.ut-asis-bar-seg.hecho{background:var(--accent)}
+.ut-asis-bar-seg.actual{background:var(--accent2)}
+
 /* ══════════════════════════════════════
    PROGRAMACIÓN
 ══════════════════════════════════════ */

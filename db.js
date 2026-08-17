@@ -606,6 +606,109 @@ function setTipoFamilia(moduloId, tipo, familia) {
   `).run(moduloId, tipo, familia)
 }
 
+// ── RF-02 · Unidades de trabajo normalizadas (segunda parte) ──────────────────
+// (docs/rediseno/04-REDISENO-PANTALLAS.md §1.2-§1.4). Sustituyen a data_json.uts
+// y data_json.asignaciones para la vista de Unidades de Trabajo. El resto de
+// Programación (plan de actividades, distribución, mapa) sigue en data_json
+// hasta que le llegue su turno — mismo patrón que ra_catalogo/ce_catalogo.
+
+/** UT de un módulo, ordenadas por id. [] si el módulo no está migrado. */
+const getUnidadesTrabajo = moduloId => getDb().prepare(
+  'SELECT ut_id, nombre, horas, horas_empresa, eval, tags FROM unidades_trabajo WHERE modulo_id=? ORDER BY ut_id'
+).all(moduloId)
+
+/**
+ * Crea o actualiza una UT. Sin `utId` genera el siguiente libre (UT1, UT2…),
+ * saltando huecos de UT borradas para no reutilizar un id que ya significó
+ * otra cosa.
+ * @returns {string} el ut_id, nuevo o el mismo que se pasó
+ */
+function setUnidadTrabajo(moduloId, utId, campos) {
+  const db = getDb()
+  const { nombre, horas, horasEmpresa, eval: evalNum, tags } = campos || {}
+  let id = utId
+  if (!id) {
+    const existentes = new Set(db.prepare('SELECT ut_id FROM unidades_trabajo WHERE modulo_id=?')
+      .all(moduloId).map(r => r.ut_id))
+    let n = existentes.size + 1
+    while (existentes.has(`UT${n}`)) n++
+    id = `UT${n}`
+  }
+  db.prepare(`
+    INSERT INTO unidades_trabajo (modulo_id, ut_id, nombre, horas, horas_empresa, eval, tags)
+    VALUES (?,?,?,?,?,?,?)
+    ON CONFLICT (modulo_id, ut_id) DO UPDATE SET
+      nombre=excluded.nombre, horas=excluded.horas, horas_empresa=excluded.horas_empresa,
+      eval=excluded.eval, tags=excluded.tags
+  `).run(moduloId, id, nombre ?? '', Number(horas) || 0, Number(horasEmpresa) || 0,
+         Number(evalNum) || 1, tags ?? null)
+  return id
+}
+
+/**
+ * Borra una UT. `ut_ce` cae en cascada por FK. Las actividades que la tuvieran
+ * asignada NO se tocan — `actividades.ut_id` es texto libre, sin FK a esta
+ * tabla (RF-02 no lo normaliza, ver docs/rediseno/05-PLAN-MIGRACION.md §8):
+ * quedan con el id de una unidad que ya no existe en el catálogo, que es
+ * justo lo que tiene que pasar («lo evaluado es hecho», §1.3).
+ */
+const deleteUnidadTrabajo = (moduloId, utId) =>
+  getDb().prepare('DELETE FROM unidades_trabajo WHERE modulo_id=? AND ut_id=?').run(moduloId, utId)
+
+/** {ra_id, ce_id}[] asignados a una UT. */
+const getUtCe = (moduloId, utId) => getDb().prepare(
+  'SELECT ra_id, ce_id FROM ut_ce WHERE modulo_id=? AND ut_id=?'
+).all(moduloId, utId)
+
+/** Toda la asignación UT→CE de un módulo, para el indicador de cobertura. */
+const getUtCeModulo = moduloId => getDb().prepare(
+  'SELECT ut_id, ra_id, ce_id FROM ut_ce WHERE modulo_id=?'
+).all(moduloId)
+
+/**
+ * Sustituye TODA la asignación de CE de una UT. No toca `actividad_ce`: quitar
+ * un CE de una UT no desvincula lo que una actividad ya evaluó con él.
+ */
+function setUtCe(moduloId, utId, pares) {
+  const db = getDb()
+  db.exec('BEGIN')
+  try {
+    db.prepare('DELETE FROM ut_ce WHERE modulo_id=? AND ut_id=?').run(moduloId, utId)
+    const ins = db.prepare('INSERT INTO ut_ce (modulo_id, ut_id, ra_id, ce_id) VALUES (?,?,?,?)')
+    for (const { ra_id, ce_id } of (pares || [])) ins.run(moduloId, utId, ra_id, ce_id)
+    db.exec('COMMIT')
+  } catch (e) {
+    try { db.exec('ROLLBACK') } catch { /* sin transacción activa */ }
+    throw e
+  }
+}
+
+/** {ra_id, ce_id}[] que evalúa una actividad. */
+const getActividadCe = actividadId => getDb().prepare(
+  'SELECT ra_id, ce_id FROM actividad_ce WHERE actividad_id=?'
+).all(actividadId)
+
+/** Toda la relación actividad→CE de un módulo, para el indicador de cobertura. */
+const getActividadCeModulo = moduloId => getDb().prepare(
+  'SELECT actividad_id, ra_id, ce_id FROM actividad_ce WHERE modulo_id=?'
+).all(moduloId)
+
+/** Sustituye los CE que evalúa una actividad. */
+function setActividadCe(actividadId, moduloId, pares) {
+  const db = getDb()
+  db.exec('BEGIN')
+  try {
+    db.prepare('DELETE FROM actividad_ce WHERE actividad_id=?').run(actividadId)
+    const ins = db.prepare(
+      'INSERT INTO actividad_ce (actividad_id, modulo_id, ra_id, ce_id) VALUES (?,?,?,?)')
+    for (const { ra_id, ce_id } of (pares || [])) ins.run(actividadId, moduloId, ra_id, ce_id)
+    db.exec('COMMIT')
+  } catch (e) {
+    try { db.exec('ROLLBACK') } catch { /* sin transacción activa */ }
+    throw e
+  }
+}
+
 function _initSchema() {
   _db.exec(`
     -- Módulos que el profesor imparte
@@ -1529,5 +1632,9 @@ module.exports = {
   getCeInstrumentosPrevistos, setCeInstrumentos, setRaInstrumentos,
   // RF-17 · tipos de actividad y familia de reparto
   getTipoFamilia, setTipoFamilia,
+  // RF-02 · unidades de trabajo normalizadas (segunda parte)
+  getUnidadesTrabajo, setUnidadTrabajo, deleteUnidadTrabajo,
+  getUtCe, getUtCeModulo, setUtCe,
+  getActividadCe, getActividadCeModulo, setActividadCe,
   TEST_ONLY_rawDb,
 }

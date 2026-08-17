@@ -411,102 +411,133 @@ async function loadProgramacion() {
     h += `</div></div>`
   }
 
-  // ── 3. TABLA DE UNIDADES DE TRABAJO ──────────────────────────
-  // Las UT reparten las horas de AULA. En los ciclos con fase en empresa
-  // (Grado Básico) la duración oficial incluye esas horas de empresa, que no
-  // se programan en UT: comparar contra ella dejaba el aviso siempre en ámbar.
-  const _horasAula = parseInt(data.modulo?.horas_aula, 10) || 0
-  const _horasOfi  = parseInt(data.modulo?.total_horas, 10) || mod.horas || 0
-  const _sumUtH = uts.reduce((s, u) => s + (parseInt(u.horas, 10) || 0), 0)
-  // Horas del módulo que se cursan en la fase de formación en empresa. Cuentan
-  // dentro de la duración del módulo (RD 659/2023, art. 9: la fase no tiene
-  // currículo propio, contribuye a los RA de los módulos), pero van marcadas
-  // para poder justificar cuántas horas del módulo se hacen fuera del centro.
-  const _sumUtEmp = uts.reduce((s, u) => s + (parseInt(u.horas_empresa, 10) || 0), 0)
-  const _pctEmp   = _sumUtH ? Math.round(_sumUtEmp * 1000 / _sumUtH) / 10 : 0
-  const _modH    = _horasAula || _horasOfi || 0
-  const _hOk     = _sumUtH === _modH
-  const _hNota   = _horasAula && _horasAula !== _horasOfi ? ' de aula' : ''
-  const _hBadgeSt = _hOk
-    ? 'background:rgba(16,185,129,.12);color:var(--green)'
-    : 'background:rgba(245,158,11,.15);color:var(--amber)'
-  h += `<div class="card" style="margin-bottom:16px">
-    <div class="prog-section-title" style="display:flex;align-items:center;gap:10px">
-      📚 Unidades de Trabajo
-      <span id="ut-horas-badge" style="font-size:10.5px;padding:2px 10px;border-radius:8px;font-weight:700;${_hBadgeSt}"
-        title="${_hNota ? `${_horasOfi} h de duración oficial, de las que ${_horasAula} son de aula y el resto formación en empresa` : 'Duración del módulo'}">
-        Σ ${_sumUtH}h / ${_modH}h${esc(_hNota)}${_hOk?' ✓':' ⚠'}
-      </span>
-      ${_sumUtEmp ? `<span id="ut-empresa-badge" style="font-size:10.5px;padding:2px 10px;border-radius:8px;font-weight:700;background:rgba(74,144,217,.14);color:var(--accent2)"
-        title="Horas del módulo que se cursan en la fase de formación en empresa. Están incluidas en la duración del módulo.">🏭 ${_sumUtEmp}h en empresa · ${_pctEmp}% del módulo</span>` : ''}
-    </div>
-    <div style="overflow-x:auto">
-    <table class="prog-table">
-      <thead><tr>
-        <th style="width:56px">UT</th>
-        <th style="min-width:180px">Nombre</th>
-        <th style="width:82px;text-align:center">Horas</th>
-        <th class="th-editable" style="width:88px;text-align:center" title="De esas horas, cuántas se cursan en la fase de formación en empresa">🏭 Empresa</th>
-        <th style="width:58px;text-align:center">Eval</th>
-        <th style="width:60px;text-align:center">RA</th>
-        <th style="min-width:160px">Contenidos clave</th>
-        <th style="width:106px;text-align:center">Acciones</th>
-      </tr></thead>
-      <tbody>`
-  for (const ut of uts) {
-    const utAsigs = asigs.filter(a => a.ut === ut.id)
-    const raIds   = utAsigs.map(a => a.ra)
-    const raCellContent = raIds.length
-      ? raIds.map(id => `<span style="font-weight:700;color:var(--accent2);display:inline-block">${esc(id)}</span>`).join('<br>')
-      : '<span style="color:var(--text2)">—</span>'
-    h += `<tr>
-      <td style="font-weight:700;color:var(--accent2);white-space:nowrap">${ut.id}</td>
-      <td><input class="nota-cell" type="text" value="${esc(ut.nombre)}"
-        style="width:100%;min-width:160px;text-align:left;font-weight:500"
-        onchange="saveUtField(${mid},'${ut.id}','nombre',this.value)"/></td>
-      <td style="text-align:center">
-        <input class="peso-cell ut-horas-inp" type="number" min="0" max="999" value="${ut.horas||0}"
-          style="width:70px"
-          oninput="_refreshUtHoras(this,${_modH},'${_hNota}')"
-          onchange="saveUtField(${mid},'${ut.id}','horas',this.value)"/></td>
-      <td style="text-align:center">
-        <input class="peso-cell" type="number" min="0" max="999" value="${ut.horas_empresa||0}"
-          style="width:64px" title="Horas de esta unidad que se cursan en la empresa"
-          onchange="saveUtField(${mid},'${ut.id}','horas_empresa',this.value)"/></td>
-      <td style="text-align:center">
-        <select class="nota-cell" style="width:52px;padding:3px 4px;text-align:center;font-weight:600"
-          onchange="saveUtField(${mid},'${ut.id}','eval',this.value)">
-          ${evals.map(e=>`<option value="${e}"${ut.eval==e?' selected':''}>${e}</option>`).join('')}
-        </select></td>
-      <td style="text-align:center;line-height:1.6">${raCellContent}</td>
-      <td><input class="nota-cell" type="text" value="${esc(ut.tags||'')}"
-        style="width:100%;text-align:left;font-size:11px;color:var(--text2)"
-        onchange="saveUtField(${mid},'${ut.id}','tags',this.value)"/></td>
-      <td style="text-align:center;white-space:nowrap">
-        <button onclick="openUtRasModal(${mid},'${ut.id}')" title="Asignar RAs y CEs"
-          style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:3px 9px;font-size:11px;font-weight:700;cursor:pointer;margin-right:4px">RA/CE</button>
-        <button onclick="deleteUt(${mid},'${ut.id}')" title="Eliminar UT" aria-label="Eliminar UT"
-          style="background:transparent;color:#ef4444;border:1px solid rgba(239,68,68,.35);border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer">✕</button>
-      </td>
-    </tr>`
+  // ── 3. UNIDADES DE TRABAJO — programación normalizada ────────
+  // RF-02, segunda parte: esta sección ya NO lee uts/asignaciones/ces
+  // (data_json). Lee y escribe unidades_trabajo, ut_ce y actividad_ce
+  // (docs/rediseno/04-REDISENO-PANTALLAS.md §1.2-§1.4). El plan de
+  // actividades y el mapa de cobertura (secciones 1, 2 y 5) siguen sobre
+  // data_json hasta su propia parte de RF-02: una actividad creada desde
+  // aquí no aparecerá todavía con sus criterios en esas secciones antiguas.
+  const raCatalogo = await window.api.getRaCatalogo(parseInt(mid))
+
+  if (!raCatalogo.length) {
+    h += `<div class="card" style="margin-bottom:16px">
+      <div class="prog-section-title">📚 Unidades de Trabajo</div>
+      <div class="empty-state">
+        <div style="font-weight:700;color:var(--text);margin-bottom:6px">Este módulo todavía no está migrado a la programación normalizada</div>
+        <div style="margin-bottom:12px">Desde RF-02, las UT y sus criterios viven en tablas con clave foránea
+          (<code>unidades_trabajo</code>, <code>ut_ce</code>), no en el JSON antiguo del módulo. Migra este módulo
+          desde Ajustes — hace una copia de seguridad antes de tocar nada — y vuelve aquí.</div>
+        <button class="btn btn-primary btn-sm" onclick="goSection('ajustes')">⚙ Ir a Ajustes</button>
+      </div>
+    </div>`
+  } else {
+    const utsNorm        = await window.api.getUnidadesTrabajo(parseInt(mid))
+    const ceCatalogoNorm = await window.api.getCeCatalogo(parseInt(mid))
+    const utCeModulo     = await window.api.getUtCeModulo(parseInt(mid))
+
+    // Indicador de cobertura curricular (04-REDISENO-PANTALLAS.md §1.2): cuántos
+    // CE del catálogo están asignados a ALGUNA UT. No es lo mismo que "tiene una
+    // actividad que lo evalúe" — esa pregunta la contesta la sección de RA.
+    const cubiertosSet = new Set(utCeModulo.map(f => `${f.ra_id}|${f.ce_id}`))
+    const faltantesCe  = ceCatalogoNorm.filter(c => !cubiertosSet.has(`${c.ra_id}|${c.ce_id}`))
+    const totalCeNorm   = ceCatalogoNorm.length
+    const cobBadge = !totalCeNorm ? '' : (faltantesCe.length === 0
+      ? `<span class="badge badge-green">✓ los ${totalCeNorm} criterios asignados a alguna UT</span>`
+      : `<button type="button" onclick="_toggleFaltantesUt(this)" data-abierto="0"
+           style="background:rgba(245,158,11,.15);color:var(--amber);border:none;border-radius:8px;padding:2px 10px;font-size:10.5px;font-weight:700;cursor:pointer">
+           ⚠ ${totalCeNorm - faltantesCe.length} de ${totalCeNorm} criterios asignados a alguna UT — ver los que faltan
+         </button>`)
+
+    h += `<div class="card" style="margin-bottom:16px">
+      <div class="prog-section-title" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        📚 Unidades de Trabajo ${cobBadge}
+      </div>
+      ${faltantesCe.length ? `<div id="ut-faltantes" style="display:none;margin:6px 0 4px;padding:8px 10px;background:var(--bg3);border-radius:8px;font-size:11px;color:var(--text2);max-height:160px;overflow-y:auto">
+        ${faltantesCe.map(c => `<div style="padding:2px 0"><b style="color:var(--accent)">${esc(c.ra_id)}|${esc(c.ce_id)}</b> ${esc(c.texto)}</div>`).join('')}
+      </div>` : ''}
+      <div style="overflow-x:auto">
+      <table class="prog-table">
+        <thead><tr>
+          <th style="width:56px">UT</th>
+          <th style="min-width:180px">Nombre</th>
+          <th style="width:82px;text-align:center">Horas</th>
+          <th style="width:88px;text-align:center">Eval</th>
+          <th style="width:110px;text-align:center">Criterios</th>
+          <th style="width:150px;text-align:center">Acciones</th>
+        </tr></thead>
+        <tbody>`
+    for (const ut of utsNorm) {
+      const misCe = utCeModulo.filter(f => f.ut_id === ut.ut_id).length
+      h += `<tr>
+        <td style="font-weight:700;color:var(--accent2);white-space:nowrap">${esc(ut.ut_id)}</td>
+        <td><a href="#" onclick="abrirAsistenteUt(${mid},'${esc(ut.ut_id)}',1);return false" style="font-weight:500">${esc(ut.nombre)}</a></td>
+        <td style="text-align:center">${ut.horas||0} h${ut.horas_empresa ? ` <span title="De ellas, en empresa" style="color:var(--accent2)">(🏭${ut.horas_empresa})</span>` : ''}</td>
+        <td style="text-align:center"><a href="#" onclick="abrirAsistenteUt(${mid},'${esc(ut.ut_id)}',1);return false" class="badge badge-accent">${evalLabel(ut.eval)}</a></td>
+        <td style="text-align:center"><a href="#" onclick="abrirAsistenteUt(${mid},'${esc(ut.ut_id)}',3);return false">${misCe} criterio${misCe===1?'':'s'}</a></td>
+        <td style="text-align:center;white-space:nowrap">
+          <button onclick="abrirNuevaActividadUt(${mid},'${esc(ut.ut_id)}')" title="Crear actividad desde esta UT"
+            style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:3px 9px;font-size:11px;font-weight:700;cursor:pointer;margin-right:4px">+ Actividad</button>
+          <button onclick="eliminarUnidadTrabajo(${mid},'${esc(ut.ut_id)}')" title="Eliminar UT" aria-label="Eliminar UT"
+            style="background:transparent;color:#ef4444;border:1px solid rgba(239,68,68,.35);border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer">✕</button>
+        </td>
+      </tr>`
+    }
+    if (!utsNorm.length) {
+      h += `<tr><td colspan="6" style="text-align:center;color:var(--text2);padding:16px">Este módulo todavía no tiene ninguna unidad de trabajo.</td></tr>`
+    }
+    h += `</tbody></table></div>
+      <div style="padding:10px 2px 2px">
+        <button onclick="abrirAsistenteUt(${mid},null,1)"
+          style="background:transparent;color:var(--accent);border:1.5px solid var(--accent);border-radius:8px;padding:5px 16px;font-size:12px;font-weight:700;cursor:pointer">+ Nueva unidad de trabajo</button>
+      </div>
+    </div>`
   }
-  h += `</tbody></table></div>
-    <div style="padding:10px 2px 2px">
-      <button onclick="addUt(${mid})"
-        style="background:transparent;color:var(--accent);border:1.5px solid var(--accent);border-radius:8px;padding:5px 16px;font-size:12px;font-weight:700;cursor:pointer">+ Añadir UT</button>
-    </div>
-  </div>`
+
+  // ── FAMILIA DE REPARTO POR TIPO DE ACTIVIDAD (RF-17) ──────────
+  // Cada tipo de actividad tiene una familia de reparto por defecto
+  // (examen|práctica: lo único que calificacion.js entiende). Aquí se puede
+  // cambiar por módulo, sin tocar el motor — ver renderer/js/utils/tipos-actividad.js.
+  {
+    const familiaOverridesRows = await window.api.getTipoFamilia(parseInt(mid))
+    const familiaOverrides = Object.fromEntries(familiaOverridesRows.map(r => [r.tipo, r.familia]))
+    h += `<div class="card" style="margin-bottom:16px">
+      <div class="prog-section-title">⚖️ Familia de reparto por tipo de actividad</div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:10px;line-height:1.5">
+        El motor de cálculo solo distingue dos familias de reparto, examen y práctica. Cada tipo de
+        actividad tiene una familia por defecto; cámbiala aquí si en este módulo debe repartir de otra forma
+        — por ejemplo, que un proyecto pese como examen.
+      </div>
+      <div style="overflow-x:auto">
+      <table class="prog-table" style="max-width:460px">
+        <thead><tr><th>Tipo de actividad</th><th style="width:160px;text-align:center">Familia de reparto</th></tr></thead>
+        <tbody>
+          ${TIPOS_ACTIVIDAD.map(t => {
+            const actual = familiaOverrides[t.id] || t.familiaDefecto
+            return `<tr>
+              <td>${esc(t.label)}</td>
+              <td style="text-align:center">
+                <select onchange="actualizarFamiliaTipo(${mid},'${t.id}',this.value)" style="font-size:11.5px">
+                  <option value="examen"${actual==='examen'?' selected':''}>Examen</option>
+                  <option value="practica"${actual==='practica'?' selected':''}>Práctica</option>
+                </select>
+                ${familiaOverrides[t.id] ? '' : `<span style="font-size:9.5px;color:var(--text3)"> (defecto)</span>`}
+              </td>
+            </tr>`
+          }).join('')}
+        </tbody>
+      </table>
+      </div>
+    </div>`
+  }
 
   // ── 4. RESULTADOS DE APRENDIZAJE Y CRITERIOS DE EVALUACIÓN ───
   // RF-02, segunda mitad: esta sección ya NO lee ras/ces/raInstr (data_json) ni
   // ra_ponderaciones. Lee y escribe ra_catalogo, ce_catalogo y
-  // ce_instrumentos_previstos (docs/rediseno/05-PLAN-MIGRACION.md). Las demás
-  // secciones de esta pantalla (plan de actividades, distribución, UT, mapa)
-  // siguen en data_json hasta la siguiente parte de RF-02: por eso un RA
-  // editado aquí puede tardar en reflejarse en esas otras secciones, que no se
-  // tocan hoy.
-  const raCatalogo = await window.api.getRaCatalogo(parseInt(mid))
-
+  // ce_instrumentos_previstos (docs/rediseno/05-PLAN-MIGRACION.md). El plan de
+  // actividades y el mapa de cobertura (secciones 1, 2 y 5) siguen en
+  // data_json hasta esa parte de RF-02: por eso un RA editado aquí puede
+  // tardar en reflejarse en esas otras secciones, que no se tocan hoy.
   if (!raCatalogo.length) {
     h += `<div class="card" style="margin-bottom:16px">
       <div class="prog-section-title">🎯 Resultados de Aprendizaje y Criterios de Evaluación</div>
@@ -727,7 +758,8 @@ async function loadProgramacion() {
             <th style="text-align:left;padding:5px 6px">Criterio</th>
             <th style="min-width:200px;text-align:left;padding:5px 6px">Instrumento</th>
             <th class="th-ce-pond" style="width:110px;text-align:right;padding:5px 6px;cursor:pointer;user-select:none"
-                onclick="_toggleCePesoColumna(this)">
+                onclick="_toggleCePesoColumna(this)"
+                title="El reparto automático distribuye a partes iguales la ponderación del RA entre sus criterios. Que la casilla esté en blanco no significa que falte un dato.">
               ${algunPesoExplicito ? 'Ponderación ▾' : '▸ reparto automático'}
             </th>
           </tr></thead>
@@ -1477,170 +1509,413 @@ async function _saveModData(mid, data, reload) {
   if (reload) loadProgramacion()
 }
 
-async function saveUtField(mid, utId, field, value) {
-  const data = _getModData(mid)
-  if (!data) return
-  const ut = (data.uts||[]).find(u => u.id === utId)
-  if (!ut) return
-  const numericos = ['horas', 'eval', 'horas_empresa']
-  ut[field] = numericos.includes(field) ? (parseInt(value) || 0) : value
-  // Nunca más horas en empresa que horas de la unidad: el resto del módulo
-  // (badge, porcentaje, informes) da por hecho que es un subconjunto.
-  if (field === 'horas_empresa' && (ut.horas_empresa || 0) > (ut.horas || 0)) {
-    ut.horas_empresa = ut.horas || 0
-    showToast(`${utId}: las horas en empresa no pueden superar las ${ut.horas || 0} h de la unidad`)
-  }
-  if (field === 'horas' && (ut.horas_empresa || 0) > (ut.horas || 0)) ut.horas_empresa = ut.horas || 0
-  // Recargar programación al cambiar eval → actualiza distribución de RAs
-  await _saveModData(mid, data, field === 'eval' || field === 'horas_empresa')
+// RF-02, segunda parte · UNIDADES DE TRABAJO — programación normalizada
+// ═══════════════════════════════════════════════════════════════
+// Todo esto lee y escribe unidades_trabajo / ut_ce / actividad_ce
+// (docs/rediseno/04-REDISENO-PANTALLAS.md §1.2-§1.4), no data_json.
+
+function _toggleFaltantesUt(btn) {
+  const panel = document.getElementById('ut-faltantes')
+  if (!panel) return
+  const abierto = btn.dataset.abierto === '1'
+  panel.style.display = abierto ? 'none' : ''
+  btn.dataset.abierto = abierto ? '0' : '1'
 }
 
-async function addUt(mid) {
-  const data = _getModData(mid)
-  if (!data) return
-  // Siguiente número LIBRE: evita IDs duplicados si se borró una UT intermedia
-  const usados = new Set((data.uts||[]).map(u => u.id))
-  let n = (data.uts?.length || 0) + 1
-  while (usados.has(`UT${n}`)) n++
-  data.uts = [...(data.uts||[]), {id:`UT${n}`, nombre:'Nueva unidad de trabajo', horas:0, eval:1, tags:''}]
-  await _saveModData(mid, data, true)
-}
-
-async function deleteUt(mid, utId) {
-  const acts = await window.api.getActividades(parseInt(mid))
-  const afectadas = acts.filter(a =>
-    String(a.ut_id||'').split(',').map(s => s.trim()).includes(utId))
-  const aviso = afectadas.length
-    ? `\n\n${afectadas.length} actividad${afectadas.length > 1 ? 'es la tienen' : ' la tiene'} asignada y se ` +
-      `quedará${afectadas.length > 1 ? 'n' : ''} sin esa unidad y sin sus criterios.`
-    : ''
-  if (!confirm(`¿Eliminar ${utId} del módulo?${aviso}`)) return
-  const data = _getModData(mid)
-  if (!data) return
-  data.uts          = (data.uts||[]).filter(u => u.id !== utId)
-  data.asignaciones = (data.asignaciones||[]).filter(a => a.ut !== utId)
-  await _revisarActividadesDeUts(mid, data, [utId])
-  await _saveModData(mid, data, true)
-}
-
-/**
- * Repasa las actividades que usan estas UT después de tocar sus RA/CE: quita los
- * criterios que ya no les corresponden y recoloca el RA. Si no, una actividad se
- * queda calificando criterios que su unidad ya no trabaja.
- */
-async function _revisarActividadesDeUts(mid, data, utIds) {
-  const acts = await window.api.getActividades(parseInt(mid))
-  let perdidos = 0
-  for (const act of acts) {
-    const suyas = String(act.ut_id||'').split(',').map(s => s.trim()).filter(Boolean)
-    if (!suyas.some(u => utIds.includes(u))) continue
-    const quedan = suyas.filter(u => (data.uts||[]).some(x => x.id === u))
-    perdidos += _reasignarUtsActividad(act, quedan, data)
-    await window.api.saveActividad(act)
-  }
-  return perdidos
-}
-
-function openUtRasModal(mid, utId) {
-  const data = _getModData(mid)
-  if (!data) return
-  const ut = (data.uts||[]).find(u => u.id === utId)
-  if (!ut) return
-  _utRasState = {mid, data, utId}
-
-  document.getElementById('ut-ras-title').textContent = `${utId} — ${ut.nombre}`
-
-  const currentAsigs = (data.asignaciones||[]).filter(a => a.ut === utId)
-  const asigMap = Object.fromEntries(currentAsigs.map(a => [a.ra, a.ces||[]]))
-  const cesData = data.ces || {}
-
-  let html = ''
-  for (const ra of (data.ras||[])) {
-    const checked = ra.id in asigMap
-    const raCEs   = cesData[ra.id] || []
-    const selCEs  = asigMap[ra.id] || []
-    // Se muestra EXACTAMENTE lo guardado: si el RA está asignado sin criterios,
-    // las casillas salen vacías. (Antes se marcaban todas y al volver a guardar
-    // la UT se quedaba con criterios que nadie había elegido.)
-    html += `
-    <div style="margin-bottom:10px;padding:10px 12px;background:var(--bg3);border-radius:10px;border:1px solid var(--border)">
-      <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer">
-        <input type="checkbox" data-ra="${ra.id}" class="ut-ra-chk" ${checked?'checked':''}
-          onchange="_toggleRaSection('${ra.id}',this.checked)"
-          style="margin-top:3px;accent-color:var(--accent);width:14px;height:14px;flex-shrink:0"/>
-        <span style="font-weight:700;color:var(--accent2);font-size:12.5px;white-space:nowrap">${ra.id}</span>
-        <span style="font-size:12px;color:var(--text);line-height:1.4">${esc(ra.nombre)}</span>
-      </label>
-      <div id="ces-block-${ra.id}" style="display:${checked?'grid':'none'};grid-template-columns:1fr 1fr;gap:2px 16px;padding:8px 0 2px 22px">
-        ${raCEs.map(ce=>`
-        <label style="display:flex;align-items:flex-start;gap:5px;cursor:pointer;padding:2px 0">
-          <input type="checkbox" data-ra="${ra.id}" data-ce="${ce.id}" class="ut-ce-chk"
-            ${checked && selCEs.includes(ce.id) ? 'checked' : ''}
-            style="margin-top:2px;accent-color:var(--accent);flex-shrink:0"/>
-          <span style="font-size:11px;color:var(--text2);line-height:1.35">
-            <b style="color:var(--accent)">${ce.id}</b> ${esc(ce.texto)}
-          </span>
-        </label>`).join('')}
-      </div>
-    </div>`
-  }
-
-  document.getElementById('ut-ras-body').innerHTML = html ||
-    '<p style="color:var(--text2);font-size:13px">Este módulo no tiene RAs definidos.</p>'
-  document.getElementById('modal-ut-ras').showModal()
-}
-
-function _refreshUtHoras(inp, modHoras, nota) {
-  const table  = inp.closest('table')
-  if (!table) return
-  const suma   = Array.from(table.querySelectorAll('.ut-horas-inp')).reduce((s,i) => s+(parseInt(i.value)||0), 0)
-  const badge  = document.getElementById('ut-horas-badge')
-  if (!badge) return
-  const ok = suma === modHoras
-  badge.textContent  = `Σ ${suma}h / ${modHoras}h${nota||''}${ok?' ✓':' ⚠'}`
-  badge.style.background = ok ? 'rgba(16,185,129,.12)' : 'rgba(245,158,11,.15)'
-  badge.style.color      = ok ? 'var(--green)'         : 'var(--amber)'
-}
-
-function _toggleRaSection(raId, checked) {
-  const block = document.getElementById(`ces-block-${raId}`)
-  if (!block) return
-  block.style.display = checked ? 'grid' : 'none'
-  const cajas = Array.from(block.querySelectorAll('input[type="checkbox"]'))
-  // Al marcar un RA se proponen todos sus criterios, pero solo si no había
-  // ninguno elegido: así desmarcar y volver a marcar no borra tu selección.
-  if (checked && !cajas.some(cb => cb.checked)) cajas.forEach(cb => { cb.checked = true })
-}
-
-async function saveUtRas() {
-  if (!_utRasState) return
-  const {mid, data, utId} = _utRasState
-  const nuevas = []
-  const sinCriterios = []
-  document.querySelectorAll('.ut-ra-chk:checked').forEach(raChk => {
-    const raId = raChk.dataset.ra
-    const ces  = Array.from(document.querySelectorAll(`.ut-ce-chk[data-ra="${raId}"]:checked`)).map(cb=>cb.dataset.ce)
-    if (!ces.length) sinCriterios.push(raId)
-    nuevas.push({ut: utId, ra: raId, ces})
-  })
-  // Un RA marcado sin ningún criterio no evalúa nada: se avisa antes de guardar.
-  if (sinCriterios.length && !confirm(
-    `${sinCriterios.join(', ')} ${sinCriterios.length > 1 ? 'quedan' : 'queda'} en ${utId} sin ningún criterio marcado, ` +
-    'así que esa unidad no evaluará nada de ese resultado de aprendizaje.\n\n¿Guardar de todos modos?')) return
-
-  data.asignaciones = (data.asignaciones||[]).filter(a => a.ut !== utId).concat(nuevas)
-  const perdidos = await _revisarActividadesDeUts(mid, data, [utId])
-  await _saveModData(mid, data, true)
-  closeUtRasModal()
-  if (perdidos) {
-    showToast(`Se ${perdidos > 1 ? 'han quitado' : 'ha quitado'} ${perdidos} criterio${perdidos > 1 ? 's' : ''} de actividades de ${utId}`)
+async function eliminarUnidadTrabajo(mid, utId) {
+  if (!confirm(`¿Eliminar ${utId}?\n\nLas actividades que la tengan asignada no se borran: conservan su fecha, ` +
+    'su nota y sus evidencias, pero quedan apuntando a una unidad de trabajo que ya no existe en el catálogo.')) return
+  try {
+    await window.api.deleteUnidadTrabajo(mid, utId)
+    showToast(`${utId} eliminada`)
+    await loadProgramacion()
+  } catch (e) {
+    alert('Error eliminando la unidad de trabajo: ' + validators.sanitizeErrorMessage(e, 'eliminarUnidadTrabajo'))
   }
 }
 
-function closeUtRasModal() {
-  const dlg = document.getElementById('modal-ut-ras')
+async function actualizarFamiliaTipo(mid, tipo, familia) {
+  try {
+    await window.api.setTipoFamilia(mid, tipo, familia)
+    showToast(`${tipo}: ahora reparte como ${familia === 'examen' ? 'examen' : 'práctica'}`)
+  } catch (e) {
+    alert('Error: ' + validators.sanitizeErrorMessage(e, 'actualizarFamiliaTipo'))
+  }
+}
+
+// ── Asistente de tres pasos para crear/editar una UT ──────────────────────
+// (04-REDISENO-PANTALLAS.md §1.2-§1.4). El mismo asistente sirve para crear
+// y para editar: editar solo cambia el paso inicial y precarga el estado.
+let _utAsistente = null
+
+async function abrirAsistenteUt(mid, utId, pasoInicial) {
+  mid = parseInt(mid)
+  const [raCatalogo, ceCatalogoRows, utCeModulo, utsExistentes] = await Promise.all([
+    window.api.getRaCatalogo(mid),
+    window.api.getCeCatalogo(mid),
+    window.api.getUtCeModulo(mid),
+    window.api.getUnidadesTrabajo(mid),
+  ])
+  const cesByRa = {}
+  for (const row of ceCatalogoRows) {
+    (cesByRa[row.ra_id] = cesByRa[row.ra_id] || []).push({ id: row.ce_id, texto: row.texto })
+  }
+
+  const modData = _getModData(mid)
+  const evalCount = modData?.modulo?.eval_count || 3
+
+  let nombre = '', horas = 0, horasEmpresa = 0, evalNum = 1, tags = ''
+  const rasSel = new Set()
+  const cesPorRa = {}
+  if (utId) {
+    const ut = utsExistentes.find(u => u.ut_id === utId)
+    if (ut) { nombre = ut.nombre; horas = ut.horas || 0; horasEmpresa = ut.horas_empresa || 0; evalNum = ut.eval || 1; tags = ut.tags || '' }
+    for (const f of utCeModulo) {
+      if (f.ut_id !== utId) continue
+      rasSel.add(f.ra_id)
+      ;(cesPorRa[f.ra_id] = cesPorRa[f.ra_id] || new Set()).add(f.ce_id)
+    }
+  }
+
+  _utAsistente = {
+    mid, utId, paso: pasoInicial || 1, evalCount,
+    nombre, horas, horasEmpresa, evalNum, tags,
+    rasSel, cesPorRa, raCatalogo, cesByRa, utCeModulo, soloSinCubrir: false,
+  }
+  document.getElementById('ut-asis-title').textContent = utId ? `Editar ${utId}` : 'Nueva unidad de trabajo'
+  _renderAsistenteUt()
+  document.getElementById('modal-ut-asistente').showModal()
+}
+
+function cerrarAsistenteUt() {
+  const dlg = document.getElementById('modal-ut-asistente')
   if (dlg.open) dlg.close()
-  _utRasState = null
+  _utAsistente = null
+}
+
+function _pasoAsistenteValido() {
+  const st = _utAsistente
+  if (!st) return false
+  if (st.paso === 1) return st.nombre.trim().length > 0
+  if (st.paso === 2) return st.rasSel.size > 0
+  if (st.paso === 3) return [...st.rasSel].some(raId => (st.cesPorRa[raId]?.size || 0) > 0)
+  return false
+}
+
+function _renderAsistenteUt() {
+  const st = _utAsistente
+  if (!st) return
+  for (let p = 1; p <= 3; p++) {
+    const seg = document.getElementById(`ut-asis-bar-${p}`)
+    if (!seg) continue
+    seg.classList.remove('hecho', 'actual')
+    if (p < st.paso) seg.classList.add('hecho')
+    else if (p === st.paso) seg.classList.add('actual')
+  }
+  const atras = document.getElementById('ut-asis-atras')
+  if (atras) atras.style.visibility = st.paso === 1 ? 'hidden' : 'visible'
+
+  const body = document.getElementById('ut-asis-body')
+  if (body) body.innerHTML = st.paso === 1 ? _pasoAsistente1() : st.paso === 2 ? _pasoAsistente2() : _pasoAsistente3()
+
+  const btn = document.getElementById('ut-asis-continuar')
+  if (btn) {
+    btn.textContent = st.paso === 3 ? (st.utId ? 'Guardar cambios' : 'Crear unidad de trabajo') : 'Continuar'
+    btn.disabled = !_pasoAsistenteValido()
+  }
+}
+
+function _pasoAsistente1() {
+  const st = _utAsistente
+  const evals = Array.from({length: st.evalCount || 3}, (_, i) => i + 1)
+  return `
+    <div class="field" style="margin-bottom:14px">
+      <label for="ut-asis-nombre">Nombre de la unidad de trabajo</label>
+      <input id="ut-asis-nombre" type="text" value="${esc(st.nombre)}" placeholder="Ej. Instalación de software libre y propietario"
+        oninput="_utAsistenteCampo('nombre',this.value)" style="width:100%"/>
+    </div>
+    <div class="field" style="margin-bottom:14px">
+      <label>Evaluación prevista</label>
+      <div style="display:flex;gap:8px">
+        ${evals.map(e => `<button type="button" onclick="_utAsistenteCampo('evalNum',${e})"
+          style="flex:1;padding:8px;border-radius:8px;cursor:pointer;font-weight:700;
+            border:1.5px solid ${st.evalNum===e?'var(--accent)':'var(--border2)'};
+            background:${st.evalNum===e?'rgba(201,104,45,.12)':'transparent'};
+            color:${st.evalNum===e?'var(--accent)':'var(--text2)'}">${evalLabel(e)}</button>`).join('')}
+      </div>
+    </div>
+    <div style="display:flex;gap:14px">
+      <div class="field" style="flex:1">
+        <label for="ut-asis-horas">Horas</label>
+        <input id="ut-asis-horas" type="number" min="0" value="${st.horas||''}" oninput="_utAsistenteCampo('horas',this.value)"/>
+      </div>
+      <div class="field" style="flex:1">
+        <label for="ut-asis-horas-emp">Horas en empresa</label>
+        <input id="ut-asis-horas-emp" type="number" min="0" value="${st.horasEmpresa||''}" oninput="_utAsistenteCampo('horasEmpresa',this.value)"/>
+      </div>
+    </div>
+    <div class="field" style="margin-top:14px">
+      <label for="ut-asis-tags">Contenidos clave (opcional)</label>
+      <input id="ut-asis-tags" type="text" value="${esc(st.tags)}" oninput="_utAsistenteCampo('tags',this.value)"/>
+    </div>`
+}
+
+function _utAsistenteCampo(campo, valor) {
+  const st = _utAsistente
+  if (!st) return
+  if (campo === 'horas' || campo === 'horasEmpresa') valor = parseInt(valor) || 0
+  if (campo === 'evalNum') valor = Number(valor)
+  st[campo] = valor
+  const btn = document.getElementById('ut-asis-continuar')
+  if (btn) btn.disabled = !_pasoAsistenteValido()
+  // Solo el botón de evaluación necesita repintar (para marcar el activo);
+  // el texto se escribe sin volver a montar el HTML, o se perdería el cursor.
+  if (campo === 'evalNum') _renderAsistenteUt()
+}
+
+function _pasoAsistente2() {
+  const st = _utAsistente
+  const cubiertosPorRa = {}
+  for (const f of st.utCeModulo) {
+    if (f.ut_id === st.utId) continue
+    (cubiertosPorRa[f.ra_id] = cubiertosPorRa[f.ra_id] || new Set()).add(f.ce_id)
+  }
+  return `<div style="display:flex;flex-direction:column;gap:8px">
+    ${st.raCatalogo.map(ra => {
+      const total = (st.cesByRa[ra.ra_id] || []).length
+      const cubiertos = cubiertosPorRa[ra.ra_id]?.size || 0
+      const checked = st.rasSel.has(ra.ra_id)
+      return `<label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid ${checked?'var(--accent)':'var(--border2)'};border-radius:10px;cursor:pointer;background:${checked?'rgba(201,104,45,.06)':'transparent'}">
+        <input type="checkbox" ${checked?'checked':''} onchange="_utAsistenteToggleRa('${esc(ra.ra_id)}',this.checked)"
+          style="accent-color:var(--accent);width:16px;height:16px"/>
+        <span style="font-weight:800;color:var(--accent2);min-width:36px">${esc(ra.ra_id)}</span>
+        <span style="flex:1;font-size:12.5px">${esc(ra.nombre)}</span>
+        <span style="font-size:11px;color:var(--text3)">${cubiertos}/${total} criterios ya cubiertos por otras UT</span>
+      </label>`
+    }).join('')}
+    ${!st.raCatalogo.length ? '<p style="color:var(--text2);font-size:13px">Este módulo no tiene RA en el catálogo.</p>' : ''}
+  </div>`
+}
+
+function _utAsistenteToggleRa(raId, checked) {
+  const st = _utAsistente
+  if (!st) return
+  if (checked) st.rasSel.add(raId); else st.rasSel.delete(raId)
+  const btn = document.getElementById('ut-asis-continuar')
+  if (btn) btn.disabled = !_pasoAsistenteValido()
+}
+
+function _pasoAsistente3() {
+  const st = _utAsistente
+  const otrasUtPorCe = {}
+  for (const f of st.utCeModulo) {
+    if (f.ut_id === st.utId) continue
+    otrasUtPorCe[`${f.ra_id}|${f.ce_id}`] = f.ut_id
+  }
+  const rasSeleccionados = st.raCatalogo.filter(r => st.rasSel.has(r.ra_id))
+  return `
+    <label style="display:flex;align-items:center;gap:8px;margin-bottom:14px;font-size:12px;color:var(--text2);cursor:pointer">
+      <input type="checkbox" id="ut-asis-solo-sin-cubrir" ${st.soloSinCubrir?'checked':''}
+        onchange="_utAsistenteToggleSoloSinCubrir(this.checked)" style="accent-color:var(--accent)"/>
+      Mostrar solo los que siguen sin cubrir
+    </label>
+    ${rasSeleccionados.map(ra => {
+      const ces = st.cesByRa[ra.ra_id] || []
+      const seleccionados = st.cesPorRa[ra.ra_id] || new Set()
+      const visibles = ces.filter(ce => !st.soloSinCubrir || !otrasUtPorCe[`${ra.ra_id}|${ce.id}`])
+      if (st.soloSinCubrir && !visibles.length) return ''
+      return `<div style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span style="font-weight:800;color:var(--accent2)">${esc(ra.ra_id)}</span>
+          <span style="font-size:11px;color:var(--text2);flex:1">${esc(ra.nombre)}</span>
+          <button type="button" onclick="_utAsistenteMarcarSinCubrir('${esc(ra.ra_id)}')"
+            style="font-size:10.5px;padding:2px 9px;border-radius:8px;border:1.5px solid var(--accent);background:transparent;color:var(--accent);font-weight:700;cursor:pointer">
+            Marcar los sin cubrir
+          </button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 16px">
+          ${visibles.map(ce => {
+            const checked = seleccionados.has(ce.id)
+            const otraUt = otrasUtPorCe[`${ra.ra_id}|${ce.id}`]
+            return `<label style="display:flex;align-items:flex-start;gap:6px;padding:3px 0;cursor:pointer">
+              <input type="checkbox" ${checked?'checked':''}
+                onchange="_utAsistenteToggleCe('${esc(ra.ra_id)}','${esc(ce.id)}',this.checked)"
+                style="margin-top:2px;accent-color:var(--accent)"/>
+              <span style="font-size:11px;color:var(--text2);line-height:1.35">
+                <b style="color:var(--accent)">${esc(ce.id)}</b> ${esc(ce.texto)}
+                ${otraUt ? `<span style="color:var(--amber)"> · ya en ${esc(otraUt)}</span>` : ''}
+              </span>
+            </label>`
+          }).join('')}
+        </div>
+      </div>`
+    }).join('')}
+    ${!rasSeleccionados.length ? '<p style="color:var(--text2);font-size:13px">Vuelve al paso 2 y elige al menos un RA.</p>' : ''}`
+}
+
+function _utAsistenteToggleCe(raId, ceId, checked) {
+  const st = _utAsistente
+  if (!st) return
+  const set = (st.cesPorRa[raId] = st.cesPorRa[raId] || new Set())
+  if (checked) set.add(ceId); else set.delete(ceId)
+  const btn = document.getElementById('ut-asis-continuar')
+  if (btn) btn.disabled = !_pasoAsistenteValido()
+}
+
+function _utAsistenteMarcarSinCubrir(raId) {
+  const st = _utAsistente
+  if (!st) return
+  const otrasUtPorCe = {}
+  for (const f of st.utCeModulo) { if (f.ut_id !== st.utId) otrasUtPorCe[`${f.ra_id}|${f.ce_id}`] = f.ut_id }
+  const ces = st.cesByRa[raId] || []
+  const set = (st.cesPorRa[raId] = st.cesPorRa[raId] || new Set())
+  for (const ce of ces) if (!otrasUtPorCe[`${raId}|${ce.id}`]) set.add(ce.id)
+  _renderAsistenteUt()
+}
+
+function _utAsistenteToggleSoloSinCubrir(checked) {
+  const st = _utAsistente
+  if (!st) return
+  st.soloSinCubrir = checked
+  _renderAsistenteUt()
+}
+
+function asistenteUtAtras() {
+  const st = _utAsistente
+  if (!st || st.paso <= 1) return
+  st.paso--
+  _renderAsistenteUt()
+}
+
+async function asistenteUtContinuar() {
+  const st = _utAsistente
+  if (!st || !_pasoAsistenteValido()) return
+  if (st.paso < 3) { st.paso++; _renderAsistenteUt(); return }
+  await _guardarAsistenteUt()
+}
+
+async function _guardarAsistenteUt() {
+  const st = _utAsistente
+  if (!st) return
+  const pares = []
+  for (const raId of st.rasSel) {
+    for (const ceId of (st.cesPorRa[raId] || [])) pares.push({ ra_id: raId, ce_id: ceId })
+  }
+  try {
+    const utId = await window.api.setUnidadTrabajo(st.mid, st.utId, {
+      nombre: st.nombre.trim(), horas: st.horas, horasEmpresa: st.horasEmpresa, eval: st.evalNum, tags: st.tags,
+    })
+    await window.api.setUtCe(st.mid, utId, pares)
+    cerrarAsistenteUt()
+    showToast(st.utId ? `${utId} actualizada` : `${utId} creada`)
+    await loadProgramacion()
+  } catch (e) {
+    alert('Error guardando la unidad de trabajo: ' + validators.sanitizeErrorMessage(e, 'guardarAsistenteUt'))
+  }
+}
+
+// ── Crear una actividad desde una UT ──────────────────────────────────────
+// El tipo ofrece los siete de tipos-actividad.js; los CE marcados (subconjunto
+// de los que trabaja la UT) alimentan actividad_ce.
+let _utActividadState = null
+
+async function abrirNuevaActividadUt(mid, utId) {
+  mid = parseInt(mid)
+  const [misCe, ceCatalogoRows, utsExistentes] = await Promise.all([
+    window.api.getUtCe(mid, utId),
+    window.api.getCeCatalogo(mid),
+    window.api.getUnidadesTrabajo(mid),
+  ])
+  const ut = utsExistentes.find(u => u.ut_id === utId)
+  const textoPorCe = Object.fromEntries(ceCatalogoRows.map(c => [`${c.ra_id}|${c.ce_id}`, c.texto]))
+  _utActividadState = {
+    mid, utId, evalUt: ut?.eval || 1,
+    ces: misCe.map(f => ({ ra_id: f.ra_id, ce_id: f.ce_id, texto: textoPorCe[`${f.ra_id}|${f.ce_id}`] || f.ce_id })),
+    marcados: new Set(misCe.map(f => `${f.ra_id}|${f.ce_id}`)),
+  }
+  document.getElementById('ut-act-title').textContent = `Nueva actividad en ${utId}`
+  _renderActividadUt()
+  document.getElementById('modal-ut-actividad').showModal()
+}
+
+function _renderActividadUt() {
+  const st = _utActividadState
+  if (!st) return
+  const tiposHtml = TIPOS_ACTIVIDAD.map(t => `<option value="${t.id}">${esc(t.label)}</option>`).join('')
+  const cesHtml = st.ces.length
+    ? st.ces.map(ce => {
+        const key = `${ce.ra_id}|${ce.ce_id}`
+        const checked = st.marcados.has(key)
+        return `<label style="display:flex;align-items:flex-start;gap:6px;padding:3px 0;cursor:pointer">
+          <input type="checkbox" ${checked?'checked':''} onchange="_utActividadToggleCe('${esc(key)}',this.checked)"
+            style="margin-top:2px;accent-color:var(--accent)"/>
+          <span style="font-size:11px;color:var(--text2);line-height:1.35">
+            <b style="color:var(--accent)">${esc(ce.ra_id)}|${esc(ce.ce_id)}</b> ${esc(ce.texto)}
+          </span>
+        </label>`
+      }).join('')
+    : `<p style="font-size:12px;color:var(--amber)">Esta UT no tiene ningún criterio asignado todavía: asígnaselos desde el asistente antes de crear actividades.</p>`
+
+  document.getElementById('ut-act-body').innerHTML = `
+    <div class="field" style="margin-bottom:12px">
+      <label for="ut-act-desc">Descripción</label>
+      <input id="ut-act-desc" type="text" placeholder="Ej. Práctica de instalación en máquina virtual" style="width:100%"/>
+    </div>
+    <div style="display:flex;gap:14px;margin-bottom:14px">
+      <div class="field" style="flex:1">
+        <label for="ut-act-tipo">Tipo</label>
+        <select id="ut-act-tipo" style="width:100%">${tiposHtml}</select>
+      </div>
+      <div class="field" style="width:100px">
+        <label for="ut-act-peso">Peso %</label>
+        <input id="ut-act-peso" type="number" min="0" max="100" value="0"/>
+      </div>
+      <div class="field" style="width:100px">
+        <label for="ut-act-notamax">Nota máx</label>
+        <input id="ut-act-notamax" type="number" min="1" value="10"/>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text2);margin-bottom:6px">¿Qué criterios de ${esc(st.utId)} evalúa esta actividad?</div>
+    ${cesHtml}
+  `
+}
+
+function _utActividadToggleCe(key, checked) {
+  const st = _utActividadState
+  if (!st) return
+  if (checked) st.marcados.add(key); else st.marcados.delete(key)
+}
+
+async function guardarActividadUt() {
+  const st = _utActividadState
+  if (!st) return
+  const descripcion = document.getElementById('ut-act-desc').value.trim()
+  if (!descripcion) { alert('Ponle una descripción a la actividad.'); return }
+  const tipo = document.getElementById('ut-act-tipo').value
+  const peso = parseFloat(document.getElementById('ut-act-peso').value) || 0
+  const notaMax = parseFloat(document.getElementById('ut-act-notamax').value) || 10
+  if (!st.marcados.size && !confirm('No has marcado ningún criterio: la actividad no evaluará nada. ¿Crearla igual?')) return
+  try {
+    const raIds = [...new Set([...st.marcados].map(k => k.split('|')[0]))]
+    const actId = await window.api.saveActividad({
+      modulo_id: st.mid, ut_id: st.utId, ra_id: raIds.length === 1 ? raIds[0] : null,
+      descripcion, instrumento: TIPOS_ACTIVIDAD.find(t => t.id === tipo)?.label || tipo,
+      tipo, peso, nota_max: notaMax, eval: st.evalUt, orden: 0, ces: [],
+    })
+    const pares = [...st.marcados].map(k => { const [ra_id, ce_id] = k.split('|'); return { ra_id, ce_id } })
+    await window.api.setActividadCe(actId, st.mid, pares)
+    cerrarActividadUtModal()
+    showToast('Actividad creada')
+    await loadProgramacion()
+  } catch (e) {
+    alert('Error creando la actividad: ' + validators.sanitizeErrorMessage(e, 'guardarActividadUt'))
+  }
+}
+
+function cerrarActividadUtModal() {
+  const dlg = document.getElementById('modal-ut-actividad')
+  if (dlg.open) dlg.close()
+  _utActividadState = null
 }
 
 // ── Modal UT para actividades de examen ──────────────────────────

@@ -207,11 +207,41 @@ function rasPorEvaluacion(data, evalCount) {
   return mapa
 }
 
+/**
+ * RF-02, segunda parte · Rango de evaluación de cada RA a partir de las UT
+ * normalizadas que lo trabajan (04-REDISENO-PANTALLAS.md §1.3): "la
+ * temporalización se declara en la UT; el RA hereda la suya de las UT que lo
+ * trabajan". Un RA trabajado en dos UT de evaluaciones distintas hereda el
+ * RANGO completo (de la primera a la última), no un valor suelto — para saber
+ * si está cerrado manda la última (`max`), igual que `rasPorEvaluacion`.
+ *
+ * Puramente derivado de `unidades_trabajo`/`ut_ce`: no toca actividades,
+ * evidencias ni notas, así que mover una UT de evaluación solo cambia lo que
+ * esta función devuelve, nunca lo ya evaluado.
+ *
+ * @param {Array} unidadesTrabajo [{ut_id, eval}, …]
+ * @param {Array} utCe            [{ut_id, ra_id, ce_id}, …]
+ * @returns {Object} { raId: {min, max} }
+ */
+function temporalizacionRas(unidadesTrabajo, utCe) {
+  const evalPorUt = Object.fromEntries(
+    (unidadesTrabajo || []).map(u => [u.ut_id, Number(u.eval) || 1]))
+  const rango = {}
+  for (const fila of (utCe || [])) {
+    const ev = evalPorUt[fila.ut_id]
+    if (!ev) continue
+    const r = rango[fila.ra_id]
+    if (!r) rango[fila.ra_id] = { min: ev, max: ev }
+    else { r.min = Math.min(r.min, ev); r.max = Math.max(r.max, ev) }
+  }
+  return rango
+}
+
 // Exportado también para los tests unitarios (en el navegador `module` no existe)
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     ceKey, ceKeyRa, ceKeyCe, actCesLista, rasDeActividad, actCubreCe, actCesDeRa,
     actividadDeRa, migrarCesActividad, cesDisponiblesActividad, cesEvaluadosDeRa,
-    rasPorEvaluacion,
+    rasPorEvaluacion, temporalizacionRas,
   }
 }

@@ -24,7 +24,6 @@ let _modData = null
 const _updateTimers = {}
 const IA_TABS = ['rubrica','actividad','informe','plan','grupo','examen','corregir','apuntes','todo']
 const _pesoTimers = {}
-let _utRasState = null
 let _toastTimer = null
 let _toastEl = null
 
@@ -145,12 +144,17 @@ function registerWindowHandlers() {
     loadProgramacion, updateActividadPeso, updateActividadDesc,
     addActividadRecuperacion,
     setEvalCount, addActividad, deleteActividadRow, _refreshPesoTotal, _getModData, _saveModData,
-    saveUtField, addUt, deleteUt, openUtRasModal, _refreshUtHoras, _toggleRaSection, saveUtRas,
     updateRaEstado, openRaNoImpartidoModal, saveRaNoImpartido, closeRaEstadoModal,
     // RF-02 · programación normalizada (docs/rediseno/05-PLAN-MIGRACION.md)
     updateRaCatalogoPond, updateRaCatalogoLlave, updateRaCatalogoDual, updateCeCatalogoPeso,
     toggleRaInstrumento, toggleCeInstrumento, _toggleRaDetalle, _toggleCePesoColumna,
-    closeUtRasModal, applyModuloPesos, updateActividadUT, rellenarCesDesdeUts,
+    // RF-02, segunda parte · Unidades de trabajo (04-REDISENO-PANTALLAS.md §1.2-§1.4)
+    _toggleFaltantesUt, eliminarUnidadTrabajo, actualizarFamiliaTipo,
+    abrirAsistenteUt, cerrarAsistenteUt, asistenteUtAtras, asistenteUtContinuar,
+    _utAsistenteCampo, _utAsistenteToggleRa, _utAsistenteToggleCe, _utAsistenteMarcarSinCubrir,
+    _utAsistenteToggleSoloSinCubrir,
+    abrirNuevaActividadUt, guardarActividadUt, cerrarActividadUtModal, _utActividadToggleCe,
+    applyModuloPesos, updateActividadUT, rellenarCesDesdeUts,
     openActUtsModal, saveActUts, closeActUtsModal,
     openActCesModal, saveActCes, _marcarCesDeRa, closeActCesModal,
     actDragStart, actDragOver, actDragLeave, actDragEnd, actDrop,

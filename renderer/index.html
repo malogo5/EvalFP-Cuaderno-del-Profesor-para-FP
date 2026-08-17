@@ -531,22 +531,51 @@
 </div><!-- /app -->
 
 <!-- ═══ MODAL Añadir Módulo ═══ -->
-<!-- Modal asignar RAs/CEs a una UT -->
-<dialog id="modal-ut-ras" aria-labelledby="ut-ras-title"
-        oncancel="closeUtRasModal()"
-        onclick="if(event.target===this)closeUtRasModal()">
-  <div class="modal" style="max-height:82vh;display:flex;flex-direction:column;gap:0">
-    <div style="display:flex;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--border)">
-      <span style="font-size:16px">🔗</span>
-      <div>
-        <div class="modal-title" id="ut-ras-title" style="margin:0;padding:0;border:none"></div>
-        <div style="font-size:11px;color:var(--text3);margin-top:2px">Selecciona los RAs y CEs que se trabajan en esta UT</div>
+<!-- RF-02, segunda parte · Asistente de tres pasos para crear/editar una UT
+     (04-REDISENO-PANTALLAS.md §1.2-§1.4): nombre+evaluación, RA, criterios. -->
+<dialog id="modal-ut-asistente" aria-labelledby="ut-asis-title"
+        oncancel="cerrarAsistenteUt()"
+        onclick="if(event.target===this)cerrarAsistenteUt()">
+  <div class="modal" style="max-height:86vh;display:flex;flex-direction:column;gap:0;width:min(720px,94vw)">
+    <div style="padding-bottom:12px;border-bottom:1px solid var(--border)">
+      <div class="modal-title" id="ut-asis-title" style="margin:0 0 10px;padding:0;border:none">Nueva unidad de trabajo</div>
+      <div style="display:flex;gap:4px">
+        <div id="ut-asis-bar-1" class="ut-asis-bar-seg"></div>
+        <div id="ut-asis-bar-2" class="ut-asis-bar-seg"></div>
+        <div id="ut-asis-bar-3" class="ut-asis-bar-seg"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:5px">
+        <span>1 · Nombre y evaluación</span><span>2 · Resultados de aprendizaje</span><span>3 · Criterios</span>
       </div>
     </div>
-    <div id="ut-ras-body" style="overflow-y:auto;flex:1;padding:14px 0 4px"></div>
+    <div id="ut-asis-body" style="overflow-y:auto;flex:1;padding:16px 2px"></div>
+    <div class="modal-footer" style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px;justify-content:space-between">
+      <button class="btn btn-ghost" id="ut-asis-atras" onclick="asistenteUtAtras()">← Atrás</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost" onclick="cerrarAsistenteUt()">Cancelar</button>
+        <button class="btn btn-primary" id="ut-asis-continuar" onclick="asistenteUtContinuar()" disabled>Continuar</button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<!-- RF-02, segunda parte · Crear una actividad desde una UT: tipo (los siete de
+     tipos-actividad.js) y qué criterios de la UT evalúa realmente (subconjunto). -->
+<dialog id="modal-ut-actividad" aria-labelledby="ut-act-title"
+        oncancel="cerrarActividadUtModal()"
+        onclick="if(event.target===this)cerrarActividadUtModal()">
+  <div class="modal" style="max-height:82vh;display:flex;flex-direction:column;gap:0">
+    <div style="display:flex;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+      <span style="font-size:16px">📝</span>
+      <div>
+        <div class="modal-title" id="ut-act-title" style="margin:0;padding:0;border:none"></div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">Nueva actividad · elige qué criterios de esta UT evalúa</div>
+      </div>
+    </div>
+    <div id="ut-act-body" style="overflow-y:auto;flex:1;padding:14px 0 4px"></div>
     <div class="modal-footer" style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px">
-      <button class="btn btn-ghost" onclick="closeUtRasModal()">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveUtRas()">Guardar asignaciones</button>
+      <button class="btn btn-ghost" onclick="cerrarActividadUtModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarActividadUt()">Crear actividad</button>
     </div>
   </div>
 </dialog>
