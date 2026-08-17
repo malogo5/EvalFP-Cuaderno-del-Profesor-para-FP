@@ -287,6 +287,203 @@ function _migrarCalificacionesCE() {
   return migradas
 }
 
+/**
+ * RF-02 · Normaliza la programación de `modulos.data_json` a las tablas con
+ * clave foránea (`ra_catalogo`, `ce_catalogo`, `unidades_trabajo`, `ut_ce`,
+ * `ce_instrumentos_previstos`, `actividad_ce`). Ver
+ * docs/rediseno/05-PLAN-MIGRACION.md §2, §4 y §5 (pasos 2 a 4).
+ *
+ * Fail-closed, sin excepciones (§2 del plan): un único `BEGIN`/`COMMIT` para
+ * TODOS los módulos de la base. Cualquier inconsistencia en cualquier módulo
+ * —JSON corrupto, un RA/CE/UT huérfano, una actividad que evalúa un criterio
+ * que ya no está en el catálogo— lanza un Error con el módulo y el motivo, y
+ * hace `ROLLBACK` de la migración entera, no solo de ese módulo: no hay
+ * estado mixto donde unos módulos queden normalizados y otros no.
+ *
+ * Idempotente: se puede volver a ejecutar sin duplicar nada. Las tablas de
+ * catálogo (ra_catalogo, ce_catalogo, unidades_trabajo) hacen upsert por su
+ * clave; las de relación (ut_ce, ce_instrumentos_previstos, actividad_ce) usan
+ * `INSERT OR IGNORE`.
+ *
+ * Deliberadamente NO se llama desde `getDb()`: a diferencia de las demás
+ * migraciones de este fichero, esta es fail-closed y podría dejar la base sin
+ * arrancar para cualquier profesor cuya programación tenga una inconsistencia
+ * ya tolerada hoy. Se invoca aparte —de momento solo desde los tests— hasta
+ * que la segunda mitad de RF-02 (las pantallas leyendo de estas tablas) esté
+ * lista para desplegarse junto con ella.
+ *
+ * @returns {{modulos:number, ra_catalogo:number, ce_catalogo:number,
+ *            unidades_trabajo:number, ut_ce:number,
+ *            ce_instrumentos_previstos:number, actividad_ce:number}}
+ */
+function migrarProgramacionNormalizada() {
+  const db = getDb()
+  const resumen = {
+    modulos: 0, ra_catalogo: 0, ce_catalogo: 0, unidades_trabajo: 0,
+    ut_ce: 0, ce_instrumentos_previstos: 0, actividad_ce: 0,
+  }
+
+  const modulos = db.prepare('SELECT id, key, abrev, data_json FROM modulos').all()
+
+  const insRa = db.prepare(`
+    INSERT INTO ra_catalogo (modulo_id, ra_id, nombre, pond, llave, dual_pct)
+    VALUES (?,?,?,?,?,?)
+    ON CONFLICT (modulo_id, ra_id) DO UPDATE SET
+      nombre=excluded.nombre, pond=excluded.pond, llave=excluded.llave, dual_pct=excluded.dual_pct
+  `)
+  const insCe = db.prepare(`
+    INSERT INTO ce_catalogo (modulo_id, ra_id, ce_id, texto, peso)
+    VALUES (?,?,?,?,?)
+    ON CONFLICT (modulo_id, ra_id, ce_id) DO UPDATE SET texto=excluded.texto, peso=excluded.peso
+  `)
+  const insUt = db.prepare(`
+    INSERT INTO unidades_trabajo (modulo_id, ut_id, nombre, horas, horas_empresa, eval, tags)
+    VALUES (?,?,?,?,?,?,?)
+    ON CONFLICT (modulo_id, ut_id) DO UPDATE SET
+      nombre=excluded.nombre, horas=excluded.horas, horas_empresa=excluded.horas_empresa,
+      eval=excluded.eval, tags=excluded.tags
+  `)
+  const insUtCe = db.prepare(
+    'INSERT OR IGNORE INTO ut_ce (modulo_id, ut_id, ra_id, ce_id) VALUES (?,?,?,?)')
+  const insInstr = db.prepare(`
+    INSERT OR IGNORE INTO ce_instrumentos_previstos (modulo_id, ra_id, ce_id, instrumento)
+    VALUES (?,?,?,?)`)
+  const insActCe = db.prepare(
+    'INSERT OR IGNORE INTO actividad_ce (actividad_id, modulo_id, ra_id, ce_id) VALUES (?,?,?,?)')
+  const selActividades = db.prepare('SELECT id, ces FROM actividades WHERE modulo_id=?')
+  const selOverrides = db.prepare('SELECT ra_id, pond FROM ra_ponderaciones WHERE modulo_id=?')
+
+  /** Aborta con un motivo que identifica el módulo, tal y como exige el plan. */
+  const fail = (mod, motivo) => {
+    throw new Error(`módulo ${mod.id} (${mod.key}): ${motivo}`)
+  }
+
+  db.exec('BEGIN')
+  try {
+    for (const mod of modulos) {
+      resumen.modulos++
+
+      let data
+      try {
+        data = JSON.parse(mod.data_json || '{}')
+      } catch (e) {
+        fail(mod, `data_json no es JSON válido (${e.message})`)
+      }
+      if (!data || typeof data !== 'object') data = {}
+
+      const ras = Array.isArray(data.ras) ? data.ras : []
+      const ces = data.ces && typeof data.ces === 'object' ? data.ces : {}
+      const uts = Array.isArray(data.uts) ? data.uts : []
+      const asignaciones = Array.isArray(data.asignaciones) ? data.asignaciones : []
+      const raInstrumentos = data.ra_instrumentos && typeof data.ra_instrumentos === 'object'
+        ? data.ra_instrumentos : {}
+
+      const raIds = new Set(ras.map(r => String(r?.id)))
+      const utIds = new Set(uts.map(u => String(u?.id)))
+
+      // ── 2.1 · ra_catalogo — pond EFECTIVO: override de ra_ponderaciones,
+      // si no hay override el del JSON. ──────────────────────────────────
+      const overrides = Object.fromEntries(
+        selOverrides.all(mod.id).map(r => [r.ra_id, r.pond]))
+      for (const ra of ras) {
+        if (!ra || !String(ra.id ?? '').trim() || !String(ra.nombre ?? '').trim()) {
+          fail(mod, `RA sin id o sin nombre (${JSON.stringify(ra)})`)
+        }
+        const raId = String(ra.id)
+        const pond = overrides[raId] !== undefined ? overrides[raId] : (ra.pond ?? 0)
+        insRa.run(mod.id, raId, ra.nombre, Number(pond) || 0, ra.llave ? 1 : 0,
+                   ra.dual == null ? null : Number(ra.dual))
+        resumen.ra_catalogo++
+      }
+
+      // ── 2.2 · ce_catalogo ───────────────────────────────────────────────
+      for (const raId of Object.keys(ces)) {
+        if (!raIds.has(raId)) fail(mod, `'ces' tiene un RA (${raId}) que no está en 'ras'`)
+        for (const ce of ces[raId] || []) {
+          insCe.run(mod.id, raId, String(ce.id), ce.texto ?? '',
+                     ce.peso == null || ce.peso === '' ? null : Number(ce.peso))
+          resumen.ce_catalogo++
+        }
+      }
+
+      // ── 2.3 · unidades_trabajo ──────────────────────────────────────────
+      for (const ut of uts) {
+        insUt.run(mod.id, String(ut.id), ut.nombre ?? '', ut.horas ?? 0, ut.horas_empresa ?? 0,
+                   ut.eval ?? 1, ut.tags ?? null)
+        resumen.unidades_trabajo++
+      }
+
+      // ── 2.4 · ut_ce, explota asignaciones ────────────────────────────────
+      for (const asig of asignaciones) {
+        const utId = String(asig?.ut)
+        const raId = String(asig?.ra)
+        if (!asig || !utIds.has(utId)) fail(mod, `asignación a la UT '${asig?.ut}', que no existe`)
+        if (!raIds.has(raId)) fail(mod, `asignación al RA '${asig?.ra}', que no existe`)
+        const ceDisponibles = new Set((ces[raId] || []).map(c => String(c.id)))
+        for (const ceId of asig.ces || []) {
+          if (!ceDisponibles.has(String(ceId))) {
+            fail(mod, `la asignación ${utId}→${raId} referencia el CE '${ceId}', que no ` +
+                       `existe en el catálogo de ${raId}`)
+          }
+          insUtCe.run(mod.id, utId, raId, String(ceId))
+          resumen.ut_ce++
+        }
+      }
+
+      // ── 2.5 · ce_instrumentos_previstos, hereda de RA a cada CE ──────────
+      for (const raId of Object.keys(raInstrumentos)) {
+        if (!raIds.has(raId)) {
+          fail(mod, `'ra_instrumentos' tiene un RA (${raId}) que no está en 'ras'`)
+        }
+        for (const ce of ces[raId] || []) {
+          for (const instrumento of raInstrumentos[raId] || []) {
+            insInstr.run(mod.id, raId, String(ce.id), String(instrumento))
+            resumen.ce_instrumentos_previstos++
+          }
+        }
+      }
+
+      // ── 2.6 · actividad_ce, desde la tabla VIVA actividades, no data_json ──
+      for (const act of selActividades.all(mod.id)) {
+        let lista
+        try { lista = JSON.parse(act.ces || '[]') } catch { lista = [] }
+        if (!Array.isArray(lista)) lista = []
+        for (const clave of lista) {
+          const s = String(clave)
+          const i = s.indexOf('|')
+          if (i < 0) {
+            fail(mod, `actividad ${act.id}: el criterio '${s}' no tiene la clave compuesta RA|CE`)
+          }
+          const raId = s.slice(0, i)
+          const ceId = s.slice(i + 1)
+          const existe = (ces[raId] || []).some(c => String(c.id) === ceId)
+          if (!existe) {
+            fail(mod, `actividad ${act.id}: evalúa el criterio '${raId}|${ceId}', que ya no ` +
+                       'está en el catálogo')
+          }
+          insActCe.run(act.id, mod.id, raId, ceId)
+          resumen.actividad_ce++
+        }
+      }
+    }
+
+    // ── Paso 4 del plan: verificar antes de confirmar ──────────────────────
+    const rotas = db.prepare('PRAGMA foreign_key_check').all()
+    if (rotas.length) {
+      throw new Error(
+        `PRAGMA foreign_key_check encontró ${rotas.length} referencia(s) rota(s) tras migrar; ` +
+        'no se confirma la migración')
+    }
+
+    db.exec('COMMIT')
+  } catch (e) {
+    try { db.exec('ROLLBACK') } catch { /* sin transacción activa */ }
+    throw e
+  }
+
+  return resumen
+}
+
 function _initSchema() {
   _db.exec(`
     -- Módulos que el profesor imparte
@@ -480,6 +677,101 @@ function _initSchema() {
       fecha      TEXT,
       PRIMARY KEY (modulo_id, ra_id),
       FOREIGN KEY (modulo_id) REFERENCES modulos(id) ON DELETE CASCADE
+    );
+
+    -- ═══════════════════════════════════════════════════════════════════════
+    -- RF-02 · Programación normalizada (ver docs/rediseno/05-PLAN-MIGRACION.md)
+    -- ═══════════════════════════════════════════════════════════════════════
+    -- Sustituyen, tabla a tabla, a lo que hoy vive dentro de modulos.data_json.
+    -- Se crean aquí (aditivo, no toca ninguna fila existente) pero todavía no
+    -- las llena nadie automáticamente: eso lo hace migrarProgramacionNormalizada(),
+    -- que hay que invocar aparte. El renderer sigue leyendo data_json hasta la
+    -- segunda mitad de RF-02.
+
+    -- Catálogo de RA del módulo. 'pond' es el valor EFECTIVO: fusión del
+    -- 'pond' del JSON con el override que hoy vive en ra_ponderaciones.
+    CREATE TABLE IF NOT EXISTS ra_catalogo (
+      modulo_id INTEGER NOT NULL,
+      ra_id     TEXT    NOT NULL,
+      nombre    TEXT    NOT NULL,
+      pond      REAL    NOT NULL DEFAULT 0,
+      llave     INTEGER NOT NULL DEFAULT 0,   -- necesario para la fase de empresa (art. 4.3.a)
+      dual_pct  REAL,                          -- % del RA que se acredita en empresa; NULL = nada
+      PRIMARY KEY (modulo_id, ra_id),
+      FOREIGN KEY (modulo_id) REFERENCES modulos(id) ON DELETE CASCADE
+    );
+
+    -- Catálogo de CE del módulo. 'peso' NULL = reparto automático entre los CE
+    -- del mismo RA: una casilla en blanco no es un dato que falta.
+    CREATE TABLE IF NOT EXISTS ce_catalogo (
+      modulo_id INTEGER NOT NULL,
+      ra_id     TEXT    NOT NULL,
+      ce_id     TEXT    NOT NULL,
+      texto     TEXT    NOT NULL,
+      peso      REAL,
+      PRIMARY KEY (modulo_id, ra_id, ce_id),
+      FOREIGN KEY (modulo_id, ra_id) REFERENCES ra_catalogo(modulo_id, ra_id) ON DELETE CASCADE
+    );
+
+    -- Unidades de trabajo.
+    CREATE TABLE IF NOT EXISTS unidades_trabajo (
+      modulo_id     INTEGER NOT NULL,
+      ut_id         TEXT    NOT NULL,
+      nombre        TEXT    NOT NULL,
+      horas         INTEGER DEFAULT 0,
+      horas_empresa INTEGER DEFAULT 0,
+      eval          INTEGER NOT NULL DEFAULT 1,
+      tags          TEXT,
+      PRIMARY KEY (modulo_id, ut_id),
+      FOREIGN KEY (modulo_id) REFERENCES modulos(id) ON DELETE CASCADE
+    );
+
+    -- Asignación UT→CE, explotada a una fila por CE: no puede existir una
+    -- asignación UT–RA que contradiga la relación UT–CE, porque el RA de una
+    -- UT se DERIVA agrupando estas filas, no se declara aparte.
+    CREATE TABLE IF NOT EXISTS ut_ce (
+      modulo_id INTEGER NOT NULL,
+      ut_id     TEXT    NOT NULL,
+      ra_id     TEXT    NOT NULL,
+      ce_id     TEXT    NOT NULL,
+      PRIMARY KEY (modulo_id, ut_id, ra_id, ce_id),
+      FOREIGN KEY (modulo_id, ut_id) REFERENCES unidades_trabajo(modulo_id, ut_id) ON DELETE CASCADE,
+      FOREIGN KEY (modulo_id, ra_id, ce_id) REFERENCES ce_catalogo(modulo_id, ra_id, ce_id)
+        ON DELETE CASCADE
+    );
+
+    -- Instrumento previsto, resuelto A NIVEL DE CE (art. 4.3.b) aunque hoy se
+    -- declare por RA en la interfaz. Un CE puede tener varios instrumentos.
+    CREATE TABLE IF NOT EXISTS ce_instrumentos_previstos (
+      modulo_id   INTEGER NOT NULL,
+      ra_id       TEXT    NOT NULL,
+      ce_id       TEXT    NOT NULL,
+      instrumento TEXT    NOT NULL,
+      PRIMARY KEY (modulo_id, ra_id, ce_id, instrumento),
+      FOREIGN KEY (modulo_id, ra_id, ce_id) REFERENCES ce_catalogo(modulo_id, ra_id, ce_id)
+        ON DELETE CASCADE
+    );
+
+    -- Índice único auxiliar: 'id' ya es única por sí sola (PK de actividades),
+    -- pero SQLite exige un índice que cubra EXACTAMENTE las columnas de una
+    -- referencia compuesta. Sin él no se puede declarar la FK de abajo.
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_actividades_id_modulo ON actividades(id, modulo_id);
+
+    -- Relación actividad→CE, sustituye a la columna actividades.ces (JSON de
+    -- claves "RA|CE"). modulo_id no es redundante: junto con la FK compuesta de
+    -- abajo, obliga a que la actividad y el CE sean del MISMO módulo — sin ella,
+    -- nada impedía una fila con el modulo_id de un módulo y el actividad_id de
+    -- otro, y las FK por separado la habrían dejado pasar.
+    CREATE TABLE IF NOT EXISTS actividad_ce (
+      actividad_id INTEGER NOT NULL,
+      modulo_id    INTEGER NOT NULL,
+      ra_id        TEXT    NOT NULL,
+      ce_id        TEXT    NOT NULL,
+      PRIMARY KEY (actividad_id, ra_id, ce_id),
+      FOREIGN KEY (actividad_id) REFERENCES actividades(id) ON DELETE CASCADE,
+      FOREIGN KEY (actividad_id, modulo_id) REFERENCES actividades(id, modulo_id),
+      FOREIGN KEY (modulo_id, ra_id, ce_id) REFERENCES ce_catalogo(modulo_id, ra_id, ce_id)
+        ON DELETE CASCADE
     );
   `)
 }
@@ -1058,6 +1350,27 @@ const setConfig  = (k,v) => getDb().prepare('INSERT OR REPLACE INTO config VALUE
 const deleteConfig = key => getDb().prepare('DELETE FROM config WHERE key=?').run(key)
 const getAllConfig = ()  => Object.fromEntries(getDb().prepare('SELECT key,value FROM config').all().map(r=>[r.key,r.value]))
 
+/**
+ * SOLO PARA TESTS. Da la conexión cruda —lectura y escritura, sin pasar por
+ * ninguna de las funciones de arriba—, que es lo que necesitan los tests de
+ * `migrarProgramacionNormalizada()` para corromper una fila a mano (§2 de la
+ * migración) o para forzar un INSERT que debe violar una clave foránea
+ * compuesta (`actividad_ce`, §1). Una función de solo lectura no habría
+ * bastado para esos dos casos.
+ *
+ * Nunca se importa desde main.js, preload.js ni el renderer: ninguno de esos
+ * necesita SQL crudo, todos pasan por las funciones validadas de este
+ * fichero. Para que un despiste no lo use fuera de un test, se niega a
+ * devolver nada si `VITEST` no está activo (lo pone Vitest solo, no hay que
+ * configurarlo).
+ */
+function TEST_ONLY_rawDb() {
+  if (!process.env.VITEST) {
+    throw new Error('TEST_ONLY_rawDb() solo puede llamarse desde los tests (VITEST no está activo)')
+  }
+  return getDb()
+}
+
 module.exports = {
   getModulos, getModulosArchivados, restaurarModulo, addModulo, deleteModulo, setModuloDataJson,
   getAlumnos, saveAlumno, deleteAlumno,
@@ -1074,4 +1387,7 @@ module.exports = {
   getEvidencias, addEvidencia,
   getMatriculas, setMatricula,
   getConfig, setConfig, deleteConfig, getAllConfig,
+  // RF-02 · programación normalizada (docs/rediseno/05-PLAN-MIGRACION.md)
+  migrarProgramacionNormalizada,
+  TEST_ONLY_rawDb,
 }
