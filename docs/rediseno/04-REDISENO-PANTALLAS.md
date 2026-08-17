@@ -180,3 +180,34 @@ nuevo.
   `evaluacion_continua`, `fase_empresa`, `matricula`).
 - Los 186 tests existentes.
 - Los ejes `actividades.eval` (parcial) y `actividades.convocatoria` (ordinaria).
+
+---
+
+## 1.4 Detalles del asistente de UT (validados en prototipo)
+
+Probados en un prototipo de interfaz y confirmados como cómodos. Se implementan tal cual.
+
+**Asistente de tres pasos** con barra de progreso y el botón de continuar deshabilitado
+mientras el paso esté incompleto: 1) nombre y evaluación prevista, 2) selección de RA,
+3) selección de criterios.
+
+**En el paso de criterios**, dos ayudas que con 79 criterios marcan la diferencia:
+
+- casilla «Mostrar solo los que siguen sin cubrir», para no recorrer la lista entera;
+- botón «Marcar los sin cubrir» por cada RA, que resuelve de un clic el caso más común.
+
+**En la tabla de RA**, además del indicador global de cobertura, un contador de criterios
+cubiertos en cada fila: es donde de verdad se decide.
+
+**En la columna de ponderación de CE plegada**, una nota explicando que el reparto automático
+distribuye a partes iguales la ponderación del RA entre sus criterios. Una casilla en blanco
+parece un dato que falta; esta nota evita esa lectura.
+
+**Edición de una UT existente**: se reutiliza el mismo asistente, pero abierto directamente en
+el paso que corresponde a lo que se ha pulsado — la evaluación abre en el paso 1, los criterios
+en el paso 3. Ni recorrerlo entero ni mantener una segunda pantalla de edición.
+
+**Caso pendiente de resolver**: un criterio ya asignado a otra UT. El modelo permite que un CE
+aparezca en varias unidades cuando pedagógicamente corresponda, así que marcarlo debe seguir
+siendo posible; lo que hace el filtro es esconderlo, no impedirlo. Al implementarlo, mostrar de
+qué UT viene y dejar marcarlo igualmente.
