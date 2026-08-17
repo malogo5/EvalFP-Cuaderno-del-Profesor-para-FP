@@ -730,6 +730,14 @@ async function _genBoletin(alumnoId, evParcial = null) {
     raEstadosBol = await window.api.getRaEstados(parseInt(mid)) || {}
   } catch { /* base antigua sin la tabla */ }
 
+  // Contexto del motor (js/core/calificacion.js), calculado ya aquí porque
+  // `utBlock` —más abajo— necesita `ponderaciones` y `rasExcluidos` para pintar
+  // cada RA con su ponderación efectiva y, si está no impartido, su motivo.
+  const ctxBol = contextoModulo({
+    ras, cesByRa: cesDict, asignaciones: asigs, actividades, minExam: minExamB,
+    tieneFaseEmpresa: moduloConFaseEmpresa(modData?.modulo), raEstados: raEstadosBol,
+  })
+
   // ── Nota de cada evaluación ───────────────────────────────────────────
   //
   // Esto lo calculaba el boletín por su cuenta: una media de las actividades
@@ -893,6 +901,13 @@ async function _genBoletin(alumnoId, evParcial = null) {
       if (!ra) return ''
       const ceLst = cesDict[asig.ra] || []
       const ceIds = asig.ces || []
+      // RF-01: la ponderación que se enseña es la EFECTIVA (tras repartir la de
+      // los RA no impartidos), no la original — y un RA excluido no se etiqueta
+      // con un 0 % engañoso, sino con el motivo que documenta la decisión.
+      const raNoImpartido = ctxBol.rasExcluidos.includes(ra.id)
+      const raPondTxt = raNoImpartido
+        ? `<span style="color:#b52">No impartido${raEstadosBol[ra.id]?.motivo ? ` — ${e(raEstadosBol[ra.id].motivo)}` : ''}</span>`
+        : `${Math.round((ctxBol.ponderaciones[ra.id]?.efectiva ?? ra.pond) * 10) / 10}%`
 
       const ceItems = ceIds.map(ceId => {
         const ce   = ceLst.find(c => c.id === ceId)
@@ -907,7 +922,7 @@ async function _genBoletin(alumnoId, evParcial = null) {
       }).join('')
 
       return `<div class="rar">
-        <div class="ral">${e(ra.id)} (${ra.pond}%) · ${e(trunc(ra.nombre, 100))}</div>
+        <div class="ral">${e(ra.id)} (${raPondTxt}) · ${e(trunc(ra.nombre, 100))}</div>
         ${ceIds.length ? `<div class="cel">${ceItems}</div>` : ''}
       </div>`
     }).join('')
@@ -956,10 +971,7 @@ async function _genBoletin(alumnoId, evParcial = null) {
   // El boletín es el documento que se lleva a casa: tiene que decir exactamente
   // lo mismo que el acta. Antes calculaba la nota como media de las medias de
   // cada evaluación y salía 6,75 donde Evaluaciones decía 6,25.
-  const ctxBol   = contextoModulo({
-    ras, cesByRa: cesDict, asignaciones: asigs, actividades, minExam: minExamB,
-    tieneFaseEmpresa: moduloConFaseEmpresa(modData?.modulo), raEstados: raEstadosBol,
-  })
+  // (`ctxBol` se calculó arriba, antes de `utBlock`.)
   const stBol = estadoModulo(ctxBol, miNotas,
     { faseEmpresa: faseAlumnoBol, evalContinuaPerdida: ecBol })
 
@@ -1112,7 +1124,7 @@ async function _genBoletin(alumnoId, evParcial = null) {
           : ''
 
         return `<div class="conv-ra-ko">
-          <div class="conv-ra-title">❌ ${e(ra.id)} (${ra.pond}%) · ${e(trunc(ra.nombre, 100))} &nbsp; Nota: ${nRa != null ? nRa.toFixed(2) : '—'}</div>
+          <div class="conv-ra-title">❌ ${e(ra.id)} (${Math.round((ctxBol.ponderaciones[ra.id]?.efectiva ?? ra.pond) * 10) / 10}%) · ${e(trunc(ra.nombre, 100))} &nbsp; Nota: ${nRa != null ? nRa.toFixed(2) : '—'}</div>
           ${utListHtml}
           ${ceListHtml}
         </div>`

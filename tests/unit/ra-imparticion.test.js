@@ -146,6 +146,61 @@ describe('RF-01 · el estado no lo decide la existencia de actividades', () => {
   })
 })
 
+describe('RF-01 · pesos desiguales: la media usa la ponderación efectiva, no una media simple', () => {
+  // RA3 pesa el 60 % del módulo y saca la nota más baja: si al excluirlo el
+  // reparto no se aplicase de verdad —por ejemplo si se promediase a partes
+  // iguales, o si `ra.pond` no se reponderase—, la media resultante no
+  // coincidiría con la que da `ponderaciones.efectiva`. Con pesos iguales
+  // (25/25/50 en los tests de arriba) esa diferencia no se nota; con pesos muy
+  // desiguales sí, así que este caso hace de verificación cruzada.
+  const RAS_DESIG = [
+    { id: 'RA1', pond: 10 },
+    { id: 'RA2', pond: 30 },
+    { id: 'RA3', pond: 60 },
+  ]
+  const ACTS_DESIG = [
+    { id: 1, ra_id: 'RA1', tipo: 'examen', peso: 1, nota_max: 10, eval: 1, convocatoria: 1 },
+    { id: 2, ra_id: 'RA2', tipo: 'examen', peso: 1, nota_max: 10, eval: 1, convocatoria: 1 },
+    { id: 3, ra_id: 'RA3', tipo: 'examen', peso: 1, nota_max: 10, eval: 1, convocatoria: 1 },
+  ]
+  const NOTAS_DESIG = { 1: 6, 2: 9, 3: 2 }
+  const ctxDesig = raEstados => contextoModulo({
+    ras: RAS_DESIG, cesByRa: CES, asignaciones: [], actividades: ACTS_DESIG,
+    minExam: null, rasSuperados: null, tieneFaseEmpresa: false,
+    convocatoria: 1, raEstados,
+  })
+
+  it('con los tres RA impartidos, el 60 % de RA3 (nota 2) arrastra la media', () => {
+    const todosImpartidos = { RA1: ESTADO_RA.IMPARTIDO, RA2: ESTADO_RA.IMPARTIDO, RA3: ESTADO_RA.IMPARTIDO }
+    const est = estadoModulo(ctxDesig(todosImpartidos), NOTAS_DESIG)
+    // (6·10 + 9·30 + 2·60) / 100 = 4,5
+    expect(est.media).toBeCloseTo(4.5)
+  })
+
+  it('al excluir RA3, la media cambia y respeta el peso relativo de RA1 y RA2 (no los promedia a partes iguales)', () => {
+    const estados = {
+      RA1: ESTADO_RA.IMPARTIDO,
+      RA2: ESTADO_RA.IMPARTIDO,
+      RA3: { estado: ESTADO_RA.NO_IMPARTIDO, motivo: 'no dio tiempo', fecha: '2026-06-01' },
+    }
+    const ctx = ctxDesig(estados)
+    const est = estadoModulo(ctx, NOTAS_DESIG)
+    // (6·10 + 9·30) / 40 = 8,25 — muy distinto de la media simple (6+9)/2 = 7,5,
+    // y muy distinto también de la media con RA3 dentro (4,5).
+    expect(est.media).toBeCloseTo(8.25)
+    expect(est.media).not.toBeCloseTo(7.5)
+
+    // La misma cifra tiene que salir si se pondera con `ponderaciones.efectiva`
+    // en vez de con `ra.pond`: el factor de reescalado se cancela en la
+    // división por la suma de pesos, así que ambas vías son equivalentes.
+    const pond = ctx.ponderaciones
+    const mediaConEfectiva =
+      (NOTAS_DESIG[1] * pond.RA1.efectiva + NOTAS_DESIG[2] * pond.RA2.efectiva) /
+      (pond.RA1.efectiva + pond.RA2.efectiva)
+    expect(mediaConEfectiva).toBeCloseTo(est.media)
+  })
+})
+
 describe('RF-01 · pérdida del derecho a evaluación continua', () => {
   it('sigue exigiendo todos los RA salvo los no impartidos', () => {
     const estados = {

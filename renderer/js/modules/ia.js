@@ -889,7 +889,11 @@ async function iaInformeAutoNotas(pref = 'i') {
     const notasEl = document.getElementById(`ia-${pref}-notas`)
     if (notasEl) {
       notasEl.dataset.minExam = minExam != null ? String(minExam) : ''
-      const pondPairs = ras.map(ra => `${ra.id}:${(raPondOverrides[ra.id] !== undefined ? raPondOverrides[ra.id] : (ra.pond || 0))}`)
+      // RF-01: la ponderación que se manda es la EFECTIVA (tras repartir la de
+      // los RA no impartidos), tal cual la calcula `ctx.ponderaciones` — no la
+      // original ni un recálculo propio. Un RA excluido manda 0, coherente con
+      // que ya no lleva nota en `notasPairs`.
+      const pondPairs = ras.map(ra => `${ra.id}:${ctx.ponderaciones[ra.id]?.efectiva ?? (ra.pond || 0)}`)
       notasEl.dataset.ponderaciones = pondPairs.join(',')
     }
   } catch { /* sin notas disponibles */ }

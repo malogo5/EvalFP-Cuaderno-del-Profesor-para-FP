@@ -156,6 +156,10 @@ resuelve en la presentación, no en el motor.
 - Copia manual del `.sqlite` **fuera** del repositorio antes de cualquier migración: el
   repositorio es **público** y el `.gitignore` no cubre `tmp/`, `*.sqlite`, `-wal` ni `-shm`.
 - Batería de casos de referencia validados a mano para verificar el motor.
+- `ai_asistente.py` (`_calc_informe_estado`, línea 1019) cuenta como `sin_nota` cualquier RA sin
+  nota, incluidos los no impartidos, así que el informe de IA sale PENDIENTE de forma incorrecta
+  en cualquier módulo con un RA excluido. Fallo preexistente; se resuelve en RF-13, cuando la IA
+  deje de calcular por su cuenta y pida los estados al motor.
 
 ---
 
