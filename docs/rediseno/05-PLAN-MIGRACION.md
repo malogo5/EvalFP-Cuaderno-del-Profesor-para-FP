@@ -112,6 +112,7 @@ CREATE TABLE ut_ce (
   PRIMARY KEY (modulo_id, ut_id, ra_id, ce_id),
   FOREIGN KEY (modulo_id, ut_id) REFERENCES unidades_trabajo(modulo_id, ut_id) ON DELETE CASCADE,
   FOREIGN KEY (modulo_id, ra_id, ce_id) REFERENCES ce_catalogo(modulo_id, ra_id, ce_id)
+    ON DELETE CASCADE
 );
 
 -- Instrumento previsto, resuelto A NIVEL DE CE (art. 4.3.b) aunque hoy se declare
@@ -124,6 +125,7 @@ CREATE TABLE ce_instrumentos_previstos (
   instrumento TEXT    NOT NULL,
   PRIMARY KEY (modulo_id, ra_id, ce_id, instrumento),
   FOREIGN KEY (modulo_id, ra_id, ce_id) REFERENCES ce_catalogo(modulo_id, ra_id, ce_id)
+    ON DELETE CASCADE
 );
 
 -- Relación actividad→CE. Sustituye a la columna actividades.ces (JSON de claves
@@ -137,8 +139,32 @@ CREATE TABLE actividad_ce (
   PRIMARY KEY (actividad_id, ra_id, ce_id),
   FOREIGN KEY (actividad_id) REFERENCES actividades(id) ON DELETE CASCADE,
   FOREIGN KEY (modulo_id, ra_id, ce_id) REFERENCES ce_catalogo(modulo_id, ra_id, ce_id)
+    ON DELETE CASCADE
 );
 ```
+
+**Por qué `ON DELETE CASCADE` y no una FK restrictiva.** Hoy, al guardar la programación,
+`setModuloDataJson` (`db.js:991-1051`) recalcula qué claves `RA|CE` siguen siendo válidas y
+**limpia** — no bloquea — cualquier referencia que haya quedado suelta: recorre
+`actividades.ces` y quita del array las claves que ya no están en el catálogo nuevo
+(`criteriosLimpiados`), sin tocar la actividad en sí ni pedir permiso. Es un borrado en cascada
+hecho a mano, fila a fila, en JavaScript.
+
+Con FK restrictiva (el `NO ACTION` por defecto de SQLite cuando no se declara `ON DELETE`), un
+`DELETE FROM ce_catalogo` fallaría en cuanto existiera una fila en `ut_ce`,
+`ce_instrumentos_previstos` o `actividad_ce` que lo referenciara — justo el caso normal, porque
+un CE con actividades es el caso frecuente, no el raro. Habría que reescribir a mano, en el
+código de guardado, el mismo borrado en cascada que SQLite ya sabe hacer, y mantenerlo
+sincronizado en cada sitio nuevo que alguna vez borre un CE.
+
+Por eso las tres FK usan `ON DELETE CASCADE`: reproduce exactamente el comportamiento actual
+(quitar la relación, no la actividad ni la UT ni el instrumento — esas tablas no desaparecen,
+solo pierden la fila que apuntaba al CE borrado) y lo hace obligatorio a nivel de esquema, no
+opcional a nivel de cada ruta de código que edite el catálogo. La única diferencia con hoy es que
+`CASCADE` no cuenta cuántas filas se llevó por delante — así que el código que sustituya a
+`setModuloDataJson` para RF-02 debe seguir haciendo el `SELECT COUNT(*)` **antes** del `DELETE`
+si quiere conservar el aviso «N criterios quitados» que ve la docente hoy (`programacion.js`,
+alrededor de `_saveModData`); `CASCADE` resuelve la integridad, no el aviso.
 
 **No se toca el esquema de `ra_ponderaciones`, `ra_estado` ni `ra_superados`.** Podrían ganar
 una FK compuesta a `ra_catalogo(modulo_id, ra_id)` por higiene, pero eso exige recrearlas (SQLite
@@ -150,6 +176,14 @@ aparte y con sus propios tests.
 dentro de `ra_catalogo.pond` (§2.1). Borrar la tabla es una decisión de código (el renderer
 tiene que dejar de llamar a `getRaPonderaciones`/`setRaPonderacion` y leer/escribir
 `ra_catalogo.pond`), no de datos — se deja para cuando esa parte de RF-02 esté implementada.
+
+**Riesgo de secuencia, no de datos**: mientras el renderer siga llamando a
+`setRaPonderacion`/`getRaPonderaciones` después de que exista `ra_catalogo.pond`, hay **dos
+fuentes de verdad para la misma cifra** y divergen en cuanto alguien edite la ponderación desde
+Programación — la escritura seguiría yendo a la tabla vieja y `ra_catalogo.pond` se quedaría
+congelado con el valor del momento de la migración. Por eso §5 fija que el paso de datos de
+RF-02 y el cambio de código que lee/escribe `ra_catalogo` en vez de `ra_ponderaciones` **van
+juntos, no uno antes que otro.**
 
 ---
 
@@ -353,6 +387,27 @@ un test que compruebe que una actividad `es_recuperacion=1` no mueve la nota de 
 se implemente su regla.** Es una dependencia dura con el motor, no con `calificacion.js` en el
 sentido de tocarlo hoy — es una condición de entrada para ejecutar §3 en producción.
 
+### 3.5 `DROP COLUMN notas.nota_rec` queda fuera de este plan
+
+En la versión anterior de este documento el borrado de la columna aparecía como el último paso
+de la secuencia. Se retira, por tres motivos a la vez:
+
+1. **Es el único paso de todo este plan sin marcha atrás dentro de la propia base** — todos los
+   demás son aditivos (tablas y columnas nuevas) o se revierten con un `ROLLBACK` de su propia
+   transacción. Borrar una columna no.
+2. **No aporta nada hoy.** En la base inspeccionada `nota_rec` es `NULL` en la única fila que
+   existe, y §3.1 ya deja dicho que el algoritmo de migración no se ha podido ejercitar contra
+   ningún caso real. No hay ninguna urgencia de espacio ni de claridad que lo justifique ahora.
+3. **Depende de que RF-08 esté implementado en el motor**, no solo de que los datos estén
+   migrados (§3.4). Mientras `calificacion.js` no sepa leer `es_recuperacion`, conservar la
+   columna vieja sin usarla es gratis y reversible; borrarla antes de tiempo no lo es.
+
+Queda como **tarea posterior**, para cuando RF-08 esté implementado y verificado en el motor:
+entonces sí, comprobar la versión de SQLite que sirve `node:sqlite` (`ALTER TABLE ... DROP
+COLUMN` directo si es ≥ 3.35, o si no la recreación de tabla que ya sigue
+`_migrarUnicidadModulos`), como acción manual explícita y separada del arranque normal de la
+app.
+
 ---
 
 ## 4. Qué no se puede migrar sin pérdida
@@ -365,9 +420,12 @@ Dicho en claro, sin inventar un sustituto:
    lista no se guarda en ningún sitio de `modulos.data_json`** — solo sobrevive el porcentaje
    agregado por RA (`ras[].dual`), ya persistido y que sí migra a `ra_catalogo.dual_pct`. La
    granularidad de CE se pierde en el momento en que se crea el módulo desde el catálogo, no en
-   esta migración: no hay ninguna fuente en la base de datos de la que recuperarla. Si se
-   necesita, hay que volver a declararla a mano por CE (candidato natural: una columna en
-   `ce_catalogo`, p.ej. `en_empresa INTEGER`), no reconstruirla.
+   esta migración: no hay ninguna fuente en la base de datos de la que recuperarla.
+   **Pérdida aceptada explícitamente**: el porcentaje a nivel de RA (`ra_catalogo.dual_pct`) es
+   suficiente para lo que la aplicación necesita hoy. Se descarta añadir una columna
+   `ce_catalogo.en_empresa` (u otra forma de reconstruir el detalle por CE) como parte de esta
+   migración — si algún día hace falta esa granularidad, se vuelve a declarar a mano, no se
+   reconstruye a partir de nada que exista en la base.
 2. **El instrumento real con el que se hizo cada recuperación histórica de `nota_rec`.** Nunca
    se guardó — solo la nota. Por eso §3.3 lo deja `NULL` y la descripción dice "origen
    desconocido"; no se puede inventar un instrumento que nadie registró.
@@ -409,6 +467,14 @@ interfaz actual tampoco las muestra.
    la transacción, un módulo con `data_json` ilegible o sin `ras`/`ces` se salta con un
    `try/catch` alrededor de su `JSON.parse` y se cuenta — eso NO aborta la transacción, solo la
    sentencia SQL que fallase de verdad la abortaría.
+
+   **No antes de que exista el código de RF-02 que lee y escribe `ra_catalogo`.** Este paso no
+   se ejecuta solo, por delante del cambio de renderer que deja de usar
+   `ra_ponderaciones`/`data_json` para la programación: si se ejecutara antes, la aplicación
+   seguiría escribiendo ponderaciones en `ra_ponderaciones` y leyendo `data_json` como hasta
+   ahora, mientras `ra_catalogo` se queda con una copia fija del momento de la migración — dos
+   fuentes de verdad divergiendo desde el primer guardado. La migración de datos y el cambio de
+   código de RF-02 se despliegan juntos, no en dos pasos separados en el tiempo.
 4. **Verificación antes de confirmar (dentro de la misma transacción del paso 3):**
    - `PRAGMA foreign_key_check` sin filas.
    - Recuento cruzado: nº de filas insertadas en `ut_ce` == nº de pares (asignación, CE) que
@@ -428,19 +494,12 @@ interfaz actual tampoco las muestra.
    - Verificación antes de confirmar: nº de `(alumno_id, actividad_id)` con `nota_rec IS NOT
      NULL` al empezar == nº de filas nuevas en `notas` con `observaciones LIKE 'Migrado de
      notas.nota_rec%'`. Si no cuadra, `ROLLBACK`.
-6. **Punto de no retorno, aparte, solo si 3, 4 y 5 terminaron limpios:** eliminar la columna
-   `notas.nota_rec`. Comprobar primero la versión de SQLite que sirve `node:sqlite` en el
-   Electron empaquetado: si soporta `ALTER TABLE notas DROP COLUMN nota_rec` (SQLite ≥ 3.35), se
-   usa directo; si no, se recrea la tabla `notas` con el procedimiento ya establecido en
-   `_migrarUnicidadModulos` (claves foráneas apagadas, `BEGIN`, `CREATE`+`INSERT SELECT`+`DROP`+
-   `RENAME`, `PRAGMA foreign_key_check`, `COMMIT`). Este paso se deja como **acción manual
-   explícita y separada**, no automática al arrancar la app: borrar una columna no se deshace
-   sin la copia del paso 1, así que no debe disparase sola la primera vez que alguien abra la
-   versión nueva.
-7. **Verificación final, de lectura, sin escritura:** recorrer un módulo de verdad en la
+6. **Verificación final, de lectura, sin escritura:** recorrer un módulo de verdad en la
    interfaz (Programación, Notas, Evaluaciones) y comprobar que las cifras que dependían de
    `data_json` (RA, CE, UT, asignaciones, instrumentos previstos) coinciden con las que devuelven
    las tablas nuevas, antes de dar la migración por buena para ese fichero.
+
+**`notas.nota_rec` no se elimina en este plan.** Ver §3.5: queda fuera, como tarea posterior.
 
 ---
 
@@ -455,7 +514,7 @@ interfaz actual tampoco las muestra.
 | `notas.nota_rec` con `actividad_id` que ya no existe | Solo posible si la fila de `notas` sobrevivió al `ON DELETE CASCADE` de su actividad, lo que no debería pasar nunca con las FK activas — se trata como bug a investigar, no como caso normal, y bloquea el paso 5 hasta explicarlo | `ROLLBACK` del paso 5; no toca el paso 3 |
 | El recuento de `notas` migradas no cuadra en el paso 5 | Alguna fila con `nota_rec` fuera de rango 0–10 que el `INSERT` rechazara (la base ya avisa hoy de notas fuera de escala en `getDb()`, línea ~121) | `ROLLBACK` del paso 5; se corrige el dato de origen y se reintenta |
 | El fichero `.sqlite` se corrompe a media migración (corte de luz, fallo de disco) | WAL + `journal_mode=WAL` ya protege bastante, pero no es infalible | Restaurar la copia del paso 1; es la única red de seguridad real, por eso es el paso 0 y no una nota a pie de página |
-| Paso 6 (`DROP COLUMN`) ejecutado antes de tiempo, con `nota_rec` sin migrar del todo | Error humano: saltarse la verificación del paso 5 | No hay marcha atrás dentro de la base — se restaura la copia del paso 1 y se repite desde el paso 3. Por eso el paso 6 está separado y descrito como manual, no como parte del arranque automático |
+| `ra_catalogo.pond` y `ra_ponderaciones` divergen tras la migración | El paso 3 se ejecutó sin el cambio de renderer de RF-02 desplegado a la vez: el código sigue escribiendo en `ra_ponderaciones`, `ra_catalogo.pond` se queda fijo en el valor del momento de migrar | No es un fallo que se revierta: es una secuencia que no debe ocurrir. Se evita no ejecutando el paso 3 hasta que el código de lectura/escritura de RF-02 esté listo para desplegarse junto con él (ver §5, paso 3) |
 
 ---
 
@@ -507,7 +566,7 @@ una UT multi-RA) y compruebe que `_ModFromJson(json.loads(salida))` reconstruye 
 ## 8. Lo que este plan deja abierto
 
 - **No decide** si `ra_ponderaciones` se borra o se deja como tabla muerta — es una decisión de
-  cuándo el código dela de usarla, no de esta migración.
+  cuándo el código deja de usarla, no de esta migración.
 - **No decide** el nombre final de la columna `ce_catalogo.peso` frente a la UI de "reparto
   automático" de `04-REDISENO-PANTALLAS.md` — el nombre de columna aquí es una propuesta, no un
   contrato cerrado con el renderer todavía inexistente.
