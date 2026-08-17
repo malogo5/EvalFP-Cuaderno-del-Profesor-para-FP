@@ -23,7 +23,6 @@ let _modsDisponibles = []
 let _modData = null
 const _updateTimers = {}
 const IA_TABS = ['rubrica','actividad','informe','plan','grupo','examen','corregir','apuntes','todo']
-const _raPondTimers = {}
 const _pesoTimers = {}
 let _utRasState = null
 let _toastTimer = null
@@ -139,11 +138,14 @@ function registerWindowHandlers() {
     renderModulos, selectMod, updateModBadge, renderModDropdown, toggleModDropdown, closeModDropdown,
     renderModRasPanel, delModulo, openAddModulo, confirmAddModulo, closeModal,
     selectCatCiclo, filterCatalogo, selectCatCard,
-    loadProgramacion, updateRaPond, updateCePeso, _refreshRaPondTotal, updateActividadPeso, updateActividadDesc,
+    loadProgramacion, updateActividadPeso, updateActividadDesc,
     addActividadRecuperacion,
     setEvalCount, addActividad, deleteActividadRow, _refreshPesoTotal, _getModData, _saveModData,
-    updateRaLlave, saveUtField, addUt, deleteUt, openUtRasModal, _refreshUtHoras, _toggleRaSection, saveUtRas,
+    saveUtField, addUt, deleteUt, openUtRasModal, _refreshUtHoras, _toggleRaSection, saveUtRas,
     updateRaEstado, openRaNoImpartidoModal, saveRaNoImpartido, closeRaEstadoModal,
+    // RF-02 · programación normalizada (docs/rediseno/05-PLAN-MIGRACION.md)
+    updateRaCatalogoPond, updateRaCatalogoLlave, updateRaCatalogoDual, updateCeCatalogoPeso,
+    toggleRaInstrumento, toggleCeInstrumento, _toggleRaDetalle, _toggleCePesoColumna,
     closeUtRasModal, applyModuloPesos, updateActividadUT, rellenarCesDesdeUts,
     openActUtsModal, saveActUts, closeActUtsModal,
     openActCesModal, saveActCes, _marcarCesDeRa, closeActCesModal,

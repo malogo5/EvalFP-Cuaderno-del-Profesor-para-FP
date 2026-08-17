@@ -484,6 +484,105 @@ function migrarProgramacionNormalizada() {
   return resumen
 }
 
+// ── RF-02 · Programación normalizada — lectura y edición ──────────────────────
+// (docs/rediseno/05-PLAN-MIGRACION.md). Un módulo sin filas en ra_catalogo no
+// está migrado: quien llama a esto decide qué hacer (avisar y remitir a
+// Ajustes, típicamente), no se inventa nada aquí.
+
+/** RA del catálogo normalizado de un módulo. [] si el módulo no está migrado. */
+function getRaCatalogo(moduloId) {
+  return getDb().prepare(
+    'SELECT ra_id, nombre, pond, llave, dual_pct FROM ra_catalogo WHERE modulo_id=? ORDER BY ra_id'
+  ).all(moduloId)
+}
+
+function setRaCatalogoPond(moduloId, raId, pond) {
+  const r = getDb().prepare('UPDATE ra_catalogo SET pond=? WHERE modulo_id=? AND ra_id=?')
+    .run(Number(pond) || 0, moduloId, raId)
+  if (!r.changes) throw new Error(`RA ${raId} no está en el catálogo normalizado del módulo ${moduloId}`)
+}
+
+function setRaCatalogoLlave(moduloId, raId, llave) {
+  const r = getDb().prepare('UPDATE ra_catalogo SET llave=? WHERE modulo_id=? AND ra_id=?')
+    .run(llave ? 1 : 0, moduloId, raId)
+  if (!r.changes) throw new Error(`RA ${raId} no está en el catálogo normalizado del módulo ${moduloId}`)
+}
+
+function setRaCatalogoDual(moduloId, raId, dualPct) {
+  const limpio = dualPct == null || dualPct === '' ? null : Number(dualPct)
+  const r = getDb().prepare('UPDATE ra_catalogo SET dual_pct=? WHERE modulo_id=? AND ra_id=?')
+    .run(limpio, moduloId, raId)
+  if (!r.changes) throw new Error(`RA ${raId} no está en el catálogo normalizado del módulo ${moduloId}`)
+}
+
+/** CE del catálogo normalizado de un módulo. */
+function getCeCatalogo(moduloId) {
+  return getDb().prepare(
+    'SELECT ra_id, ce_id, texto, peso FROM ce_catalogo WHERE modulo_id=? ORDER BY ra_id, ce_id'
+  ).all(moduloId)
+}
+
+/** Peso de un CE dentro de su RA. NULL = reparto automático (no 0). */
+function setCeCatalogoPeso(moduloId, raId, ceId, peso) {
+  const limpio = peso == null || peso === '' ? null : Number(peso)
+  const r = getDb().prepare('UPDATE ce_catalogo SET peso=? WHERE modulo_id=? AND ra_id=? AND ce_id=?')
+    .run(limpio, moduloId, raId, ceId)
+  if (!r.changes) throw new Error(`CE ${raId}|${ceId} no está en el catálogo normalizado del módulo ${moduloId}`)
+}
+
+/** Instrumentos previstos del módulo, por CE. */
+function getCeInstrumentosPrevistos(moduloId) {
+  return getDb().prepare(
+    'SELECT ra_id, ce_id, instrumento FROM ce_instrumentos_previstos WHERE modulo_id=? ' +
+    'ORDER BY ra_id, ce_id, instrumento'
+  ).all(moduloId)
+}
+
+/** Fija los instrumentos previstos de UN CE (sustituye los que hubiera): la excepción puntual por CE de RF-02. */
+function setCeInstrumentos(moduloId, raId, ceId, instrumentos) {
+  const db = getDb()
+  db.exec('BEGIN')
+  try {
+    db.prepare('DELETE FROM ce_instrumentos_previstos WHERE modulo_id=? AND ra_id=? AND ce_id=?')
+      .run(moduloId, raId, ceId)
+    const ins = db.prepare(
+      'INSERT INTO ce_instrumentos_previstos (modulo_id, ra_id, ce_id, instrumento) VALUES (?,?,?,?)')
+    const limpios = [...new Set((instrumentos || []).map(i => String(i || '').trim()).filter(Boolean))]
+    for (const instr of limpios) ins.run(moduloId, raId, ceId, instr)
+    db.exec('COMMIT')
+  } catch (e) {
+    try { db.exec('ROLLBACK') } catch { /* sin transacción activa */ }
+    throw e
+  }
+}
+
+/**
+ * Declara los instrumentos previstos de un RA: los hereda CADA CE del RA
+ * (RF-02: "se declara por RA, lo heredan sus CE, con excepción puntual por
+ * CE"). Sustituye lo que hubiera en cada CE — incluida una excepción puntual
+ * que ya existiera, porque esto es precisamente "volver a declarar por RA".
+ */
+function setRaInstrumentos(moduloId, raId, instrumentos) {
+  const db = getDb()
+  const ces = db.prepare('SELECT ce_id FROM ce_catalogo WHERE modulo_id=? AND ra_id=?').all(moduloId, raId)
+  const limpios = [...new Set((instrumentos || []).map(i => String(i || '').trim()).filter(Boolean))]
+  db.exec('BEGIN')
+  try {
+    const del = db.prepare(
+      'DELETE FROM ce_instrumentos_previstos WHERE modulo_id=? AND ra_id=? AND ce_id=?')
+    const ins = db.prepare(
+      'INSERT INTO ce_instrumentos_previstos (modulo_id, ra_id, ce_id, instrumento) VALUES (?,?,?,?)')
+    for (const ce of ces) {
+      del.run(moduloId, raId, ce.ce_id)
+      for (const instr of limpios) ins.run(moduloId, raId, ce.ce_id, instr)
+    }
+    db.exec('COMMIT')
+  } catch (e) {
+    try { db.exec('ROLLBACK') } catch { /* sin transacción activa */ }
+    throw e
+  }
+}
+
 function _initSchema() {
   _db.exec(`
     -- Módulos que el profesor imparte
@@ -1389,5 +1488,8 @@ module.exports = {
   getConfig, setConfig, deleteConfig, getAllConfig,
   // RF-02 · programación normalizada (docs/rediseno/05-PLAN-MIGRACION.md)
   migrarProgramacionNormalizada,
+  getRaCatalogo, setRaCatalogoPond, setRaCatalogoLlave, setRaCatalogoDual,
+  getCeCatalogo, setCeCatalogoPeso,
+  getCeInstrumentosPrevistos, setCeInstrumentos, setRaInstrumentos,
   TEST_ONLY_rawDb,
 }

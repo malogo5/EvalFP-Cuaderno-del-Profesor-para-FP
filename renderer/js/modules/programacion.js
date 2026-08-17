@@ -39,19 +39,6 @@ async function loadProgramacion() {
     if (raPondOverrides[ra.id] !== undefined) ra.pond = raPondOverrides[ra.id]
   })
 
-  // RF-01 · Estado de impartición de cada RA (previsto/impartido/no_impartido).
-  // Se le pasa al motor único para conocer, por RA, el estado resuelto y la
-  // ponderación efectiva tras repartir la de los no impartidos: no se recalcula
-  // aquí, se lee tal cual la devuelve `contextoModulo`.
-  let raEstadosDb = {}
-  try {
-    raEstadosDb = await window.api.getRaEstados(parseInt(mid)) || {}
-  } catch { /* base antigua sin la tabla */ }
-  const ctxRA = contextoModulo({
-    ras, cesByRa: ces, asignaciones: asigs, actividades, raEstados: raEstadosDb,
-  })
-  const algunRaNoImpartido = Object.values(ctxRA.ponderaciones).some(p => p.estado === 'no_impartido')
-
   // índices rápidos
   const utMap  = Object.fromEntries(uts.map(u => [u.id, u]))
   const raMap  = Object.fromEntries(ras.map(r => [r.id, r]))
@@ -79,9 +66,6 @@ async function loadProgramacion() {
       }
     }
   }
-  const totalCes = ras.reduce((s, ra) => s + (ces[ra.id] || []).length, 0)
-  const cesCubiertos = Object.keys(coberturaCe).length
-
   // ── cabecera ──────────────────────────────────────────────────
   let h = `
   <div class="card" style="margin-bottom:16px;padding:16px 20px;border-left:4px solid var(--accent)">
@@ -514,188 +498,267 @@ async function loadProgramacion() {
   </div>`
 
   // ── 4. RESULTADOS DE APRENDIZAJE Y CRITERIOS DE EVALUACIÓN ───
-  const totalRaPond = ras.reduce((s, r) => s + (r.pond || 0), 0)
-  const raPondOk    = ras.every(r => r.pond) && Math.abs(totalRaPond - 100) < 0.1
-  const raSumBadge  = ras.some(r => r.pond)
-    ? (raPondOk
-        ? `<span data-rapond-total style="font-size:10.5px;padding:2px 9px;border-radius:8px;background:rgba(16,185,129,.12);color:var(--green);font-weight:700;margin-left:auto">✓ 100%</span>`
-        : `<span data-rapond-total style="font-size:10.5px;padding:2px 9px;border-radius:8px;background:rgba(245,158,11,.15);color:var(--amber);font-weight:700;margin-left:auto">⚠ suma ${totalRaPond}%</span>`)
-    : ''
+  // RF-02, segunda mitad: esta sección ya NO lee ras/ces/raInstr (data_json) ni
+  // ra_ponderaciones. Lee y escribe ra_catalogo, ce_catalogo y
+  // ce_instrumentos_previstos (docs/rediseno/05-PLAN-MIGRACION.md). Las demás
+  // secciones de esta pantalla (plan de actividades, distribución, UT, mapa)
+  // siguen en data_json hasta la siguiente parte de RF-02: por eso un RA
+  // editado aquí puede tardar en reflejarse en esas otras secciones, que no se
+  // tocan hoy.
+  const raCatalogo = await window.api.getRaCatalogo(parseInt(mid))
 
-  // Cuántos criterios evalúa de verdad alguna actividad. Sin esto, la programación
-  // puede tener criterios que nadie califica y no enterarte hasta la reclamación.
-  // Los criterios de un RA dualizado que no tiene actividad de aula no son un
-  // olvido: se acreditan en la fase de formación en empresa. Contarlos como
-  // «sin actividad» dejaba el aviso en ámbar para siempre y escondía los que sí
-  // faltan de verdad.
-  const _raDual = Object.fromEntries(ras.map(r => [r.id, Number(r.dual) || 0]))
-  let cesEnEmpresa = 0
-  for (const ra of ras) {
-    if (!_raDual[ra.id]) continue
-    for (const ce of (ces[ra.id] || [])) {
-      if (!coberturaCe[ceKey(ra.id, ce.id)]) cesEnEmpresa++
+  if (!raCatalogo.length) {
+    h += `<div class="card" style="margin-bottom:16px">
+      <div class="prog-section-title">🎯 Resultados de Aprendizaje y Criterios de Evaluación</div>
+      <div class="empty-state">
+        <div style="font-weight:700;color:var(--text);margin-bottom:6px">Este módulo todavía no está migrado a la programación normalizada</div>
+        <div style="margin-bottom:12px">Desde RF-02, los RA y CE de esta vista viven en tablas con clave foránea
+          (<code>ra_catalogo</code>, <code>ce_catalogo</code>), no en el JSON antiguo del módulo. Migra este módulo
+          desde Ajustes — hace una copia de seguridad antes de tocar nada — y vuelve aquí.</div>
+        <button class="btn btn-primary btn-sm" onclick="goSection('ajustes')">⚙ Ir a Ajustes</button>
+      </div>
+    </div>`
+  } else {
+    const ceCatalogoRows = await window.api.getCeCatalogo(parseInt(mid))
+    const ceInstrRows    = await window.api.getCeInstrumentosPrevistos(parseInt(mid))
+    let raEstadosDb = {}
+    try {
+      raEstadosDb = await window.api.getRaEstados(parseInt(mid)) || {}
+    } catch { /* base antigua sin la tabla */ }
+
+    const cesByRaNorm = {}
+    for (const row of ceCatalogoRows) {
+      (cesByRaNorm[row.ra_id] = cesByRaNorm[row.ra_id] || []).push(
+        { id: row.ce_id, texto: row.texto, peso: row.peso })
     }
-  }
-  const cesPendientes = totalCes - cesCubiertos - cesEnEmpresa
-  const _empresaTxt = cesEnEmpresa
-    ? ` <span style="font-size:10.5px;padding:2px 9px;border-radius:8px;background:rgba(74,144,217,.14);color:var(--accent2);font-weight:700"
-         title="Criterios de resultados dualizados que se acreditan en la fase de formación en empresa">🏭 ${cesEnEmpresa} en empresa</span>`
-    : ''
-  // Parte del módulo que se acredita en la empresa, ponderada por el peso de cada
-  // resultado: es la cifra que hay que poder enseñar para justificar que la
-  // estancia tiene carácter curricular y no es una visita.
-  const _pesoDual = ras.reduce((acc, r) => acc + (Number(r.pond) || 0) * (Number(r.dual) || 0) / 100, 0)
-  const _pesoDualTxt = Math.round(_pesoDual * 10) / 10
-  const _dualEnRango = _pesoDual >= 10 && _pesoDual <= 20
-  const dualBadge = _pesoDual
-    ? `<span style="font-size:10.5px;padding:2px 9px;border-radius:8px;font-weight:700;${_dualEnRango
-        ? 'background:rgba(16,185,129,.12);color:var(--green)'
-        : 'background:rgba(245,158,11,.15);color:var(--amber)'}"
-        title="Peso de los resultados de aprendizaje que se acreditan en la fase de formación en empresa, ponderado por la ponderación de cada RA. El periodo de formación en empresa del grado D debe cubrir entre el 10 % y el 20 % de los RA de los módulos asociados a estándares de competencia.">
-        🏭 ${_pesoDualTxt}% del módulo se acredita en empresa${_dualEnRango ? ' ✓' : ' ⚠ fuera del 10-20 %'}</span>`
-    : ''
-  const cobBadge = totalCes
-    ? (cesPendientes <= 0
-        ? `<span style="font-size:10.5px;padding:2px 9px;border-radius:8px;background:rgba(16,185,129,.12);color:var(--green);font-weight:700"
-             title="Cada criterio del decreto está cubierto: por una actividad del aula o por la fase de formación en empresa">✓ los ${totalCes} criterios se evalúan</span>${_empresaTxt}`
-        : `<span style="font-size:10.5px;padding:2px 9px;border-radius:8px;background:rgba(245,158,11,.15);color:var(--amber);font-weight:700"
-             title="Los criterios sin actividad salen marcados abajo con ○. Asígnalos a una práctica o examen desde la columna CEs del plan, o marca su RA como dualizado si se acreditan en la empresa.">⚠ ${cesPendientes} criterio${cesPendientes > 1 ? 's' : ''} sin actividad que los evalúe</span>${_empresaTxt}`)
-    : ''
-
-  h += `<div class="card" style="margin-bottom:16px">
-    <div class="prog-section-title" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">🎯 Resultados de Aprendizaje y Criterios de Evaluación
-      ${cobBadge}
-      ${dualBadge}
-      ${raSumBadge}
-    </div>
-    <div style="display:flex;flex-direction:column;gap:10px">`
-
-  for (const ra of ras) {
-    const raCes = ces[ra.id] || []
-    // En qué evaluación cae este RA (mismo mapa que las secciones de arriba)
-    const raEval = evalDeRa[ra.id] ? `Eval ${evalDeRa[ra.id]}` : 'Sin evaluación'
-    const instrList = raInstr[ra.id] || []
-    const instrStr  = instrList.map(i =>
-      i==='practica'?'Práctica':i==='examen'?'Examen':i==='proyecto'?'Proyecto':
-      i==='informe'?'Informe':i==='presentacion'?'Presentación':i
-    ).join(' + ')
-    // qué UT(s) evalúa
-    const utAsigs = asigs.filter(a => a.ra === ra.id).map(a => a.ut)
-
-    // Input editable de ponderación (con tooltip explicativo)
-    const pondInput = `<span style="display:inline-flex;align-items:center;gap:4px;background:rgba(0,0,0,.15);border-radius:8px;padding:2px 8px 2px 4px">
-      <input class="ra-pond-cell" type="number" min="0" max="100" step="1"
-        value="${ra.pond || ''}" placeholder="—"
-        data-mid="${mid}" data-raid="${ra.id}"
-        oninput="_refreshRaPondTotal(this)"
-        onchange="updateRaPond(this)"
-        title="Ponderación de este RA en la nota final (%)"/>
-      <span style="font-size:11px;color:rgba(255,255,255,.6);font-weight:600">%</span>
-    </span>`
-
-    // Porcentaje del RA que se adquiere y acredita en la fase de formación en
-    // empresa (Decreto 80/2024, art. 5.bis). 0 o vacío = íntegramente en el aula.
-    const dualInput = `<span title="Parte de este resultado que se adquiere y acredita en la fase de formación en empresa (Decreto 80/2024, art. 5.bis). 0 o vacío significa que se acredita íntegramente en el centro."
-        style="display:inline-flex;align-items:center;gap:4px;background:rgba(74,144,217,.12);border-radius:8px;padding:2px 8px 2px 6px;white-space:nowrap">
-      <span style="font-size:11px">🏭</span>
-      <input class="ra-dual-cell peso-cell" type="number" min="0" max="100" step="5"
-        value="${ra.dual != null && ra.dual !== '' ? ra.dual : ''}" placeholder="0"
-        data-mid="${mid}" data-raid="${esc(ra.id)}"
-        onchange="updateRaDual(this)" style="width:48px;font-size:11px"/>
-      <span style="font-size:10.5px;color:var(--text2);font-weight:600">% en empresa</span>
-    </span>`
-
-    // RA que hay que tener alcanzado para incorporarse a la fase de empresa
-    // (Orden 201/2024, art. 4.3.a). La programación debe especificarlos.
-    const llaveChk = `<label title="Marca los RA que el alumnado debe tener alcanzados para incorporarse a la fase de formación en empresa (Orden 201/2024, art. 4.3.a)"
-        style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:var(--text2);cursor:pointer;white-space:nowrap">
-      <input type="checkbox" ${ra.llave ? 'checked' : ''}
-        onchange="updateRaLlave(${mid},'${esc(ra.id)}',this.checked)"
-        style="accent-color:var(--accent);width:13px;height:13px"/>
-      🔑 para empresa
-    </label>`
-
-    // RF-01 · Estado de impartición (Orden 201/2024, art. 2.3). De grupo, nunca
-    // individual: o se da al módulo entero o no se da. "No impartido" exige
-    // motivo, así que ese valor solo se fija desde el modal, nunca al vuelo.
-    const raEstadoActual = ctxRA.raEstados[ra.id]
-    const raEstadoMotivo = raEstadosDb[ra.id]?.motivo || ''
-    const raEstadoColores = {
-      previsto:     'background:rgba(106,96,80,.12);color:var(--text2)',
-      impartido:    'background:rgba(16,185,129,.12);color:var(--green)',
-      no_impartido: 'background:rgba(239,68,68,.12);color:#ef4444',
+    const instrByCeNorm = {}
+    for (const row of ceInstrRows) {
+      const k = `${row.ra_id}|${row.ce_id}`
+      ;(instrByCeNorm[k] = instrByCeNorm[k] || []).push(row.instrumento)
     }
-    const raEstadoTitulo = raEstadoActual === 'no_impartido' && raEstadoMotivo
-      ? `No impartido: ${raEstadoMotivo}`
-      : 'Estado de impartición de este RA (Orden 201/2024, art. 2.3). "No impartido" excluye el RA del cómputo y reparte su ponderación.'
-    const estadoSelect = `<span style="display:inline-flex;align-items:center;gap:3px">
-      <select class="ra-estado-sel" data-mid="${mid}" data-raid="${esc(ra.id)}"
-        data-current="${raEstadoActual}" data-motivo="${esc(raEstadoMotivo)}"
-        onchange="updateRaEstado(this)" title="${esc(raEstadoTitulo)}"
-        style="border:1.5px solid var(--border2);border-radius:8px;padding:2px 6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;${raEstadoColores[raEstadoActual] || ''}">
-        <option value="previsto"${raEstadoActual === 'previsto' ? ' selected' : ''}>Previsto</option>
-        <option value="impartido"${raEstadoActual === 'impartido' ? ' selected' : ''}>Impartido</option>
-        <option value="no_impartido"${raEstadoActual === 'no_impartido' ? ' selected' : ''}>No impartido</option>
-      </select>
-      ${raEstadoActual === 'no_impartido' ? `<button type="button" onclick="openRaNoImpartidoModal(${mid},'${esc(ra.id)}')"
-        title="Ver o editar el motivo" aria-label="Ver o editar el motivo"
-        style="background:transparent;border:none;color:var(--text2);cursor:pointer;font-size:12px;padding:0 2px">✎</button>` : ''}
-    </span>`
 
-    // Ponderación original → efectiva: solo cuando hay algún RA no impartido en
-    // el módulo, para no ensuciar la pantalla el resto del tiempo. La cifra sale
-    // tal cual de `contextoModulo().ponderaciones`, sin recalcularla aquí.
-    const raPond = ctxRA.ponderaciones[ra.id] || {}
-    const repartoBadge = algunRaNoImpartido && Math.abs((raPond.original || 0) - (raPond.efectiva || 0)) > 0.05
-      ? `<span class="badge" title="Ponderación original → efectiva tras repartir la de los RA no impartidos"
-          style="background:rgba(245,158,11,.15);color:var(--amber);font-weight:700">${_fmtPct(raPond.original)}% → ${_fmtPct(raPond.efectiva)}%</span>`
+    // RF-01, sobre la fuente normalizada: el motor único no cambia, solo de
+    // dónde sacamos ras/cesByRa.
+    const rasParaCtx = raCatalogo.map(r => ({ id: r.ra_id, nombre: r.nombre, pond: r.pond }))
+    const ctxRA = contextoModulo({
+      ras: rasParaCtx, cesByRa: cesByRaNorm, asignaciones: asigs, actividades,
+      raEstados: raEstadosDb,
+    })
+    const algunRaNoImpartido = Object.values(ctxRA.ponderaciones).some(p => p.estado === 'no_impartido')
+
+    const nTotalRaPond = raCatalogo.reduce((s, r) => s + (r.pond || 0), 0)
+    const nRaPondOk    = raCatalogo.every(r => r.pond) && Math.abs(nTotalRaPond - 100) < 0.1
+    const raSumBadge   = raCatalogo.some(r => r.pond)
+      ? (nRaPondOk
+          ? `<span style="font-size:10.5px;padding:2px 9px;border-radius:8px;background:rgba(16,185,129,.12);color:var(--green);font-weight:700;margin-left:auto">✓ 100%</span>`
+          : `<span style="font-size:10.5px;padding:2px 9px;border-radius:8px;background:rgba(245,158,11,.15);color:var(--amber);font-weight:700;margin-left:auto">⚠ suma ${nTotalRaPond}%</span>`)
       : ''
 
-    h += `<div style="border:1px solid var(--border);border-left:4px solid var(--accent2);border-radius:8px;overflow:hidden">
-      <div style="background:var(--bg3);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-         <span style="font-size:13px;font-weight:800;color:var(--accent2);min-width:38px">${esc(ra.id)}</span>
-         <span style="font-size:13px;font-weight:600;flex:1">${esc(ra.nombre)}</span>
-         ${estadoSelect}
-         ${llaveChk}
-         ${pondInput}
-         ${repartoBadge}
-         ${dualInput}
-         <span class="badge">${raEval}</span>
-         ${utAsigs.length ? `<span class="badge">${esc(utAsigs.join(', '))}</span>` : ''}
-         ${instrStr ? `<span class="badge badge-green">${esc(instrStr)}</span>` : ''}
-       </div>`
+    // Mismo razonamiento de cobertura que antes, ahora contra el catálogo
+    // normalizado. `coberturaCe` sigue siendo válido: solo mira existencia de
+    // claves RA|CE, que no cambian entre el JSON viejo y las tablas nuevas.
+    const nTotalCes = raCatalogo.reduce((s, r) => s + (cesByRaNorm[r.ra_id] || []).length, 0)
+    const nCesCubiertos = Object.keys(coberturaCe)
+      .filter(k => raCatalogo.some(r => k.startsWith(r.ra_id + '|'))).length
+    const nRaDual = Object.fromEntries(raCatalogo.map(r => [r.ra_id, Number(r.dual_pct) || 0]))
+    let nCesEnEmpresa = 0
+    for (const ra of raCatalogo) {
+      if (!nRaDual[ra.ra_id]) continue
+      for (const ce of (cesByRaNorm[ra.ra_id] || [])) {
+        if (!coberturaCe[ceKey(ra.ra_id, ce.id)]) nCesEnEmpresa++
+      }
+    }
+    const nCesPendientes = nTotalCes - nCesCubiertos - nCesEnEmpresa
+    const nEmpresaTxt = nCesEnEmpresa
+      ? ` <span style="font-size:10.5px;padding:2px 9px;border-radius:8px;background:rgba(74,144,217,.14);color:var(--accent2);font-weight:700"
+           title="Criterios de resultados dualizados que se acreditan en la fase de formación en empresa">🏭 ${nCesEnEmpresa} en empresa</span>`
+      : ''
+    const nPesoDual = raCatalogo.reduce((acc, r) => acc + (Number(r.pond) || 0) * (Number(r.dual_pct) || 0) / 100, 0)
+    const nPesoDualTxt = Math.round(nPesoDual * 10) / 10
+    const nDualEnRango = nPesoDual >= 10 && nPesoDual <= 20
+    const dualBadge = nPesoDual
+      ? `<span style="font-size:10.5px;padding:2px 9px;border-radius:8px;font-weight:700;${nDualEnRango
+          ? 'background:rgba(16,185,129,.12);color:var(--green)'
+          : 'background:rgba(245,158,11,.15);color:var(--amber)'}"
+          title="Peso de los resultados de aprendizaje que se acreditan en la fase de formación en empresa, ponderado por la ponderación de cada RA. El periodo de formación en empresa del grado D debe cubrir entre el 10 % y el 20 % de los RA de los módulos asociados a estándares de competencia.">
+          🏭 ${nPesoDualTxt}% del módulo se acredita en empresa${nDualEnRango ? ' ✓' : ' ⚠ fuera del 10-20 %'}</span>`
+      : ''
+    const cobBadge = nTotalCes
+      ? (nCesPendientes <= 0
+          ? `<span style="font-size:10.5px;padding:2px 9px;border-radius:8px;background:rgba(16,185,129,.12);color:var(--green);font-weight:700"
+               title="Cada criterio del decreto está cubierto: por una actividad del aula o por la fase de formación en empresa">✓ los ${nTotalCes} criterios se evalúan</span>${nEmpresaTxt}`
+          : `<span style="font-size:10.5px;padding:2px 9px;border-radius:8px;background:rgba(245,158,11,.15);color:var(--amber);font-weight:700"
+               title="Los criterios sin actividad salen marcados en el desplegable con ○. Asígnalos a una práctica o examen, o marca su RA como dualizado si se acreditan en la empresa.">⚠ ${nCesPendientes} criterio${nCesPendientes > 1 ? 's' : ''} sin actividad que los evalúe</span>${nEmpresaTxt}`)
+      : ''
 
-     if (raCes.length) {
-       h += `<div style="padding:8px 16px 10px 16px">
-         <table style="width:100%;border-collapse:collapse">`
-       for (const ce of raCes) {
-         // Dónde se evalúa este criterio: verde con el listado, o hueco si nadie lo evalúa
-         const donde = coberturaCe[ceKey(ra.id, ce.id)] || []
-         const marca = donde.length
-           ? `<span title="Se evalúa en: ${esc(donde.join(' · '))}" style="color:var(--green);font-size:11px">●</span>`
-           : (_raDual[ra.id]
-             ? `<span title="Se acredita en la fase de formación en empresa (${_raDual[ra.id]}% de este resultado)" style="font-size:10px">🏭</span>`
-             : `<span title="Ningún examen ni práctica evalúa este criterio todavía" style="color:var(--amber);font-size:11px">○</span>`)
-         // Ponderación del criterio dentro del RA (Orden 201/2024, art. 4.3.a).
-         // En blanco = todos los criterios del RA valen lo mismo.
-         const pesoCe = `<input class="peso-cell" type="number" min="0" max="100" step="1"
-             value="${ce.peso != null && ce.peso !== '' ? ce.peso : ''}" placeholder="—"
-             data-mid="${mid}" data-raid="${esc(ra.id)}" data-ceid="${esc(ce.id)}"
-             onchange="updateCePeso(this)"
-             title="Peso de este criterio dentro del RA. En blanco, todos los criterios pesan igual."
-             style="width:52px;font-size:11px"/>`
-         h += `<tr style="border-top:1px solid var(--border)">
-           <td style="padding:4px 6px 4px 0;text-align:center;vertical-align:top;width:16px">${marca}</td>
-           <td style="padding:4px 10px 4px 0;font-size:12px;font-weight:700;color:var(--accent);white-space:nowrap;vertical-align:top">${esc(ce.id)}</td>
-           <td style="padding:4px 0;font-size:12px;color:var(--text2);line-height:1.5">${esc(ce.texto)}</td>
-           <td style="padding:4px 0 4px 8px;text-align:right;vertical-align:top;white-space:nowrap">${pesoCe}<span style="font-size:10px;color:var(--text3)">%</span></td>
-         </tr>`
-       }
-       h += `</table></div>`
-     }
-     h += `</div>`
+    const INSTRUMENTOS = [
+      ['practica', 'Práctica'], ['examen', 'Examen'], ['proyecto', 'Proyecto'],
+      ['informe', 'Informe'], ['presentacion', 'Presentación'], ['empresa', '🏭 Empresa'],
+    ]
+    // Instrumentos "del RA": los que comparten TODOS sus CE. Si divergen, no se
+    // inventa un valor común — se avisa y se resuelve en el desplegable.
+    const instrumentosDeRa = (raId, cesDelRa) => {
+      if (!cesDelRa.length) return { lista: [], divergen: false }
+      const sets = cesDelRa.map(ce => (instrByCeNorm[`${raId}|${ce.id}`] || []).slice().sort())
+      const ref = JSON.stringify(sets[0])
+      return { lista: sets[0] || [], divergen: sets.some(s => JSON.stringify(s) !== ref) }
+    }
+    const chip = (mid_, raId, ceId, val, label, activo) => {
+      const attrCe = ceId ? ` data-ceid="${esc(ceId)}"` : ''
+      const handler = ceId ? 'toggleCeInstrumento(this)' : 'toggleRaInstrumento(this)'
+      return `<button type="button" class="instr-chip" data-mid="${mid_}" data-raid="${esc(raId)}"${attrCe}
+          data-val="${val}" data-activo="${activo ? 1 : 0}" onclick="${handler}" title="${label}"
+          style="font-size:9.5px;padding:2px 7px;border-radius:9px;cursor:pointer;font-weight:${activo ? 700 : 400};
+                 border:1.5px solid ${activo ? 'var(--accent)' : 'var(--border2)'};
+                 background:${activo ? 'rgba(201,104,45,.15)' : 'transparent'};
+                 color:${activo ? 'var(--accent)' : 'var(--text2)'}">${label}</button>`
+    }
+
+    h += `<div class="card" style="margin-bottom:16px">
+      <div class="prog-section-title" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">🎯 Resultados de Aprendizaje y Criterios de Evaluación
+        ${cobBadge}
+        ${dualBadge}
+        ${raSumBadge}
+      </div>
+      <div style="overflow-x:auto">
+      <table class="prog-table" style="width:100%">
+        <thead><tr>
+          <th style="width:24px"></th>
+          <th style="width:48px">RA</th>
+          <th style="min-width:160px">Nombre</th>
+          <th style="width:96px;text-align:center">Ponderación</th>
+          <th style="width:180px;text-align:center">Estado de impartición</th>
+          <th style="min-width:220px">Instrumento previsto</th>
+          <th style="width:90px;text-align:center">% Empresa</th>
+          <th style="width:34px;text-align:center" title="Necesario para incorporarse a la fase de empresa (art. 4.3.a)">🔑</th>
+        </tr></thead>
+        <tbody>`
+
+    for (const ra of raCatalogo) {
+      const raId = ra.ra_id
+      const raCes = cesByRaNorm[raId] || []
+
+      const raEstadoActual = ctxRA.raEstados[raId]
+      const raEstadoMotivo = raEstadosDb[raId]?.motivo || ''
+      const raEstadoColores = {
+        previsto:     'background:rgba(106,96,80,.12);color:var(--text2)',
+        impartido:    'background:rgba(16,185,129,.12);color:var(--green)',
+        no_impartido: 'background:rgba(239,68,68,.12);color:#ef4444',
+      }
+      const raEstadoTitulo = raEstadoActual === 'no_impartido' && raEstadoMotivo
+        ? `No impartido: ${raEstadoMotivo}`
+        : 'Estado de impartición de este RA (Orden 201/2024, art. 2.3). "No impartido" excluye el RA del cómputo y reparte su ponderación.'
+      const estadoSelect = `<span style="display:inline-flex;align-items:center;gap:3px">
+        <select class="ra-estado-sel" data-mid="${mid}" data-raid="${esc(raId)}"
+          data-current="${raEstadoActual}" data-motivo="${esc(raEstadoMotivo)}"
+          onchange="updateRaEstado(this)" title="${esc(raEstadoTitulo)}"
+          style="border:1.5px solid var(--border2);border-radius:8px;padding:2px 4px;font-size:10.5px;font-weight:700;cursor:pointer;font-family:inherit;${raEstadoColores[raEstadoActual] || ''}">
+          <option value="previsto"${raEstadoActual === 'previsto' ? ' selected' : ''}>Previsto</option>
+          <option value="impartido"${raEstadoActual === 'impartido' ? ' selected' : ''}>Impartido</option>
+          <option value="no_impartido"${raEstadoActual === 'no_impartido' ? ' selected' : ''}>No impartido</option>
+        </select>
+        ${raEstadoActual === 'no_impartido' ? `<button type="button" onclick="openRaNoImpartidoModal(${mid},'${esc(raId)}')"
+          title="Ver o editar el motivo" aria-label="Ver o editar el motivo"
+          style="background:transparent;border:none;color:var(--text2);cursor:pointer;font-size:12px;padding:0 2px">✎</button>` : ''}
+      </span>`
+
+      const raPondCtx = ctxRA.ponderaciones[raId] || {}
+      const repartoBadge = algunRaNoImpartido && Math.abs((raPondCtx.original || 0) - (raPondCtx.efectiva || 0)) > 0.05
+        ? `<div><span class="badge" title="Ponderación original → efectiva tras repartir la de los RA no impartidos"
+            style="background:rgba(245,158,11,.15);color:var(--amber);font-weight:700;font-size:9.5px">${_fmtPct(raPondCtx.original)}% → ${_fmtPct(raPondCtx.efectiva)}%</span></div>`
+        : ''
+
+      const { lista: instrRaLista, divergen: instrDivergen } = instrumentosDeRa(raId, raCes)
+      const instrCell = `<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+        ${INSTRUMENTOS.map(([val, label]) => chip(mid, raId, null, val, label, instrRaLista.includes(val))).join('')}
+        ${instrDivergen ? `<span title="Los CE de este RA no llevan todos los mismos instrumentos: revísalo en el desplegable" style="color:var(--amber);font-size:12px;cursor:help">⚠</span>` : ''}
+      </div>`
+
+      const abierto = _raExpandidas.has(raId)
+      h += `<tr style="border-top:1px solid var(--border)">
+        <td style="text-align:center">
+          <button type="button" id="ra-tog-${esc(raId)}" onclick="_toggleRaDetalle('${esc(raId)}')"
+            title="${abierto ? 'Ocultar' : 'Ver'} criterios de evaluación"
+            style="background:transparent;border:none;color:var(--text2);cursor:pointer;font-size:12px">${abierto ? '▾' : '▸'}</button>
+        </td>
+        <td style="font-weight:800;color:var(--accent2);white-space:nowrap;vertical-align:top;padding-top:8px">${esc(raId)}</td>
+        <td style="font-weight:600;vertical-align:top;padding-top:8px">${esc(ra.nombre)}${repartoBadge}</td>
+        <td style="text-align:center;vertical-align:top;padding-top:6px">
+          <input class="ra-pond-cell" type="number" min="0" max="100" step="1"
+            value="${ra.pond || ''}" placeholder="—"
+            data-mid="${mid}" data-raid="${esc(raId)}"
+            onchange="updateRaCatalogoPond(this)" title="Ponderación de este RA en la nota final (%)"
+            style="width:52px;text-align:center"/>%
+        </td>
+        <td style="text-align:center;vertical-align:top;padding-top:6px">${estadoSelect}</td>
+        <td style="vertical-align:top;padding-top:8px">${instrCell}</td>
+        <td style="text-align:center;vertical-align:top;padding-top:6px">
+          <input class="ra-dual-cell peso-cell" type="number" min="0" max="100" step="5"
+            value="${ra.dual_pct != null && ra.dual_pct !== '' ? ra.dual_pct : ''}" placeholder="0"
+            data-mid="${mid}" data-raid="${esc(raId)}"
+            onchange="updateRaCatalogoDual(this)"
+            title="Parte de este RA que se adquiere y acredita en la fase de formación en empresa (Decreto 80/2024, art. 5.bis)"
+            style="width:44px;text-align:center"/>%
+        </td>
+        <td style="text-align:center;vertical-align:top;padding-top:8px">
+          <input type="checkbox" ${ra.llave ? 'checked' : ''}
+            onchange="updateRaCatalogoLlave(${mid},'${esc(raId)}',this.checked)"
+            title="Necesario para incorporarse a la fase de formación en empresa (Orden 201/2024, art. 4.3.a)"
+            style="accent-color:var(--accent);width:14px;height:14px;cursor:pointer"/>
+        </td>
+      </tr>
+      <tr id="ra-det-${esc(raId)}" style="display:${abierto ? '' : 'none'}">
+        <td></td>
+        <td colspan="7" style="padding:0 0 14px 0">`
+
+      if (raCes.length) {
+        const algunPesoExplicito = raCes.some(c => c.peso != null && c.peso !== '')
+        h += `<table style="width:100%;border-collapse:collapse;background:var(--bg3);border-radius:8px">
+          <thead><tr style="font-size:9.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em">
+            <th style="width:16px"></th>
+            <th style="width:52px;text-align:left;padding:5px 6px">CE</th>
+            <th style="text-align:left;padding:5px 6px">Criterio</th>
+            <th style="min-width:200px;text-align:left;padding:5px 6px">Instrumento</th>
+            <th class="th-ce-pond" style="width:110px;text-align:right;padding:5px 6px;cursor:pointer;user-select:none"
+                onclick="_toggleCePesoColumna(this)">
+              ${algunPesoExplicito ? 'Ponderación ▾' : '▸ reparto automático'}
+            </th>
+          </tr></thead>
+          <tbody>`
+        for (const ce of raCes) {
+          const donde = coberturaCe[ceKey(raId, ce.id)] || []
+          const marca = donde.length
+            ? `<span title="Se evalúa en: ${esc(donde.join(' · '))}" style="color:var(--green);font-size:11px">●</span>`
+            : (nRaDual[raId]
+              ? `<span title="Se acredita en la fase de formación en empresa (${nRaDual[raId]}% de este resultado)" style="font-size:10px">🏭</span>`
+              : `<span title="Ningún examen ni práctica evalúa este criterio todavía" style="color:var(--amber);font-size:11px">○</span>`)
+          const instrCe = instrByCeNorm[`${raId}|${ce.id}`] || []
+          const chipsCe = INSTRUMENTOS.map(([val, label]) =>
+            chip(mid, raId, ce.id, val, label, instrCe.includes(val))).join('')
+          const pesoCe = `<input class="peso-cell" type="number" min="0" max="100" step="1"
+              value="${ce.peso != null && ce.peso !== '' ? ce.peso : ''}" placeholder="—"
+              data-mid="${mid}" data-raid="${esc(raId)}" data-ceid="${esc(ce.id)}"
+              onchange="updateCeCatalogoPeso(this)"
+              title="Peso de este criterio dentro del RA. En blanco, todos los criterios pesan igual."
+              style="width:52px;font-size:11px"/>`
+          h += `<tr style="border-top:1px solid var(--border)">
+            <td style="padding:4px 6px 4px 6px;text-align:center;vertical-align:top">${marca}</td>
+            <td style="padding:4px 6px;font-size:12px;font-weight:700;color:var(--accent);white-space:nowrap;vertical-align:top">${esc(ce.id)}</td>
+            <td style="padding:4px 6px;font-size:12px;color:var(--text2);line-height:1.5">${esc(ce.texto)}</td>
+            <td style="padding:4px 6px;vertical-align:top"><div style="display:flex;gap:3px;flex-wrap:wrap">${chipsCe}</div></td>
+            <td class="ce-peso-celda" style="padding:4px 6px;text-align:right;vertical-align:top;white-space:nowrap;display:${algunPesoExplicito ? '' : 'none'}">${pesoCe}<span style="font-size:10px;color:var(--text3)">%</span></td>
+          </tr>`
+        }
+        h += `</tbody></table>`
+      } else {
+        h += `<div style="padding:6px 0;font-size:11px;color:var(--text2);font-style:italic">Este RA no tiene criterios en el catálogo.</div>`
+      }
+
+      h += `</td></tr>`
+    }
+
+    h += `</tbody></table></div></div>`
   }
-  h += `</div></div>`
 
   // ── 5. MAPA DE ASIGNACIONES UT → RA → CEs ────────────────────
   if (asigs.length) {
@@ -736,129 +799,169 @@ async function loadProgramacion() {
   panel.innerHTML = h
 }
 
-// PONDERACIONES DE RAs
+// RF-02 · RESULTADOS DE APRENDIZAJE Y CRITERIOS — programación normalizada
 // ═══════════════════════════════════════════════════════════════
-async function updateRaPond(el) {
+// Todo esto lee y escribe ra_catalogo / ce_catalogo / ce_instrumentos_previstos
+// (docs/rediseno/05-PLAN-MIGRACION.md), no data_json ni ra_ponderaciones.
+
+async function updateRaCatalogoPond(el) {
   const mid  = parseInt(el.dataset.mid)
   const raId = el.dataset.raid
-  if (!mid || !raId) return
-
-  // Vaciar la casilla es legítimo: significa «este RA aún no está ponderado».
   const vacio = String(el.value).trim() === ''
   const pond  = vacio ? 0 : parseFloat(el.value)
-
   if (!vacio && !validators.ponderacion(pond)) {
     alert('Ponderación inválida. Debe estar entre 0 y 100.')
-    el.value = ''
-    _refreshRaPondTotal(el)
-    return
+    return loadProgramacion()
   }
-
-  clearTimeout(_raPondTimers[mid + raId])
-  _raPondTimers[mid + raId] = setTimeout(async () => {
-    try {
-      await window.api.setRaPonderacion(mid, raId, pond)
-      showSaved()
-    } catch(e) {
-      alert('Error guardando ponderación: ' + validators.sanitizeErrorMessage(e, 'updateRaPond'))
-      console.error(e)
-    }
-  }, 350)
+  try {
+    await window.api.setRaCatalogoPond(mid, raId, pond)
+    showSaved()
+    await loadProgramacion()
+  } catch (e) {
+    alert('Error guardando ponderación: ' + validators.sanitizeErrorMessage(e, 'updateRaCatalogoPond'))
+  }
 }
 
 /**
- * Peso de un criterio dentro de su RA (Orden 201/2024, art. 4.3.a: la
- * programación debe recoger los RA y sus criterios «con la ponderación
- * establecida para cada uno de ellos»).
- * Vacío = reparto a partes iguales, que es lo que hacía la aplicación antes.
+ * Marca un RA como necesario para incorporarse a la fase de formación en
+ * empresa (Orden 201/2024, art. 4.3.a).
  */
-async function updateCePeso(el) {
-  const mid  = parseInt(el.dataset.mid)
-  const raId = el.dataset.raid
-  const ceId = el.dataset.ceid
-  if (!mid || !raId || !ceId) return
-  const vacio = String(el.value).trim() === ''
-  const peso  = vacio ? null : parseFloat(el.value)
-  if (!vacio && (isNaN(peso) || peso < 0 || peso > 100)) {
-    alert('Peso inválido. Debe estar entre 0 y 100.')
-    el.value = ''
-    return
-  }
-  const data = _getModData(mid)
-  if (!data) return
-  const ce = (data.ces?.[raId] || []).find(c => c.id === ceId)
-  if (!ce) return
-  if (vacio) delete ce.peso
-  else ce.peso = peso
-  await _saveModData(mid, data, false)
-
-  // Aviso si los criterios de ese RA no suman 100: se sigue guardando, pero
-  // mientras no cuadren el motor reparte a partes iguales.
-  const lista = data.ces[raId] || []
-  const conPeso = lista.filter(c => c.peso != null && c.peso !== '')
-  if (conPeso.length && conPeso.length === lista.length) {
-    const suma = conPeso.reduce((s, c) => s + Number(c.peso), 0)
-    if (Math.abs(suma - 100) > 0.1) {
-      showToast(`Los criterios de ${raId} suman ${Math.round(suma * 10) / 10}%: hasta que sumen 100 pesan todos igual`)
-    }
-  } else if (conPeso.length) {
-    showToast(`${raId}: faltan ${lista.length - conPeso.length} criterios por ponderar`)
+async function updateRaCatalogoLlave(mid, raId, llave) {
+  try {
+    await window.api.setRaCatalogoLlave(mid, raId, llave)
+    showToast(llave
+      ? `${raId} marcado como necesario para la fase de empresa`
+      : `${raId} ya no condiciona la fase de empresa`)
+  } catch (e) {
+    alert('Error: ' + validators.sanitizeErrorMessage(e, 'updateRaCatalogoLlave'))
+    await loadProgramacion()
   }
 }
 
 /**
  * Porcentaje de un RA que se adquiere y acredita en la fase de formación en
- * empresa (Decreto 80/2024, art. 5.bis: el currículo puede desarrollarse en
- * parte en la empresa). Se guarda en el propio RA para que la programación
- * declare, resultado a resultado, qué parte se acredita fuera del centro.
- *
- * 0 o vacío = íntegramente en el aula. 100 = el resultado completo se acredita
- * en la empresa, y sus criterios dejan de contar como «sin actividad».
+ * empresa (Decreto 80/2024, art. 5.bis). 0 o vacío = íntegramente en el aula.
  */
-async function updateRaDual(el) {
+async function updateRaCatalogoDual(el) {
   const mid  = parseInt(el.dataset.mid)
   const raId = el.dataset.raid
-  if (!mid || !raId) return
   const vacio = String(el.value).trim() === ''
-  const pct   = vacio ? 0 : parseFloat(el.value)
+  const pct   = vacio ? null : parseFloat(el.value)
   if (!vacio && (isNaN(pct) || pct < 0 || pct > 100)) {
     alert('Porcentaje inválido. Debe estar entre 0 y 100.')
-    el.value = ''
-    return
+    return loadProgramacion()
   }
-  const data = _getModData(mid)
-  if (!data) return
-  const ra = (data.ras || []).find(r => r.id === raId)
-  if (!ra) return
-  if (!pct) delete ra.dual
-  else ra.dual = pct
-  await _saveModData(mid, data, true)
-  showToast(pct
-    ? `${raId}: ${pct}% se acredita en la fase de formación en empresa`
-    : `${raId} vuelve a acreditarse íntegramente en el aula`)
+  try {
+    await window.api.setRaCatalogoDual(mid, raId, pct)
+    await loadProgramacion()
+  } catch (e) {
+    alert('Error: ' + validators.sanitizeErrorMessage(e, 'updateRaCatalogoDual'))
+  }
 }
 
 /**
- * Marca un RA como necesario para incorporarse a la fase de formación en
- * empresa (Orden 201/2024, art. 4.3.a). El asistente de IA ya sabía usarlo, pero
- * no había ninguna pantalla donde indicarlo.
+ * Peso de un criterio dentro de su RA (Orden 201/2024, art. 4.3.a). En blanco,
+ * reparto automático entre los CE del RA.
  */
-async function updateRaLlave(mid, raId, esLlave) {
-  const data = _getModData(mid)
-  if (!data) return
-  const ra = (data.ras || []).find(r => r.id === raId)
-  if (!ra) return
-  if (esLlave) ra.llave = true
-  else delete ra.llave
-  await _saveModData(mid, data, false)
-  showToast(esLlave
-    ? `${raId} marcado como necesario para la fase de empresa`
-    : `${raId} ya no condiciona la fase de empresa`)
+async function updateCeCatalogoPeso(el) {
+  const mid  = parseInt(el.dataset.mid)
+  const raId = el.dataset.raid
+  const ceId = el.dataset.ceid
+  const vacio = String(el.value).trim() === ''
+  const peso  = vacio ? null : parseFloat(el.value)
+  if (!vacio && (isNaN(peso) || peso < 0 || peso > 100)) {
+    alert('Peso inválido. Debe estar entre 0 y 100.')
+    return loadProgramacion()
+  }
+  try {
+    await window.api.setCeCatalogoPeso(mid, raId, ceId, peso)
+    showSaved()
+    await loadProgramacion()
+  } catch (e) {
+    alert('Error: ' + validators.sanitizeErrorMessage(e, 'updateCeCatalogoPeso'))
+  }
+}
+
+/**
+ * Instrumento previsto, declarado por RA: lo heredan TODOS los CE de ese RA
+ * (RF-02). Sustituye cualquier excepción puntual que hubiera por CE — es
+ * literalmente volver a declararlo por RA.
+ */
+async function toggleRaInstrumento(el) {
+  const mid  = parseInt(el.dataset.mid)
+  const raId = el.dataset.raid
+  const val  = el.dataset.val
+  const grupo = el.closest('div')
+  const activos = grupo
+    ? Array.from(grupo.querySelectorAll('.instr-chip'))
+        .filter(b => b.dataset.activo === '1')
+        .map(b => b.dataset.val)
+    : []
+  const set = new Set(activos)
+  if (set.has(val)) set.delete(val); else set.add(val)
+  try {
+    await window.api.setRaInstrumentos(mid, raId, [...set])
+    await loadProgramacion()
+  } catch (e) {
+    alert('Error: ' + validators.sanitizeErrorMessage(e, 'toggleRaInstrumento'))
+  }
+}
+
+/** Excepción puntual de instrumento previsto para UN CE (RF-02). */
+async function toggleCeInstrumento(el) {
+  const mid  = parseInt(el.dataset.mid)
+  const raId = el.dataset.raid
+  const ceId = el.dataset.ceid
+  const val  = el.dataset.val
+  const grupo = el.closest('div')
+  const activos = grupo
+    ? Array.from(grupo.querySelectorAll('.instr-chip'))
+        .filter(b => b.dataset.activo === '1')
+        .map(b => b.dataset.val)
+    : []
+  const set = new Set(activos)
+  if (set.has(val)) set.delete(val); else set.add(val)
+  try {
+    await window.api.setCeInstrumentos(mid, raId, ceId, [...set])
+    await loadProgramacion()
+  } catch (e) {
+    alert('Error: ' + validators.sanitizeErrorMessage(e, 'toggleCeInstrumento'))
+  }
+}
+
+/** Despliega o repliega los criterios de un RA. Se recuerda entre recargas. */
+function _toggleRaDetalle(raId) {
+  if (_raExpandidas.has(raId)) _raExpandidas.delete(raId)
+  else _raExpandidas.add(raId)
+  const fila = document.getElementById('ra-det-' + raId)
+  const btn  = document.getElementById('ra-tog-' + raId)
+  const abierto = _raExpandidas.has(raId)
+  if (fila) fila.style.display = abierto ? '' : 'none'
+  if (btn)  btn.textContent    = abierto ? '▾' : '▸'
+}
+
+/**
+ * Columna de ponderación por CE, plegada por defecto (04-REDISENO-PANTALLAS.md
+ * §1.1): una casilla en blanco parece un dato que falta y no lo es, así que
+ * mientras nadie haya puesto ningún peso se oculta entera tras la cabecera
+ * «reparto automático».
+ */
+function _toggleCePesoColumna(th) {
+  const tabla = th.closest('table')
+  if (!tabla) return
+  const celdas = tabla.querySelectorAll('.ce-peso-celda')
+  const oculto = celdas.length > 0 && celdas[0].style.display === 'none'
+  celdas.forEach(td => { td.style.display = oculto ? '' : 'none' })
+  th.textContent = oculto ? 'Ponderación ▾' : '▸ reparto automático'
 }
 
 // RF-01 · ESTADO DE IMPARTICIÓN DEL RA
 // ═══════════════════════════════════════════════════════════════
 let _raEstadoModalState = null
+
+// RF-02: qué filas de la tabla de RA están desplegadas, para que no se
+// vuelvan a cerrar todas cada vez que loadProgramacion() recarga tras guardar.
+const _raExpandidas = new Set()
 
 /** Redondea a 1 decimal y quita el ".0" sobrante, para las cifras del badge de reparto. */
 function _fmtPct(n) {
@@ -925,21 +1028,6 @@ function closeRaEstadoModal() {
   if (dlg.open) dlg.close()
   if (_raEstadoModalState?.el) _raEstadoModalState.el.value = _raEstadoModalState.el.dataset.current
   _raEstadoModalState = null
-}
-
-function _refreshRaPondTotal(el) {
-  // Recalcular suma de todas las ponderaciones de RAs en el DOM
-  const card = el.closest('.card')
-  if (!card) return
-  const inputs = Array.from(card.querySelectorAll('input.ra-pond-cell'))
-  const suma   = inputs.reduce((s, inp) => s + (parseFloat(inp.value) || 0), 0)
-  const ok     = inputs.length > 0 && Math.abs(suma - 100) < 0.1
-  const badge  = card.querySelector('[data-rapond-total]')
-  if (badge) {
-    badge.textContent   = ok ? '✓ 100%' : `⚠ suma ${Math.round(suma * 10) / 10}%`
-    badge.style.background = ok ? 'rgba(16,185,129,.12)' : 'rgba(245,158,11,.15)'
-    badge.style.color      = ok ? 'var(--green)'         : 'var(--amber)'
-  }
 }
 
 // ═══════════════════════════════════════════════════════════════

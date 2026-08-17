@@ -492,6 +492,18 @@
         </p>
         <div id="archivados-info" style="font-size:12px;color:var(--text2)">Cargando…</div>
       </div>
+      <div class="card">
+        <div class="card-title">🗂 Programación normalizada (RF-02)</div>
+        <p style="font-size:12px;color:var(--text2);margin:0 0 12px">
+          Pasa los RA, CE, ponderaciones e instrumentos previstos de cada módulo del JSON antiguo
+          a tablas propias con clave foránea. Es manual: no ocurre sola al abrir la aplicación.
+          Hace una copia de seguridad completa antes de tocar nada. Si algún módulo tiene una
+          inconsistencia (un criterio o unidad que ya no existe en su catálogo), no se migra
+          ninguno y el aviso dice cuál es y por qué, para corregirlo y volver a intentarlo.
+        </p>
+        <div id="rf02-info" style="font-size:12px;color:var(--text2);margin-bottom:12px">Cargando…</div>
+        <button class="btn btn-ghost btn-sm" onclick="migrarProgramacionNormalizadaUI()">🗂 Migrar a tablas normalizadas</button>
+      </div>
       <div class="card" style="margin-bottom:16px">
         <div class="card-title">🐍 Fase de empresa · CE de Python</div>
         <p style="font-size:12px;color:var(--text2);margin:0 0 12px">

@@ -537,6 +537,40 @@ ipcMain.handle('db:getRaEstados',        (_, mid)             => db.getRaEstados
 ipcMain.handle('db:setRaEstado',         (_, mid, raId, estado, motivo) => db.setRaEstado(mid, raId, estado, motivo))
 ipcMain.handle('db:setModuloDataJson',   (_, id, data)        => db.setModuloDataJson(id, data))
 
+// RF-02 · Programación normalizada (docs/rediseno/05-PLAN-MIGRACION.md)
+ipcMain.handle('db:getRaCatalogo',       (_, mid)                  => db.getRaCatalogo(mid))
+ipcMain.handle('db:setRaCatalogoPond',   (_, mid, raId, pond)      => db.setRaCatalogoPond(mid, raId, pond))
+ipcMain.handle('db:setRaCatalogoLlave',  (_, mid, raId, llave)     => db.setRaCatalogoLlave(mid, raId, llave))
+ipcMain.handle('db:setRaCatalogoDual',   (_, mid, raId, dualPct)   => db.setRaCatalogoDual(mid, raId, dualPct))
+ipcMain.handle('db:getCeCatalogo',       (_, mid)                  => db.getCeCatalogo(mid))
+ipcMain.handle('db:setCeCatalogoPeso',   (_, mid, raId, ceId, peso) => db.setCeCatalogoPeso(mid, raId, ceId, peso))
+ipcMain.handle('db:getCeInstrumentosPrevistos', (_, mid)           => db.getCeInstrumentosPrevistos(mid))
+ipcMain.handle('db:setCeInstrumentos',   (_, mid, raId, ceId, instrumentos) =>
+  db.setCeInstrumentos(mid, raId, ceId, instrumentos))
+ipcMain.handle('db:setRaInstrumentos',   (_, mid, raId, instrumentos) =>
+  db.setRaInstrumentos(mid, raId, instrumentos))
+
+/**
+ * Migración a la programación normalizada (RF-02). Acción manual disparada
+ * desde Ajustes, nunca automática al abrir la aplicación: es fail-closed (ver
+ * db.js, migrarProgramacionNormalizada) y podría dejar la base sin poder
+ * arrancar para un módulo con una inconsistencia hoy tolerada. La copia de
+ * seguridad previa es obligatoria y va aquí, no en el renderer, para que no
+ * se pueda migrar sin ella.
+ */
+ipcMain.handle('db:migrarProgramacionNormalizada', async () => {
+  const backupPath = await performBackup()
+  logger.logEvent('MANUAL_BACKUP', { filename: path.basename(backupPath), motivo: 'previa a RF-02' })
+  try {
+    const resumen = db.migrarProgramacionNormalizada()
+    logger.logEvent('MIGRACION_PROGRAMACION_NORMALIZADA', resumen)
+    return { ...resumen, backup: path.basename(backupPath) }
+  } catch (e) {
+    logger.logError('Migración a programación normalizada abortada', e)
+    throw e
+  }
+})
+
 // ── IPC: Config ───────────────────────────────────────────────────────────────
 ipcMain.handle('db:getAllConfig', async event => {
   assertTrustedSender(event)

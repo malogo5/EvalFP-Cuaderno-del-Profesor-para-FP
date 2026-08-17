@@ -139,6 +139,48 @@ contextBridge.exposeInMainWorld('api', {
     return ipcRenderer.invoke('db:setRaEstado', mid, raId, estado, motivo)
   },
 
+  // RF-02 · programación normalizada (docs/rediseno/05-PLAN-MIGRACION.md)
+  getRaCatalogo: mid => {
+    _validateId(mid, 'modulo_id')
+    return ipcRenderer.invoke('db:getRaCatalogo', mid)
+  },
+  setRaCatalogoPond: (mid, raId, pond) => {
+    _validateId(mid, 'modulo_id')
+    _validatePond(pond)
+    return ipcRenderer.invoke('db:setRaCatalogoPond', mid, raId, pond)
+  },
+  setRaCatalogoLlave: (mid, raId, llave) => {
+    _validateId(mid, 'modulo_id')
+    return ipcRenderer.invoke('db:setRaCatalogoLlave', mid, raId, !!llave)
+  },
+  setRaCatalogoDual: (mid, raId, dualPct) => {
+    _validateId(mid, 'modulo_id')
+    return ipcRenderer.invoke('db:setRaCatalogoDual', mid, raId, dualPct)
+  },
+  getCeCatalogo: mid => {
+    _validateId(mid, 'modulo_id')
+    return ipcRenderer.invoke('db:getCeCatalogo', mid)
+  },
+  setCeCatalogoPeso: (mid, raId, ceId, peso) => {
+    _validateId(mid, 'modulo_id')
+    return ipcRenderer.invoke('db:setCeCatalogoPeso', mid, raId, ceId, peso)
+  },
+  getCeInstrumentosPrevistos: mid => {
+    _validateId(mid, 'modulo_id')
+    return ipcRenderer.invoke('db:getCeInstrumentosPrevistos', mid)
+  },
+  setCeInstrumentos: (mid, raId, ceId, instrumentos) => {
+    _validateId(mid, 'modulo_id')
+    return ipcRenderer.invoke('db:setCeInstrumentos', mid, raId, ceId, instrumentos)
+  },
+  setRaInstrumentos: (mid, raId, instrumentos) => {
+    _validateId(mid, 'modulo_id')
+    return ipcRenderer.invoke('db:setRaInstrumentos', mid, raId, instrumentos)
+  },
+  // Migración a tablas normalizadas: manual desde Ajustes, con copia de
+  // seguridad previa hecha en el proceso principal (ver main.js).
+  migrarProgramacionNormalizada: () => ipcRenderer.invoke('db:migrarProgramacionNormalizada'),
+
   // ── Edición UT/RA/CE ──────────────────────────────────────────────────────────
   setModuloDataJson: (id, data) => {
     _validateId(id, 'modulo id')

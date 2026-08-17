@@ -65,6 +65,7 @@ async function loadAjustes() {
   pintarCopiasSeguridad()
   pintarModulosArchivados()
   pintarFaseEmpresaPython()
+  pintarProgramacionNormalizada()
 }
 
 /**
@@ -248,5 +249,88 @@ async function saveAjustes() {
   } catch(e) {
     alert('Error guardando ajustes: ' + validators.sanitizeErrorMessage(e, 'saveAjustes'))
     console.error(e)
+  }
+}
+
+/**
+ * RF-02 · Programación normalizada (docs/rediseno/05-PLAN-MIGRACION.md).
+ *
+ * Estado de cada módulo: migrado si tiene filas en ra_catalogo, sin migrar si
+ * no. Se comprueba módulo a módulo porque la migración en sí no distingue —
+ * es una única transacción para toda la base, todo o nada— pero un módulo
+ * creado después de migrar la base también aparecería sin migrar, y conviene
+ * que se vea aquí en vez de descubrirlo en Programación.
+ */
+async function pintarProgramacionNormalizada() {
+  const caja = document.getElementById('rf02-info')
+  if (!caja) return
+  caja.textContent = 'Comprobando…'
+  try {
+    const mods = await window.api.getModulos()
+    if (!mods.length) { caja.textContent = 'Todavía no hay ningún módulo.'; return }
+    const estados = await Promise.all(mods.map(async m => {
+      try { return { m, migrado: (await window.api.getRaCatalogo(m.id)).length > 0 } }
+      catch { return { m, migrado: false } }
+    }))
+    const sinMigrar = estados.filter(e => !e.migrado)
+    const filas = estados.map(({ m, migrado }) =>
+      `<div style="display:flex;align-items:center;gap:8px;padding:2px 0;font-size:12px">
+        <span style="${migrado ? 'color:var(--green)' : 'color:var(--amber)'}">${migrado ? '✓' : '○'}</span>
+        <b style="color:var(--accent2)">${esc(m.abrev)}</b>
+        <span style="color:var(--text2)">${esc(m.nombre)}</span>
+        <span style="color:var(--text3);margin-left:auto">${migrado ? 'migrado' : 'sin migrar'}</span>
+      </div>`).join('')
+    caja.innerHTML = filas +
+      (sinMigrar.length
+        ? `<div style="margin-top:8px;font-size:12px;color:var(--amber)">
+             ${sinMigrar.length} módulo${sinMigrar.length > 1 ? 's' : ''} sin migrar: en Programación,
+             la vista de Resultados de Aprendizaje de ese módulo pedirá migrar antes de poder editarla.
+           </div>`
+        : `<div style="margin-top:8px;font-size:12px;color:var(--green)">Todos los módulos están migrados.</div>`)
+  } catch (e) {
+    caja.textContent = 'No se ha podido comprobar: ' + (e && e.message ? e.message : e)
+  }
+}
+
+/**
+ * Dispara la migración a las tablas normalizadas de RF-02. Manual, con
+ * confirmación explícita y copia de seguridad previa — nunca automática al
+ * abrir la aplicación (la copia la hace main.js, antes de tocar la base:
+ * ver db:migrarProgramacionNormalizada). Fail-closed: si cualquier módulo
+ * tiene una inconsistencia, no se confirma nada y el mensaje dice cuál y por
+ * qué, para poder corregirla y reintentar.
+ */
+async function migrarProgramacionNormalizadaUI() {
+  const caja = document.getElementById('rf02-info')
+  if (!confirm(
+    'Esto va a migrar la programación de todos los módulos a las tablas normalizadas de RF-02 ' +
+    '(ra_catalogo, ce_catalogo, ce_instrumentos_previstos…).\n\n' +
+    'Antes se hace una copia de seguridad completa de la base. Si algún módulo tiene una ' +
+    'inconsistencia (un criterio o una unidad que ya no existe en su catálogo), la migración ' +
+    'no se aplica a ninguno y el mensaje dirá cuál es y por qué.\n\n¿Migrar ahora?')) return
+
+  if (caja) caja.textContent = 'Haciendo copia de seguridad y migrando…'
+  try {
+    const resumen = await window.api.migrarProgramacionNormalizada()
+    showToast('✓ Programación migrada')
+    await pintarProgramacionNormalizada()
+    // pintarProgramacionNormalizada() acaba de reescribir la caja con el estado
+    // por módulo; el recuento de esta migración concreta se antepone, no se
+    // pierde debajo de ese refresco.
+    if (caja) {
+      caja.insertAdjacentHTML('afterbegin', `<div style="font-size:12px;color:var(--green);margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border)">
+        Migrados ${resumen.modulos} módulo${resumen.modulos === 1 ? '' : 's'} ·
+        ${resumen.ra_catalogo} RA · ${resumen.ce_catalogo} CE · ${resumen.unidades_trabajo} UT ·
+        ${resumen.ut_ce} asignaciones UT→CE · ${resumen.ce_instrumentos_previstos} instrumentos ·
+        ${resumen.actividad_ce} relaciones actividad→CE.<br>
+        Copia de seguridad previa: <code>${esc(resumen.backup || '')}</code>
+      </div>`)
+    }
+  } catch (e) {
+    // El motivo (qué módulo, qué referencia) va en el propio mensaje del
+    // error — ver migrarProgramacionNormalizada() en db.js — así que se
+    // muestra tal cual, no se sustituye por un genérico.
+    if (caja) caja.innerHTML = `<div style="color:var(--red);font-size:12px">La migración no se ha aplicado: ${esc(e.message || String(e))}</div>`
+    alert('La migración no se ha aplicado. Detalle:\n\n' + (e.message || e))
   }
 }
