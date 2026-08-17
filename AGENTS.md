@@ -42,3 +42,5 @@ Este proyecto maneja datos de alumnado (nombre, NIA, fecha de nacimiento, notas)
 ## Licencia
 
 GPLv3 — cualquier código añadido debe ser compatible con esta licencia.
+
+- En los mensajes de commit, no añadir la línea Co-Authored-By.
