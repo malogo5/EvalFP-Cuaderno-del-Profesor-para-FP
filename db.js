@@ -1520,10 +1520,32 @@ function setRaEstado(moduloId, raId, estado, motivo) {
  */
 function setModuloDataJson(id, dataJson) {
   const db = getDb()
-  db.prepare('UPDATE modulos SET data_json=? WHERE id=?').run(JSON.stringify(dataJson), id)
-
   const data = dataJson && typeof dataJson === 'object' ? dataJson : {}
   const raIds = new Set((data.ras || []).map(r => String(r.id)))
+
+  // RF-02, cierre: si el módulo ya está migrado, ra_catalogo es la fuente viva
+  // de qué RA existen — data.ras es, en el mejor de los casos, una copia que
+  // alguna pantalla todavía arrastra. Si no coincide exactamente, es un
+  // snapshot desactualizado: limpiar ra_superados con ese dato podría borrar
+  // el cierre de un RA que sigue existiendo (solo que data.ras no lo tenía),
+  // y un cierre del art. 4.3.f borrado por error no se recupera. Se aborta
+  // ANTES de escribir nada — ni el data_json ni la limpieza — en vez de
+  // limpiar con un dato que puede estar equivocado.
+  const catalogoNorm = db.prepare('SELECT ra_id FROM ra_catalogo WHERE modulo_id=?').all(id)
+  if (catalogoNorm.length) {
+    const raIdsCatalogo = new Set(catalogoNorm.map(r => r.ra_id))
+    const coinciden = raIdsCatalogo.size === raIds.size && [...raIdsCatalogo].every(r => raIds.has(r))
+    if (!coinciden) {
+      throw new Error(
+        `setModuloDataJson: el data.ras recibido (${[...raIds].sort().join(',') || '—'}) no coincide con ` +
+        `ra_catalogo (${[...raIdsCatalogo].sort().join(',')}) del módulo ${id}. Se aborta sin escribir para ` +
+        `no arriesgar un borrado de ra_superados (cierres del art. 4.3.f) basado en un snapshot desactualizado.`
+      )
+    }
+  }
+
+  db.prepare('UPDATE modulos SET data_json=? WHERE id=?').run(JSON.stringify(dataJson), id)
+
   const validas = new Set()
   for (const [ra, lst] of Object.entries(data.ces || {})) {
     for (const ce of lst || []) validas.add(`${ra}|${ce.id}`)

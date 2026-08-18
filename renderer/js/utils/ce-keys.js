@@ -237,11 +237,27 @@ function temporalizacionRas(unidadesTrabajo, utCe) {
   return rango
 }
 
+/**
+ * Todas las claves "RA|CE" de un catálogo {raId: [{id,texto}, ...]}, sin
+ * duplicados. Lo usa la prueba objetiva del art. 3.6 (quien pierde el derecho
+ * a la evaluación continua se examina de «la totalidad de los resultados de
+ * aprendizaje a través de sus criterios de evaluación»): tiene que barrer el
+ * catálogo COMPLETO, no una selección, así que es una función con nombre y
+ * con test, no una lógica suelta dentro del botón que la crea.
+ */
+function todosLosCe(cesPorRa) {
+  const claves = []
+  for (const raId of Object.keys(cesPorRa || {})) {
+    for (const ce of (cesPorRa[raId] || [])) claves.push(ceKey(raId, ce.id))
+  }
+  return claves
+}
+
 // Exportado también para los tests unitarios (en el navegador `module` no existe)
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     ceKey, ceKeyRa, ceKeyCe, actCesLista, rasDeActividad, actCubreCe, actCesDeRa,
     actividadDeRa, migrarCesActividad, cesDisponiblesActividad, cesEvaluadosDeRa,
-    rasPorEvaluacion, temporalizacionRas,
+    rasPorEvaluacion, temporalizacionRas, todosLosCe,
   }
 }

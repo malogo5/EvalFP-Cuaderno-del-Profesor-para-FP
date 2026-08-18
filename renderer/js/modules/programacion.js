@@ -1404,10 +1404,7 @@ async function addActividad(mid, ev, tipo) {
 async function addPruebaObjetiva(mid) {
   const data = _getModData(mid)   // solo para modulo.eval_count, no es RF-02
   const { ces } = await _cargarCatalogoNormalizado(mid)
-  const todos = []
-  for (const raId of Object.keys(ces)) {
-    for (const ce of (ces[raId] || [])) todos.push(ceKey(raId, ce.id))
-  }
+  const todos = todosLosCe(ces)
   if (!todos.length) {
     alert('Este módulo no tiene criterios de evaluación cargados.')
     return
@@ -1530,7 +1527,18 @@ function _getModData(mid) {
 }
 
 async function _saveModData(mid, data, reload) {
-  const r = await window.api.setModuloDataJson(parseInt(mid), data)
+  let r
+  try {
+    r = await window.api.setModuloDataJson(parseInt(mid), data)
+  } catch (e) {
+    // db.js aborta si el data.ras que se escribe no coincide con ra_catalogo:
+    // es la red de seguridad contra un cierre de RA (art. 4.3.f) borrado por un
+    // snapshot desactualizado. No debe pasar en el uso normal, pero si pasa hay
+    // que decirlo, no perderlo en un rechazo de promesa que nadie ve.
+    alert('No se ha podido guardar: ' + validators.sanitizeErrorMessage(e, '_saveModData'))
+    if (reload) loadProgramacion()
+    return
+  }
   _modulos = await window.api.getModulos()
   showSaved()
   // Quitar un RA de la programación deja sin dueño a las actividades que lo

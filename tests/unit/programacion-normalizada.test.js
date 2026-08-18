@@ -207,3 +207,64 @@ describe.skipIf(!sqliteDisponible)('RF-02 · migrarProgramacionNormalizada()', (
     expect(ra1.pond).toBe(45)
   })
 })
+
+describe.skipIf(!sqliteDisponible)('RF-02, cierre · setModuloDataJson() no limpia ra_superados con un data.ras desactualizado', () => {
+  function moduloMigradoConCierres() {
+    const mid = crearModulo(`MOD_CIERRE_${Date.now()}`)
+    db.migrarProgramacionNormalizada()
+    const alu = db.saveAlumno({ modulo_id: mid, nombre: 'Ana', apellidos: 'García', estado: 'Activo' })
+    db.cerrarEvaluacionRAs(mid, 1, [
+      { alumnoId: alu, raId: 'RA1', nota: 7 },
+      { alumnoId: alu, raId: 'RA2', nota: 8 },
+    ])
+    return { mid, alu }
+  }
+
+  it('data.ras que coincide con ra_catalogo escribe con normalidad (no falso positivo)', () => {
+    const { mid } = moduloMigradoConCierres()
+    const dataActual = JSON.parse(db.getModulos().find(m => m.id === mid).data_json)
+    // dataActual.ras trae RA1 y RA2, exactamente como ra_catalogo: no debe abortar.
+    expect(() => db.setModuloDataJson(mid, dataActual)).not.toThrow()
+  })
+
+  it('data.ras que falta un RA que sí está en ra_catalogo aborta ANTES de tocar ra_superados', () => {
+    const { mid, alu } = moduloMigradoConCierres()
+    expect(db.getRasSuperados(mid)).toHaveLength(2)   // RA1 y RA2 cerrados
+
+    const dataDesactualizada = JSON.parse(db.getModulos().find(m => m.id === mid).data_json)
+    // Simula un snapshot viejo: se quita RA2 del data.ras que se va a escribir,
+    // aunque ra_catalogo lo sigue teniendo (nadie lo ha borrado de verdad).
+    dataDesactualizada.ras = dataDesactualizada.ras.filter(r => r.id !== 'RA2')
+    delete dataDesactualizada.ces.RA2
+
+    expect(() => db.setModuloDataJson(mid, dataDesactualizada)).toThrow(/ra_catalogo/)
+
+    // El cierre de RA2 (art. 4.3.f) sigue ahí: no se ha limpiado nada.
+    const cierres = db.getRasSuperados(mid)
+    expect(cierres).toHaveLength(2)
+    expect(cierres.some(c => c.ra_id === 'RA2' && c.alumno_id === alu)).toBe(true)
+
+    // Tampoco se ha escrito el data_json desactualizado: sigue el de antes.
+    const dataTrasIntento = JSON.parse(db.getModulos().find(m => m.id === mid).data_json)
+    expect(dataTrasIntento.ras.map(r => r.id).sort()).toEqual(['RA1', 'RA2'])
+  })
+
+  it('un RA de más en data.ras (que ra_catalogo no tiene) también aborta', () => {
+    const { mid } = moduloMigradoConCierres()
+    const dataConExtra = JSON.parse(db.getModulos().find(m => m.id === mid).data_json)
+    dataConExtra.ras.push({ id: 'RA3', nombre: 'No está en ra_catalogo', pond: 0 })
+
+    expect(() => db.setModuloDataJson(mid, dataConExtra)).toThrow(/ra_catalogo/)
+    expect(db.getRasSuperados(mid)).toHaveLength(2)   // nada se ha tocado
+  })
+
+  it('en un módulo SIN migrar, setModuloDataJson sigue funcionando como antes (sin ra_catalogo no hay nada que comparar)', () => {
+    const mid = crearModulo(`MOD_SIN_MIGRAR_${Date.now()}`)
+    // Sin migrarProgramacionNormalizada(): ra_catalogo está vacío para este módulo.
+    const data = JSON.parse(db.getModulos().find(m => m.id === mid).data_json)
+    data.ras = data.ras.filter(r => r.id !== 'RA2')   // quitar un RA de verdad, caso legítimo
+    delete data.ces.RA2
+    const r = db.setModuloDataJson(mid, data)
+    expect(r.huerfanas.length).toBeGreaterThanOrEqual(0)   // no revienta, comportamiento previo intacto
+  })
+})
