@@ -1,45 +1,8 @@
 // PROGRAMACIÓN — Vista completa tipo Excel
 // ═══════════════════════════════════════════════════════════════
-
-/**
- * RF-02, cierre: adapta ra_catalogo/ce_catalogo/unidades_trabajo/ut_ce/
- * ce_instrumentos_previstos a las formas {ras, ces, uts, asigs, raInstr} que ya
- * entienden los helpers de ce-keys.js (rasDeActividad, actCubreCe,
- * cesDisponiblesActividad, rasPorEvaluacion…), para no reescribirlos. Toda la
- * pestaña de Programación pasa por aquí — un único punto de lectura, en vez de
- * que cada función pida las tablas y las adapte a su manera.
- */
-async function _cargarCatalogoNormalizado(mid) {
-  mid = parseInt(mid)
-  const [raCatalogo, ceCatalogoRows, unidadesTrabajoRows, utCeModuloRows, ceInstrRows, actividadCeModuloRows] =
-    await Promise.all([
-      window.api.getRaCatalogo(mid),
-      window.api.getCeCatalogo(mid),
-      window.api.getUnidadesTrabajo(mid),
-      window.api.getUtCeModulo(mid),
-      window.api.getCeInstrumentosPrevistos(mid),
-      window.api.getActividadCeModulo(mid),
-    ])
-  const ras = raCatalogo.map(r => ({ id: r.ra_id, nombre: r.nombre, pond: r.pond, dual: r.dual_pct, llave: r.llave }))
-  const ces = {}
-  for (const c of ceCatalogoRows) (ces[c.ra_id] = ces[c.ra_id] || []).push({ id: c.ce_id, texto: c.texto, peso: c.peso })
-  const uts = unidadesTrabajoRows.map(u => ({
-    id: u.ut_id, nombre: u.nombre, horas: u.horas, horas_empresa: u.horas_empresa, eval: u.eval, tags: u.tags,
-  }))
-  const asigMap = {}
-  for (const f of utCeModuloRows) {
-    const k = `${f.ut_id}|${f.ra_id}`
-    ;(asigMap[k] = asigMap[k] || { ut: f.ut_id, ra: f.ra_id, ces: [] }).ces.push(f.ce_id)
-  }
-  const asigs = Object.values(asigMap)
-  const raInstr = {}
-  for (const row of ceInstrRows) (raInstr[row.ra_id] = raInstr[row.ra_id] || new Set()).add(row.instrumento)
-  for (const k of Object.keys(raInstr)) raInstr[k] = [...raInstr[k]]
-  return {
-    raCatalogo, ceCatalogoRows, unidadesTrabajoRows, utCeModuloRows, ceInstrRows, actividadCeModuloRows,
-    ras, ces, uts, asigs, raInstr,
-  }
-}
+// _cargarCatalogoNormalizado() vive en js/utils/catalogo-normalizado.js:
+// la usan también Dashboard y Evaluaciones, así que es un punto único
+// compartido, no propio de este archivo.
 
 async function loadProgramacion() {
   const mid = document.getElementById('prog-mod-sel').value

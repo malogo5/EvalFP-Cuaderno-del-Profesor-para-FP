@@ -110,6 +110,10 @@ const MODULE_SCRIPTS = [
   // es el único punto de obtención de actividades para el motor, así que
   // tiene que estar antes que cualquier pantalla que lo llame.
   'js/utils/tipos-actividad.js',
+  // RF-02, cierre · punto único de lectura de ra_catalogo/ce_catalogo/
+  // unidades_trabajo/ut_ce: lo usan Programación, Dashboard y Evaluaciones,
+  // así que va antes que todas ellas.
+  'js/utils/catalogo-normalizado.js',
   // Motor único de calificación: lo comparten Evaluaciones, Dashboard, boletín e IA
   'js/core/calificacion.js',
   // csrf-token.js y session-manager.js eliminados: son utilidades web sin uso

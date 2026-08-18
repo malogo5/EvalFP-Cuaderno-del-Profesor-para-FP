@@ -139,6 +139,24 @@ async function saveRec2Nota(mid, alumnoId, raId, ceId, notaStr) {
 async function loadDashboard() {
   const mid = document.getElementById('dash-mod-sel').value
   if (!mid) return
+
+  // RF-02, cierre: RA/CE/UT/asignaciones salen de las tablas normalizadas, no
+  // de data_json — igual que en Programación. Sin migrar, no hay nada fiable
+  // que calcular: se avisa y se remite a Ajustes en vez de leer el JSON viejo.
+  const cat = await _cargarCatalogoNormalizado(mid)
+  if (!cat.raCatalogo.length) {
+    document.getElementById('dash-content').innerHTML = `
+      <div class="empty-state">
+        <div style="font-weight:700;color:var(--text);margin-bottom:6px">Este módulo todavía no está migrado a la programación normalizada</div>
+        <div style="margin-bottom:12px">Desde RF-02, el Dashboard calcula las notas a partir de las tablas normalizadas
+          del módulo (<code>ra_catalogo</code>, <code>ce_catalogo</code>, <code>unidades_trabajo</code>), no del JSON
+          antiguo. Migra este módulo desde Ajustes — hace una copia de seguridad antes de tocar nada — y vuelve aquí.</div>
+        <button class="btn btn-primary btn-sm" onclick="goSection('ajustes')">⚙ Ir a Ajustes</button>
+      </div>`
+    return
+  }
+  const { ras, ces: cesDict, asigs } = cat
+
   _alumnos = await window.api.getAlumnos(mid)           // poblar global para genBoletin
   const alumnos = _alumnos.filter(a => a.estado === 'Activo')
   // RF-17: única vía de obtención de actividades para el motor — tipo ya
@@ -149,14 +167,11 @@ async function loadDashboard() {
   // H6: nota efectiva = nota_rec (recuperación) si existe, si no la original
   notasArr.forEach(n => { if(!ng[n.alumno_id])ng[n.alumno_id]={}; ng[n.alumno_id][n.actividad_id]=n.nota_rec ?? n.nota })
 
-  // Datos del módulo
+  // modulo.eval_count no es RF-02: sigue en data_json.
   const modData   = _getModData(mid)
   const evalCount = modData?.modulo?.eval_count || 3
   const evals     = Array.from({length: evalCount}, (_, i) => i + 1)
   const actividades = allActividades.filter(a => evals.includes(a.eval))
-  const ras     = modData?.ras          || []
-  const cesDict = modData?.ces          || {}
-  const asigs   = modData?.asignaciones || []
 
   if (!alumnos.length || !actividades.length) {
     const why = !alumnos.length
@@ -676,6 +691,17 @@ async function _genBoletin(alumnoId, evParcial = null) {
               document.getElementById('eval-mod-sel')?.value
   if (!mid) { alert('Selecciona un módulo primero.'); return }
 
+  // RF-02, cierre: RA/CE/UT/asignaciones salen de las tablas normalizadas, no
+  // de data_json — igual que en Programación y en loadDashboard(). Sin migrar,
+  // no hay boletín fiable que generar.
+  const cat = await _cargarCatalogoNormalizado(mid)
+  if (!cat.raCatalogo.length) {
+    alert('Este módulo todavía no está migrado a la programación normalizada (RF-02). ' +
+      'Migra el módulo desde Ajustes y vuelve a generar el boletín.')
+    return
+  }
+  const { ras, uts, ces: cesDict, asigs } = cat
+
   // Cargar alumnos frescos de la BD (la caché _alumnos puede ser de otro módulo)
   const alumnosMod = await window.api.getAlumnos(parseInt(mid))
   const alumno = alumnosMod.find(x => x.id === alumnoId)
@@ -692,24 +718,11 @@ async function _genBoletin(alumnoId, evParcial = null) {
   notasArr.filter(n => n.alumno_id === alumnoId)
           .forEach(n => { miNotas[n.actividad_id] = n.nota_rec ?? n.nota })
 
-  // Metadatos del módulo
+  // modulo.eval_count no es RF-02: sigue en data_json.
   const modData   = _getModData(mid) || {}
-  const ras       = modData.ras          || []
-  const uts       = modData.uts          || []
-  const cesDict   = modData.ces          || {}   // { "RA1": [{id,texto},...], ... }
-  const asigs     = modData.asignaciones || []   // [{ut, ra, ces:[...]}, ...]
   const evalCount = modData.modulo?.eval_count || 3
   const evals     = Array.from({length: evalCount}, (_, i) => i + 1)
   const mod       = _modulos.find(m => m.id == mid) || {}
-
-  // Aplicar overrides de ponderación de RA editados por el profesor
-  try {
-    const rows = await window.api.getRaPonderaciones(parseInt(mid))
-    rows.forEach(r => {
-      const ra = ras.find(x => x.id === r.ra_id)
-      if (ra) ra.pond = r.pond
-    })
-  } catch { /* sin overrides */ }
 
   const cfgBol   = await window.api.getAllConfig()
   const minRawB  = cfgBol[`minexam_${mid}`]

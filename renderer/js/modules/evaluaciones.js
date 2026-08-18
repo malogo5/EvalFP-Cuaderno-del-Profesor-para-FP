@@ -115,6 +115,23 @@ async function loadEvaluaciones() {
   const mid = document.getElementById('eval-mod-sel').value
   if (!mid) return
 
+  // RF-02, cierre: RA/CE/UT/asignaciones salen de las tablas normalizadas, no
+  // de data_json — igual que en Programación y en Dashboard. Sin migrar, no
+  // hay cálculo fiable que enseñar.
+  const cat = await _cargarCatalogoNormalizado(mid)
+  if (!cat.raCatalogo.length) {
+    document.getElementById('eval-content').innerHTML = `
+      <div class="empty-state">
+        <div style="font-weight:700;color:var(--text);margin-bottom:6px">Este módulo todavía no está migrado a la programación normalizada</div>
+        <div style="margin-bottom:12px">Desde RF-02, Evaluaciones calcula las notas a partir de las tablas normalizadas
+          del módulo (<code>ra_catalogo</code>, <code>ce_catalogo</code>, <code>unidades_trabajo</code>), no del JSON
+          antiguo. Migra este módulo desde Ajustes — hace una copia de seguridad antes de tocar nada — y vuelve aquí.</div>
+        <button class="btn btn-primary btn-sm" onclick="goSection('ajustes')">⚙ Ir a Ajustes</button>
+      </div>`
+    return
+  }
+  const { ras, ces: cesByRa, asigs: asigsMod, uts: utsNorm } = cat
+
   // ── Cargar datos ──────────────────────────────────────────────
   const alumnosTodos = await window.api.getAlumnos(mid)
   const alumnos      = alumnosTodos.filter(a => a.estado === 'Activo')
@@ -131,15 +148,13 @@ async function loadEvaluaciones() {
     if (n.nota_rec != null) ngRec[n.alumno_id][n.actividad_id] = { orig: n.nota, rec: n.nota_rec }
   })
 
+  // modulo.eval_count no es RF-02: sigue en data_json.
   const modData   = _getModData(mid)
   const evalCount = modData?.modulo?.eval_count || [...new Set(actividades.map(a => a.eval))].length || 3
   const evals     = Array.from({ length: evalCount }, (_, i) => i + 1)
-  const rasBase   = modData?.ras          || []
-  const cesByRa   = modData?.ces          || {}
-  const asigsMod  = modData?.asignaciones || []
   // Evaluación de cada RA deducida de sus UT (misma fuente que Programación:
   // si el profesor mueve una UT de trimestre, aquí se refleja igual).
-  const evalRas   = rasPorEvaluacion(modData, evalCount)   // {1:[raId,...], 2:[...]}
+  const evalRas   = rasPorEvaluacion({ ras, uts: utsNorm, asignaciones: asigsMod, eval_ras: {} }, evalCount)
 
   // Estado compartido con dashboard
   await _loadPardones(mid)
@@ -157,17 +172,6 @@ async function loadEvaluaciones() {
   const PRAC  = totP > 0 ? sumPP / totP : 0.30
   const EXAM  = totP > 0 ? sumPE / totP : 0.70
 
-  // ── RAs con ponderaciones guardadas ──────────────────────────
-  const raPondOverrides = {}
-  try {
-    const rows = await window.api.getRaPonderaciones(parseInt(mid))
-    rows.forEach(r => { raPondOverrides[r.ra_id] = r.pond })
-  } catch { /* sin overrides */ }
-
-  const ras = rasBase.map(ra => ({
-    ...ra,
-    pond: raPondOverrides[ra.id] !== undefined ? raPondOverrides[ra.id] : (ra.pond || 0)
-  }))
   // Fase de formación en empresa por alumno (Orden 201/2024, art. 12)
   const fasesAlumno = {}
   try {
