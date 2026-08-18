@@ -167,6 +167,31 @@ resuelve en la presentación, no en el motor.
   inicio de curso. Detectado al revisar RF-17 (el tipo `empresa` que existía en
   `ra_instrumentos`/`ce_instrumentos_previstos` se ha retirado por no ser un tipo de actividad;
   esto es lo que queda sin cubrir tras retirarlo). No tiene requisito propio todavía.
+- **Deuda temporal — doble escritura de criterios por actividad (RF-02, cierre de Programación,
+  2026-08-18).** Programación ya lee y escribe UT/RA/CE/asignaciones solo en las tablas
+  normalizadas (`ra_catalogo`, `ce_catalogo`, `unidades_trabajo`, `ut_ce`, `actividad_ce`), nunca
+  en `data_json`. Pero `dashboard.js`, `evaluaciones.js`, `ia.js` y `modulos.js` siguen
+  construyendo su `contextoModulo()` (el que alimenta a `calificacion.js`) leyendo
+  `data_json.ras`/`ces`/`asignaciones` directamente. Para que esas pantallas no se queden con
+  datos obsoletos en cuanto se edita algo desde la Programación normalizada, cada punto de
+  Programación que asigna criterios a una actividad escribe AHORA EN LAS DOS: `actividad_ce`
+  (fuente nueva) y `actividades.ces` (columna JSON, para que esas cuatro pantallas sigan
+  funcionando sin tocarlas). Esto es un parche temporal, no el diseño definitivo. Cuando
+  dashboard.js/evaluaciones.js/ia.js/modulos.js pasen a leer las tablas normalizadas (tarea
+  siguiente tras esta), `actividades.ces` deja de escribirse desde Programación y esta nota se
+  retira. `data_json.eval_ras` tiene el mismo patrón: `_sincronizarEvalRas()` en `programacion.js`
+  sigue calculándolo y escribiéndolo en `data_json` (ahora a partir de las tablas normalizadas,
+  no de datos obsoletos) solo porque esas mismas cuatro pantallas todavía lo leen de ahí.
+- **Riesgo de limpieza silenciosa por `data_json.ras` obsoleto (detectado 2026-08-18).**
+  `setModuloDataJson` (db.js) borra de `ra_superados` cualquier cierre de evaluación cuyo `ra_id`
+  no esté en el `data.ras` del blob que se le pasa. Los pocos sitios de Programación que todavía
+  necesitan reescribir el blob por otro motivo (hoy solo `setEvalCount`, para `modulo.eval_count`)
+  reenvían el `data.ras` tal cual lo tenían cacheado desde la migración — si desde entonces se
+  añadió o se borró un RA en `ra_catalogo` (vista de RA), ese `data.ras` está desactualizado y la
+  limpieza de `ra_superados` puede acertar o equivocarse según ese snapshot congelado, no según el
+  catálogo real. Mitigado por ahora dejando que `_saveModData` muestre la alerta de "cierres
+  retirados"/"huérfanas" si la limpieza dispara, en vez de silenciarla. Se resuelve de raíz cuando
+  `data_json.ras` deje de escribirse por completo (ligado a la tarea anterior).
 
 ---
 

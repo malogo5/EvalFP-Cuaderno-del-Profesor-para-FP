@@ -1,58 +1,114 @@
 // PROGRAMACIÓN — Vista completa tipo Excel
 // ═══════════════════════════════════════════════════════════════
+
+/**
+ * RF-02, cierre: adapta ra_catalogo/ce_catalogo/unidades_trabajo/ut_ce/
+ * ce_instrumentos_previstos a las formas {ras, ces, uts, asigs, raInstr} que ya
+ * entienden los helpers de ce-keys.js (rasDeActividad, actCubreCe,
+ * cesDisponiblesActividad, rasPorEvaluacion…), para no reescribirlos. Toda la
+ * pestaña de Programación pasa por aquí — un único punto de lectura, en vez de
+ * que cada función pida las tablas y las adapte a su manera.
+ */
+async function _cargarCatalogoNormalizado(mid) {
+  mid = parseInt(mid)
+  const [raCatalogo, ceCatalogoRows, unidadesTrabajoRows, utCeModuloRows, ceInstrRows, actividadCeModuloRows] =
+    await Promise.all([
+      window.api.getRaCatalogo(mid),
+      window.api.getCeCatalogo(mid),
+      window.api.getUnidadesTrabajo(mid),
+      window.api.getUtCeModulo(mid),
+      window.api.getCeInstrumentosPrevistos(mid),
+      window.api.getActividadCeModulo(mid),
+    ])
+  const ras = raCatalogo.map(r => ({ id: r.ra_id, nombre: r.nombre, pond: r.pond, dual: r.dual_pct, llave: r.llave }))
+  const ces = {}
+  for (const c of ceCatalogoRows) (ces[c.ra_id] = ces[c.ra_id] || []).push({ id: c.ce_id, texto: c.texto, peso: c.peso })
+  const uts = unidadesTrabajoRows.map(u => ({
+    id: u.ut_id, nombre: u.nombre, horas: u.horas, horas_empresa: u.horas_empresa, eval: u.eval, tags: u.tags,
+  }))
+  const asigMap = {}
+  for (const f of utCeModuloRows) {
+    const k = `${f.ut_id}|${f.ra_id}`
+    ;(asigMap[k] = asigMap[k] || { ut: f.ut_id, ra: f.ra_id, ces: [] }).ces.push(f.ce_id)
+  }
+  const asigs = Object.values(asigMap)
+  const raInstr = {}
+  for (const row of ceInstrRows) (raInstr[row.ra_id] = raInstr[row.ra_id] || new Set()).add(row.instrumento)
+  for (const k of Object.keys(raInstr)) raInstr[k] = [...raInstr[k]]
+  return {
+    raCatalogo, ceCatalogoRows, unidadesTrabajoRows, utCeModuloRows, ceInstrRows, actividadCeModuloRows,
+    ras, ces, uts, asigs, raInstr,
+  }
+}
+
 async function loadProgramacion() {
   const mid = document.getElementById('prog-mod-sel').value
   if (!mid) return
   const mod = _modulos.find(m => m.id == mid)
   if (!mod) return
+  // `data_json` solo se lee ya para modulo.eval_count (nº de evaluaciones del
+  // módulo, ajeno a RF-02) y como último recurso si getActividades fallara.
+  // RA, CE, UT y asignaciones vienen siempre de las tablas normalizadas.
   const data = mod.data_json ? JSON.parse(mod.data_json) : null
   const panel = document.getElementById('prog-panel')
-  if (!data || !data.ras?.length) {
-    panel.innerHTML = `
-      <div class="empty-state">
-        <div style="font-weight:700;color:var(--text);margin-bottom:6px">Este módulo aún no tiene programación cargada</div>
-        <div style="margin-bottom:12px">Cuando añadas los RAs y CE en el catálogo del módulo, aquí verás el plan de actividades, la distribución por evaluaciones y el mapa UT → RA.</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn btn-primary btn-sm" onclick="openAddModulo()">＋ Añadir módulo</button>
-          <button class="btn btn-ghost btn-sm" onclick="goSection('modulos')">📚 Ver catálogo</button>
-        </div>
-      </div>`
+
+  const cat = await _cargarCatalogoNormalizado(mid)
+  if (!cat.raCatalogo.length) {
+    if (!data || !data.ras?.length) {
+      panel.innerHTML = `
+        <div class="empty-state">
+          <div style="font-weight:700;color:var(--text);margin-bottom:6px">Este módulo aún no tiene programación cargada</div>
+          <div style="margin-bottom:12px">Cuando añadas los RAs y CE en el catálogo del módulo, aquí verás el plan de actividades, la distribución por evaluaciones y el mapa UT → RA.</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-primary btn-sm" onclick="openAddModulo()">＋ Añadir módulo</button>
+            <button class="btn btn-ghost btn-sm" onclick="goSection('modulos')">📚 Ver catálogo</button>
+          </div>
+        </div>`
+    } else {
+      panel.innerHTML = `
+        <div class="empty-state">
+          <div style="font-weight:700;color:var(--text);margin-bottom:6px">Este módulo todavía no está migrado a la programación normalizada</div>
+          <div style="margin-bottom:12px">Desde RF-02, toda la pestaña de Programación lee de tablas con clave foránea
+            (<code>ra_catalogo</code>, <code>ce_catalogo</code>, <code>unidades_trabajo</code>, <code>ut_ce</code>), no del
+            JSON antiguo del módulo. Migra este módulo desde Ajustes — hace una copia de seguridad antes de tocar nada —
+            y vuelve aquí.</div>
+          <button class="btn btn-primary btn-sm" onclick="goSection('ajustes')">⚙ Ir a Ajustes</button>
+        </div>`
+    }
     return
   }
+  const {
+    raCatalogo, ceCatalogoRows, unidadesTrabajoRows, utCeModuloRows, ceInstrRows, actividadCeModuloRows,
+    ras, ces, uts, asigs, raInstr,
+  } = cat
 
-  const ras        = data.ras        || []
-  const ces        = data.ces        || {}
-  const uts        = data.uts        || []
-  const asigs      = data.asignaciones || []  // [{ut,ra,ces:[CRx...]}]
-  const raInstr    = data.ra_instrumentos || {}
-  // Cargar actividades desde BD (tienen los pesos reales editados por el profesor)
-  const actividades = (await window.api.getActividades(parseInt(mid))) || data.actividades || []
-
-  // Cargar overrides de ponderación de RAs y mezclar con los defaults del JSON
-  const raPondOverrides = {}
-  try {
-    const rows = await window.api.getRaPonderaciones(parseInt(mid))
-    rows.forEach(r => { raPondOverrides[r.ra_id] = r.pond })
-  } catch { /* sin overrides — usar ponderaciones por defecto del JSON */ }
-  // Aplicar overrides al raMap
-  ras.forEach(ra => {
-    if (raPondOverrides[ra.id] !== undefined) ra.pond = raPondOverrides[ra.id]
-  })
+  // Cargar actividades desde BD, con `.ces` resuelto contra actividad_ce cuando
+  // exista una fila (fuente nueva). Si una actividad no tiene ninguna fila ahí
+  // todavía se usa su columna JSON legada — así una actividad editada antes de
+  // esta migración no pierde de golpe sus criterios.
+  const actividadCePorAct = {}
+  for (const f of actividadCeModuloRows) {
+    (actividadCePorAct[f.actividad_id] = actividadCePorAct[f.actividad_id] || []).push(ceKey(f.ra_id, f.ce_id))
+  }
+  const actividades = ((await window.api.getActividades(parseInt(mid))) || data?.actividades || [])
+    .map(a => actividadCePorAct[a.id] ? { ...a, ces: actividadCePorAct[a.id] } : a)
 
   // índices rápidos
   const utMap  = Object.fromEntries(uts.map(u => [u.id, u]))
   const raMap  = Object.fromEntries(ras.map(r => [r.id, r]))
-  const evalCount = data.modulo?.eval_count || [...new Set(uts.map(u => u.eval||1))].length || 3
+  const evalCount = data?.modulo?.eval_count || [...new Set(uts.map(u => u.eval||1))].length || 3
   const evals     = Array.from({length: evalCount}, (_, i) => i + 1)
 
   // Qué RAs caen en cada evaluación. Fuente única: la evaluación de las UT que los
-  // trabajan, que es lo que el profesor mueve en la tabla de unidades. Así el plan
-  // de actividades, la distribución y la ficha de cada RA dicen siempre lo mismo.
-  const evalRasMap = rasPorEvaluacion(data, evalCount)
+  // trabajan (unidades_trabajo.eval / ut_ce), que es lo que el profesor mueve en
+  // el asistente de UT. rasPorEvaluacion() no distingue de dónde vienen uts y
+  // asignaciones, así que se reutiliza tal cual sobre la forma normalizada.
+  const evalRasMap = rasPorEvaluacion({ ras, uts, asignaciones: asigs, eval_ras: {} }, evalCount)
   const evalDeRa   = {}
   for (const [ev, lista] of Object.entries(evalRasMap)) for (const raId of lista) evalDeRa[raId] = ev
-  // Dejarlo escrito en el módulo: es lo que leen los informes y los scripts de IA
-  await _sincronizarEvalRas(mid, evalCount)
+  // Dejarlo escrito en el módulo: es lo que leen (todavía, fuera de Programación)
+  // Evaluaciones, Dashboard y los scripts de IA — ver 00-CONTEXTO.md, deuda RF-02.
+  await _sincronizarEvalRas(mid, evalCount, evalRasMap)
 
   // Trazabilidad al revés: para cada criterio, qué actividades lo evalúan. Es la
   // pregunta que hay que poder contestar en una reclamación.
@@ -412,36 +468,17 @@ async function loadProgramacion() {
   }
 
   // ── 3. UNIDADES DE TRABAJO — programación normalizada ────────
-  // RF-02, segunda parte: esta sección ya NO lee uts/asignaciones/ces
-  // (data_json). Lee y escribe unidades_trabajo, ut_ce y actividad_ce
-  // (docs/rediseno/04-REDISENO-PANTALLAS.md §1.2-§1.4). El plan de
-  // actividades y el mapa de cobertura (secciones 1, 2 y 5) siguen sobre
-  // data_json hasta su propia parte de RF-02: una actividad creada desde
-  // aquí no aparecerá todavía con sus criterios en esas secciones antiguas.
-  const raCatalogo = await window.api.getRaCatalogo(parseInt(mid))
-
-  if (!raCatalogo.length) {
-    h += `<div class="card" style="margin-bottom:16px">
-      <div class="prog-section-title">📚 Unidades de Trabajo</div>
-      <div class="empty-state">
-        <div style="font-weight:700;color:var(--text);margin-bottom:6px">Este módulo todavía no está migrado a la programación normalizada</div>
-        <div style="margin-bottom:12px">Desde RF-02, las UT y sus criterios viven en tablas con clave foránea
-          (<code>unidades_trabajo</code>, <code>ut_ce</code>), no en el JSON antiguo del módulo. Migra este módulo
-          desde Ajustes — hace una copia de seguridad antes de tocar nada — y vuelve aquí.</div>
-        <button class="btn btn-primary btn-sm" onclick="goSection('ajustes')">⚙ Ir a Ajustes</button>
-      </div>
-    </div>`
-  } else {
-    const utsNorm        = await window.api.getUnidadesTrabajo(parseInt(mid))
-    const ceCatalogoNorm = await window.api.getCeCatalogo(parseInt(mid))
-    const utCeModulo     = await window.api.getUtCeModulo(parseInt(mid))
-
+  // RF-02: lee y escribe unidades_trabajo, ut_ce y actividad_ce
+  // (docs/rediseno/04-REDISENO-PANTALLAS.md §1.2-§1.4). El módulo ya está
+  // migrado (se comprobó arriba), así que unidadesTrabajoRows/ceCatalogoRows/
+  // utCeModuloRows vienen del catálogo cargado al principio de la función.
+  {
     // Indicador de cobertura curricular (04-REDISENO-PANTALLAS.md §1.2): cuántos
     // CE del catálogo están asignados a ALGUNA UT. No es lo mismo que "tiene una
     // actividad que lo evalúe" — esa pregunta la contesta la sección de RA.
-    const cubiertosSet = new Set(utCeModulo.map(f => `${f.ra_id}|${f.ce_id}`))
-    const faltantesCe  = ceCatalogoNorm.filter(c => !cubiertosSet.has(`${c.ra_id}|${c.ce_id}`))
-    const totalCeNorm   = ceCatalogoNorm.length
+    const cubiertosSet = new Set(utCeModuloRows.map(f => `${f.ra_id}|${f.ce_id}`))
+    const faltantesCe  = ceCatalogoRows.filter(c => !cubiertosSet.has(`${c.ra_id}|${c.ce_id}`))
+    const totalCeNorm   = ceCatalogoRows.length
     const cobBadge = !totalCeNorm ? '' : (faltantesCe.length === 0
       ? `<span class="badge badge-green">✓ los ${totalCeNorm} criterios asignados a alguna UT</span>`
       : `<button type="button" onclick="_toggleFaltantesUt(this)" data-abierto="0"
@@ -467,8 +504,8 @@ async function loadProgramacion() {
           <th style="width:150px;text-align:center">Acciones</th>
         </tr></thead>
         <tbody>`
-    for (const ut of utsNorm) {
-      const misCe = utCeModulo.filter(f => f.ut_id === ut.ut_id).length
+    for (const ut of unidadesTrabajoRows) {
+      const misCe = utCeModuloRows.filter(f => f.ut_id === ut.ut_id).length
       h += `<tr>
         <td style="font-weight:700;color:var(--accent2);white-space:nowrap">${esc(ut.ut_id)}</td>
         <td><a href="#" onclick="abrirAsistenteUt(${mid},'${esc(ut.ut_id)}',1);return false" style="font-weight:500">${esc(ut.nombre)}</a></td>
@@ -483,7 +520,7 @@ async function loadProgramacion() {
         </td>
       </tr>`
     }
-    if (!utsNorm.length) {
+    if (!unidadesTrabajoRows.length) {
       h += `<tr><td colspan="6" style="text-align:center;color:var(--text2);padding:16px">Este módulo todavía no tiene ninguna unidad de trabajo.</td></tr>`
     }
     h += `</tbody></table></div>
@@ -532,36 +569,16 @@ async function loadProgramacion() {
   }
 
   // ── 4. RESULTADOS DE APRENDIZAJE Y CRITERIOS DE EVALUACIÓN ───
-  // RF-02, segunda mitad: esta sección ya NO lee ras/ces/raInstr (data_json) ni
-  // ra_ponderaciones. Lee y escribe ra_catalogo, ce_catalogo y
-  // ce_instrumentos_previstos (docs/rediseno/05-PLAN-MIGRACION.md). El plan de
-  // actividades y el mapa de cobertura (secciones 1, 2 y 5) siguen en
-  // data_json hasta esa parte de RF-02: por eso un RA editado aquí puede
-  // tardar en reflejarse en esas otras secciones, que no se tocan hoy.
-  if (!raCatalogo.length) {
-    h += `<div class="card" style="margin-bottom:16px">
-      <div class="prog-section-title">🎯 Resultados de Aprendizaje y Criterios de Evaluación</div>
-      <div class="empty-state">
-        <div style="font-weight:700;color:var(--text);margin-bottom:6px">Este módulo todavía no está migrado a la programación normalizada</div>
-        <div style="margin-bottom:12px">Desde RF-02, los RA y CE de esta vista viven en tablas con clave foránea
-          (<code>ra_catalogo</code>, <code>ce_catalogo</code>), no en el JSON antiguo del módulo. Migra este módulo
-          desde Ajustes — hace una copia de seguridad antes de tocar nada — y vuelve aquí.</div>
-        <button class="btn btn-primary btn-sm" onclick="goSection('ajustes')">⚙ Ir a Ajustes</button>
-      </div>
-    </div>`
-  } else {
-    const ceCatalogoRows = await window.api.getCeCatalogo(parseInt(mid))
-    const ceInstrRows    = await window.api.getCeInstrumentosPrevistos(parseInt(mid))
+  // RF-02: lee y escribe ra_catalogo, ce_catalogo y ce_instrumentos_previstos
+  // (docs/rediseno/05-PLAN-MIGRACION.md). El módulo ya está migrado (se
+  // comprobó arriba); ceCatalogoRows/ceInstrRows vienen del catálogo cargado
+  // al principio de la función, igual que en el resto de secciones.
+  {
     let raEstadosDb = {}
     try {
       raEstadosDb = await window.api.getRaEstados(parseInt(mid)) || {}
     } catch { /* base antigua sin la tabla */ }
 
-    const cesByRaNorm = {}
-    for (const row of ceCatalogoRows) {
-      (cesByRaNorm[row.ra_id] = cesByRaNorm[row.ra_id] || []).push(
-        { id: row.ce_id, texto: row.texto, peso: row.peso })
-    }
     const instrByCeNorm = {}
     for (const row of ceInstrRows) {
       const k = `${row.ra_id}|${row.ce_id}`
@@ -576,7 +593,7 @@ async function loadProgramacion() {
     const rasParaCtx = raCatalogo.map(r => ({ id: r.ra_id, nombre: r.nombre, pond: r.pond }))
     const { actividades: actividadesParaCtx } = await getActividadesParaMotor(parseInt(mid))
     const ctxRA = contextoModulo({
-      ras: rasParaCtx, cesByRa: cesByRaNorm, asignaciones: asigs, actividades: actividadesParaCtx,
+      ras: rasParaCtx, cesByRa: ces, asignaciones: asigs, actividades: actividadesParaCtx,
       raEstados: raEstadosDb,
     })
     const algunRaNoImpartido = Object.values(ctxRA.ponderaciones).some(p => p.estado === 'no_impartido')
@@ -592,14 +609,14 @@ async function loadProgramacion() {
     // Mismo razonamiento de cobertura que antes, ahora contra el catálogo
     // normalizado. `coberturaCe` sigue siendo válido: solo mira existencia de
     // claves RA|CE, que no cambian entre el JSON viejo y las tablas nuevas.
-    const nTotalCes = raCatalogo.reduce((s, r) => s + (cesByRaNorm[r.ra_id] || []).length, 0)
+    const nTotalCes = raCatalogo.reduce((s, r) => s + (ces[r.ra_id] || []).length, 0)
     const nCesCubiertos = Object.keys(coberturaCe)
       .filter(k => raCatalogo.some(r => k.startsWith(r.ra_id + '|'))).length
     const nRaDual = Object.fromEntries(raCatalogo.map(r => [r.ra_id, Number(r.dual_pct) || 0]))
     let nCesEnEmpresa = 0
     for (const ra of raCatalogo) {
       if (!nRaDual[ra.ra_id]) continue
-      for (const ce of (cesByRaNorm[ra.ra_id] || [])) {
+      for (const ce of (ces[ra.ra_id] || [])) {
         if (!coberturaCe[ceKey(ra.ra_id, ce.id)]) nCesEnEmpresa++
       }
     }
@@ -674,7 +691,7 @@ async function loadProgramacion() {
 
     for (const ra of raCatalogo) {
       const raId = ra.ra_id
-      const raCes = cesByRaNorm[raId] || []
+      const raCes = ces[raId] || []
 
       const raEstadoActual = ctxRA.raEstados[raId]
       const raEstadoMotivo = raEstadosDb[raId]?.motivo || ''
@@ -1153,24 +1170,40 @@ async function updateActividadDesc(el) {
 }
 
 /**
+ * Traduce una lista de claves "RA|CE" a pares {ra_id,ce_id} y las guarda en
+ * actividad_ce (fuente nueva, RF-02). Escritura doble TEMPORAL: actividades.ces
+ * (columna JSON) se sigue escribiendo también en cada punto que llama a esto,
+ * porque Dashboard, Evaluaciones e IA todavía la leen para construir su
+ * contextoModulo — ver 00-CONTEXTO.md, deuda fechada de esta tarea. Se retira
+ * cuando esas pantallas pasen a leer las tablas normalizadas.
+ */
+async function _sincronizarActividadCe(actId, mid, cesKeys) {
+  const pares = (cesKeys || []).map(k => ({ ra_id: ceKeyRa(k), ce_id: ceKeyCe(k) }))
+  await window.api.setActividadCe(actId, parseInt(mid), pares)
+}
+
+/**
  * Reasigna las UT de una actividad dejándola coherente:
  *  · ra_id pasa a ser el RA de esas UT (o se vacía si son varios, porque entonces
  *    quien manda son los criterios marcados);
  *  · los criterios que ya no pertenecen a ninguna de las UT nuevas se caen, en vez
  *    de quedarse ahí calificando un RA que la actividad ya no toca.
  * Devuelve cuántos criterios se han descartado.
+ * `asigs`/`cesPorRa` vienen ya adaptados de las tablas normalizadas
+ * (_cargarCatalogoNormalizado), con la misma forma que antes tenían
+ * data.asignaciones/data.ces.
  */
-function _reasignarUtsActividad(act, utIds, data) {
+function _reasignarUtsActividad(act, utIds, asigs, cesPorRa) {
   act.ut_id = utIds.join(',')
-  const asigs = data?.asignaciones || []
-  const ras   = rasDeActividad({ ut_id: act.ut_id }, asigs)
-  act.ra_id   = ras.length === 1 ? ras[0] : null
+  asigs = asigs || []
+  const ras = rasDeActividad({ ut_id: act.ut_id }, asigs)
+  act.ra_id = ras.length === 1 ? ras[0] : null
 
-  const grupos    = cesDisponiblesActividad(act, asigs, data?.ces || {})
+  const grupos    = cesDisponiblesActividad(act, asigs, cesPorRa || {})
   const validas   = new Set()
   grupos.forEach(g => g.ces.forEach(ce => validas.add(ceKey(g.raId, ce.id))))
   const antes     = actCesLista(act)
-  const migradas  = migrarCesActividad({ ...act, ces: antes }, asigs, data?.ces || {}) || antes
+  const migradas  = migrarCesActividad({ ...act, ces: antes }, asigs, cesPorRa || {}) || antes
   const conservar = migradas.filter(k => validas.has(k))
   act.ces = conservar
   return migradas.length - conservar.length
@@ -1187,8 +1220,10 @@ async function updateActividadUT(el) {
     const acts = await window.api.getActividades(mid)
     const act = acts.find(a => a.id === actId)
     if (!act) return
-    const perdidos = _reasignarUtsActividad(act, selected, _getModData(mid))
+    const { asigs, ces } = await _cargarCatalogoNormalizado(mid)
+    const perdidos = _reasignarUtsActividad(act, selected, asigs, ces)
     await window.api.saveActividad(act)
+    await _sincronizarActividadCe(actId, mid, act.ces)
     showSaved()
     if (perdidos) loadProgramacion()   // el contador de criterios ha cambiado
   } catch(e) { console.error('updateActividadUT:', e) }
@@ -1253,18 +1288,21 @@ async function actDrop(event, toEval) {
  * enseña primero el reparto que va a quedar.
  */
 async function setEvalCount(mid, count) {
-  const newCount  = parseInt(count)
-  const data      = _getModData(mid)
+  const newCount = parseInt(count)
+  const data = _getModData(mid)   // solo para modulo.eval_count, no es RF-02
   if (!data) return
 
-  const actsPrev = await window.api.getActividades(parseInt(mid))
-  const utsPrev  = data.uts || []
+  const [actsPrev, cat] = await Promise.all([
+    window.api.getActividades(parseInt(mid)),
+    _cargarCatalogoNormalizado(mid),
+  ])
+  const utsPrev  = cat.unidadesTrabajoRows   // {ut_id, nombre, horas, horas_empresa, eval, tags}
   const anterior = data.modulo?.eval_count || [...new Set(utsPrev.map(u => u.eval || 1))].length || 3
   if (newCount === anterior) return
 
   // Simular el reparto para poder contarlo antes de tocar nada
   const simulaUt = (() => {
-    const orden = utsPrev.slice().sort((a, b) => (a.eval||1)-(b.eval||1) || (a.orden||0)-(b.orden||0))
+    const orden = utsPrev.slice().sort((a, b) => (a.eval||1)-(b.eval||1))
     const porEval = Math.ceil(orden.length / newCount) || 1
     return orden.filter((u, i) => (u.eval || 1) !== Math.min(Math.floor(i / porEval) + 1, newCount)).length
   })()
@@ -1288,22 +1326,30 @@ async function setEvalCount(mid, count) {
     loadProgramacion()   // devolver el desplegable a su valor
     return
   }
-  data.modulo     = data.modulo || {}
+  data.modulo = data.modulo || {}
   data.modulo.eval_count = newCount
+  // _saveModData (no _sincronizarActividadCe: no toca actividades) porque
+  // sigue escribiendo el blob entero de data_json, ras incluido — si esos ras
+  // están desactualizados respecto a ra_catalogo, el aviso de cierres/huérfanas
+  // de setModuloDataJson es la red de seguridad que lo dice en vez de callarlo.
+  await _saveModData(mid, data, false)
 
-  // ── Redistribuir UTs ──────────────────────────────────────────
-  // Siempre redistribuye proporcionalmente: ninguna UT se pierde
-  const uts = data.uts || []
-  if (uts.length) {
-    const sorted = uts.slice().sort((a,b) => (a.eval||1)-(b.eval||1) || (a.orden||0)-(b.orden||0))
+  // ── Redistribuir UTs (unidades_trabajo.eval) ──────────────────
+  // Siempre redistribuye proporcionalmente: ninguna UT se pierde. eval_ras ya
+  // no se calcula ni se guarda aquí: loadProgramacion() lo deriva de las UT
+  // recién redistribuidas y lo sincroniza al recargar, más abajo.
+  if (utsPrev.length) {
+    const sorted = utsPrev.slice().sort((a,b) => (a.eval||1)-(b.eval||1))
     const perEval = Math.ceil(sorted.length / newCount)
-    sorted.forEach((ut, i) => { ut.eval = Math.min(Math.floor(i / perEval) + 1, newCount) })
+    for (const [i, ut] of sorted.entries()) {
+      const nuevoEval = Math.min(Math.floor(i / perEval) + 1, newCount)
+      if (nuevoEval !== (ut.eval || 1)) {
+        await window.api.setUnidadTrabajo(mid, ut.ut_id, {
+          nombre: ut.nombre, horas: ut.horas, horasEmpresa: ut.horas_empresa, eval: nuevoEval, tags: ut.tags,
+        })
+      }
+    }
   }
-
-  // ── Recalcular eval_ras ───────────────────────────────────────
-  // Los RA siguen a sus UT: se recalcula desde el reparto que se acaba de hacer,
-  // en vez de repartirlos por su cuenta y acabar diciendo dos cosas distintas.
-  data.eval_ras = rasPorEvaluacion(data, newCount)
 
   // ── Redistribuir Actividades (en BD) ─────────────────────────
   // Siempre redistribuye proporcionalmente por eval+orden: ninguna actividad se pierde
@@ -1320,7 +1366,7 @@ async function setEvalCount(mid, count) {
     }
   }
 
-  await _saveModData(mid, data, true)
+  loadProgramacion()
 }
 
 async function addActividad(mid, ev, tipo) {
@@ -1356,11 +1402,11 @@ async function addActividad(mid, ev, tipo) {
  * quien la ha perdido es la única que cuenta.
  */
 async function addPruebaObjetiva(mid) {
-  const data = _getModData(mid)
-  const ces  = data?.ces || {}
+  const data = _getModData(mid)   // solo para modulo.eval_count, no es RF-02
+  const { ces } = await _cargarCatalogoNormalizado(mid)
   const todos = []
   for (const raId of Object.keys(ces)) {
-    for (const ce of (ces[raId] || [])) todos.push(`${raId}|${ce.id}`)
+    for (const ce of (ces[raId] || [])) todos.push(ceKey(raId, ce.id))
   }
   if (!todos.length) {
     alert('Este módulo no tiene criterios de evaluación cargados.')
@@ -1369,13 +1415,14 @@ async function addPruebaObjetiva(mid) {
   const allActs  = await window.api.getActividades(parseInt(mid))
   const maxOrden = allActs.reduce((m, a) => Math.max(m, a.orden || 0), 0)
   const evalCount = Number(data?.modulo?.eval_count) || 3
-  await window.api.saveActividad({
+  const actId = await window.api.saveActividad({
     modulo_id: parseInt(mid), ut_id: null, ra_id: null,
     descripcion: 'Prueba objetiva de evaluación completa (art. 3.6)',
     instrumento: 'Examen', tipo: 'examen',
     peso: 0, nota_max: 10, eval: evalCount, orden: maxOrden + 1,
     ces: todos, convocatoria: 1, prueba_objetiva: 1,
   })
+  await _sincronizarActividadCe(actId, mid, todos)
   showToast(`Prueba objetiva creada con los ${todos.length} criterios del módulo`)
   loadProgramacion()
 }
@@ -1460,16 +1507,17 @@ function _mismoEvalRas(a, b, evalCount) {
 }
 
 /**
- * Deja escrito en el módulo el reparto de RA por evaluación que sale de las UT.
- * Evaluaciones, Dashboard y los informes de IA leen `eval_ras`; si el profesor
- * mueve una UT de trimestre y no se actualiza, cada pantalla cuenta una cosa.
+ * Deja escrito en el módulo el reparto de RA por evaluación que ya se calculó
+ * en loadProgramacion() a partir de las tablas normalizadas. Evaluaciones,
+ * Dashboard y los informes de IA leen `eval_ras` desde data_json — no están
+ * migrados todavía (00-CONTEXTO.md, deuda RF-02) — así que este es el único
+ * punto que les mantiene ese dato al día sin tocar esas pantallas.
  */
-async function _sincronizarEvalRas(mid, evalCount) {
+async function _sincronizarEvalRas(mid, evalCount, evalRasMap) {
   const data = _getModData(mid)
   if (!data) return false
-  const nuevo = rasPorEvaluacion(data, evalCount)
-  if (_mismoEvalRas(nuevo, data.eval_ras, evalCount)) return false
-  data.eval_ras = nuevo
+  if (_mismoEvalRas(evalRasMap, data.eval_ras, evalCount)) return false
+  data.eval_ras = evalRasMap
   await window.api.setModuloDataJson(parseInt(mid), data)
   _modulos = await window.api.getModulos()
   return true
@@ -1921,16 +1969,14 @@ function cerrarActividadUtModal() {
 // ── Modal UT para actividades de examen ──────────────────────────
 let _actUtsState = null
 
-function openActUtsModal(actId, mid, currentUtId) {
-  const data = _getModData(mid)
-  if (!data) return
-  _actUtsState = { actId, mid }
+async function openActUtsModal(actId, mid, currentUtId) {
+  const { uts, asigs, ces } = await _cargarCatalogoNormalizado(mid)
+  _actUtsState = { actId, mid, asigs, ces }
 
   // Título: descripción de la actividad si está disponible
   document.getElementById('act-uts-title').textContent = `Examen · UTs relacionadas`
 
   const selIds = (currentUtId||'').split(',').filter(Boolean)
-  const uts = data.uts || []
   const evals = [...new Set(uts.map(u => u.eval||1))].sort((a,b)=>a-b)
 
   let html = ''
@@ -1942,7 +1988,7 @@ function openActUtsModal(actId, mid, currentUtId) {
     for (const ut of evUts) {
       const checked = selIds.includes(ut.id)
       // Todos los RA que trabaja la UT, no solo el primero
-      const raIds = (data.asignaciones||[]).filter(a => a.ut === ut.id).map(a => a.ra)
+      const raIds = asigs.filter(a => a.ut === ut.id).map(a => a.ra)
       const raLabel = raIds.map(raId =>
         `<span style="font-size:10px;font-weight:700;color:var(--accent2);background:rgba(74,144,217,.1);padding:1px 5px;border-radius:4px;margin-left:4px">${esc(raId)}</span>`
       ).join('')
@@ -1965,14 +2011,15 @@ function openActUtsModal(actId, mid, currentUtId) {
 
 async function saveActUts() {
   if (!_actUtsState) return
-  const { actId, mid } = _actUtsState
+  const { actId, mid, asigs, ces } = _actUtsState
   const selected = Array.from(document.querySelectorAll('.act-ut-chk:checked')).map(cb => cb.dataset.utid)
   try {
     const acts = await window.api.getActividades(mid)
     const act = acts.find(a => a.id === actId)
     if (!act) return
-    const perdidos = _reasignarUtsActividad(act, selected, _getModData(mid))
+    const perdidos = _reasignarUtsActividad(act, selected, asigs, ces)
     await window.api.saveActividad(act)
+    await _sincronizarActividadCe(actId, mid, act.ces)
     closeActUtsModal()
     if (perdidos) {
       showToast(`Se han quitado ${perdidos} criterio${perdidos > 1 ? 's' : ''} que ya no pertenecen a estas UT`)
@@ -1992,9 +2039,8 @@ function closeActUtsModal() {
 // ═══════════════════════════════════════════════════════════════
 let _actCesState = null
 
-function openActCesModal(actId, mid, utId, raId, currentCesEncoded, convocatoria) {
-  const data = _getModData(mid)
-  if (!data) return
+async function openActCesModal(actId, mid, utId, raId, currentCesEncoded, convocatoria) {
+  const { ras, ces, asigs } = await _cargarCatalogoNormalizado(mid)
   _actCesState = { actId, mid }
 
   let selCes = []
@@ -2011,12 +2057,10 @@ function openActCesModal(actId, mid, utId, raId, currentCesEncoded, convocatoria
   // Una prueba de recuperación no cuelga de ninguna unidad de trabajo: recupera
   // lo que haga falta, así que se ofrece el módulo entero.
   const grupos = esRecuperacion
-    ? (data.ras || [])
-        .map(ra => ({ raId: ra.id, ces: (data.ces || {})[ra.id] || [] }))
+    ? ras
+        .map(ra => ({ raId: ra.id, ces: ces[ra.id] || [] }))
         .filter(g => g.ces.length)
-    : cesDisponiblesActividad(
-        { ut_id: utId, ra_id: raId }, data.asignaciones || [], data.ces || {}
-      )
+    : cesDisponiblesActividad({ ut_id: utId, ra_id: raId }, asigs, ces)
 
   if (!grupos.length) {
     document.getElementById('act-ces-body').innerHTML =
@@ -2032,7 +2076,7 @@ function openActCesModal(actId, mid, utId, raId, currentCesEncoded, convocatoria
   // Ojo: CR1 existe en todos los RA. Cada casilla guarda la clave RA|CE, de forma
   // que marcar el CR1 de RA4 no marca de rebote el CR1 de RA5.
   for (const grupo of grupos) {
-    const raNombre = (data.ras || []).find(r => r.id === grupo.raId)?.nombre || ''
+    const raNombre = ras.find(r => r.id === grupo.raId)?.nombre || ''
     // Marcar 27 criterios de uno en uno es la tarea más repetitiva de la
     // programación, y dejarla a medias es lo que hace que una actividad no
     // evalúe nada. Un atajo por RA evita justamente eso.
@@ -2079,6 +2123,7 @@ async function saveActCes() {
     if (!act) return
     act.ces = selected
     await window.api.saveActividad(act)
+    await _sincronizarActividadCe(actId, mid, selected)
     closeActCesModal()
     loadProgramacion()
   } catch(e) { console.error('saveActCes:', e) }
@@ -2097,10 +2142,7 @@ function closeActCesModal() {
  * No toca las actividades que ya tengan criterios: la decisión del profesor manda.
  */
 async function rellenarCesDesdeUts(mid) {
-  const data = _getModData(mid)
-  if (!data) return
-  const asigs    = data.asignaciones || []
-  const cesPorRa = data.ces || {}
+  const { uts, asigs, ces: cesPorRa } = await _cargarCatalogoNormalizado(mid)
   const acts = await window.api.getActividades(parseInt(mid))
 
   // Un examen sin UT no cubre ningún criterio, así que su nota no entra en
@@ -2108,7 +2150,7 @@ async function rellenarCesDesdeUts(mid) {
   // («no tiene UT asignada y se queda igual») justo cuando era el que más falta
   // hacía: se le asignan las unidades de su propia evaluación.
   const utsPorEval = {}
-  for (const ut of (data.uts || [])) {
+  for (const ut of uts) {
     const ev = Number(ut.eval || 1)
     if (!utsPorEval[ev]) utsPorEval[ev] = []
     utsPorEval[ev].push(ut.id)
@@ -2162,6 +2204,7 @@ async function rellenarCesDesdeUts(mid) {
     try {
       // c.act ya lleva la ut_id que se le haya asignado arriba
       await window.api.saveActividad({ ...c.act, ces: c.claves })
+      await _sincronizarActividadCe(c.act.id, mid, c.claves)
       hechas++
     } catch (e) {
       console.error('rellenarCesDesdeUts:', c.act.id, e)
