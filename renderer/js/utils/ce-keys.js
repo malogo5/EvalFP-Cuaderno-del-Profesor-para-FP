@@ -269,6 +269,30 @@ function _nuevoEvalDeActividad(act, nuevoEvalPorUt) {
 }
 
 /**
+ * Reparte `total` (un porcentaje) entre `n` elementos con un decimal cada
+ * uno, de forma que la SUMA de los repartidos sea EXACTAMENTE `total`
+ * redondeado a un decimal. Redondear cada elemento por separado
+ * (`Math.round(total/n*10)/10`) es lo que hacía `applyModuloPesos()` antes:
+ * con 30 % entre 7 actividades, cada una salía en 4,3 % y la suma marcaba
+ * 30,1 %, no 30 — nunca cuadraba con evaluaciones que no dividen exacto.
+ *
+ * Método del resto mayor: todos los elementos parten de la misma parte
+ * entera en décimas, y a los primeros `sobran` (por orden de posición, no al
+ * azar, para que repartir dos veces dé lo mismo) se les da la décima que
+ * falta para llegar exacto.
+ *
+ * @returns {number[]} `n` valores (uno por elemento) que suman exactamente
+ *   `Math.round(total * 10) / 10`.
+ */
+function repartirPesoRedondeado(total, n) {
+  if (!n || n <= 0) return []
+  const totalDecimas = Math.round(total * 10)
+  const baseDecimas = Math.floor(totalDecimas / n)
+  const sobran = totalDecimas - baseDecimas * n
+  return Array.from({ length: n }, (_, i) => (baseDecimas + (i < sobran ? 1 : 0)) / 10)
+}
+
+/**
  * Todas las claves "RA|CE" de un catálogo {raId: [{id,texto}, ...]}, sin
  * duplicados. Lo usa la prueba objetiva del art. 3.6 (quien pierde el derecho
  * a la evaluación continua se examina de «la totalidad de los resultados de
@@ -290,6 +314,6 @@ if (typeof module !== 'undefined' && module.exports) {
     ceKey, ceKeyRa, ceKeyCe, actCesLista, rasDeActividad, actCubreCe, actCesDeRa,
     actividadDeRa, migrarCesActividad, cesDisponiblesActividad, cesEvaluadosDeRa,
     rasPorEvaluacion, temporalizacionRas, todosLosCe,
-    _repartoNuevoEvalUt, _nuevoEvalDeActividad,
+    _repartoNuevoEvalUt, _nuevoEvalDeActividad, repartirPesoRedondeado,
   }
 }

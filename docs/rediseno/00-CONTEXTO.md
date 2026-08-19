@@ -180,13 +180,16 @@ resuelve en la presentación, no en el motor.
   recuperar de una copia de seguridad. Pendiente: un punto de alta explícito (botón propio, o que
   el asistente de UT permita elegir "Informe de empresa" como instrumento sin que cuente como
   actividad calificable con familia de reparto).
-- **Cosmético — suma de pesos por evaluación puede marcar 100,2 % en vez de 100 % (detectado
-  2026-08-18, módulo ISO real).** Cuando varias actividades de una evaluación tienen un peso que
-  no es exacto en base 10 (p. ej. 100 % repartido entre 6 actividades da 16,666…%, guardado
-  redondeado a 6,7), la suma de los pesos REDONDEADOS que se muestra puede quedar en 100,2 % con
-  aviso ⚠ aunque el reparto real sea exacto. No es el fallo de `setEvalCount` (ver más abajo): es
-  solo que la cabecera suma los valores ya redondeados en vez del reparto exacto. Pendiente,
-  cosmético, no se ha tocado.
+- **Resuelto — `applyModuloPesos()` ya reparte prácticas y exámenes con suma exacta (2026-08-19).**
+  Detectado en el módulo ISO real: pedir 30 %/70 % o 40 %/60 % entre actividades que no dividen
+  exacto (p. ej. 30 % entre 7) daba "⚠ suma 100,1 %"/"100,4 %" — cada actividad se redondeaba a un
+  decimal por separado y la suma de los redondeos ya no coincidía con el total pedido.
+  `repartirPesoRedondeado()` (`ce-keys.js`, método del resto mayor) lo sustituye: la suma de lo
+  repartido da siempre el total exacto (`tests/unit/repartir-peso-redondeado.test.js`). Esto
+  arregla los repartos NUEVOS hechos con "Aplicar a todo el módulo"; los pesos que ya estaban
+  guardados en la base (p. ej. los 6,7 % de la carga inicial del decreto, que ya venían así del
+  import, no de este botón) no se tocan solos — hay que volver a pulsar "Aplicar a todo el
+  módulo" para que se recalculen con el método nuevo.
 - **Deuda temporal — doble escritura de criterios por actividad (RF-02, cierre de Programación,
   2026-08-18).** Programación ya lee y escribe UT/RA/CE/asignaciones solo en las tablas
   normalizadas (`ra_catalogo`, `ce_catalogo`, `unidades_trabajo`, `ut_ce`, `actividad_ce`), nunca

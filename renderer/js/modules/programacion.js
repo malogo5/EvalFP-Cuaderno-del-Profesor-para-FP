@@ -2217,21 +2217,28 @@ async function applyModuloPesos() {
   const acts = await window.api.getActividades(mid)
   if (!acts.length) { alert('Este módulo no tiene actividades.'); return }
 
-  // Qué pesos cambian de verdad, para poder enseñarlo antes de tocar nada
+  // Qué pesos cambian de verdad, para poder enseñarlo antes de tocar nada.
+  // repartirPesoRedondeado() reparte por el método del resto mayor: la suma
+  // de lo repartido da siempre el total exacto, nunca 100,1/100,2 % por
+  // redondear cada actividad por separado (ver 00-CONTEXTO.md, 2026-08-19).
   const evsPrev = [...new Set(acts.map(a => a.eval))].sort()
   const cambios = []
   for (const ev of evsPrev) {
     const evActs = acts.filter(a => a.eval === ev)
-    const nP = evActs.filter(a => a.tipo === 'practica').length
-    const nE = evActs.filter(a => a.tipo === 'examen').length
-    for (const a of evActs) {
-      const nuevo = a.tipo === 'practica'
-        ? (nP ? Math.round(pesoPrac / nP * 10) / 10 : 0)
-        : (nE ? Math.round(pesoExam / nE * 10) / 10 : 0)
-      if (Math.abs((a.peso || 0) - nuevo) > 0.05) {
-        cambios.push(`  · ${evalLabel(ev)} · ${a.descripcion || a.instrumento}: ${a.peso || 0}% → ${nuevo}%`)
+    const practicas = evActs.filter(a => a.tipo === 'practica')
+    const examenes  = evActs.filter(a => a.tipo === 'examen')
+    const pesosPrac = repartirPesoRedondeado(pesoPrac, practicas.length)
+    const pesosExam = repartirPesoRedondeado(pesoExam, examenes.length)
+    practicas.forEach((a, i) => {
+      if (Math.abs((a.peso || 0) - pesosPrac[i]) > 0.05) {
+        cambios.push(`  · ${evalLabel(ev)} · ${a.descripcion || a.instrumento}: ${a.peso || 0}% → ${pesosPrac[i]}%`)
       }
-    }
+    })
+    examenes.forEach((a, i) => {
+      if (Math.abs((a.peso || 0) - pesosExam[i]) > 0.05) {
+        cambios.push(`  · ${evalLabel(ev)} · ${a.descripcion || a.instrumento}: ${a.peso || 0}% → ${pesosExam[i]}%`)
+      }
+    })
   }
   if (!cambios.length) { showToast('Los pesos ya son esos, no hay nada que cambiar'); return }
   const muestra = cambios.slice(0, 12).join('\n') +
@@ -2245,12 +2252,14 @@ async function applyModuloPesos() {
     const evActs   = acts.filter(a => a.eval === ev)
     const practicas = evActs.filter(a => a.tipo === 'practica')
     const examenes  = evActs.filter(a => a.tipo === 'examen')
-    for (const a of practicas) {
-      a.peso = practicas.length ? Math.round(pesoPrac / practicas.length * 10) / 10 : 0
+    const pesosPrac = repartirPesoRedondeado(pesoPrac, practicas.length)
+    const pesosExam = repartirPesoRedondeado(pesoExam, examenes.length)
+    for (const [i, a] of practicas.entries()) {
+      a.peso = pesosPrac[i]
       await window.api.saveActividad(a)
     }
-    for (const a of examenes) {
-      a.peso = examenes.length  ? Math.round(pesoExam  / examenes.length  * 10) / 10 : 0
+    for (const [i, a] of examenes.entries()) {
+      a.peso = pesosExam[i]
       await window.api.saveActividad(a)
     }
   }
