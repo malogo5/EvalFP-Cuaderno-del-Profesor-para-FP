@@ -2,13 +2,20 @@
 // ═══════════════════════════════════════════════════════════════
 // RF-17 · Tipos de actividad y familia de reparto
 // ═══════════════════════════════════════════════════════════════
-// Fuente única para dos cosas que antes eran listas distintas y podían
-// desincronizarse: el TIPO de actividad (lo que elige la docente al crearla,
-// y lo que declara como instrumento previsto de un CE en RF-02) y el
-// INSTRUMENTO PREVISTO. Son la misma lista.
+// TIPOS_ACTIVIDAD es lo que elige la docente al crear una actividad (y de
+// donde sale la familia de reparto). INSTRUMENTOS_PREVISTOS es lo que se
+// declara en RF-02 como instrumento previsto de un RA/CE (art. 4.3.b): son
+// los mismos siete más "Informe de empresa" — la evidencia de los CE que se
+// acreditan en la fase de formación en empresa (art. 21), que no es un tipo
+// de actividad calificable (no tiene peso ni nota, vive en
+// ra_catalogo.dual_pct/fase_empresa) pero sí hay que poder declarar como
+// instrumento. Antes eran la misma lista y "empresa" se quitó de los tipos de
+// actividad al cerrar RF-17; esto reabre el hueco que dejó solo para
+// instrumento previsto, sin reinstaurarlo como tipo (00-CONTEXTO.md, tareas
+// abiertas).
 //
-// `calificacion.js` no conoce estos siete valores: solo sabe repartir entre
-// dos FAMILIAS, "examen" y "practica" (`pesosPorTipo`, `mediaActividades`,
+// `calificacion.js` no conoce estos valores: solo sabe repartir entre dos
+// FAMILIAS, "examen" y "practica" (`pesosPorTipo`, `mediaActividades`,
 // `examenesQueDeciden`, todas comparan `a.tipo === 'practica'|'examen'`
 // literalmente). Por eso el tipo real nunca llega al motor: antes de
 // pasarle una actividad, su `tipo` se sustituye por la familia que le
@@ -23,6 +30,14 @@ const TIPOS_ACTIVIDAD = [
   { id: 'exposicion',   label: 'Exposición',   familiaDefecto: 'practica' },
   { id: 'trabajo',      label: 'Trabajo',      familiaDefecto: 'practica' },
   { id: 'cuestionario', label: 'Cuestionario', familiaDefecto: 'examen' },
+]
+
+// Instrumento previsto de un RA/CE (RF-02, art. 4.3.b): los siete tipos de
+// actividad más "Informe de empresa", que no es un tipo de actividad — no
+// tiene familia de reparto, no se crea como actividad calificable.
+const INSTRUMENTOS_PREVISTOS = [
+  ...TIPOS_ACTIVIDAD.map(t => ({ id: t.id, label: t.label })),
+  { id: 'informe_empresa', label: 'Informe de empresa' },
 ]
 
 const DEFECTO_FAMILIA = Object.fromEntries(TIPOS_ACTIVIDAD.map(t => [t.id, t.familiaDefecto]))
@@ -114,6 +129,6 @@ async function getActividadesParaMotor(moduloId) {
 // tiene ningún coste en Node mientras nadie la invoque desde ahí.
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
-    TIPOS_ACTIVIDAD, DEFECTO_FAMILIA, familiaDeTipo, resolverFamilia, getActividadesParaMotor,
+    TIPOS_ACTIVIDAD, INSTRUMENTOS_PREVISTOS, DEFECTO_FAMILIA, familiaDeTipo, resolverFamilia, getActividadesParaMotor,
   }
 }

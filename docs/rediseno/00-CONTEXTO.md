@@ -160,13 +160,33 @@ resuelve en la presentación, no en el motor.
   nota, incluidos los no impartidos, así que el informe de IA sale PENDIENTE de forma incorrecta
   en cualquier módulo con un RA excluido. Fallo preexistente; se resuelve en RF-13, cuando la IA
   deje de calcular por su cuenta y pida los estados al motor.
-- **Instrumento de evaluación de los CE dualizados, sin registrar.** `fase_empresa` es
-  `(alumno_id, estado, motivo, fecha)` — una fila por alumno para toda la fase de formación en
-  empresa, sin RA, sin CE y sin instrumento. El art. 4.3.b exige el instrumento previsto también
-  para los CE que se acreditan en empresa, y RF-11 lo necesita para el documento informativo de
-  inicio de curso. Detectado al revisar RF-17 (el tipo `empresa` que existía en
-  `ra_instrumentos`/`ce_instrumentos_previstos` se ha retirado por no ser un tipo de actividad;
-  esto es lo que queda sin cubrir tras retirarlo). No tiene requisito propio todavía.
+- **Instrumento de evaluación de los CE dualizados — declaración añadida, registro por alumno
+  sigue pendiente (actualizado 2026-08-18).** El instrumento previsto (RF-02) ya ofrece "Informe
+  de empresa" como opción (`INSTRUMENTOS_PREVISTOS` en `tipos-actividad.js`, distinta de
+  `TIPOS_ACTIVIDAD`: no es un tipo de actividad, no tiene familia de reparto, no se crea como
+  actividad calificable), así que un RA/CE dualizado ya puede declarar con qué instrumento se
+  evalúa (art. 4.3.b). Lo que SIGUE sin cubrir: `fase_empresa` sigue siendo
+  `(alumno_id, estado, motivo, fecha)` — una fila por alumno para toda la fase, sin RA, sin CE —
+  así que no hay dónde registrar, alumno a alumno, qué CE concretos se acreditaron con ese
+  informe. RF-11 lo necesita para el documento informativo de inicio de curso. No tiene requisito
+  propio todavía.
+- **No hay forma de crear una actividad de "Informe de empresa" desde la interfaz (detectado
+  2026-08-18, al borrarse una por accidente durante una migración real).** El botón "+ Práctica"
+  del Plan de Actividades fija `instrumento: 'Práctica'` a mano; el asistente de "crear actividad
+  desde UT" (RF-02) deriva el instrumento del tipo elegido entre los siete de
+  `TIPOS_ACTIVIDAD`, que no incluye "empresa". Las cuatro actividades reales con
+  `instrumento='Empresa'` vienen todas de la carga inicial del módulo (import del decreto), no de
+  ningún botón de la app — así que borrar una de esas actividades hoy es irreversible sin
+  recuperar de una copia de seguridad. Pendiente: un punto de alta explícito (botón propio, o que
+  el asistente de UT permita elegir "Informe de empresa" como instrumento sin que cuente como
+  actividad calificable con familia de reparto).
+- **Cosmético — suma de pesos por evaluación puede marcar 100,2 % en vez de 100 % (detectado
+  2026-08-18, módulo ISO real).** Cuando varias actividades de una evaluación tienen un peso que
+  no es exacto en base 10 (p. ej. 100 % repartido entre 6 actividades da 16,666…%, guardado
+  redondeado a 6,7), la suma de los pesos REDONDEADOS que se muestra puede quedar en 100,2 % con
+  aviso ⚠ aunque el reparto real sea exacto. No es el fallo de `setEvalCount` (ver más abajo): es
+  solo que la cabecera suma los valores ya redondeados en vez del reparto exacto. Pendiente,
+  cosmético, no se ha tocado.
 - **Deuda temporal — doble escritura de criterios por actividad (RF-02, cierre de Programación,
   2026-08-18).** Programación ya lee y escribe UT/RA/CE/asignaciones solo en las tablas
   normalizadas (`ra_catalogo`, `ce_catalogo`, `unidades_trabajo`, `ut_ce`, `actividad_ce`), nunca

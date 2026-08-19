@@ -238,6 +238,37 @@ function temporalizacionRas(unidadesTrabajo, utCe) {
 }
 
 /**
+ * Mapa ut_id -> nueva evaluación, repartiendo las UT en `newCount` bloques
+ * iguales por orden de su evaluación actual. Es la ÚNICA fuente del reparto
+ * al cambiar el nº de evaluaciones del módulo (programacion.js, setEvalCount):
+ * la usan tanto la simulación del diálogo de confirmación como la escritura
+ * real, así que nunca pueden divergir entre sí.
+ */
+function _repartoNuevoEvalUt(uts, newCount) {
+  const mapa = {}
+  const sorted = uts.slice().sort((a, b) => (a.eval || 1) - (b.eval || 1))
+  const perEval = Math.ceil(sorted.length / newCount) || 1
+  sorted.forEach((ut, i) => { mapa[ut.ut_id] = Math.min(Math.floor(i / perEval) + 1, newCount) })
+  return mapa
+}
+
+/**
+ * Evaluación que le tocaría a una actividad tras redistribuir las UT: la de
+ * su UT (o la más temprana de las suyas, si cubre varias — un examen que
+ * cierra varias unidades no puede ir más tarde que la primera que evalúa).
+ * Antes esto se repartía por posición en la lista plana de actividades, sin
+ * mirar a qué UT pertenecía cada una: una actividad de una UT de la 2ª
+ * evaluación podía acabar "en la 1ª" solo por cómo le tocara el turno.
+ * Sin UT (recuperación, prueba objetiva del art. 3.6…) no hay de dónde
+ * derivarlo: null, que quiere decir "no tocar esta actividad".
+ */
+function _nuevoEvalDeActividad(act, nuevoEvalPorUt) {
+  const utIds = String(act.ut_id || '').split(',').map(s => s.trim()).filter(Boolean)
+  const evals = utIds.map(id => nuevoEvalPorUt[id]).filter(e => e != null)
+  return evals.length ? Math.min(...evals) : null
+}
+
+/**
  * Todas las claves "RA|CE" de un catálogo {raId: [{id,texto}, ...]}, sin
  * duplicados. Lo usa la prueba objetiva del art. 3.6 (quien pierde el derecho
  * a la evaluación continua se examina de «la totalidad de los resultados de
@@ -259,5 +290,6 @@ if (typeof module !== 'undefined' && module.exports) {
     ceKey, ceKeyRa, ceKeyCe, actCesLista, rasDeActividad, actCubreCe, actCesDeRa,
     actividadDeRa, migrarCesActividad, cesDisponiblesActividad, cesEvaluadosDeRa,
     rasPorEvaluacion, temporalizacionRas, todosLosCe,
+    _repartoNuevoEvalUt, _nuevoEvalDeActividad,
   }
 }

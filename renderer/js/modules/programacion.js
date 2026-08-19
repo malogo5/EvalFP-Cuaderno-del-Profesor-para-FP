@@ -145,15 +145,33 @@ async function loadProgramacion() {
     // y entrarían en la nota de la 1ª convocatoria, que ya está en acta.
     const actsRecuperacion = actividades.filter(a => Number(a.convocatoria) === 2)
 
+    // Cabecera de cada evaluación: qué RA trabajan las UT de ESA evaluación
+    // (no el RA-cierre de evalRasMap, que solo lo pone en la última — un RA
+    // trabajado en dos evaluaciones desaparecía de la cabecera de la primera,
+    // como si la actividad que lo tocaba ahí estuviera descolocada sin estarlo).
+    const raEvalsPorRa = {}   // raId -> Set de evaluaciones en las que alguna de sus UT cae
+    for (const a of asigs) {
+      const ut = utMap[a.ut]
+      if (!ut) continue
+      ;(raEvalsPorRa[a.ra] = raEvalsPorRa[a.ra] || new Set()).add(ut.eval || 1)
+    }
+
     for (const ev of evals) {
       const acts = actividades.filter(a => a.eval === ev && Number(a.convocatoria) !== 2).sort((a,b) => {
         if (a.tipo !== b.tipo) return a.tipo === 'practica' ? -1 : 1
         return (a.orden||0) - (b.orden||0)
       })
-      const rasEv = evalRasMap[String(ev)] || []
+      const rasEv = Object.keys(raEvalsPorRa)
+        .filter(raId => raEvalsPorRa[raId].has(ev))
+        .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
       const rasEvalStr = rasEv.map(raId => {
         const ra = raMap[raId] || {}
-        return `${raId}${ra.pond ? ` (${ra.pond}%)` : ''}`
+        const pondTxt = ra.pond ? ` (${ra.pond}%)` : ''
+        // Un RA que sigue trabajándose después no "no cuadra": se marca, no se oculta.
+        const continua = [...raEvalsPorRa[raId]].some(e => e > ev)
+        return continua
+          ? `<span title="${esc(raId)} sigue trabajándose en una evaluación posterior" style="color:var(--accent2);font-weight:600">${esc(raId)}${pondTxt} →</span>`
+          : `<span>${esc(raId)}${pondTxt}</span>`
       }).join(' · ')
 
       const totalPeso = acts.reduce((s,a) => s + (a.peso||0), 0)
@@ -606,13 +624,12 @@ async function loadProgramacion() {
                title="Los criterios sin actividad salen marcados en el desplegable con ○. Asígnalos a una práctica o examen, o marca su RA como dualizado si se acreditan en la empresa.">⚠ ${nCesPendientes} criterio${nCesPendientes > 1 ? 's' : ''} sin actividad que los evalúe</span>${nEmpresaTxt}`)
       : ''
 
-    // RF-17: misma lista que el tipo de actividad (renderer/js/utils/tipos-
-    // actividad.js) — el instrumento previsto de RF-02 y el tipo de actividad
-    // son la misma fuente, no dos listas que puedan desincronizarse. 'empresa'
-    // ya no está: no es un tipo de actividad, es la dualización que vive en
-    // ra_catalogo.dual_pct (ver 00-CONTEXTO.md, tareas abiertas, sobre el
-    // hueco de instrumento en fase_empresa para los CE dualizados).
-    const INSTRUMENTOS = TIPOS_ACTIVIDAD.map(t => [t.id, t.label])
+    // RF-02, art. 4.3.b: instrumento previsto = los siete tipos de actividad
+    // (renderer/js/utils/tipos-actividad.js) más "Informe de empresa", que no
+    // es un tipo de actividad — no tiene familia de reparto ni se crea como
+    // actividad calificable — pero sí hay que poder declararlo como
+    // instrumento de los CE que se acreditan en la fase de empresa (art. 21).
+    const INSTRUMENTOS = INSTRUMENTOS_PREVISTOS.map(t => [t.id, t.label])
     // Instrumentos "del RA": los que comparten TODOS sus CE. Si divergen, no se
     // inventa un valor común — se avisa y se resuelve en el desplegable.
     const instrumentosDeRa = (raId, cesDelRa) => {
@@ -1249,6 +1266,9 @@ async function actDrop(event, toEval) {
  * actividades. Antes lo hacía sin preguntar: con el curso empezado, mover una
  * actividad de trimestre cambia el boletín de la evaluación, así que ahora se
  * enseña primero el reparto que va a quedar.
+ *
+ * `_repartoNuevoEvalUt`/`_nuevoEvalDeActividad` viven en ce-keys.js: son
+ * lógica pura (sin DOM ni window.api) y se prueban ahí directamente.
  */
 async function setEvalCount(mid, count) {
   const newCount = parseInt(count)
@@ -1263,17 +1283,14 @@ async function setEvalCount(mid, count) {
   const anterior = data.modulo?.eval_count || [...new Set(utsPrev.map(u => u.eval || 1))].length || 3
   if (newCount === anterior) return
 
-  // Simular el reparto para poder contarlo antes de tocar nada
-  const simulaUt = (() => {
-    const orden = utsPrev.slice().sort((a, b) => (a.eval||1)-(b.eval||1))
-    const porEval = Math.ceil(orden.length / newCount) || 1
-    return orden.filter((u, i) => (u.eval || 1) !== Math.min(Math.floor(i / porEval) + 1, newCount)).length
-  })()
-  const simulaAct = (() => {
-    const orden = actsPrev.slice().sort((a, b) => (a.eval||1)-(b.eval||1) || (a.orden||0)-(b.orden||0))
-    const porEval = Math.ceil(orden.length / newCount) || 1
-    return orden.filter((a, i) => (a.eval || 1) !== Math.min(Math.floor(i / porEval) + 1, newCount)).length
-  })()
+  // Reparto de UT calculado UNA vez: simulación y aplicación real leen del
+  // mismo mapa, así que lo que se enseña en el diálogo es lo que se aplica.
+  const nuevoEvalPorUt = _repartoNuevoEvalUt(utsPrev, newCount)
+  const simulaUt  = utsPrev.filter(u => nuevoEvalPorUt[u.ut_id] !== (u.eval || 1)).length
+  const simulaAct = actsPrev.filter(a => {
+    const nuevo = _nuevoEvalDeActividad(a, nuevoEvalPorUt)
+    return nuevo != null && nuevo !== (a.eval || 1)
+  }).length
 
   const conNotas = (() => {
     try { return actsPrev.filter(a => a.peso > 0).length } catch { return 0 }
@@ -1282,7 +1299,7 @@ async function setEvalCount(mid, count) {
     `Vas a pasar de ${anterior} a ${newCount} evaluaciones.\n\n` +
     `Se repartirán de nuevo, por orden:\n` +
     `  · ${simulaUt} unidad(es) de trabajo cambian de evaluación\n` +
-    `  · ${simulaAct} actividad(es) cambian de evaluación\n` +
+    `  · ${simulaAct} actividad(es) cambian de evaluación, siguiendo a su unidad de trabajo\n` +
     `  · los RA siguen a sus unidades\n\n` +
     (conNotas ? 'Si ya has puesto notas, sus actividades pueden acabar en otro trimestre y los boletines por evaluación cambiarán.\n\n' : '') +
     '¿Continuar?')) {
@@ -1301,31 +1318,26 @@ async function setEvalCount(mid, count) {
   // Siempre redistribuye proporcionalmente: ninguna UT se pierde. eval_ras ya
   // no se calcula ni se guarda aquí: loadProgramacion() lo deriva de las UT
   // recién redistribuidas y lo sincroniza al recargar, más abajo.
-  if (utsPrev.length) {
-    const sorted = utsPrev.slice().sort((a,b) => (a.eval||1)-(b.eval||1))
-    const perEval = Math.ceil(sorted.length / newCount)
-    for (const [i, ut] of sorted.entries()) {
-      const nuevoEval = Math.min(Math.floor(i / perEval) + 1, newCount)
-      if (nuevoEval !== (ut.eval || 1)) {
-        await window.api.setUnidadTrabajo(mid, ut.ut_id, {
-          nombre: ut.nombre, horas: ut.horas, horasEmpresa: ut.horas_empresa, eval: nuevoEval, tags: ut.tags,
-        })
-      }
+  for (const ut of utsPrev) {
+    const nuevoEval = nuevoEvalPorUt[ut.ut_id]
+    if (nuevoEval !== (ut.eval || 1)) {
+      await window.api.setUnidadTrabajo(mid, ut.ut_id, {
+        nombre: ut.nombre, horas: ut.horas, horasEmpresa: ut.horas_empresa, eval: nuevoEval, tags: ut.tags,
+      })
     }
   }
 
-  // ── Redistribuir Actividades (en BD) ─────────────────────────
-  // Siempre redistribuye proporcionalmente por eval+orden: ninguna actividad se pierde
-  const acts = actsPrev
-  if (acts.length) {
-    const sorted = acts.slice().sort((a,b) => (a.eval||1)-(b.eval||1) || (a.orden||0)-(b.orden||0))
-    const perEval = Math.ceil(sorted.length / newCount)
-    for (const [i, act] of sorted.entries()) {
-      const newEval = Math.min(Math.floor(i / perEval) + 1, newCount)
-      if (newEval !== (act.eval||1)) {
-        act.eval = newEval
-        await window.api.saveActividad(act)
-      }
+  // ── Redistribuir Actividades: cada una sigue a su(s) UT ───────
+  // Ya NO se reparte por posición en una lista plana (eso es lo que
+  // descolocaba una actividad de UT4 bajo la cabecera de RA de otra
+  // evaluación): cada actividad hereda el eval de su propia UT, o el más
+  // temprano de las suyas si cubre varias (examen multi-UT). Una actividad
+  // sin UT no se toca — no hay de dónde derivar su evaluación.
+  for (const act of actsPrev) {
+    const newEval = _nuevoEvalDeActividad(act, nuevoEvalPorUt)
+    if (newEval != null && newEval !== (act.eval || 1)) {
+      act.eval = newEval
+      await window.api.saveActividad(act)
     }
   }
 
